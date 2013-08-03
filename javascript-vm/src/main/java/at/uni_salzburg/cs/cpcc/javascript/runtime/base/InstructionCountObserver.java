@@ -1,6 +1,6 @@
 /*
  * This code is part of the CPCC-NG project.
- * Copyright (c) 2012  Clemens Krainer, Michael Lippautz
+ * Copyright (c) 2013  Clemens Krainer, Michael Lippautz
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@ public interface InstructionCountObserver
 {
 
     /**
-     * @param count
+     * @param count the instruction count.
      */
-    public void observeInstructioncound(int count);
+    void observeInstructioncound(int count);
 
 }

@@ -55,15 +55,15 @@ public class VirtualVehicleActionPoint extends ScriptableObject
      * 
      * @name LatLngAlt
      * @class Immutable container for real-world latitude and longitude coordinates.
-     * @param {LatLngAlt} position The position.
-     * @param {double} tolerance The allowed position tolerance.
-     * @param {SensorValue} values The sensor values of this action point.
+     * @param actionPosition The position of the action point.
+     * @param positionTolerance The allowed position tolerance.
+     * @param sensorValues The sensor values of this action point.
      */
-    public void jsConstructor(LatLngAlt position, double tolerance, NativeArray values)
+    public void jsConstructor(LatLngAlt actionPosition, double positionTolerance, NativeArray sensorValues)
     {
-        this.position = position;
-        this.tolerance = tolerance;
-        this.values = values;
+        this.position = actionPosition;
+        this.tolerance = positionTolerance;
+        this.values = sensorValues;
     }
 
     /**
@@ -81,7 +81,7 @@ public class VirtualVehicleActionPoint extends ScriptableObject
      * @memberOf ActionPoint#
      * @name position
      * @function
-     * @return {LatLngAlt} The position
+     * @return The position
      */
     public LatLngAlt jsGet_position()
     {
@@ -94,11 +94,11 @@ public class VirtualVehicleActionPoint extends ScriptableObject
      * @memberOf ActionPoint#
      * @name position
      * @function
-     * @return {LatLngAlt} The position
+     * @param newPosition The new position
      */
-    public void jsSet_position(LatLngAlt position)
+    public void jsSet_position(LatLngAlt newPosition)
     {
-        this.position = position;
+        this.position = newPosition;
     }
 
     /**
@@ -107,7 +107,7 @@ public class VirtualVehicleActionPoint extends ScriptableObject
      * @memberOf ActionPoint#
      * @name tolerance
      * @function
-     * @return {Double} The tolerance
+     * @return The tolerance
      */
     public double jsGet_tolerance()
     {
@@ -120,11 +120,11 @@ public class VirtualVehicleActionPoint extends ScriptableObject
      * @memberOf ActionPoint#
      * @name tolerance
      * @function
-     * @return {Double} The tolerance
+     * @param newTolerance The new tolerance
      */
-    public void jsSet_tolerance(double tolerance)
+    public void jsSet_tolerance(double newTolerance)
     {
-        this.tolerance = tolerance;
+        this.tolerance = newTolerance;
     }
 
     /**
@@ -133,7 +133,7 @@ public class VirtualVehicleActionPoint extends ScriptableObject
      * @memberOf ActionPoint#
      * @name values
      * @function
-     * @return {SensorValue} The values
+     * @return The values
      */
     public NativeArray jsGet_values()
     {
@@ -146,11 +146,11 @@ public class VirtualVehicleActionPoint extends ScriptableObject
      * @memberOf ActionPoint#
      * @name values
      * @function
-     * @return {SensorValue} The values
+     * @param newValues The new values
      */
-    public void jsSet_values(NativeArray values)
+    public void jsSet_values(NativeArray newValues)
     {
-        this.values = values;
+        this.values = newValues;
     }
 
     /**

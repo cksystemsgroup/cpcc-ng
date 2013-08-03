@@ -1,7 +1,7 @@
 /*
  * @(#) FileLoader.java
  *
- * This code is part of the JNavigator project.
+ * This code is part of the CPCC-NG project.
  * Copyright (c) 2013  Clemens Krainer
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,14 +22,31 @@ package at.uni_salzburg.cs.cpcc.utilities;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
-public class FileLoader
+/**
+ * FileLoader
+ */
+public final class FileLoader
 {
-    public static String loadFileAsString(File file) throws IOException
+    private FileLoader()
     {
-        FileReader reader = new FileReader(file);
+        // intentionally empty
+    }
+
+    /**
+     * @param file the file to be loaded
+     * @param charSetName the character set name
+     * @return the file content as a <code>String</code> object.
+     * @throws IOException thrown in case of errors.
+     */
+    public static String loadFileAsString(File file, String charSetName) throws IOException
+    {
+        FileInputStream fis = new FileInputStream(file); 
+        Reader reader = new InputStreamReader(fis, charSetName);
         BufferedReader lineReader = new BufferedReader(reader);
         StringBuilder sb = new StringBuilder();
         String line;

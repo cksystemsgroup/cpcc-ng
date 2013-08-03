@@ -52,8 +52,8 @@ public class JSInterpreter
         Collections.synchronizedMap(new HashMap<Context, Properties>());
 
     /**
-     * @param cx
-     * @return
+     * @param cx the context
+     * @return the context scope
      */
     public static ScriptableObject getContextScope(Context cx)
     {
@@ -61,7 +61,7 @@ public class JSInterpreter
     }
 
     /**
-     * @param scope
+     * @param scope the context scope
      */
     public static void setContextScope(ScriptableObject scope)
     {
@@ -69,7 +69,7 @@ public class JSInterpreter
     }
 
     /**
-     * close
+     * close the context
      */
     public void close()
     {
@@ -77,7 +77,7 @@ public class JSInterpreter
     }
 
     /**
-     * @return
+     * @return the context's console provider
      */
     public static ConsoleProvider getConsoleProvider()
     {
@@ -85,7 +85,7 @@ public class JSInterpreter
     }
 
     /**
-     * @param consoleProvider
+     * @param consoleProvider the context's console provider
      */
     public void setConsoleProvider(ConsoleProvider consoleProvider)
     {
@@ -93,7 +93,7 @@ public class JSInterpreter
     }
 
     /**
-     * @return
+     * @return the context's position provider
      */
     public static PositonProvider getPositionProvider()
     {
@@ -101,7 +101,7 @@ public class JSInterpreter
     }
 
     /**
-     * @param positionProvider
+     * @param positionProvider the context's position provider
      */
     public void setPositionProvider(PositonProvider positionProvider)
     {
@@ -109,7 +109,7 @@ public class JSInterpreter
     }
 
     /**
-     * @return
+     * @return the context's properties
      */
     public static Properties getContextProperties()
     {
@@ -117,7 +117,7 @@ public class JSInterpreter
     }
 
     /**
-     * @param props
+     * @param props the context's properties
      */
     public static void setContextProperties(Properties props)
     {
@@ -126,7 +126,7 @@ public class JSInterpreter
     }
 
     /**
-     * @param threshold
+     * @param threshold the instruction observer threshold.
      */
     public void setInstructionObserverThreshold(int threshold)
     {
@@ -135,7 +135,7 @@ public class JSInterpreter
     }
 
     /**
-     * @param obs
+     * @param obs the instruction count observer.
      */
     public void addInstructionCountObserver(InstructionCountObserver obs)
     {
@@ -143,8 +143,10 @@ public class JSInterpreter
     }
 
     /**
-     * @return
-     * @throws IOException
+     * Start the JavaScript interpreter.
+     * 
+     * @return a <code>ContinuationPending</code> snapshot or null.
+     * @throws IOException thrown in case of errors.
      */
     public byte[] start() throws IOException
     {
@@ -165,9 +167,11 @@ public class JSInterpreter
     }
 
     /**
-     * @param snapshot
-     * @return
-     * @throws IOException
+     * Start the JavaScript interpreter from a <code>ContinuationPending</code> snapshot.
+     * 
+     * @param snapshot the <code>ContinuationPending</code> snapshot.
+     * @return a <code>ContinuationPending</code> snapshot or null.
+     * @throws IOException thrown in case of errors.
      */
     public byte[] start(byte[] snapshot) throws IOException
     {

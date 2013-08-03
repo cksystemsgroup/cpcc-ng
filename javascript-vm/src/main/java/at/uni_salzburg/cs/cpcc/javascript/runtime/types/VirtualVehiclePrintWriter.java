@@ -25,9 +25,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
+import org.apache.commons.io.FileUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import at.uni_salzburg.cs.cpcc.javascript.JSInterpreter;
 
 /**
@@ -37,8 +39,8 @@ public class VirtualVehiclePrintWriter extends ScriptableObject
 {
 
     private static final long serialVersionUID = -3020497671453909858L;
-    private VirtualVehicleFile file;
-    private String csn;
+    private VirtualVehicleFile vvFile;
+    private String characterSetName;
 
     private void setPrototype()
     {
@@ -57,16 +59,17 @@ public class VirtualVehiclePrintWriter extends ScriptableObject
     /**
      * @name VirtualVehiclePrintWriter
      * @class Immutable container for virtual vehicle print output.
-     * @param {File} file The file object containing the abstract path name.
-     * @throws FileNotFoundException
-     * @throws UnsupportedEncodingException
+     * @param file The file object containing the abstract path name.
+     * @param csn The character set name
+     * @throws FileNotFoundException thrown in case of errors.
+     * @throws UnsupportedEncodingException thrown in case of errors.
      */
     public void jsConstructor(VirtualVehicleFile file, String csn) throws FileNotFoundException,
         UnsupportedEncodingException
     {
-        this.file = file;
-        this.csn = csn != null && "undefined".equals(csn) ? null : csn;
-        file.getDelegate().delete();
+        this.vvFile = file;
+        this.characterSetName = csn != null && "undefined".equals(csn) ? null : csn;
+        FileUtils.deleteQuietly(file.getDelegate());
     }
 
     /**
@@ -79,14 +82,17 @@ public class VirtualVehiclePrintWriter extends ScriptableObject
     }
 
     /**
-     * @return
-     * @throws IOException
+     * @return the <code>PrintWriter</code> delegate.
+     * @throws IOException thrown in case of errors.
      */
     @SuppressWarnings("resource")
+    @SuppressFBWarnings("DM_DEFAULT_ENCODING")
     private PrintWriter getDelegate() throws IOException
     {
-        FileOutputStream os = new FileOutputStream(file.getDelegate(), true);
-        return csn == null ? new PrintWriter(os) : new PrintWriter(new OutputStreamWriter(os, csn));
+        FileOutputStream os = new FileOutputStream(vvFile.getDelegate(), true);
+        return characterSetName == null
+            ? new PrintWriter(os)
+            : new PrintWriter(new OutputStreamWriter(os, characterSetName));
     }
 
     /**
@@ -96,8 +102,8 @@ public class VirtualVehiclePrintWriter extends ScriptableObject
      * @name println
      * @function
      * @memberOf _global_
-     * @param {Object} arg The object to be printed.
-     * @throws IOException
+     * @param arg The object to be printed.
+     * @throws IOException thrown in case of errors.
      */
     public void jsFunction_println(Object arg) throws IOException
     {
@@ -113,8 +119,8 @@ public class VirtualVehiclePrintWriter extends ScriptableObject
      * @name println
      * @function
      * @memberOf _global_
-     * @param {Object} arg The object to be printed.
-     * @throws IOException
+     * @param arg The object to be printed.
+     * @throws IOException thrown in case of errors.
      */
     public void jsFunction_print(Object arg) throws IOException
     {
@@ -130,9 +136,9 @@ public class VirtualVehiclePrintWriter extends ScriptableObject
      * @name printf
      * @function
      * @memberOf _global_
-     * @param {String} format The formatting string.
-     * @param {Object} args The objects to be printed.
-     * @throws IOException
+     * @param format The formatting string.
+     * @param args The objects to be printed.
+     * @throws IOException thrown in case of errors.
      */
     public void jsFunction_printf(String format, Object args) throws IOException
     {

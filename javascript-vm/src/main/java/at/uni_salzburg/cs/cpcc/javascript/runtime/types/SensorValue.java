@@ -56,15 +56,15 @@ public class SensorValue extends ScriptableObject
      * 
      * @name SensorValue
      * @class Immutable container for name, time, and values of sensors.
-     * @param {String} name The sensor name
-     * @param {Double} time The completion time.
-     * @param {Object} value The captured value.
+     * @param sensorName The sensor name
+     * @param completionTime The completion time.
+     * @param sensorValue The captured value.
      */
-    public void jsConstructor(String name, Double time, Object value)
+    public void jsConstructor(String sensorName, Double completionTime, Object sensorValue)
     {
-        this.name = name;
-        this.time = time;
-        this.value = value;
+        this.name = sensorName;
+        this.time = completionTime;
+        this.value = sensorValue;
     }
 
     /**
@@ -82,7 +82,7 @@ public class SensorValue extends ScriptableObject
      * @memberOf SensorValue#
      * @name name
      * @function
-     * @return {String} The sensor's name
+     * @return The sensor's name
      */
     public String jsGet_name()
     {
@@ -95,11 +95,11 @@ public class SensorValue extends ScriptableObject
      * @memberOf SensorValue#
      * @name name
      * @function
-     * @return {String} The sensor's name
+     * @param newName the new name
      */
-    public void jsSet_name(String name)
+    public void jsSet_name(String newName)
     {
-        this.name = name;
+        this.name = newName;
     }
 
     /**
@@ -108,7 +108,7 @@ public class SensorValue extends ScriptableObject
      * @memberOf SensorValue#
      * @name name
      * @function
-     * @return {Double} The completion time
+     * @return The completion time
      */
     public Double jsGet_time()
     {
@@ -121,11 +121,11 @@ public class SensorValue extends ScriptableObject
      * @memberOf SensorValue#
      * @name name
      * @function
-     * @return {Double} The completion time
+     * @param newTime the new completion time
      */
-    public void jsSet_time(Double time)
+    public void jsSet_time(Double newTime)
     {
-        this.time = time;
+        this.time = newTime;
     }
 
     /**
@@ -134,7 +134,7 @@ public class SensorValue extends ScriptableObject
      * @memberOf SensorValue#
      * @name value
      * @function
-     * @return {Object} The sensor value
+     * @return The sensor value
      */
     public Object jsGet_value()
     {
@@ -147,11 +147,11 @@ public class SensorValue extends ScriptableObject
      * @memberOf SensorValue#
      * @name value
      * @function
-     * @return {Object} The sensor value
+     * @param newValue the new value.
      */
-    public void jsSet_value(Object value)
+    public void jsSet_value(Object newValue)
     {
-        this.value = value;
+        this.value = newValue;
     }
 
     /**

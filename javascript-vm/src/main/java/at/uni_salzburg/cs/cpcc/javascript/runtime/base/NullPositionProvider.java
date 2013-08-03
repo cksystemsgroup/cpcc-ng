@@ -33,7 +33,7 @@ public class NullPositionProvider implements PositonProvider
     public LatLngAlt getCurrentPosition()
     {
         LatLngAlt position = new LatLngAlt();
-        //		position.setPrototype(ScriptableObject.getClassPrototype(JSInterpreter.getGlobalScope(), "LatLngAlt"));
+        // position.setPrototype(ScriptableObject.getClassPrototype(JSInterpreter.getGlobalScope(), "LatLngAlt"));
         return position;
     }
 

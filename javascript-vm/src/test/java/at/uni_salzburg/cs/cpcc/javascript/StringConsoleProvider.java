@@ -1,6 +1,6 @@
 /*
  * This code is part of the CPCC-NG project.
- * Copyright (c) 2012  Clemens Krainer
+ * Copyright (c) 2013  Clemens Krainer
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,15 @@ package at.uni_salzburg.cs.cpcc.javascript;
 
 import at.uni_salzburg.cs.cpcc.javascript.runtime.base.ConsoleProvider;
 
-public class StringConsoleProvider implements ConsoleProvider {
-	
-	public StringBuilder result = new StringBuilder();
-	
-	@Override
-	public void print(String message) {
-		result.append(message);
-	}
-	
+public class StringConsoleProvider implements ConsoleProvider
+{
+
+    public StringBuilder result = new StringBuilder();
+
+    @Override
+    public void print(String message)
+    {
+        result.append(message);
+    }
+
 }

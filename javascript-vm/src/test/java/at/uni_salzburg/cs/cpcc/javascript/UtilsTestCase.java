@@ -25,182 +25,207 @@ import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
-public class UtilsTestCase {
+public class UtilsTestCase
+{
 
-	@Test
-	public void compactPathTest01() throws FileNotFoundException {
-		assertEquals("",Utils.compactPath(""));
-		assertEquals("",Utils.compactPath("/"));
-		assertEquals("",Utils.compactPath("//"));
-		assertEquals("",Utils.compactPath("///"));
-		assertEquals("",Utils.compactPath("////"));
-	}
+    @Test
+    public void compactPathTest01() throws FileNotFoundException
+    {
+        assertEquals("", Utils.compactPath(""));
+        assertEquals("", Utils.compactPath("/"));
+        assertEquals("", Utils.compactPath("//"));
+        assertEquals("", Utils.compactPath("///"));
+        assertEquals("", Utils.compactPath("////"));
+    }
 
-	
-	@Test
-	public void compactPathTest02() throws FileNotFoundException {
-		String expected = "name1";
-		assertEquals(expected, Utils.compactPath("name1"));
-		assertEquals(expected, Utils.compactPath("/name1"));
-	}
-	
-	@Test
-	public void compactPathTest03() throws FileNotFoundException {
-		String expected = "name1"+File.separator+"name2";
-		assertEquals(expected, Utils.compactPath("name1/name2"));
-		assertEquals(expected, Utils.compactPath("name1//name2"));
-		assertEquals(expected, Utils.compactPath("name1///name2"));
-		assertEquals(expected, Utils.compactPath("name1////name2"));
-		
-		assertEquals(expected, Utils.compactPath("/name1/name2"));
-		assertEquals(expected, Utils.compactPath("//name1//name2"));
-		assertEquals(expected, Utils.compactPath("///name1///name2"));
-		assertEquals(expected, Utils.compactPath("////name1////name2"));
-	}
-	
-	@Test
-	public void compactPathTest04() throws FileNotFoundException {
-		String expected = "name1"+File.separator+"name2";
-		assertEquals(expected, Utils.compactPath("name1\\name2"));
-		assertEquals(expected, Utils.compactPath("name1\\\\name2"));
-		assertEquals(expected, Utils.compactPath("name1\\\\\\name2"));
-		assertEquals(expected, Utils.compactPath("name1\\\\\\\\name2"));
-		
-		assertEquals(expected, Utils.compactPath("\\name1\\name2"));
-		assertEquals(expected, Utils.compactPath("\\\\name1\\\\name2"));
-		assertEquals(expected, Utils.compactPath("\\\\\\name1\\\\\\name2"));
-		assertEquals(expected, Utils.compactPath("\\\\\\\\name1\\\\\\\\name2"));
-	}
-	
-	@Test
-	public void compactPathTest05() throws FileNotFoundException {
-		String expected = "name1"+File.separator+"name2"+File.separator+"name3";
-		assertEquals(expected, Utils.compactPath("name1/name2/name3"));
-		assertEquals(expected, Utils.compactPath("name1//name2//name3"));
-		assertEquals(expected, Utils.compactPath("name1///name2///name3"));
-		assertEquals(expected, Utils.compactPath("name1////name2////name3"));
-		
-		assertEquals(expected, Utils.compactPath("/name1/name2/name3"));
-		assertEquals(expected, Utils.compactPath("//name1//name2//name3"));
-		assertEquals(expected, Utils.compactPath("///name1///name2///name3"));
-		assertEquals(expected, Utils.compactPath("////name1////name2////name3"));
-	}
-	
-	@Test
-	public void compactPathTest06() throws FileNotFoundException {
-		String expected = "name1"+File.separator+"name2"+File.separator+"name3";
-		assertEquals(expected, Utils.compactPath("name1\\name2\\name3"));
-		assertEquals(expected, Utils.compactPath("name1\\\\name2\\\\name3"));
-		assertEquals(expected, Utils.compactPath("name1\\\\\\name2\\\\\\name3"));
-		assertEquals(expected, Utils.compactPath("name1\\\\\\\\name2\\\\\\\\name3"));
-		
-		assertEquals(expected, Utils.compactPath("\\name1\\name2\\name3"));
-		assertEquals(expected, Utils.compactPath("\\\\name1\\\\name2\\\\name3"));
-		assertEquals(expected, Utils.compactPath("\\\\\\name1\\\\\\name2\\\\\\name3"));
-		assertEquals(expected, Utils.compactPath("\\\\\\\\name1\\\\\\\\name2\\\\\\\\name3"));
-	}
-	
-	
-	@Test
-	public void compactPathTest10() throws FileNotFoundException {
-		assertEquals("",Utils.compactPath("."));
-		assertEquals("",Utils.compactPath("./."));
-		assertEquals("",Utils.compactPath("././."));
-		assertEquals("",Utils.compactPath("./././."));
-		
-		assertEquals("",Utils.compactPath("."));
-		assertEquals("",Utils.compactPath(".\\."));
-		assertEquals("",Utils.compactPath(".\\.\\."));
-		assertEquals("",Utils.compactPath(".\\.\\.\\."));
-	}
-	
-	@Test
-	public void compactPathTest11() throws FileNotFoundException {
-		assertEquals("",Utils.compactPath("/."));
-		assertEquals("",Utils.compactPath("//./."));
-		assertEquals("",Utils.compactPath("///././."));
-		assertEquals("",Utils.compactPath("///./././."));
-		
-		assertEquals("",Utils.compactPath("\\."));
-		assertEquals("",Utils.compactPath("\\\\.\\."));
-		assertEquals("",Utils.compactPath("\\\\\\.\\.\\."));
-		assertEquals("",Utils.compactPath("\\\\\\\\.\\.\\.\\."));
-	}
-	
-	@Test
-	public void compactPathTest20() throws FileNotFoundException {
-		assertEquals("",Utils.compactPath("name1/.."));
-		assertEquals("",Utils.compactPath("name1/name2/../.."));
-		assertEquals("",Utils.compactPath("name1/name2/name3/../../.."));
-		assertEquals("",Utils.compactPath("name1/name2/name3/name4/../../../.."));
-		
-		assertEquals("",Utils.compactPath("name1\\.."));
-		assertEquals("",Utils.compactPath("name1\\name2\\..\\.."));
-		assertEquals("",Utils.compactPath("name1\\name2\\name3\\..\\..\\.."));
-		assertEquals("",Utils.compactPath("name1\\name2\\name3\\name4\\..\\..\\..\\.."));
-	}
-	
-	@Test
-	public void compactPathTest21() throws FileNotFoundException {
-		assertEquals("",Utils.compactPath("name1/.."));
-		assertEquals("",Utils.compactPath("name1/../name2/.."));
-		assertEquals("",Utils.compactPath("name1/../name2/../name3/.."));
-		assertEquals("",Utils.compactPath("name1/../name2/../name3/../name4/.."));
-		
-		assertEquals("",Utils.compactPath("name1\\.."));
-		assertEquals("",Utils.compactPath("name1\\..\\name2\\.."));
-		assertEquals("",Utils.compactPath("name1\\..\\name2\\..\\name3\\.."));
-		assertEquals("",Utils.compactPath("name1\\..\\name2\\..\\name3\\..\\name4\\.."));
-	}
-	
-	@Test
-	public void compactPathTest22() throws FileNotFoundException {
-		assertEquals("name2",Utils.compactPath("name1/../name2"));
-		assertEquals("name1",Utils.compactPath("name1//name2/.."));
-		assertEquals("name3",Utils.compactPath("name1/../name2/../name3/"));
-		assertEquals("name1/name4",Utils.compactPath("name1//name2/../name3/../name4"));
-		
-		assertEquals("name2",Utils.compactPath("/name1/../name2/"));
-		assertEquals("name1",Utils.compactPath("name1//name2/../"));
-		assertEquals("name3",Utils.compactPath("name1/../name2/../name3/"));
-		assertEquals("name4",Utils.compactPath("name1/../name2/../name3/../name4"));
-	}
-	
-	@Test
-	public void compactPathTest30() {
-		try {
-			Utils.compactPath("..");
-		} catch (FileNotFoundException e) {
-			assertEquals("Invalid path name: ..",e.getMessage());
-		}
-	}
-	
-	@Test
-	public void compactPathTest31() {
-		try {
-			Utils.compactPath("../..");
-		} catch (FileNotFoundException e) {
-			assertEquals("Invalid path name: ../..",e.getMessage());
-		}
-	}
-	
-	@Test
-	public void compactPathTest38() {
-		try {
-			Utils.compactPath("../name1");
-		} catch (FileNotFoundException e) {
-			assertEquals("Invalid path name: ../name1",e.getMessage());
-		}
-	}
-	
-	@Test
-	public void compactPathTest39() {
-		try {
-			Utils.compactPath("name1/../../name2");
-		} catch (FileNotFoundException e) {
-			assertEquals("Invalid path name: name1/../../name2",e.getMessage());
-		}
-	}
-	
-	
+    @Test
+    public void compactPathTest02() throws FileNotFoundException
+    {
+        String expected = "name1";
+        assertEquals(expected, Utils.compactPath("name1"));
+        assertEquals(expected, Utils.compactPath("/name1"));
+    }
+
+    @Test
+    public void compactPathTest03() throws FileNotFoundException
+    {
+        String expected = "name1" + File.separator + "name2";
+        assertEquals(expected, Utils.compactPath("name1/name2"));
+        assertEquals(expected, Utils.compactPath("name1//name2"));
+        assertEquals(expected, Utils.compactPath("name1///name2"));
+        assertEquals(expected, Utils.compactPath("name1////name2"));
+
+        assertEquals(expected, Utils.compactPath("/name1/name2"));
+        assertEquals(expected, Utils.compactPath("//name1//name2"));
+        assertEquals(expected, Utils.compactPath("///name1///name2"));
+        assertEquals(expected, Utils.compactPath("////name1////name2"));
+    }
+
+    @Test
+    public void compactPathTest04() throws FileNotFoundException
+    {
+        String expected = "name1" + File.separator + "name2";
+        assertEquals(expected, Utils.compactPath("name1\\name2"));
+        assertEquals(expected, Utils.compactPath("name1\\\\name2"));
+        assertEquals(expected, Utils.compactPath("name1\\\\\\name2"));
+        assertEquals(expected, Utils.compactPath("name1\\\\\\\\name2"));
+
+        assertEquals(expected, Utils.compactPath("\\name1\\name2"));
+        assertEquals(expected, Utils.compactPath("\\\\name1\\\\name2"));
+        assertEquals(expected, Utils.compactPath("\\\\\\name1\\\\\\name2"));
+        assertEquals(expected, Utils.compactPath("\\\\\\\\name1\\\\\\\\name2"));
+    }
+
+    @Test
+    public void compactPathTest05() throws FileNotFoundException
+    {
+        String expected = "name1" + File.separator + "name2" + File.separator + "name3";
+        assertEquals(expected, Utils.compactPath("name1/name2/name3"));
+        assertEquals(expected, Utils.compactPath("name1//name2//name3"));
+        assertEquals(expected, Utils.compactPath("name1///name2///name3"));
+        assertEquals(expected, Utils.compactPath("name1////name2////name3"));
+
+        assertEquals(expected, Utils.compactPath("/name1/name2/name3"));
+        assertEquals(expected, Utils.compactPath("//name1//name2//name3"));
+        assertEquals(expected, Utils.compactPath("///name1///name2///name3"));
+        assertEquals(expected, Utils.compactPath("////name1////name2////name3"));
+    }
+
+    @Test
+    public void compactPathTest06() throws FileNotFoundException
+    {
+        String expected = "name1" + File.separator + "name2" + File.separator + "name3";
+        assertEquals(expected, Utils.compactPath("name1\\name2\\name3"));
+        assertEquals(expected, Utils.compactPath("name1\\\\name2\\\\name3"));
+        assertEquals(expected, Utils.compactPath("name1\\\\\\name2\\\\\\name3"));
+        assertEquals(expected, Utils.compactPath("name1\\\\\\\\name2\\\\\\\\name3"));
+
+        assertEquals(expected, Utils.compactPath("\\name1\\name2\\name3"));
+        assertEquals(expected, Utils.compactPath("\\\\name1\\\\name2\\\\name3"));
+        assertEquals(expected, Utils.compactPath("\\\\\\name1\\\\\\name2\\\\\\name3"));
+        assertEquals(expected, Utils.compactPath("\\\\\\\\name1\\\\\\\\name2\\\\\\\\name3"));
+    }
+
+    @Test
+    public void compactPathTest10() throws FileNotFoundException
+    {
+        assertEquals("", Utils.compactPath("."));
+        assertEquals("", Utils.compactPath("./."));
+        assertEquals("", Utils.compactPath("././."));
+        assertEquals("", Utils.compactPath("./././."));
+
+        assertEquals("", Utils.compactPath("."));
+        assertEquals("", Utils.compactPath(".\\."));
+        assertEquals("", Utils.compactPath(".\\.\\."));
+        assertEquals("", Utils.compactPath(".\\.\\.\\."));
+    }
+
+    @Test
+    public void compactPathTest11() throws FileNotFoundException
+    {
+        assertEquals("", Utils.compactPath("/."));
+        assertEquals("", Utils.compactPath("//./."));
+        assertEquals("", Utils.compactPath("///././."));
+        assertEquals("", Utils.compactPath("///./././."));
+
+        assertEquals("", Utils.compactPath("\\."));
+        assertEquals("", Utils.compactPath("\\\\.\\."));
+        assertEquals("", Utils.compactPath("\\\\\\.\\.\\."));
+        assertEquals("", Utils.compactPath("\\\\\\\\.\\.\\.\\."));
+    }
+
+    @Test
+    public void compactPathTest20() throws FileNotFoundException
+    {
+        assertEquals("", Utils.compactPath("name1/.."));
+        assertEquals("", Utils.compactPath("name1/name2/../.."));
+        assertEquals("", Utils.compactPath("name1/name2/name3/../../.."));
+        assertEquals("", Utils.compactPath("name1/name2/name3/name4/../../../.."));
+
+        assertEquals("", Utils.compactPath("name1\\.."));
+        assertEquals("", Utils.compactPath("name1\\name2\\..\\.."));
+        assertEquals("", Utils.compactPath("name1\\name2\\name3\\..\\..\\.."));
+        assertEquals("", Utils.compactPath("name1\\name2\\name3\\name4\\..\\..\\..\\.."));
+    }
+
+    @Test
+    public void compactPathTest21() throws FileNotFoundException
+    {
+        assertEquals("", Utils.compactPath("name1/.."));
+        assertEquals("", Utils.compactPath("name1/../name2/.."));
+        assertEquals("", Utils.compactPath("name1/../name2/../name3/.."));
+        assertEquals("", Utils.compactPath("name1/../name2/../name3/../name4/.."));
+
+        assertEquals("", Utils.compactPath("name1\\.."));
+        assertEquals("", Utils.compactPath("name1\\..\\name2\\.."));
+        assertEquals("", Utils.compactPath("name1\\..\\name2\\..\\name3\\.."));
+        assertEquals("", Utils.compactPath("name1\\..\\name2\\..\\name3\\..\\name4\\.."));
+    }
+
+    @Test
+    public void compactPathTest22() throws FileNotFoundException
+    {
+        assertEquals("name2", Utils.compactPath("name1/../name2"));
+        assertEquals("name1", Utils.compactPath("name1//name2/.."));
+        assertEquals("name3", Utils.compactPath("name1/../name2/../name3/"));
+        assertEquals("name1/name4", Utils.compactPath("name1//name2/../name3/../name4"));
+
+        assertEquals("name2", Utils.compactPath("/name1/../name2/"));
+        assertEquals("name1", Utils.compactPath("name1//name2/../"));
+        assertEquals("name3", Utils.compactPath("name1/../name2/../name3/"));
+        assertEquals("name4", Utils.compactPath("name1/../name2/../name3/../name4"));
+    }
+
+    @Test
+    public void compactPathTest30()
+    {
+        try
+        {
+            Utils.compactPath("..");
+        }
+        catch (FileNotFoundException e)
+        {
+            assertEquals("Invalid path name: ..", e.getMessage());
+        }
+    }
+
+    @Test
+    public void compactPathTest31()
+    {
+        try
+        {
+            Utils.compactPath("../..");
+        }
+        catch (FileNotFoundException e)
+        {
+            assertEquals("Invalid path name: ../..", e.getMessage());
+        }
+    }
+
+    @Test
+    public void compactPathTest38()
+    {
+        try
+        {
+            Utils.compactPath("../name1");
+        }
+        catch (FileNotFoundException e)
+        {
+            assertEquals("Invalid path name: ../name1", e.getMessage());
+        }
+    }
+
+    @Test
+    public void compactPathTest39()
+    {
+        try
+        {
+            Utils.compactPath("name1/../../name2");
+        }
+        catch (FileNotFoundException e)
+        {
+            assertEquals("Invalid path name: name1/../../name2", e.getMessage());
+        }
+    }
+
 }

@@ -30,9 +30,9 @@ public class SandboxNativeJavaObject extends NativeJavaObject
     private static final long serialVersionUID = 6171062703545916867L;
 
     /**
-     * @param scope
-     * @param javaObject
-     * @param staticType
+     * @param scope the scriptable scope
+     * @param javaObject the java object
+     * @param staticType the static type
      */
     public SandboxNativeJavaObject(Scriptable scope, Object javaObject, Class<?> staticType)
     {

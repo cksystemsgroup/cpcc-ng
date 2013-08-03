@@ -54,14 +54,14 @@ public class LatLngAlt extends ScriptableObject
     /**
      * Construct a <code>LatLngAlt</code> object with given coordinates.
      * 
-     * @param lat latitude
-     * @param lng longitude
-     * @param alt altitude
+     * @param latitude latitude
+     * @param longitude longitude
+     * @param altitude altitude
      */
-    public LatLngAlt(double lat, double lng, double alt)
+    public LatLngAlt(double latitude, double longitude, double altitude)
     {
         setPrototype();
-        jsConstructor(lat, lng, alt);
+        jsConstructor(latitude, longitude, altitude);
     }
 
     /**
@@ -69,15 +69,15 @@ public class LatLngAlt extends ScriptableObject
      * 
      * @name LatLngAlt
      * @class Immutable container for real-world coordinates latitude, longitude, and altitude.
-     * @param {double} lat The latitude of the position.
-     * @param {double} lng The longitude of the position.
-     * @param {double} alt The altitude of the position.
+     * @param latitude The latitude of the position.
+     * @param longitude The longitude of the position.
+     * @param altitude The altitude of the position.
      */
-    public void jsConstructor(double lat, double lng, double alt)
+    public void jsConstructor(double latitude, double longitude, double altitude)
     {
-        this.lat = lat;
-        this.lng = lng;
-        this.alt = alt;
+        this.lat = latitude;
+        this.lng = longitude;
+        this.alt = altitude;
     }
 
     /**
@@ -96,7 +96,9 @@ public class LatLngAlt extends ScriptableObject
     public boolean equals(Object obj)
     {
         if (obj == null || !(obj instanceof LatLngAlt))
+        {
             return false;
+        }
         LatLngAlt other = (LatLngAlt) obj;
         return lat == other.lat && lng == other.lng && alt == other.alt;
     }
@@ -116,7 +118,7 @@ public class LatLngAlt extends ScriptableObject
      * @memberOf LatLngAlt#
      * @name lat
      * @function
-     * @return {double} The latitude
+     * @return The latitude
      */
     public double jsGet_lat()
     {
@@ -129,11 +131,11 @@ public class LatLngAlt extends ScriptableObject
      * @memberOf LatLngAlt#
      * @name lat
      * @function
-     * @param {double} The latitude
+     * @param latitude the latitude
      */
-    public void jsSet_lat(double lat)
+    public void jsSet_lat(double latitude)
     {
-        this.lat = lat;
+        this.lat = latitude;
     }
 
     /**
@@ -142,7 +144,7 @@ public class LatLngAlt extends ScriptableObject
      * @memberOf LatLngAlt#
      * @name lng
      * @function
-     * @return {double} The longitude
+     * @return The longitude
      */
     public double jsGet_lng()
     {
@@ -155,11 +157,11 @@ public class LatLngAlt extends ScriptableObject
      * @memberOf LatLngAlt#
      * @name lng
      * @function
-     * @param {double} The longitude
+     * @param longitude The longitude
      */
-    public void jsSet_lng(double lng)
+    public void jsSet_lng(double longitude)
     {
-        this.lng = lng;
+        this.lng = longitude;
     }
 
     /**
@@ -168,7 +170,7 @@ public class LatLngAlt extends ScriptableObject
      * @memberOf LatLngAlt#
      * @name alt
      * @function
-     * @return {double} The altitude
+     * @return The altitude
      */
     public double jsGet_alt()
     {
@@ -181,11 +183,11 @@ public class LatLngAlt extends ScriptableObject
      * @memberOf LatLngAlt#
      * @name alt
      * @function
-     * @param {double} The altitude
+     * @param altitude The altitude
      */
-    public void jsSet_alt(double alt)
+    public void jsSet_alt(double altitude)
     {
-        this.alt = alt;
+        this.alt = altitude;
     }
 
     /**
@@ -194,14 +196,17 @@ public class LatLngAlt extends ScriptableObject
      * @memberOf LatLngAlt#
      * @name equals
      * @function
-     * @param {LatLngAlt} other The position to compare against.
-     * @return {boolean} true if the positions are equal, false otherwise.
+     * @param other The position to compare against.
+     * @return true if the positions are equal, false otherwise.
      */
     public boolean jsFunction_equals(LatLngAlt other)
     {
         return equals(other);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString()
     {

@@ -37,7 +37,7 @@ import at.uni_salzburg.cs.cpcc.javascript.runtime.types.VirtualVehicleActionPoin
 /**
  * BuiltinFunctions
  */
-public class BuiltinFunctions implements Serializable
+public final class BuiltinFunctions implements Serializable
 {
     private static final long serialVersionUID = -5978941480045547826L;
 
@@ -45,14 +45,15 @@ public class BuiltinFunctions implements Serializable
     {
         // intentionally empty.
     }
-    
+
     /**
      * Function acquires the latest available position and returns immediately.
      * 
      * @name getpos
      * @function
      * @memberOf _global_
-     * @return {LatLng} The latest available position.
+     * @return The latest available position.
+     * @throws Exception thrown in case of errors.
      */
     public static LatLngAlt getpos() throws Exception
     {
@@ -70,7 +71,10 @@ public class BuiltinFunctions implements Serializable
      * @name println
      * @function
      * @memberOf _global_
-     * @param {Object} vargs The objects to print, separated by commas.
+     * @param cx the interpreter context.
+     * @param thisObj the reference to the JavaScript object.
+     * @param args the arguments.
+     * @param funObj funObj
      */
     public static void println(Context cx, Scriptable thisObj, Object[] args, Function funObj)
     {
@@ -98,7 +102,7 @@ public class BuiltinFunctions implements Serializable
      * @name sleep
      * @function
      * @memberOf _global_
-     * @param millis the length of time to sleep in milliseconds.
+     * @param arg the length of time to sleep in milliseconds.
      */
     public static void sleep(Object arg)
     {
@@ -110,6 +114,7 @@ public class BuiltinFunctions implements Serializable
         catch (InterruptedException e)
         {
             // we don't care
+            e.printStackTrace();
         }
     }
 
@@ -141,19 +146,26 @@ public class BuiltinFunctions implements Serializable
      * @name sleep
      * @function
      * @memberOf _global_
+     * @return the next pseudorandom, uniformly distributed float value between 0.0 and 1.0 from the Math.random()
+     *         sequence.
      */
     public static double random()
     {
-       return RandomUtils.nextDouble(); 
+        return RandomUtils.nextDouble();
     }
 
     /**
-     * Fly to the next action point.
+     * Fly to the next action point. Arguments are one instance of LatLngAlt followed by one or more sensor names
+     * (Strings).
      * 
      * @name flyTo
      * @function
      * @memberOf _global_
-     * @param {Object} vargs one instance of LatLngAlt followed by one or more sensor names (Strings)
+     * @param ctx the interpreter context.
+     * @param thisObj the reference to the JavaScript object.
+     * @param args the arguments.
+     * @param funObj funObj
+     * @return a <code>VirtualVehicleActionPoint</code> instance.
      */
     public static VirtualVehicleActionPoint flyTo(Context ctx, Scriptable thisObj, Object[] args, Function funObj)
     {
@@ -162,7 +174,8 @@ public class BuiltinFunctions implements Serializable
             || !(args[1] instanceof Double))
         {
             throw new IllegalArgumentException(
-                "Too few parameters or first parameter is not a LatLngAlt instance or second parameter is not a number.");
+                "Too few parameters or first parameter is not a LatLngAlt instance or "
+                    + "second parameter is not a number.");
         }
 
         LatLngAlt latLonAlt = (LatLngAlt) args[0];

@@ -34,14 +34,18 @@ import org.mozilla.javascript.serialize.ScriptableOutputStream;
 /**
  * Utils
  */
-public class Utils
+public final class Utils
 {
+    private Utils()
+    {
+        // intentionally empty
+    }
 
     /**
-     * @param c
-     * @param scope
-     * @return
-     * @throws IOException
+     * @param c the continuation object.
+     * @param scope the scriptable scope.
+     * @return the serialized continuation object.
+     * @throws IOException thrown in case of errors.
      */
     public static byte[] serialize(Object c, ScriptableObject scope) throws IOException
     {
@@ -55,11 +59,11 @@ public class Utils
     }
 
     /**
-     * @param blob
-     * @param scope
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @param blob the serialized continuation object.
+     * @param scope the scriptable scope.
+     * @return the continuation object.
+     * @throws IOException thrown in case of errors.
+     * @throws ClassNotFoundException thrown in case of errors.
      */
     public static Object deserialize(byte[] blob, ScriptableObject scope) throws IOException, ClassNotFoundException
     {
@@ -71,9 +75,9 @@ public class Utils
     }
 
     /**
-     * @param path
-     * @return
-     * @throws FileNotFoundException
+     * @param path a given path
+     * @return the compacted path
+     * @throws FileNotFoundException thrown in case of errors.
      */
     public static String compactPath(String path) throws FileNotFoundException
     {

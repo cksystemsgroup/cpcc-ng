@@ -1,6 +1,6 @@
 /*
  * This code is part of the CPCC-NG project.
- * Copyright (c) 2012  Clemens Krainer
+ * Copyright (c) 2013  Clemens Krainer
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,40 +21,43 @@ package at.uni_salzburg.cs.cpcc.javascript;
 import at.uni_salzburg.cs.cpcc.javascript.runtime.base.PositonProvider;
 import at.uni_salzburg.cs.cpcc.javascript.runtime.types.LatLngAlt;
 
-public class StaticPositionProviderMock implements PositonProvider {
+public class StaticPositionProviderMock implements PositonProvider
+{
 
-	private double mLat;
-	private double mLng;
-	private double mAlt;
-	
-	public StaticPositionProviderMock(double lat, double lng, double alt) {
-		this.mLat = lat;
-		this.mLng = lng;
-		this.mAlt = alt;
-	}
-	
-	@Override
-	public LatLngAlt getCurrentPosition() {
-		LatLngAlt position = new LatLngAlt(mLat, mLng, mAlt);
-		return position;
-	}
+    private double mLat;
+    private double mLng;
+    private double mAlt;
 
-	@Override
-	public Double getSpeedOverGround() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public StaticPositionProviderMock(double lat, double lng, double alt)
+    {
+        this.mLat = lat;
+        this.mLng = lng;
+        this.mAlt = alt;
+    }
 
-	@Override
-	public Double getCourseOverGround() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public LatLngAlt getCurrentPosition()
+    {
+        LatLngAlt position = new LatLngAlt(mLat, mLng, mAlt);
+        return position;
+    }
 
-	@Override
-	public Double getAltitudeOverGround() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+    @Override
+    public Double getSpeedOverGround()
+    {
+        return null;
+    }
+
+    @Override
+    public Double getCourseOverGround()
+    {
+        return null;
+    }
+
+    @Override
+    public Double getAltitudeOverGround()
+    {
+        return null;
+    }
+
 }

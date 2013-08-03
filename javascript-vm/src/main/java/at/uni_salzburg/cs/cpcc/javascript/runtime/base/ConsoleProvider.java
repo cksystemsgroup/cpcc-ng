@@ -25,8 +25,8 @@ public interface ConsoleProvider
 {
 
     /**
-     * @param message
+     * @param message the message
      */
-    public void print(String message);
+    void print(String message);
 
 }

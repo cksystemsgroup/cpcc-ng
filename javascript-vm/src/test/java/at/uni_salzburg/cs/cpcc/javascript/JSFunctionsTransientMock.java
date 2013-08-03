@@ -1,6 +1,6 @@
 /*
  * This code is part of the CPCC-NG project.
- * Copyright (c) 2012  Clemens Krainer
+ * Copyright (c) 2013  Clemens Krainer
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,16 +21,19 @@ package at.uni_salzburg.cs.cpcc.javascript;
 import at.uni_salzburg.cs.cpcc.javascript.runtime.TransientFunctions;
 import at.uni_salzburg.cs.cpcc.javascript.runtime.TransientState;
 
-public class JSFunctionsTransientMock extends TransientFunctions {
+public class JSFunctionsTransientMock extends TransientFunctions
+{
 
-	private static final long serialVersionUID = 3409273822118853711L;
+    private static final long serialVersionUID = 3409273822118853711L;
 
-	public JSFunctionsTransientMock(TransientState transientState) {
-		super(transientState);
-	}
-	
-	public void printDummy() {
-		JSInterpreter.getConsoleProvider().print(((TransientStateMock)transientState).test+"\n");
-	}
+    public JSFunctionsTransientMock(TransientState transientState)
+    {
+        super(transientState);
+    }
+
+    public void printDummy()
+    {
+        JSInterpreter.getConsoleProvider().print(((TransientStateMock) transientState).test + "\n");
+    }
 
 }

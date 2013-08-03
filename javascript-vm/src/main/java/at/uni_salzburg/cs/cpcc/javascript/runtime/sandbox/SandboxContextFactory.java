@@ -1,6 +1,6 @@
 /*
  * This code is part of the CPCC-NG project.
- * Copyright (c) 2012  Clemens Krainer, Michael Lippautz
+ * Copyright (c) 2013  Clemens Krainer, Michael Lippautz
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,8 +66,8 @@ public class SandboxContextFactory extends ContextFactory
     }
 
     /**
-     * @param context
-     * @param obs
+     * @param context context
+     * @param obs obs
      */
     public static void addInstructionCountObserver(Context context, InstructionCountObserver obs)
     {
@@ -82,8 +82,8 @@ public class SandboxContextFactory extends ContextFactory
     }
 
     /**
-     * @param context
-     * @param obs
+     * @param context context
+     * @param obs obs
      */
     public static void removeInstructionCountObserver(Context context, InstructionCountObserver obs)
     {

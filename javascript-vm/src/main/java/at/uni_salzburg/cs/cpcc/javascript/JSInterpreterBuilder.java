@@ -55,7 +55,7 @@ public class JSInterpreterBuilder
     };
 
     @SuppressWarnings("serial")
-    private static final Set<Class<? extends Scriptable>> builtinTypes = new HashSet<Class<? extends Scriptable>>()
+    private static final Set<Class<? extends Scriptable>> BUILTIN_TYPES = new HashSet<Class<? extends Scriptable>>()
     {
         {
             add(LatLngAlt.class);
@@ -72,17 +72,19 @@ public class JSInterpreterBuilder
 
     private Map<String, InputStream> codeFiles = new HashMap<String, InputStream>();
 
+    private String charSetName = "UTF-8";
+
     /**
-     * @param packageScope
-     * @param o
+     * @param packageScope the scope of the provided package
+     * @param obj the serving object of the provided package
      */
-    public void addProvidedPackage(String packageScope, Object o)
+    public void addProvidedPackage(String packageScope, Object obj)
     {
-        providedPackages.put(packageScope, o);
+        providedPackages.put(packageScope, obj);
     }
 
     /**
-     * @param type
+     * @param type the provided Java class.
      */
     public void addProvidedTypes(Class<? extends Scriptable> type)
     {
@@ -90,20 +92,28 @@ public class JSInterpreterBuilder
     }
 
     /**
-     * @param name
-     * @param inputStream
+     * @param name the name of the code file.
+     * @param inputStream the associated input stream.
      */
     public void addCodefile(String name, InputStream inputStream)
     {
         codeFiles.put(name, inputStream);
     }
+    
+    /**
+     * @param charSetName the name of the character set to be used.
+     */
+    public void setCharSetName(String charSetName)
+    {
+        this.charSetName = charSetName;
+    }
 
     /**
-     * @return
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     * @throws InvocationTargetException
-     * @throws IOException
+     * @return a newly instantiated JavaScript interpreter. 
+     * @throws IllegalAccessException thrown in case of errors.
+     * @throws InstantiationException thrown in case of errors.
+     * @throws InvocationTargetException thrown in case of errors.
+     * @throws IOException thrown in case of errors.
      */
     public JSInterpreter build() throws IllegalAccessException, InstantiationException, InvocationTargetException,
         IOException
@@ -132,7 +142,7 @@ public class JSInterpreterBuilder
 
         contextScope.defineFunctionProperties(builtinFns, BuiltinFunctions.class, ScriptableObject.DONTENUM);
 
-        for (Class<? extends Scriptable> bt : builtinTypes)
+        for (Class<? extends Scriptable> bt : BUILTIN_TYPES)
         {
             ScriptableObject.defineClass(contextScope, bt, true);
         }
@@ -144,7 +154,8 @@ public class JSInterpreterBuilder
 
         for (Entry<String, InputStream> e : codeFiles.entrySet())
         {
-            context.evaluateReader(contextScope, new InputStreamReader(e.getValue()), e.getKey(), 1, null);
+            context.evaluateReader(contextScope,
+                new InputStreamReader(e.getValue(), charSetName), e.getKey(), 1, null);
         }
 
         JSInterpreter jsi = new JSInterpreter();
@@ -158,13 +169,13 @@ public class JSInterpreterBuilder
     /**
      * MyClassShutter
      */
-    private class MyClassShutter implements ClassShutter
+    private static class MyClassShutter implements ClassShutter
     {
 
         private Set<String> allowedPackages;
 
         /**
-         * @param allowedPackages
+         * @param allowedPackages the allowed packages
          */
         public MyClassShutter(Set<String> allowedPackages)
         {

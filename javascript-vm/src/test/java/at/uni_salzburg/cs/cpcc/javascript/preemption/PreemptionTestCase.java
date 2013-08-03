@@ -1,6 +1,6 @@
 /*
  * This code is part of the CPCC-NG project.
- * Copyright (c) 2012  Clemens Krainer
+ * Copyright (c) 2013  Clemens Krainer
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,34 +21,35 @@ package at.uni_salzburg.cs.cpcc.javascript.preemption;
 import org.junit.Test;
 
 
-public class PreemptionTestCase {
+public class PreemptionTestCase
+{
 
-	@Test
-	public void testCase01() throws InterruptedException {
-		
-	    String js = "function VV() { " +
-    		"println(\"hello world!\"); " +
-    		"	for (var x=0; x < 10; ++x) { " +
-    		"		println(\"Iteration: \" + x); " +
-    		"		for (var t=0; t < 10000; ++t) { continue; } " +
-    		"		sleep(1000); " +
-    		"	}" +
-    		"}";
+    @Test
+    public void testCase01() throws InterruptedException
+    {
 
-		JScriptRunner runner = new JScriptRunner();
-		runner.setJs(js);
-		
-		runner.start();
-		
-		try { Thread.sleep(5000); } catch (InterruptedException e) { }
-		runner.interrupt();
-		
-		
-		System.out.println("before preempt");
-		runner.preempt();
-		System.out.println("after preempt");
-		
-		runner.join();
-	}
+        String js = "function VV() { "
+            + "println(\"hello world!\"); "
+            + "    for (var x=0; x < 10; ++x) { "
+            + "        println(\"Iteration: \" + x); "
+            + "        for (var t=0; t < 10000; ++t) { continue; } "
+            + "        sleep(1000); "
+            + "    }"
+            + "}";
+
+        JScriptRunner runner = new JScriptRunner();
+        runner.setJs(js);
+
+        runner.start();
+
+        Thread.sleep(5000);
+        runner.interrupt();
+
+        System.out.println("before preempt");
+        runner.preempt();
+        System.out.println("after preempt");
+
+        runner.join();
+    }
 
 }

@@ -1,6 +1,6 @@
 /*
  * This code is part of the CPCC-NG project.
- * Copyright (c) 2012  Clemens Krainer
+ * Copyright (c) 2013  Clemens Krainer
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,45 +30,55 @@ import org.junit.Test;
 
 import at.uni_salzburg.cs.cpcc.javascript.runtime.base.InstructionCountObserver;
 
-public class InstructionCounterTest {
+public class InstructionCounterTest
+{
 
-	private int icnt;
-	
-	private StringConsoleProvider consoleProvider;
-	
-	private class TestObserver implements InstructionCountObserver {
-		@Override
-		public void observeInstructioncound(int count) {
-			icnt += count;
-		}
-	}
-	
-    private JSInterpreter createJSI(String resourceName) throws IllegalAccessException, InstantiationException, InvocationTargetException, IOException {
-		InputStream fis = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
-		JSInterpreterBuilder b = new JSInterpreterBuilder();
-		b.addCodefile(resourceName, fis);
-//		b.addProvidedPackage(packageScope, o);
-//		b.addProvidedTypes(type);
-		JSInterpreter jsi = b.build();
-		consoleProvider = new StringConsoleProvider();
-		jsi.setConsoleProvider(consoleProvider);
-		return jsi; 
+    private int icnt;
+
+    private StringConsoleProvider consoleProvider;
+
+    private class TestObserver implements InstructionCountObserver
+    {
+        @Override
+        public void observeInstructioncound(int count)
+        {
+            icnt += count;
+        }
     }
-    
-	@Test
-	public void testIntructonCounterCallback() throws IOException, IllegalAccessException, InstantiationException, InvocationTargetException {
-		JSInterpreter jsi = createJSI("test-js/instruction-cnt.js");
-		assertNotNull(jsi);
-		
-		jsi.addInstructionCountObserver(new TestObserver());
-		jsi.setInstructionObserverThreshold(200);
-		
-		try {
-			jsi.start();
-			assertTrue(icnt > 200000);
-			assertEquals("0.0\n", consoleProvider.result.toString());
-		} finally {
-			jsi.close();
-		}
-	}
+
+    private JSInterpreter createJSI(String resourceName) throws IllegalAccessException, InstantiationException,
+        InvocationTargetException, IOException
+    {
+        InputStream fis = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+        JSInterpreterBuilder b = new JSInterpreterBuilder();
+        b.addCodefile(resourceName, fis);
+        // b.addProvidedPackage(packageScope, o);
+        // b.addProvidedTypes(type);
+        JSInterpreter jsi = b.build();
+        consoleProvider = new StringConsoleProvider();
+        jsi.setConsoleProvider(consoleProvider);
+        return jsi;
+    }
+
+    @Test
+    public void testIntructonCounterCallback() throws IOException, IllegalAccessException, InstantiationException,
+        InvocationTargetException
+    {
+        JSInterpreter jsi = createJSI("test-js/instruction-cnt.js");
+        assertNotNull(jsi);
+
+        jsi.addInstructionCountObserver(new TestObserver());
+        jsi.setInstructionObserverThreshold(200);
+
+        try
+        {
+            jsi.start();
+            assertTrue(icnt > 200000);
+            assertEquals("0.0\n", consoleProvider.result.toString());
+        }
+        finally
+        {
+            jsi.close();
+        }
+    }
 }

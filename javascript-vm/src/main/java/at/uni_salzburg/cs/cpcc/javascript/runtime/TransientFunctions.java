@@ -30,7 +30,7 @@ public class TransientFunctions implements Serializable
     protected transient TransientState transientState;
 
     /**
-     * @param transientState
+     * @param transientState the transient state.
      */
     public TransientFunctions(TransientState transientState)
     {
@@ -38,7 +38,7 @@ public class TransientFunctions implements Serializable
     }
 
     /**
-     * @param transientState
+     * @param transientState the transient state.
      */
     public void setTransientState(TransientState transientState)
     {

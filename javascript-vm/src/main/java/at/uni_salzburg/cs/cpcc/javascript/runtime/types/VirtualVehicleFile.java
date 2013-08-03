@@ -65,12 +65,12 @@ public class VirtualVehicleFile extends ScriptableObject
     /**
      * @name File
      * @class Immutable container for virtual vehicle file I/O
-     * @param {String} fileName The name of the file
-     * @throws FileNotFoundException
+     * @param name The name of the file
+     * @throws FileNotFoundException thrown in case of errors.
      */
-    public void jsConstructor(String fileName) throws FileNotFoundException
+    public void jsConstructor(String name) throws FileNotFoundException
     {
-        this.fileName = Utils.compactPath(fileName);
+        this.fileName = Utils.compactPath(name);
     }
 
     /**
@@ -89,7 +89,7 @@ public class VirtualVehicleFile extends ScriptableObject
      * @memberOf File#
      * @name delete
      * @function
-     * @return {boolean} true if and only if the file or directory is successfully deleted; false otherwise
+     * @return true if and only if the file or directory is successfully deleted; false otherwise
      */
     public boolean jsFunction_delete()
     {
@@ -102,7 +102,7 @@ public class VirtualVehicleFile extends ScriptableObject
      * @memberOf File#
      * @name exists
      * @function
-     * @return {boolean} true if and only if the file or directory denoted by this abstract pathname exists; false
+     * @return true if and only if the file or directory denoted by this abstract pathname exists; false
      *         otherwise
      */
     public boolean jsFunction_exists()
@@ -117,7 +117,7 @@ public class VirtualVehicleFile extends ScriptableObject
      * @memberOf File#
      * @name getName
      * @function
-     * @return {String} The name of the file or directory denoted by this abstract pathname.
+     * @return The name of the file or directory denoted by this abstract pathname.
      */
     public String jsFunction_getName()
     {
@@ -130,7 +130,7 @@ public class VirtualVehicleFile extends ScriptableObject
      * @memberOf File#
      * @name isDirectory
      * @function
-     * @return {boolean} true if the specified path is an existing directory.
+     * @return true if the specified path is an existing directory.
      */
     public boolean jsFunction_isDirectory()
     {
@@ -143,7 +143,7 @@ public class VirtualVehicleFile extends ScriptableObject
      * @memberOf File#
      * @name isFile
      * @function
-     * @return {boolean} true if the specified path is an existing file.
+     * @return true if the specified path is an existing file.
      */
     public boolean jsFunction_isFile()
     {
@@ -156,7 +156,7 @@ public class VirtualVehicleFile extends ScriptableObject
      * @memberOf File#
      * @name mkdir
      * @function
-     * @return {boolean} true if and only if the directory was created; false otherwise
+     * @return true if and only if the directory was created; false otherwise
      */
     public boolean jsFunction_mkdir()
     {
@@ -184,7 +184,7 @@ public class VirtualVehicleFile extends ScriptableObject
      * @memberOf File#
      * @name length
      * @function
-     * @return {long} The length, in bytes, of the file denoted by this abstract pathname.
+     * @return The length, in bytes, of the file denoted by this abstract pathname.
      */
     public long jsFunction_length()
     {
@@ -197,7 +197,7 @@ public class VirtualVehicleFile extends ScriptableObject
      * @memberOf File#
      * @name list
      * @function
-     * @return {String[]} the list of files in this directory.
+     * @return the list of files in this directory.
      */
     public NativeArray jsFunction_list()
     {
