@@ -51,7 +51,8 @@ public class RosNodeStarterImpl implements RosNodeStarter
     /**
      * @throws RosRuntimeException thrown in case of errors.
      */
-    public RosNodeStarterImpl(/*BigraphArchive archive, BigraphReactionRuleArchive brrArchive*/) throws RosRuntimeException
+    public RosNodeStarterImpl(/*BigraphArchive archive, BigraphReactionRuleArchive brrArchive*/)
+        throws RosRuntimeException
     {
         LOG.info("Initializing RosNodeStarterImpl.");
         

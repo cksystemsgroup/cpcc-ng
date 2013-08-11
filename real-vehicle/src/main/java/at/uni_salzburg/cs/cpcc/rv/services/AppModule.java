@@ -1,8 +1,27 @@
+/*
+ * This code is part of the CPCC-NG project.
+ *
+ * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 package at.uni_salzburg.cs.cpcc.rv.services;
 
 import java.io.IOException;
 
-import org.apache.tapestry5.*;
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
@@ -19,6 +38,9 @@ import org.slf4j.Logger;
  */
 public class AppModule
 {
+    /**
+     * @param binder the service binder
+     */
     public static void bind(ServiceBinder binder)
     {
         // binder.bind(MyServiceInterface.class, MyServiceImpl.class);
@@ -29,8 +51,10 @@ public class AppModule
         // invoking the constructor.
     }
 
-    public static void contributeFactoryDefaults(
-            MappedConfiguration<String, Object> configuration)
+    /**
+     * @param configuration the application configuration.
+     */
+    public static void contributeFactoryDefaults(MappedConfiguration<String, Object> configuration)
     {
         // The application version number is incorprated into URLs for some
         // assets. Web browsers will cache assets because of the far future expires
@@ -41,8 +65,10 @@ public class AppModule
         configuration.override(SymbolConstants.APPLICATION_VERSION, "1.0-SNAPSHOT");
     }
 
-    public static void contributeApplicationDefaults(
-            MappedConfiguration<String, Object> configuration)
+    /**
+     * @param configuration the application configuration.
+     */
+    public static void contributeApplicationDefaults(MappedConfiguration<String, Object> configuration)
     {
         // Contributions to ApplicationDefaults will override any contributions to
         // FactoryDefaults (with the same key). Here we're restricting the supported
@@ -70,13 +96,20 @@ public class AppModule
      * service interface and would be "RequestFilter".  Since Tapestry already defines
      * a service named "RequestFilter" we use an explicit service id that we can reference
      * inside the contribution method.
+     *
+     * @param log the current logger
+     * @return the newly created request filter.
      */
     public RequestFilter buildTimingFilter(final Logger log)
     {
         return new RequestFilter()
         {
+            /**
+             * {@inheritDoc}
+             */
+            @Override
             public boolean service(Request request, Response response, RequestHandler handler)
-                    throws IOException
+                throws IOException
             {
                 long startTime = System.currentTimeMillis();
 
@@ -87,7 +120,8 @@ public class AppModule
                     // received a handler that is a bridge to the next filter.
 
                     return handler.service(request, response);
-                } finally
+                }
+                finally
                 {
                     long elapsed = System.currentTimeMillis() - startTime;
 
@@ -103,6 +137,10 @@ public class AppModule
      * management or security. The @Local annotation selects the desired service by type, but only
      * from the same module.  Without @Local, there would be an error due to the other service(s)
      * that implement RequestFilter (defined in other modules).
+     */
+    /**
+     * @param configuration the application configuration.
+     * @param filter the request filter.
      */
     public void contributeRequestHandler(OrderedConfiguration<RequestFilter> configuration,
                                          @Local

@@ -86,7 +86,7 @@ public class RosNodeStarterTest
 //    }
     
     
-    @Test
+    @Test(enabled = false)
     public void f2() throws URISyntaxException
     {
         URI uri = new URI("http", null, "localhost", 11311, "/", null, null);
