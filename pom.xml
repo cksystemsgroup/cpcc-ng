@@ -40,6 +40,9 @@
 	<modules>
 		<module>utilities</module>
 		<module>javascript-vm</module>
+		<module>virtual-vehicle-rte</module>
+		<module>real-vehicle</module>
+		<module>ros-service</module>
 	</modules>
 
 	<!-- <scm> <connection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</connection> 
@@ -112,6 +115,69 @@
 				<version>2.0.1</version>
 				<scope>provided</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>${testng-release-version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.easymock</groupId>
+				<artifactId>easymock</artifactId>
+				<version>${easymock-release-version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-test</artifactId>
+				<version>${tapestry-release-version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-javadoc</artifactId>
+				<version>${tapestry-release-version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-core</artifactId>
+				<version>${tapestry-release-version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-yuicompressor</artifactId>
+				<version>${tapestry-release-version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-upload</artifactId>
+				<version>${tapestry-release-version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-hibernate</artifactId>
+				<version>${tapestry-release-version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.trsvax</groupId>
+				<artifactId>tapestry-bootstrap</artifactId>
+				<version>${tapestry-bootstrap-version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ros.rosjava_core</groupId>
+				<artifactId>rosjava</artifactId>
+				<version>${rosjava-version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -130,6 +196,15 @@
 
 	<properties>
 		<java-version>1.7</java-version>
+		<tapestry-release-version>5.3.7</tapestry-release-version>
+		<servlet-api-release-version>2.5</servlet-api-release-version>
+		<testng-release-version>5.14.10</testng-release-version>
+		<easymock-release-version>3.0</easymock-release-version>
+		<tapestry-bootstrap-version>2.1.6-alpha-2</tapestry-bootstrap-version>
+		<rosjava-version>0.0.6</rosjava-version>
+		<mockito-core-version>1.9.5</mockito-core-version>
+		<com.h2database.version>1.3.172</com.h2database.version>
+		<javax.mail.version>1.4</javax.mail.version>
 	</properties>
 
 	<build>

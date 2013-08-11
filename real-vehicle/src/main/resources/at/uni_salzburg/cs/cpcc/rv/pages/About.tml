@@ -1,0 +1,7 @@
+<html t:type="layout" title="About real-vehicle"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+      xmlns:p="tapestry:parameter">
+
+    <p>About real-vehicle application ...</p>
+
+</html>

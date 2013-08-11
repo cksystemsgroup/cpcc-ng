@@ -1,0 +1,9 @@
+ ----
+ Module at.uni-salzburg.cs.cpcc:ros-service
+ ----
+
+at.uni-salzburg.cs.cpcc:ros-service Documentation
+
+  This is where you can start to document your module.
+
+  Create new files in the Maven APT format, and update the site.xml file to point to them.
