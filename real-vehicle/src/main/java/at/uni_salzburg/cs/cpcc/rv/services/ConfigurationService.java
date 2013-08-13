@@ -17,48 +17,48 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.services;
+package at.uni_salzburg.cs.cpcc.rv.services;
 
+import java.net.URI;
 import java.util.Set;
 
+import at.uni_salzburg.cs.cpcc.ros.actuators.AbstractActuator;
+import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractSensor;
+
 /**
- * RosTopicState
+ * ConfigurationService
  */
-public class RosTopicState extends RosTopic
+public interface ConfigurationService
 {
-    private Set<String> publishers;
-    private Set<String> subscribers;
+    /**
+     * @param masterServerUri the master server URI
+     */
+    void setMasterServerUri(URI masterServerUri);
+
+    /**
+     * @return the master server URI
+     */
+    URI getMasterServerUri();
     
     /**
-     * @param publishers the registered publishers.
+     * @param publisher a publisher to be registered.
      */
-    public void setPublishers(Set<String> publishers)
-    {
-        this.publishers = publishers;
-    }
+    void addSensor(AbstractSensor publisher);
     
     /**
-     * @return the registered publishers.
+     * @return the registered publishers
      */
-    public Set<String> getPublishers()
-    {
-        return publishers;
-    }
+    Set<AbstractSensor> getSensors();
     
     /**
-     * @param subscribers the registered subscribers.
+     * @param subscriber a subscriber to be registered.
      */
-    public void setSubscribers(Set<String> subscribers)
-    {
-        this.subscribers = subscribers;
-    }
+    void addActuator(AbstractActuator subscriber);
     
     /**
      * @return the registered subscribers.
      */
-    public Set<String> getSubscribers()
-    {
-        return subscribers;
-    }
+    Set<AbstractActuator> getActuators();
 
+    
 }

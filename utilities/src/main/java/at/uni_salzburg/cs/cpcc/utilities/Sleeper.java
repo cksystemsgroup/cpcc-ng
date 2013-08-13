@@ -17,48 +17,35 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.services;
+package at.uni_salzburg.cs.cpcc.utilities;
 
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * RosTopicState
+ * Sleeper
  */
-public class RosTopicState extends RosTopic
+public final class Sleeper
 {
-    private Set<String> publishers;
-    private Set<String> subscribers;
+    private static final Logger LOG = LoggerFactory.getLogger(Sleeper.class);
     
-    /**
-     * @param publishers the registered publishers.
-     */
-    public void setPublishers(Set<String> publishers)
+    private Sleeper()
     {
-        this.publishers = publishers;
+        // intentionally empty
     }
     
     /**
-     * @return the registered publishers.
+     * @param millis milliseconds to sleep
      */
-    public Set<String> getPublishers()
+    public static void sleep(long millis)
     {
-        return publishers;
+        try
+        {
+            Thread.sleep(millis);
+        }
+        catch (InterruptedException e)
+        {
+            LOG.trace("Sleeping has been interrupted!");
+        }
     }
-    
-    /**
-     * @param subscribers the registered subscribers.
-     */
-    public void setSubscribers(Set<String> subscribers)
-    {
-        this.subscribers = subscribers;
-    }
-    
-    /**
-     * @return the registered subscribers.
-     */
-    public Set<String> getSubscribers()
-    {
-        return subscribers;
-    }
-
 }

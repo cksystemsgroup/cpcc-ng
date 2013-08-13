@@ -17,48 +17,57 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.services;
+package at.uni_salzburg.cs.cpcc.ros.actuators;
 
-import java.util.Set;
+import org.ros.namespace.GraphName;
+import org.ros.node.AbstractNodeMain;
+
+import at.uni_salzburg.cs.cpcc.ros.services.RosTopic;
 
 /**
- * RosTopicState
+ * Actuator
  */
-public class RosTopicState extends RosTopic
+public abstract class AbstractActuator extends AbstractNodeMain
 {
-    private Set<String> publishers;
-    private Set<String> subscribers;
+    private GraphName name;
     
+    private RosTopic topic;
+
+
     /**
-     * @param publishers the registered publishers.
+     * @return ROS actuator path
      */
-    public void setPublishers(Set<String> publishers)
+    public GraphName getName()
     {
-        this.publishers = publishers;
-    }
-    
-    /**
-     * @return the registered publishers.
-     */
-    public Set<String> getPublishers()
-    {
-        return publishers;
-    }
-    
-    /**
-     * @param subscribers the registered subscribers.
-     */
-    public void setSubscribers(Set<String> subscribers)
-    {
-        this.subscribers = subscribers;
-    }
-    
-    /**
-     * @return the registered subscribers.
-     */
-    public Set<String> getSubscribers()
-    {
-        return subscribers;
+        return name;
     }
 
+    /**
+     * @param name ROS actuator path
+     */
+    public void setName(GraphName name)
+    {
+        this.name = name;
+    }
+
+    /**
+     * @return ROS topic
+     */
+    public RosTopic getTopic()
+    {
+        return topic;
+    }
+
+    /**
+     * @param topic ROS topic
+     */
+    public void setTopic(RosTopic topic)
+    {
+        this.topic = topic;
+    }
+    
+    /**
+     * @return the type of the sensor.
+     */
+    public abstract ActuatorType getType();
 }

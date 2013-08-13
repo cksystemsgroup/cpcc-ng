@@ -9,6 +9,7 @@
     <p>The current time is: <strong>${currentTime}</strong></p>
 
     <!-- A Zone is a component that can be updated in place, triggered by other components. -->
+    <!--
     <t:zone t:id="zone">
         <p>
             You have clicked the link <strong>${clickCount}</strong> times.
@@ -38,5 +39,6 @@
             ]
         </p>
     </p:sidebar>
+-->
 
 </html>

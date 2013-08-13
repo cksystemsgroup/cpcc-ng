@@ -17,56 +17,47 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.rv.pages;
+package at.uni_salzburg.cs.cpcc.rv.pages.ros;
 
-import java.util.Date;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.annotations.Cached;
+import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.annotations.Symbol;
+
+import at.uni_salzburg.cs.cpcc.ros.services.RosQueryService;
+import at.uni_salzburg.cs.cpcc.ros.services.RosTopicState;
 
 /**
- * Start page of application real-vehicle.
+ * About
  */
-public class Index
+public class RosList
 {
-    @Property
     @Inject
-    @Symbol(SymbolConstants.TAPESTRY_VERSION)
-    private String tapestryVersion;
+    private RosQueryService rosQueryService;
 
-//    @InjectComponent
-//    private Zone zone;
-
-//    @Persist
-//    @Property
-//    private int clickCount;
-
-//    @Inject
-//    private AlertManager alertManager;
-
+    @Property
+    private RosTopicState topicState;
+    
     /**
-     * @return the current time.
+     * @return a 
+     * @throws URISyntaxException thrown in case of errors
      */
-    public Date getCurrentTime()
+    @Cached
+    public Iterable<RosTopicState> getTopicList() throws URISyntaxException
     {
-        return new Date();
+        URI uri = new URI("http://localhost:11311/");
+        
+        return rosQueryService.findRegisteredTopics(uri);
+    }
+    
+    @OnEvent("delete")
+    void deleteTopic(String name)
+    {
+//        personService.deleteById(id);
+        System.out.println("delete " + name);
     }
 
-//    void onActionFromIncrement()
-//    {
-//        alertManager.info("Increment clicked");
-//
-//        clickCount++;
-//    }
-//
-//    Object onActionFromIncrementAjax()
-//    {
-//        clickCount++;
-//
-//        alertManager.info("Increment (via Ajax) clicked");
-//
-//        return zone;
-//    }
 }

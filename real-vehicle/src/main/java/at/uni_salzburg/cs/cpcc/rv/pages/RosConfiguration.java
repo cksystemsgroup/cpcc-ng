@@ -17,48 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.services;
-
-import java.util.Set;
+package at.uni_salzburg.cs.cpcc.rv.pages;
 
 /**
- * RosTopicState
+ * About
  */
-public class RosTopicState extends RosTopic
+public class RosConfiguration
 {
-    private Set<String> publishers;
-    private Set<String> subscribers;
-    
-    /**
-     * @param publishers the registered publishers.
-     */
-    public void setPublishers(Set<String> publishers)
-    {
-        this.publishers = publishers;
-    }
-    
-    /**
-     * @return the registered publishers.
-     */
-    public Set<String> getPublishers()
-    {
-        return publishers;
-    }
-    
-    /**
-     * @param subscribers the registered subscribers.
-     */
-    public void setSubscribers(Set<String> subscribers)
-    {
-        this.subscribers = subscribers;
-    }
-    
-    /**
-     * @return the registered subscribers.
-     */
-    public Set<String> getSubscribers()
-    {
-        return subscribers;
-    }
 
 }

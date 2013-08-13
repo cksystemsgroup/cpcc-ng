@@ -19,46 +19,43 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.services;
 
-import java.util.Set;
-
 /**
- * RosTopicState
+ * RosTopic
  */
-public class RosTopicState extends RosTopic
+public class RosTopic
 {
-    private Set<String> publishers;
-    private Set<String> subscribers;
+    private String name;
+    private String type;
     
     /**
-     * @param publishers the registered publishers.
+     * @param name the name of the registered topic.
      */
-    public void setPublishers(Set<String> publishers)
+    public void setName(String name)
     {
-        this.publishers = publishers;
+        this.name = name;
     }
     
     /**
-     * @return the registered publishers.
+     * @return the name of the registered topic.
      */
-    public Set<String> getPublishers()
+    public String getName()
     {
-        return publishers;
+        return name;
     }
     
     /**
-     * @param subscribers the registered subscribers.
+     * @param types the registered message type.
      */
-    public void setSubscribers(Set<String> subscribers)
+    public void setType(String types)
     {
-        this.subscribers = subscribers;
+        this.type = types;
     }
     
     /**
-     * @return the registered subscribers.
+     * @return the registered message type.
      */
-    public Set<String> getSubscribers()
+    public String getType()
     {
-        return subscribers;
+        return type;
     }
-
 }

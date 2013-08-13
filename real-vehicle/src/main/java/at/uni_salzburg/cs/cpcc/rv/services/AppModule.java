@@ -19,25 +19,24 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services;
 
-import java.io.IOException;
-
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.Local;
-import org.apache.tapestry5.services.Request;
-import org.apache.tapestry5.services.RequestFilter;
-import org.apache.tapestry5.services.RequestHandler;
-import org.apache.tapestry5.services.Response;
-import org.slf4j.Logger;
+
+import at.uni_salzburg.cs.cpcc.ros.services.RosQueryService;
+import at.uni_salzburg.cs.cpcc.ros.services.RosQueryServiceImpl;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to
  * configure and extend Tapestry, or to place your own service definitions.
  */
-public class AppModule
+public final class AppModule
 {
+    private AppModule()
+    {
+        // TODO Auto-generated constructor stub
+    }
+    
     /**
      * @param binder the service binder
      */
@@ -49,6 +48,8 @@ public class AppModule
         // Use service builder methods (example below) when the implementation
         // is provided inline, or requires more initialization than simply
         // invoking the constructor.
+        binder.bind(RosQueryService.class, RosQueryServiceImpl.class);
+        
     }
 
     /**
@@ -100,36 +101,36 @@ public class AppModule
      * @param log the current logger
      * @return the newly created request filter.
      */
-    public RequestFilter buildTimingFilter(final Logger log)
-    {
-        return new RequestFilter()
-        {
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public boolean service(Request request, Response response, RequestHandler handler)
-                throws IOException
-            {
-                long startTime = System.currentTimeMillis();
-
-                try
-                {
-                    // The responsibility of a filter is to invoke the corresponding method
-                    // in the handler. When you chain multiple filters together, each filter
-                    // received a handler that is a bridge to the next filter.
-
-                    return handler.service(request, response);
-                }
-                finally
-                {
-                    long elapsed = System.currentTimeMillis() - startTime;
-
-                    log.info(String.format("Request time: %d ms", elapsed));
-                }
-            }
-        };
-    }
+//    public RequestFilter buildTimingFilter(final Logger log)
+//    {
+//        return new RequestFilter()
+//        {
+//            /**
+//             * {@inheritDoc}
+//             */
+//            @Override
+//            public boolean service(Request request, Response response, RequestHandler handler)
+//                throws IOException
+//            {
+//                long startTime = System.currentTimeMillis();
+//
+//                try
+//                {
+//                    // The responsibility of a filter is to invoke the corresponding method
+//                    // in the handler. When you chain multiple filters together, each filter
+//                    // received a handler that is a bridge to the next filter.
+//
+//                    return handler.service(request, response);
+//                }
+//                finally
+//                {
+//                    long elapsed = System.currentTimeMillis() - startTime;
+//
+//                    log.info(String.format("Request time: %d ms", elapsed));
+//                }
+//            }
+//        };
+//    }
 
     /**
      * This is a contribution to the RequestHandler service configuration. This is how we extend
@@ -142,14 +143,14 @@ public class AppModule
      * @param configuration the application configuration.
      * @param filter the request filter.
      */
-    public void contributeRequestHandler(OrderedConfiguration<RequestFilter> configuration,
-                                         @Local
-                                         RequestFilter filter)
-    {
-        // Each contribution to an ordered configuration has a name, When necessary, you may
-        // set constraints to precisely control the invocation order of the contributed filter
-        // within the pipeline.
-
-        configuration.add("Timing", filter);
-    }
+//    public void contributeRequestHandler(OrderedConfiguration<RequestFilter> configuration,
+//                                         @Local
+//                                         RequestFilter filter)
+//    {
+//        // Each contribution to an ordered configuration has a name, When necessary, you may
+//        // set constraints to precisely control the invocation order of the contributed filter
+//        // within the pipeline.
+//
+//        configuration.add("Timing", filter);
+//    }
 }

@@ -17,48 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.services;
-
-import java.util.Set;
+package at.uni_salzburg.cs.cpcc.ros.sensors;
 
 /**
- * RosTopicState
+ * SensorType
  */
-public class RosTopicState extends RosTopic
+public enum SensorType
 {
-    private Set<String> publishers;
-    private Set<String> subscribers;
-    
-    /**
-     * @param publishers the registered publishers.
-     */
-    public void setPublishers(Set<String> publishers)
-    {
-        this.publishers = publishers;
-    }
-    
-    /**
-     * @return the registered publishers.
-     */
-    public Set<String> getPublishers()
-    {
-        return publishers;
-    }
-    
-    /**
-     * @param subscribers the registered subscribers.
-     */
-    public void setSubscribers(Set<String> subscribers)
-    {
-        this.subscribers = subscribers;
-    }
-    
-    /**
-     * @return the registered subscribers.
-     */
-    public Set<String> getSubscribers()
-    {
-        return subscribers;
-    }
-
+    CAMERA, GPS_RECEIVER
 }

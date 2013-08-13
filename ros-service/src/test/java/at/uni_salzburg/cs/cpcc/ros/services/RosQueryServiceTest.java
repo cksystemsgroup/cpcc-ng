@@ -23,11 +23,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -74,7 +72,7 @@ public class RosQueryServiceTest
             topic.getName(),
             topic.getPublishers(),
             topic.getSubscribers(),
-            topic.getTypes());
+            topic.getType());
         }
         
         core.shutdown();
@@ -86,13 +84,13 @@ public class RosQueryServiceTest
         assertEquals(topics[0].getPublishers().size(), 1, "Publisher: number of publishers");
         assertEquals(topics[0].getPublishers().toArray(empty)[0], "pub", "Publisher: publisher name");
         assertEquals(topics[0].getSubscribers().size(), 0, "Publisher: number of subscribers");
-        assertEquals(topics[0].getTypes(), "sensor_msgs/CameraInfo", "Publisher: type name");
+        assertEquals(topics[0].getType(), "sensor_msgs/CameraInfo", "Publisher: type name");
         
         assertEquals(topics[1].getName(), "subs", "Subscriber: topic name");
         assertEquals(topics[1].getPublishers().size(), 0, "Subscriber: number of publishers");
         assertEquals(topics[1].getSubscribers().size(), 1, "Subscriber: number of subscribers");
         assertEquals(topics[1].getSubscribers().toArray(empty)[0], "sub", "Subscriber: publisher name");
-        assertEquals(topics[1].getTypes(), "sensor_msgs/Image", "Subscriber: type name");        
+        assertEquals(topics[1].getType(), "sensor_msgs/Image", "Subscriber: type name");        
     }
     
     /**

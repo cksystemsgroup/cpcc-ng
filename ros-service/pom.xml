@@ -43,7 +43,8 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Provided by the servlet container, but sometimes referenced in the application code. -->
+		<!-- Provided by the servlet container, but sometimes referenced in the 
+			application code. -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -64,6 +65,12 @@
 		<dependency>
 			<groupId>ros.rosjava_core</groupId>
 			<artifactId>rosjava</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>at.uni-salzburg.cs.cpcc</groupId>
+			<artifactId>utilities</artifactId>
+			<version>${project.parent.version}</version>
 		</dependency>
 	</dependencies>
 
