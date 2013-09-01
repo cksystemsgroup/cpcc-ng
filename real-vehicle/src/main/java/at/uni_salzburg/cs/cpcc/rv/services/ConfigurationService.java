@@ -22,8 +22,7 @@ package at.uni_salzburg.cs.cpcc.rv.services;
 import java.net.URI;
 import java.util.Set;
 
-import at.uni_salzburg.cs.cpcc.ros.actuators.AbstractActuator;
-import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractSensor;
+import org.ros.namespace.GraphName;
 
 /**
  * ConfigurationService
@@ -31,34 +30,72 @@ import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractSensor;
 public interface ConfigurationService
 {
     /**
-     * @param masterServerUri the master server URI
+     * @param masterServerUri the master server URI.
      */
     void setMasterServerUri(URI masterServerUri);
 
     /**
-     * @return the master server URI
+     * @return the master server URI.
      */
     URI getMasterServerUri();
-    
-    /**
-     * @param publisher a publisher to be registered.
-     */
-    void addSensor(AbstractSensor publisher);
-    
-    /**
-     * @return the registered publishers
-     */
-    Set<AbstractSensor> getSensors();
-    
-    /**
-     * @param subscriber a subscriber to be registered.
-     */
-    void addActuator(AbstractActuator subscriber);
-    
-    /**
-     * @return the registered subscribers.
-     */
-    Set<AbstractActuator> getActuators();
 
+    /**
+     * @param internalRosCore true: use internal RosCore, false: use external RosCore specified by master server URI. 
+     */
+    void setInternalRosCore(boolean internalRosCore);
     
+    /**
+     * @return true for an internal RosCore, false otherwise.
+     */
+    boolean isInternalRosCore();
+    
+    /**
+     * @param positionSensor the sensor providing position information.
+     */
+    void setPositionSensor(SensorConfiguration positionSensor);
+
+    /**
+     * @return the sensor providing position information.
+     */
+    SensorConfiguration getPositionSensor();
+
+    /**
+     * @param wayPointController the way point controller configuration.
+     */
+    void setWayPointController(ActuatorConfiguration wayPointController);
+
+    /**
+     * @return the way point controller configuration.
+     */
+    ActuatorConfiguration getWayPointController();
+
+    /**
+     * @param sensor a sensor to be registered.
+     */
+    void addSensor(SensorConfiguration sensor);
+
+    /**
+     * @return the registered sensors.
+     */
+    Set<SensorConfiguration> getSensors();
+
+    /**
+     * @return the requested sensor or null.
+     */
+    SensorConfiguration getSensorByName(GraphName name);
+    
+    /**
+     * @param subscriber a actuator to be registered.
+     */
+    void addActuator(ActuatorConfiguration actuator);
+
+    /**
+     * @return the registered actuators.
+     */
+    Set<ActuatorConfiguration> getActuators();
+
+    /**
+     * @return the requested actuator or null.
+     */
+    ActuatorConfiguration getActuatorByName(GraphName name);
 }

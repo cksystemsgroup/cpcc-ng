@@ -28,4 +28,10 @@
 		<filter-name>app</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	<resource-ref>
+		<description>My DataSource Reference</description>
+		<res-ref-name>jdbc/RV</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
 </web-app>

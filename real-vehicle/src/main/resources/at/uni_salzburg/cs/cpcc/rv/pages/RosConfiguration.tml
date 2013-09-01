@@ -1,9 +1,0 @@
-<html t:type="layout" title="About real-vehicle"
-      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-      xmlns:p="tapestry:parameter">
-
-    <p>ROS configuration ...</p>
-
-	<t:pagelink page="ros/list">ROS list</t:pagelink>
-
-</html>

@@ -189,9 +189,27 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-beanvalidator</artifactId>
+				<version>${tapestry-release-version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>ros.rosjava_core</groupId>
 				<artifactId>rosjava</artifactId>
 				<version>${rosjava-version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>c3p0</groupId>
+				<artifactId>c3p0</artifactId>
+				<version>${c3p0.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>${com.h2database.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -218,7 +236,8 @@
 		<tapestry-bootstrap-version>2.1.6-alpha-2</tapestry-bootstrap-version>
 		<rosjava-version>0.0.6</rosjava-version>
 		<mockito-core-version>1.9.5</mockito-core-version>
-		<com.h2database.version>1.3.172</com.h2database.version>
+		<com.h2database.version>1.3.173</com.h2database.version>
+		<c3p0.version>0.9.1.2</c3p0.version>
 		<javax.mail.version>1.4</javax.mail.version>
 	</properties>
 

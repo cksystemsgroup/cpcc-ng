@@ -19,7 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.services;
 
-import org.apache.tapestry5.ioc.annotations.EagerLoad;
 import org.ros.RosCore;
 import org.ros.exception.RosRuntimeException;
 import org.slf4j.Logger;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
 /**
  * RosNodeStarterImpl
  */
-@EagerLoad
 public class RosNodeStarterImpl implements RosNodeStarter
 {
     private static final Logger LOG = LoggerFactory.getLogger(RosNodeStarterImpl.class);

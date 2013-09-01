@@ -1,0 +1,33 @@
+<html t:type="layout" title="${message:rosList}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<section id="deviceNew">
+	<form t:type="form" validate="device" t:id="form">
+		<t:errors />
+
+		<div t:type="beaneditor" object="device" exclude="id"
+			add="deviceTypeName"
+			reorder="topicRoot,deviceTypeName,configuration">
+			<p:deviceTypeName>
+				<label t:type="label" for="deviceTypeName" />
+				<select t:type="select" t:id="deviceTypeName"
+					model="deviceTypeNameSelectModel" encoder="deviceTypeNameEncoder"
+					value="device.type" />
+			</p:deviceTypeName>
+			<p:configuration>
+				<t:label for="configuration" />
+				<t:textarea t:id="configuration" rows="5"
+					value="device.configuration" />
+			</p:configuration>
+		</div>
+
+		<div class="form-actions">
+			<input type="submit" t:type="submit" value="${message:btn.create}"
+				class="btn btn-primary" /> <a t:type="pagelink"
+				page="configuration" class="btn">${message:btn.cancel}</a>
+		</div>
+	</form>
+</section>
+
+</html>

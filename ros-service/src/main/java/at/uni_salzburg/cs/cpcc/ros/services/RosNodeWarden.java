@@ -17,57 +17,41 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.actuators;
+package at.uni_salzburg.cs.cpcc.ros.services;
 
-import org.ros.namespace.GraphName;
-import org.ros.node.AbstractNodeMain;
+import java.net.URI;
+import java.util.Map;
 
-import at.uni_salzburg.cs.cpcc.ros.services.RosTopic;
+import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 
 /**
- * Actuator
+ * RosNodeWarden
  */
-public abstract class AbstractActuator extends AbstractNodeMain
+public interface RosNodeWarden
 {
-    private GraphName name;
-    
-    private RosTopic topic;
-
-
     /**
-     * @return ROS actuator path
+     * @return the current master server URI.
      */
-    public GraphName getName()
-    {
-        return name;
-    }
+    URI getMasterURI();
 
     /**
-     * @param name ROS actuator path
+     * @param masterURI the new master server URI.
      */
-    public void setName(GraphName name)
-    {
-        this.name = name;
-    }
+    void setMasterURI(URI masterURI);
 
     /**
-     * @return ROS topic
+     * @param node the ROS node to be added.
      */
-    public RosTopic getTopic()
-    {
-        return topic;
-    }
+    void addRosNode(AbstractRosAdapter node);
 
     /**
-     * @param topic ROS topic
+     * @param node the ROS node to be removed.
      */
-    public void setTopic(RosTopic topic)
-    {
-        this.topic = topic;
-    }
-    
+    void removeRosNode(AbstractRosAdapter node);
+
     /**
-     * @return the type of the sensor.
+     * @return the ROS adapter map
      */
-    public abstract ActuatorType getType();
+    Map<String, AbstractRosAdapter> getAdapterMap();
+
 }

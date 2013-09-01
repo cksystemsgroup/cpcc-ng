@@ -7,6 +7,14 @@ html,body {
 	/* The html and body elements cannot have any padding or margin. */
 }
 
+HTML > BODY DIV.t-error LI {
+    margin-left: 20px;
+}
+
+BODY DIV.t-error LI {
+    margin-left: 20px;
+}
+
 /* Wrapper for page content to push down footer */
 #wrap {
 	min-height: 100%;
@@ -61,4 +69,24 @@ html,body {
 
 code {
 	font-size: 80%;
+}
+
+.topic-table th.name {
+	width: 100px;
+}
+
+.topic-table th.buildtin {
+	width: 30px;
+}
+
+.topic-table th.configString {
+	width: 120px;
+}
+
+.topic-table th.sensorType {
+	width: 150px;
+}
+
+.topic-table th.actuatorType {
+	width: 150px;
 }

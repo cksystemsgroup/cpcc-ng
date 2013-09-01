@@ -17,31 +17,31 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.actuators;
+package at.uni_salzburg.cs.cpcc.ros.sensors;
 
+import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
-import org.ros.node.Node;
-import org.ros.node.topic.Publisher;
+import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * SimpleWayPointController
+ * GpsSensor
  */
-public class SimpleWayPointController extends AbstractActuator
+public class GpsSensorAdapter extends AbstractSensorAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleWayPointController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GpsSensorAdapter.class);
     
-    private Publisher<geometry_msgs.Pose> publisher;
-
+    private sensor_msgs.NavSatFix position;
+    
     /**
      * {@inheritDoc}
      */
     @Override
-    public ActuatorType getType()
+    public SensorType getType()
     {
-        return ActuatorType.SIMPLE_WAYPOINT_CONTROLLER;
+        return SensorType.GPS_RECEIVER;
     }
 
     /**
@@ -60,28 +60,25 @@ public class SimpleWayPointController extends AbstractActuator
     public void onStart(ConnectedNode connectedNode)
     {
         LOG.debug("onStart()");
-        
-        publisher = connectedNode.newPublisher(getTopic().getName(), geometry_msgs.Pose._TYPE);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onShutdown(Node node)
-    {
-        super.onShutdown(node);
-        publisher = null;
-    }
+        Subscriber<sensor_msgs.NavSatFix> positionSubscriber =
+            connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.NavSatFix._TYPE);
 
-    /**
-     * @param position the desired position.
-     */
-    public void setPosition(geometry_msgs.Pose position)
-    {
-        if (publisher != null)
+        positionSubscriber.addMessageListener(new MessageListener<sensor_msgs.NavSatFix>()
         {
-            publisher.publish(position);
-        }
+            @Override
+            public void onNewMessage(sensor_msgs.NavSatFix message)
+            {
+                position = message;
+            }
+        });
+    }
+    
+    /**
+     * @return the current GPS position.
+     */
+    public sensor_msgs.NavSatFix getPosition()
+    {
+        return position;
     }
 }

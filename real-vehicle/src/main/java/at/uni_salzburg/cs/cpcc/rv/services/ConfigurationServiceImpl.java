@@ -26,8 +26,7 @@ import java.util.Set;
 
 import javax.inject.Singleton;
 
-import at.uni_salzburg.cs.cpcc.ros.actuators.AbstractActuator;
-import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractSensor;
+import org.ros.namespace.GraphName;
 
 /**
  * ConfigurationServiceImpl
@@ -37,9 +36,15 @@ public class ConfigurationServiceImpl implements ConfigurationService
 {
     private URI masterServerUri;
     
-    private Set<AbstractSensor> sensors = Collections.synchronizedSet(new HashSet<AbstractSensor>());
+    private boolean internalRosCore;
     
-    private Set<AbstractActuator> actuators = Collections.synchronizedSet(new HashSet<AbstractActuator>());
+    private SensorConfiguration positionSensor;
+    
+    private ActuatorConfiguration wayPointController;
+    
+    private Set<SensorConfiguration> sensors = Collections.synchronizedSet(new HashSet<SensorConfiguration>());
+    
+    private Set<ActuatorConfiguration> actuators = Collections.synchronizedSet(new HashSet<ActuatorConfiguration>());
 
     /**
      * {@inheritDoc}
@@ -63,16 +68,70 @@ public class ConfigurationServiceImpl implements ConfigurationService
      * {@inheritDoc}
      */
     @Override
-    public void addSensor(AbstractSensor name)
+    public void setInternalRosCore(boolean internalRosCore)
     {
-        sensors.add(name);
+        this.internalRosCore = internalRosCore;
     }
     
     /**
      * {@inheritDoc}
      */
     @Override
-    public Set<AbstractSensor> getSensors()
+    public boolean isInternalRosCore()
+    {
+        return internalRosCore;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPositionSensor(SensorConfiguration positionSensor)
+    {
+        this.positionSensor = positionSensor;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SensorConfiguration getPositionSensor()
+    {
+        return positionSensor;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setWayPointController(ActuatorConfiguration wayPointController)
+    {
+        this.wayPointController = wayPointController;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ActuatorConfiguration getWayPointController()
+    {
+        return wayPointController;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addSensor(SensorConfiguration sensorName)
+    {
+        sensors.add(sensorName);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<SensorConfiguration> getSensors()
     {
         return sensors;
     }
@@ -81,17 +140,51 @@ public class ConfigurationServiceImpl implements ConfigurationService
      * {@inheritDoc}
      */
     @Override
-    public void addActuator(AbstractActuator name)
+    public SensorConfiguration getSensorByName(GraphName name)
     {
-        actuators.add(name);
+        for (SensorConfiguration sc : sensors)
+        {
+            if (sc.getName().equals(name))
+            {
+                return sc;
+            }
+        }
+        
+        return null;
     }
     
     /**
      * {@inheritDoc}
      */
     @Override
-    public Set<AbstractActuator> getActuators()
+    public void addActuator(ActuatorConfiguration actuatorName)
+    {
+        actuators.add(actuatorName);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<ActuatorConfiguration> getActuators()
     {
         return actuators;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ActuatorConfiguration getActuatorByName(GraphName name)
+    {
+        for (ActuatorConfiguration ac : actuators)
+        {
+            if (ac.getName().equals(name))
+            {
+                return ac;
+            }
+        }
+
+        return null;
     }
 }

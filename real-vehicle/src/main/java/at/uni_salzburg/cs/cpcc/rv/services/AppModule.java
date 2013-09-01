@@ -20,9 +20,13 @@
 package at.uni_salzburg.cs.cpcc.rv.services;
 
 import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.Translator;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.services.ThreadLocale;
 
+import at.uni_salzburg.cs.cpcc.ros.services.RosNodeWarden;
+import at.uni_salzburg.cs.cpcc.ros.services.RosNodeWardenImpl;
 import at.uni_salzburg.cs.cpcc.ros.services.RosQueryService;
 import at.uni_salzburg.cs.cpcc.ros.services.RosQueryServiceImpl;
 
@@ -49,7 +53,10 @@ public final class AppModule
         // is provided inline, or requires more initialization than simply
         // invoking the constructor.
         binder.bind(RosQueryService.class, RosQueryServiceImpl.class);
-        
+        binder.bind(ImageSubscriber.class, ImageSubscriberImpl.class);
+        binder.bind(RosNodeWarden.class, RosNodeWardenImpl.class).eagerLoad();
+        binder.bind(ConfigurationService.class, ConfigurationServiceImpl.class).eagerLoad();
+        binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
     }
 
     /**
@@ -79,6 +86,37 @@ public final class AppModule
         configuration.add(SymbolConstants.SUPPORTED_LOCALES, "en");
     }
 
+    /**
+     * @param configuration the configuration
+     * @param threadLocale the locale
+     */
+    @SuppressWarnings("rawtypes")
+    public static void contributeTranslatorAlternatesSource(MappedConfiguration<String, Translator> configuration,
+        ThreadLocale threadLocale)
+    {
+        configuration.add("graphName", new GraphNameTranslator("graphName"));
+        configuration.add("uri", new UriTranslator("uri"));
+    }
+    
+    /**
+     * @param configuration the configuration.
+     * @param environment the environment.
+     */
+//    public static void contributeMarkupRenderer(OrderedConfiguration<MarkupRendererFilter> configuration,
+//        final Environment environment)
+//    {
+//        MarkupRendererFilter validationDecorator = new MarkupRendererFilter()
+//        {
+//            public void renderMarkup(MarkupWriter writer, MarkupRenderer renderer)
+//            {
+//                ValidationDecorator decorator = new BootstrapValidationDecorator(environment, writer);
+//                environment.push(ValidationDecorator.class, decorator);
+//                renderer.renderMarkup(writer);
+//                environment.pop(ValidationDecorator.class);
+//            }
+//        };
+//        configuration.override("DefaultValidationDecorator", validationDecorator);
+//    }
 
     /**
      * This is a service definition, the service will be named "TimingFilter". The interface,

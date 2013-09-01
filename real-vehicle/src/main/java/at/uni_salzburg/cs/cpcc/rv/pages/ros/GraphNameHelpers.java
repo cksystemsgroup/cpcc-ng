@@ -17,57 +17,40 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.sensors;
+package at.uni_salzburg.cs.cpcc.rv.pages.ros;
 
+import org.apache.tapestry5.ValueEncoder;
 import org.ros.namespace.GraphName;
-import org.ros.node.AbstractNodeMain;
-
-import at.uni_salzburg.cs.cpcc.ros.services.RosTopic;
 
 /**
- * AbstractSensor
+ * GraphNameHelpers
  */
-public abstract class AbstractSensor extends AbstractNodeMain
+public class GraphNameHelpers
 {
-    private GraphName name;
-    
-    private RosTopic topic;
-
-    
-    /**
-     * @return ROS sensor path 
-     */
-    public GraphName getName()
-    {
-        return name;
-    }
+    private static ValueEncoder<GraphName> INSTANCE;
 
     /**
-     * @param name ROS sensor path
+     * @return the <code>ValueEncoder</code> instance for <code>GraphName</code> objects.
      */
-    public void setName(GraphName name)
+    public static ValueEncoder<GraphName> valueEncoder()
     {
-        this.name = name;
+        if (INSTANCE == null)
+        {
+            INSTANCE = new ValueEncoder<GraphName>()
+            {
+                public GraphName toValue(String clientValue)
+                {
+                    return clientValue == null ? GraphName.empty() : GraphName.of(clientValue);
+                }
+
+                public String toClient(GraphName value)
+                {
+                    return value == null ? "" : value.toString();
+                }
+            };
+        }
+
+        return INSTANCE;
     }
 
-    /**
-     * @return ROS topic
-     */
-    public RosTopic getTopic()
-    {
-        return topic;
-    }
-
-    /**
-     * @param topic ROS topic
-     */
-    public void setTopic(RosTopic topic)
-    {
-        this.topic = topic;
-    }
-    
-    /**
-     * @return the type of the sensor.
-     */
-    public abstract SensorType getType();
 }

@@ -31,9 +31,9 @@ import at.uni_salzburg.cs.cpcc.ros.services.RosTopic;
 /**
  * CameraSensor
  */
-public class CameraSensor extends AbstractSensor
+public class CameraSensorAdapter extends AbstractSensorAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(CameraSensor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CameraSensorAdapter.class);
     
     private RosTopic infoTopic;
     private sensor_msgs.CameraInfo cameraInfo;

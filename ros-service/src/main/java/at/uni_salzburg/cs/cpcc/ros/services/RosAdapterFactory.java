@@ -17,12 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.rv.pages;
+package at.uni_salzburg.cs.cpcc.ros.services;
 
-/**
- * About
- */
-public class RosConfiguration
+import java.util.Collection;
+
+import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
+
+public interface RosAdapterFactory
 {
-
+    /**
+     * @param topic the ROS topic.
+     * @param registered all registered topics.
+     * @return the newly built ROS adapter.
+     * @throws IllegalAccessException thrown in case of errors.
+     * @throws InstantiationException thrown in case of errors.
+     */
+    AbstractRosAdapter build(RosTopic topic, Collection<RosTopicState> registered) throws InstantiationException,
+        IllegalAccessException;
 }
