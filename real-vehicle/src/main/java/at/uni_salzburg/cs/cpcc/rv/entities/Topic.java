@@ -49,6 +49,14 @@ public class Topic
     @NotNull
     @Size(max = 50)
     private String messageType;
+    
+    @NotNull
+    @Size(max = 120)
+    private String adapterClassName;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TopicCategory category;
 
     /**
      * @return the topic ID.
@@ -114,4 +122,35 @@ public class Topic
         this.messageType = messageType;
     }
     
+    /**
+     * @return the adapter class name
+     */
+    public String getAdapterClassName()
+    {
+        return adapterClassName;
+    }
+    
+    /**
+     * @param adapterClassName the adapter class name to set
+     */
+    public void setAdapterClassName(String adapterClassName)
+    {
+        this.adapterClassName = adapterClassName;
+    }
+    
+    /**
+     * @return the category
+     */
+    public TopicCategory getCategory()
+    {
+        return category;
+    }
+    
+    /**
+     * @param category the category to set
+     */
+    public void setCategory(TopicCategory category)
+    {
+        this.category = category;
+    }
 }

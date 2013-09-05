@@ -194,6 +194,7 @@ public class QueryManagerImpl implements QueryManager
                 MappingAttributes newAttributes = new MappingAttributes();
                 newAttributes.setPk(pk);
                 newAttributes.setVvVisible(Boolean.FALSE);
+                newAttributes.setConnectedToAutopilot(Boolean.FALSE);
                 saveOrUpdate(newAttributes);
             }
         }

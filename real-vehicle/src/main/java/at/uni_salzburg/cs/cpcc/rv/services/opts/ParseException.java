@@ -27,9 +27,52 @@ import java.util.Locale;
 @SuppressWarnings("serial")
 public class ParseException extends Exception
 {
+    private Symbol expectedSymbol;
+    private Symbol actualSymbol;
+    private int lineNumber;
+    private int columnNumber;
+    
+    
     public ParseException(Symbol expected, OptionsScanner scanner, Token token)
     {
         super(String.format(Locale.US, "Expected a %s but got a %s in line %d column %d",
             expected.name(), token.getSymbol().name(), scanner.getLineNumber(), scanner.getColumnNumber()));
+        expectedSymbol = expected;
+        actualSymbol = token.getSymbol();
+        lineNumber = scanner.getLineNumber();
+        columnNumber = scanner.getColumnNumber();
     }
+    
+    /**
+     * @return the expectedSymbol
+     */
+    public Symbol getExpectedSymbol()
+    {
+        return expectedSymbol;
+    }
+    
+    /**
+     * @return the actualSymbol
+     */
+    public Symbol getActualSymbol()
+    {
+        return actualSymbol;
+    }
+    
+    /**
+     * @return the lineNumber
+     */
+    public int getLineNumber()
+    {
+        return lineNumber;
+    }
+    
+    /**
+     * @return the columnNumber
+     */
+    public int getColumnNumber()
+    {
+        return columnNumber;
+    }
+
 }

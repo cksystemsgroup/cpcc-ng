@@ -43,8 +43,6 @@
 		row="deviceConfig"
 		class="table table-striped table-condensed topic-table">
 
-		<p:typeNameCell>${deviceConfig.Type.Name}</p:typeNameCell>
-
 		<p:affiliationCell>
 			<t:if test="deviceConfig.type.className">
 				${message:internalMapping}
@@ -53,6 +51,8 @@
 				</p:else>
 			</t:if>
 		</p:affiliationCell>
+
+		<p:typeNameCell>${deviceConfig.Type.Name}</p:typeNameCell>
 
 		<p:editDeviceActionsCell>
 			<a t:type="pagelink" page="ros/editDevice"
@@ -75,19 +75,47 @@
 <section id="mappingList">
 	<h3>${message:mappingList}</h3>
 	<t:form t:id="mappingForm">
-		<table t:type="grid" source="mappingList" exclude="device,topic,vvVisible"
-			add="topicPath,vvVisibleCb,typeName"
-			reorder="topicPath,vvVisibleCb,typeName"
-			row="mappingConfig"
+		<table t:type="grid" source="mappingList"
+			exclude="device,topic,vvVisible,primaryCategory,connectedToAutopilot"
+			add="topicPath,vvVisibleCb,typeName,category,autoPilotCb"
+			reorder="topicPath,vvVisibleCb,typeName,category,autoPilotCb" row="mappingConfig"
 			class="table table-striped table-condensed topic-table">
 
 			<p:vvVisibleCbCell>
 				<t:checkbox t:id="vvVisibleCB" value="mappingConfig.vvVisible"
 					onclick="this.form.submit();" />
 			</p:vvVisibleCbCell>
+			
+			<p:autoPilotCbCell>
+				<t:if test="mappingConfig.connectedToAutopilot">
+					<t:if test="mappingConfig.pk.topic.subpath">
+						<a t:type="eventlink" event="disconnectFromAutoPilot"
+							context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
+							title="${message:connectedToAutoPilot}"> <i class="icon-plane"></i></a>
+						<p:else>
+							<a t:type="eventlink" event="disconnectFromAutoPilot"
+								context="${mappingConfig.pk.device.topicRoot}" href="#"
+								title="${message:connectedToAutoPilot}"> <i class="icon-plane"></i></a>						
+						</p:else>
+					</t:if>
+				<p:else>
+					<t:if test="mappingConfig.pk.topic.subpath">
+						<a t:type="eventlink" event="connectToAutoPilot"
+							context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
+							title="${message:connectToAutoPilot}"> <i class="icon-plus"></i></a>
+						<p:else>
+							<a t:type="eventlink" event="connectToAutoPilot"
+								context="${mappingConfig.pk.device.topicRoot}" href="#"
+								title="${message:connectToAutoPilot}"> <i class="icon-plus"></i></a>						
+						</p:else>
+					</t:if>
+				</p:else>
+			</t:if>
+			
+			</p:autoPilotCbCell>
 
 			<p:topicPathCell>
-			${mappingConfig.pk.device.topicRoot}<t:if
+				${mappingConfig.pk.device.topicRoot}<t:if
 					test="mappingConfig.pk.topic.subpath">/${mappingConfig.pk.topic.subpath}</t:if>
 			</p:topicPathCell>
 
@@ -95,29 +123,45 @@
 				${mappingConfig.pk.topic.messageType}
 			</p:typeNameCell>
 
-			<!-- 			<p:editMappingActionsCell> -->
-			<!-- 				<t:if test="mappingConfig.pk.device.type.className"> -->
-			<!-- 					<p:else> -->
-			<!-- 						<a t:type="pagelink" page="ros/editExternalDevice" -->
-			<!-- 							context="mappingConfig.pk.device.topicRoot" href="#" -->
-			<!-- 							title="${message:editExternalDevice}"> <i class="icon-pencil"></i> -->
-			<!-- 						</a> -->
-			<!-- 					&nbsp; -->
-			<!-- 					<a t:type="eventlink" event="deleteMapping" -->
-			<!-- 							context="mappingConfig.pk.device.topicRoot" href="#" -->
-			<!-- 							title="${message:deleteExternalDevice}"> <i class="icon-remove"></i> -->
-			<!-- 						</a> -->
-
-			<!-- 					</p:else> -->
-			<!-- 				</t:if> -->
-			<!-- 			</p:editMappingActionsCell> -->
-
+			<p:categoryCell>
+				${mappingConfig.pk.topic.category}
+			</p:categoryCell>
+		
 			<p:empty>
 				<p>${message:noMappingFound}</p>
 			</p:empty>
 		</table>
 	</t:form>
 </section>
+
+<!-- <section id="realVehicle"> -->
+<!-- 	<h3>${message:realVehicleConfiguration}</h3> -->
+<!-- 	<table t:type="grid" source="mappingList" -->
+<!-- 		exclude="device,topic,vvVisible,primaryCategory" -->
+<!-- 		add="topicPath,typeName,category" reorder="topicPath,typeName" -->
+<!-- 		row="mappingConfig" -->
+<!-- 		class="table table-striped table-condensed topic-table"> -->
+
+<!-- 		<p:topicPathCell> -->
+<!-- 			${mappingConfig.pk.device.topicRoot}<t:if -->
+<!-- 				test="mappingConfig.pk.topic.subpath">/${mappingConfig.pk.topic.subpath}</t:if> -->
+<!-- 		</p:topicPathCell> -->
+
+<!-- 		<p:typeNameCell> -->
+<!-- 				${mappingConfig.pk.topic.messageType} -->
+<!-- 		</p:typeNameCell> -->
+
+<!-- 		<p:categoryCell> -->
+<!-- 				${mappingConfig.pk.topic.category} -->
+<!-- 		</p:categoryCell> -->
+		
+<!-- 		<p:empty> -->
+<!-- 			<p>${message:noMappingFound}</p> -->
+<!-- 		</p:empty> -->
+
+<!-- 	</table> -->
+
+<!-- </section> -->
 
 
 </html>

@@ -34,4 +34,12 @@ public interface OptionsParserService
      * @throws ParseException thrown in case of errors.
      */
     Collection<Option> parse(String options) throws IOException, ParseException;
+
+    /**
+     * @param source the source.
+     * @param format the localized message format.
+     * @param e the exception
+     * @return the formatted error message.
+     */
+    String formatParserErrorMessage(String source, String format, ParseException e);
 }

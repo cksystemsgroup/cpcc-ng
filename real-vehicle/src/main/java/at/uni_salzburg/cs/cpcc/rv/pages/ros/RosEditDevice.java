@@ -22,6 +22,8 @@ package at.uni_salzburg.cs.cpcc.rv.pages.ros;
 import static org.apache.tapestry5.EventConstants.PREPARE;
 import static org.apache.tapestry5.EventConstants.SUCCESS;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.validation.Valid;
 
@@ -33,21 +35,39 @@ import org.apache.tapestry5.annotations.PageActivationContext;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.apache.tapestry5.ioc.Messages;
 
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 import at.uni_salzburg.cs.cpcc.rv.entities.DeviceType;
 import at.uni_salzburg.cs.cpcc.rv.pages.Configuration;
 import at.uni_salzburg.cs.cpcc.rv.services.DeviceTypeSelectHelpers;
 import at.uni_salzburg.cs.cpcc.rv.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.rv.services.opts.ParseException;
+import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 
 /**
  * RosEditDevice
  */
 public class RosEditDevice
 {
+    private final static String ERROR_TOPIC_ALREADY_USED = "error.topic.already.used";
+    private final static String ERROR_TOPIC_MUST_START_WITH_SLASH = "error.topic.must.start.with.slash";
+    private final static String ERROR_PARSING = "error.parsing";
+    private final static String ERROR_PARSING_SYNTAX = "error.parsing.syntax";
+    
     @Inject
     private QueryManager qm;
+    
+    @Inject
+    private RosNodeService nodeService;
 
+    @Inject
+    private OptionsParserService parserService;
+    
+    @Inject
+    private Messages messages;
+    
     @Valid
     @Property
     private Device device;
@@ -66,7 +86,7 @@ public class RosEditDevice
 
     @OnEvent(SUCCESS)
     @CommitAfter
-    Object newDevice()
+    Object storeDevice()
     {
         if (!device.getTopicRoot().startsWith("/"))
         {
@@ -75,6 +95,8 @@ public class RosEditDevice
 
         qm.saveOrUpdate(device);
         qm.saveOrUpdateMappingAttributes(device);
+        nodeService.updateDevice(device);
+        nodeService.updateMappingAttributes(qm.findMappingAttributesByDevice(device));
         return Configuration.class;
     }
 
@@ -88,4 +110,46 @@ public class RosEditDevice
         return new DeviceTypeSelectHelpers(qm).valueEncoder();
     }
 
+    void onValidateFromForm()
+    {
+        if (!device.getTopicRoot().startsWith("/"))
+        {
+            String msg = messages.get(ERROR_TOPIC_MUST_START_WITH_SLASH);
+            form.recordError(msg);
+        }
+
+        if (!deviceTopic.equals(device.getTopicRoot()))
+        {
+            Device dev = qm.findDeviceByTopicRoot(device.getTopicRoot());
+            if (dev != null)
+            {
+                String msg = messages.get(ERROR_TOPIC_ALREADY_USED);
+                form.recordError(String.format(msg, device.getTopicRoot()));
+            }
+        }
+
+        checkConfig();
+    }
+    
+    private void checkConfig()
+    {
+        if (device.getConfiguration() != null)
+        {
+            try
+            {
+                parserService.parse(device.getConfiguration());
+            }
+            catch (ParseException e)
+            {
+                String msg = parserService.formatParserErrorMessage(device.getConfiguration(),
+                    messages.get(ERROR_PARSING_SYNTAX), e);
+                form.recordError(msg);
+            }
+            catch (IOException e)
+            {
+                String msg = String.format(messages.get(ERROR_PARSING), e.getMessage());
+                form.recordError(msg);
+            }
+        }
+    }
 }

@@ -20,11 +20,14 @@
 package at.uni_salzburg.cs.cpcc.rv.pages;
 
 import static org.apache.tapestry5.EventConstants.PREPARE;
-import static org.apache.tapestry5.EventConstants.SUCCESS;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.inject.Inject;
@@ -36,7 +39,10 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 import at.uni_salzburg.cs.cpcc.rv.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.rv.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.rv.entities.Topic;
+import at.uni_salzburg.cs.cpcc.rv.entities.TopicCategory;
 import at.uni_salzburg.cs.cpcc.rv.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 
 /**
  * Configuration
@@ -46,15 +52,18 @@ public class Configuration
     @Inject
     private QueryManager qm;
 
+    @Inject
+    private RosNodeService nodeService;
+
     @Property
     private Parameter internalRosCore;
-    
+
     @Property
     private Parameter masterServerURI;
-    
+
     @Property
     private Collection<Device> deviceList;
-    
+
     @Property
     private Device deviceConfig;
 
@@ -63,7 +72,7 @@ public class Configuration
 
     @Property
     private MappingAttributes mappingConfig;
-    
+
     @OnEvent(PREPARE)
     void loadParameters()
     {
@@ -72,76 +81,129 @@ public class Configuration
         deviceList = qm.findAllDevices();
         mappingList = orderByTopic(qm.findAllMappingAttributes());
     }
-    
+
     /**
-     * @param attributes the mapping attributes
+     * @param attributeList the mapping attributes
      * @return the mapping attributes ordered by topic
      */
-    private Collection<MappingAttributes> orderByTopic(List<MappingAttributes> attributes)
+    private Collection<MappingAttributes> orderByTopic(Collection<MappingAttributes> attributeList)
     {
-        Map<String,MappingAttributes> tree = new TreeMap<String,MappingAttributes>();
-        for (MappingAttributes a : attributes)
+        Map<String, MappingAttributes> tree = new TreeMap<String, MappingAttributes>();
+        for (MappingAttributes attribute : attributeList)
         {
-            StringBuilder b = new StringBuilder(a.getPk().getDevice().getTopicRoot());
-            
-            String subPath = a.getPk().getTopic().getSubpath();
-            
+            StringBuilder b = new StringBuilder(attribute.getPk().getDevice().getTopicRoot());
+
+            String subPath = attribute.getPk().getTopic().getSubpath();
+
             if (subPath != null)
             {
                 b.append("/").append(subPath);
             }
-            tree.put(b.toString(), a);
+            tree.put(b.toString(), attribute);
         }
         return tree.values();
     }
 
-    @OnEvent(SUCCESS)
-    Object updateDatabase()
-    {
-        qm.saveOrUpdate(internalRosCore);
-        qm.saveOrUpdate(masterServerURI);
-        qm.saveOrUpdateAll(deviceList);
-        return Configuration.class;
-    }
-    
     @OnEvent("deleteDevice")
     @CommitAfter
     void deleteDevice(String topic)
     {
         Device device = qm.findDeviceByTopicRoot(topic);
-        qm.deleteAll(qm.findMappingAttributesByDevice(device));
+        Collection<MappingAttributes> mappings = qm.findMappingAttributesByDevice(device);
+        nodeService.shutdownMappingAttributes(mappings);
+        nodeService.shutdownDevice(device);
+        qm.deleteAll(mappings);
         qm.delete(device);
     }
     
-    @OnEvent("deleteMapping")
+    @OnEvent("connectToAutoPilot")
     @CommitAfter
-    void deleteMapping(String topic)
+    void connectToAutoPilot(String topic)
     {
-        Device device = qm.findDeviceByTopicRoot(topic);
+        List<MappingAttributes> attributeList = qm.findAllMappingAttributes();
 
-        // delete only external mappings.
-        if (device.getType().getClassName() == null)
+        Map<String, MappingAttributes> attributeMap = new HashMap<String, MappingAttributes>();
+
+        TopicCategory category = null;
+        
+        for (MappingAttributes attribute : attributeList)
         {
-            qm.deleteAll(qm.findMappingAttributesByDevice(device));
-            qm.delete(device);
+            StringBuilder b = new StringBuilder(attribute.getPk().device.getTopicRoot());
+            String subPath = attribute.getPk().getTopic().getSubpath();
+            if (subPath != null)
+            {
+                b.append("/").append(subPath);
+            }
+            attributeMap.put(b.toString(), attribute);
+            String attributeTopic = b.toString();
+            if (attributeTopic.equals(topic))
+            {
+                category = attribute.getPk().getTopic().getCategory();
+            }
+        }
+
+        if (category == null)
+        {
+            return;
+        }
+        
+        for (Entry<String, MappingAttributes> entry : attributeMap.entrySet())
+        {
+            MappingAttributes attribute = entry.getValue();
+            Topic attributeTopic = attribute.getPk().getTopic();
+            if (category != attributeTopic.getCategory())
+            {
+                continue;
+            }
+            boolean connectedToAutopilot = topic.equals(entry.getKey());
+            attribute.setConnectedToAutopilot(connectedToAutopilot);
+            qm.saveOrUpdate(attribute);
         }
     }
     
+    @OnEvent("disconnectFromAutoPilot")
     @CommitAfter
-    void onSuccessFromUriForm()
+    void disconnectFromAutoPilot(String topic)
+    {
+        List<MappingAttributes> attributeList = qm.findAllMappingAttributes();
+        for (MappingAttributes attribute : attributeList)
+        {
+            StringBuilder b = new StringBuilder(attribute.getPk().device.getTopicRoot());
+            String subPath = attribute.getPk().getTopic().getSubpath();
+            if (subPath != null)
+            {
+                b.append("/").append(subPath);
+            }
+            String attributeTopic = b.toString();
+            if (attributeTopic.equals(topic))
+            {
+                attribute.setConnectedToAutopilot(Boolean.FALSE);
+                qm.saveOrUpdate(attribute);
+                break;
+            }
+        }
+    }
+
+    @CommitAfter
+    void onSuccessFromUriForm() throws URISyntaxException
     {
         qm.saveOrUpdate(masterServerURI);
+        nodeService.updateMasterServerURI(new URI(masterServerURI.getValue()));
     }
-    
+
     @CommitAfter
     void onSuccessFromCoreForm()
     {
         qm.saveOrUpdate(internalRosCore);
+        nodeService.updateRosCore(Boolean.parseBoolean(internalRosCore.getValue()));
     }
-    
+
     @CommitAfter
     void onSuccessFromMappingForm()
     {
         qm.saveOrUpdateAll(mappingList);
+        nodeService.updateMappingAttributes(mappingList);
+        
+        System.out.println("" + mappingConfig.getPk().getDevice().getId() + " " + mappingConfig.getPk().getTopic().getId());
     }
 }

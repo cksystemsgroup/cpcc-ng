@@ -17,14 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.services;
+package at.uni_salzburg.cs.cpcc.rv.entities;
 
 /**
- * RosNodeType
+ * TopicCategory
  */
-public enum RosNodeType
+public enum TopicCategory
 {
-    PUBLISHER,
-    SUBSCRIBER,
-    SERVICE
+    WAYPOINT_CONTROLLER,
+    GPS_POSITION_PROVIDER,
+    CAMERA,
+    CAMERA_INFO,
+    ALTITUDE_OVER_GROUND
 }

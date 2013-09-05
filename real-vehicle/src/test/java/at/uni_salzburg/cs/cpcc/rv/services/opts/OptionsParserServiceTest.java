@@ -90,4 +90,33 @@ public class OptionsParserServiceTest
         Assert.assertEquals(casparList.get(0).getItemString(), "xxx uu");
     }
     
+    @Test
+    public void shouldParseCorrectOptionList() throws IOException, ParseException
+    {
+        Collection<Option> result = svc.parse("bugger=(lala,'looney',3.141592)");
+        Assert.assertTrue(result.size() == 1);
+        
+        Option bugger = null;
+        
+        for (Option option : result)
+        {
+            if ("bugger".equals(option.getKey()))
+            {
+                bugger = option;
+            }
+        }
+        
+        Assert.assertNotNull(bugger);
+        List<Token> buggerList = bugger.getValue();
+        Assert.assertEquals(buggerList.size(), 3);
+        Assert.assertEquals(buggerList.get(0).getSymbol(), Symbol.IDENT);
+        Assert.assertEquals(buggerList.get(0).getItemString(), "lala");
+        
+        Assert.assertEquals(buggerList.get(1).getSymbol(), Symbol.LITERAL);
+        Assert.assertEquals(buggerList.get(1).getItemString(), "looney");
+        
+        Assert.assertEquals(buggerList.get(2).getSymbol(), Symbol.NUMBER);
+        Assert.assertEquals(buggerList.get(2).getItemString(), "3.141592");
+        Assert.assertEquals(buggerList.get(2).getNumber().doubleValue(), 3.141592, 1E-8);
+    }
 }

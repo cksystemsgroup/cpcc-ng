@@ -95,7 +95,7 @@ public class OptionsParserServiceImpl implements OptionsParserService
         while (token.getSymbol() != Symbol.END && token.getSymbol() != Symbol.RIGHT_PAREN)
         {
             token.copyFields(scanner.next());
-            if (token.getSymbol() != Symbol.IDENT || token.getSymbol() != Symbol.LITERAL || token.getSymbol() != Symbol.NUMBER)
+            if (token.getSymbol() != Symbol.IDENT && token.getSymbol() != Symbol.LITERAL && token.getSymbol() != Symbol.NUMBER)
             {
                 throw new ParseException(Symbol.IDENT, scanner, token);
             }
@@ -104,5 +104,32 @@ public class OptionsParserServiceImpl implements OptionsParserService
         }
         
         return new Option(myToken.getItemString(), tokenList);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String formatParserErrorMessage(String source, String format, ParseException e)
+    {
+        StringBuilder b = new StringBuilder();
+        String[] lines = source.split("\n");
+        for (int k=0, s=lines.length; k < s; ++k)
+        {
+            if (e.getLineNumber()-1 == k)
+            {
+                b.append(lines[k].substring(0,e.getColumnNumber()));
+                b.append("<*>");
+                b.append(lines[k].substring(e.getColumnNumber()));
+            }
+            else
+            {
+                b.append(lines[k]);
+                
+            }
+            b.append("\n");
+        }
+        
+        return String.format(format, b.toString());
     }
 }

@@ -20,8 +20,10 @@
 package at.uni_salzburg.cs.cpcc.rv.services.ros;
 
 import java.net.URI;
+import java.util.Collection;
 
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
+import at.uni_salzburg.cs.cpcc.rv.entities.MappingAttributes;
 
 /**
  * RosNodeService
@@ -29,34 +31,42 @@ import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 public interface RosNodeService
 {
     /**
-     * @return the master server URI.
-     */
-    URI getMasterServerURI();
-    
-    /**
      * @param uri the master server URI.
      */
-    void setMasterServerURI(URI uri);
-    
-    /**
-     * @return true if an internal <code>RosCore</code> is used, false otherwise.
-     */
-    boolean isInternalRosCore();
+    void updateMasterServerURI(URI uri);
     
     /**
      * @param internal true if an internal <code>RosCore</code> should be used, false otherwise.
      */
-    void setInternalRosCore(boolean internal);
+    void updateRosCore(boolean internal);
     
     /**
      * @param device the device.
      */
-    void startDeviceDriver(Device device);
+    void updateDevice(Device device);
     
     /**
      * @param device the device.
      */
-    void stopDeviceDriver(Device device);
+    void shutdownDevice(Device device);
     
+//    /**
+//     * @param attributes the attributes.
+//     */
+//    void updateMappingAttributes(MappingAttributes attributes);
+//
+//    /**
+//     * @param attributes the attributes.
+//     */
+//    void shutdownMappingAttributes(MappingAttributes attributes);
     
+    /**
+     * @param mappings the mappings
+     */
+    void updateMappingAttributes(Collection<MappingAttributes> mappings);
+    
+    /**
+     * @param mappings the mappings
+     */
+    void shutdownMappingAttributes(Collection<MappingAttributes> mappings);
 }

@@ -35,6 +35,9 @@ public class MappingAttributes
     @NotNull
     private Boolean vvVisible;
 
+    @NotNull
+    private Boolean connectedToAutopilot;
+    
     /**
      * @return the primary key
      */
@@ -66,4 +69,21 @@ public class MappingAttributes
     {
         this.vvVisible = vvVisible;
     }
+    
+    /**
+     * @return true, if connected to the autopilot.
+     */
+    public Boolean getConnectedToAutopilot()
+    {
+        return connectedToAutopilot;
+    }
+    
+    /**
+     * @param connectedToAutopilot true, if connected to the autopilot.
+     */
+    public void setConnectedToAutopilot(Boolean connectedToAutopilot)
+    {
+        this.connectedToAutopilot = connectedToAutopilot;
+    }
+    
 }
