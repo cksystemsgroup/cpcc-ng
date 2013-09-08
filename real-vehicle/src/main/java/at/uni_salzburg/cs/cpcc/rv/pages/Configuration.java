@@ -203,7 +203,5 @@ public class Configuration
     {
         qm.saveOrUpdateAll(mappingList);
         nodeService.updateMappingAttributes(mappingList);
-        
-        System.out.println("" + mappingConfig.getPk().getDevice().getId() + " " + mappingConfig.getPk().getTopic().getId());
     }
 }
