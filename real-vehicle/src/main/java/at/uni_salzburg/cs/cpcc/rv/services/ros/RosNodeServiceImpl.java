@@ -19,10 +19,13 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services.ros;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -42,6 +45,10 @@ import at.uni_salzburg.cs.cpcc.rv.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.rv.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.rv.entities.Topic;
 import at.uni_salzburg.cs.cpcc.rv.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.rv.services.opts.Option;
+import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.rv.services.opts.ParseException;
+import at.uni_salzburg.cs.cpcc.rv.services.opts.Token;
 
 /**
  * RosNodeServiceImpl
@@ -59,7 +66,10 @@ public class RosNodeServiceImpl implements RosNodeService
 
     private QueryManager qm;
 
+    private OptionsParserService optionsParser;
+
     private NodeConfiguration nodeConfiguration;
+
 
     private static Map<String, RosNodeGroup> deviceNodes = Collections
         .synchronizedMap(new TreeMap<String, RosNodeGroup>());
@@ -70,9 +80,10 @@ public class RosNodeServiceImpl implements RosNodeService
     /**
      * Constructor
      */
-    public RosNodeServiceImpl(QueryManager qm)
+    public RosNodeServiceImpl(QueryManager qm, OptionsParserService optionsParser)
     {
         this.qm = qm;
+        this.optionsParser = optionsParser;
         init();
     }
 
@@ -100,7 +111,7 @@ public class RosNodeServiceImpl implements RosNodeService
         
         List<Device> allDevices = qm.findAllDevices();
 
-        System.out.println("RosNodeServiceImpl.init()");
+        LOG.info("init()");
 
         for (Device device : allDevices)
         {
@@ -122,7 +133,7 @@ public class RosNodeServiceImpl implements RosNodeService
     {
         
         // TODO Auto-generated method stub
-        System.out.println("RosNodeServiceImpl launchNode=" + device.getTopicRoot() + ", topic=" + topic.getSubpath());
+        LOG.info("RosNodeServiceImpl launchNode=" + device.getTopicRoot() + ", topic=" + topic.getSubpath());
 
         
         if (device.getType().getClassName() != null)
@@ -130,12 +141,11 @@ public class RosNodeServiceImpl implements RosNodeService
             try
             {
                 Class<?> name = Class.forName(device.getType().getClassName());
-                System.out.println("RosNodeServiceImpl class " + name.getName() + " loaded.");
+                LOG.info("RosNodeServiceImpl class " + name.getName() + " loaded.");
             }
             catch (ClassNotFoundException e)
             {
-                System.out.println("RosNodeServiceImpl can not load class " + device.getType().getClassName());
-                e.printStackTrace();
+                LOG.error("RosNodeServiceImpl can not load class " + device.getType().getClassName(), e);
             }
         }
     }
@@ -147,7 +157,7 @@ public class RosNodeServiceImpl implements RosNodeService
     public void updateMasterServerURI(URI uri)
     {
         // TODO Auto-generated method stub
-        System.out.println("updateMasterServerURI " + uri.toASCIIString());
+        LOG.info("updateMasterServerURI " + uri.toASCIIString());
 
         if (masterServerUri != null && masterServerUri.equals(uri))
         {
@@ -175,9 +185,8 @@ public class RosNodeServiceImpl implements RosNodeService
     @Override
     public void updateRosCore(boolean internal)
     {
-        // TODO Auto-generated method stub
         boolean rcore = rosCore != null;
-        System.out.println("updateRosCore internal=" + internal + ", core-running=" + rcore);
+        LOG.info("updateRosCore internal=" + internal + ", core-running=" + rcore);
 
         synchronized (LOG)
         {
@@ -231,7 +240,7 @@ public class RosNodeServiceImpl implements RosNodeService
     public void updateDevice(Device device)
     {
         // TODO Auto-generated method stub
-        System.out.println("updateDevice " + device.getTopicRoot());
+        LOG.info("updateDevice " + device.getTopicRoot());
         
         stopRosNodeGroup(device.getTopicRoot());
         
@@ -248,33 +257,11 @@ public class RosNodeServiceImpl implements RosNodeService
     public void shutdownDevice(Device device)
     {
         // TODO Auto-generated method stub
-        System.out.println("shutdownDevice " + device.getTopicRoot());
+        LOG.info("shutdownDevice " + device.getTopicRoot());
         stopRosNodeGroup(device.getTopicRoot());
         
         // TODO delete from RTE
     }
-    
-//    /**
-//     * {@inheritDoc}
-//     */
-//    @Override
-//    public void updateMappingAttributes(MappingAttributes attributes)
-//    {
-//        // TODO Auto-generated method stub
-//        System.out.println("updateMappingAttributes device=" + attributes.getPk().getDevice().getTopicRoot());
-//        
-//        
-//    }
-//    
-//    /**
-//     * {@inheritDoc}
-//     */
-//    @Override
-//    public void shutdownMappingAttributes(MappingAttributes attributes)
-//    {
-//        // TODO Auto-generated method stub
-//        System.out.println("shutdownMappingAttributes device=" + attributes.getPk().getDevice().getTopicRoot());
-//    }
     
     /**
      * {@inheritDoc}
@@ -283,7 +270,7 @@ public class RosNodeServiceImpl implements RosNodeService
     public void updateMappingAttributes(Collection<MappingAttributes> mappings)
     {
         // TODO Auto-generated method stub
-        System.out.println("updateMappingAttributes");
+        LOG.info("updateMappingAttributes");
         
         
     }
@@ -295,7 +282,7 @@ public class RosNodeServiceImpl implements RosNodeService
     public void shutdownMappingAttributes(Collection<MappingAttributes> mappings)
     {
         // TODO Auto-generated method stub
-        System.out.println("shutdownMappingAttributes");
+        LOG.info("shutdownMappingAttributes");
         
     }
     
@@ -309,7 +296,7 @@ public class RosNodeServiceImpl implements RosNodeService
         String topicRoot = device.getTopicRoot();
         String className = device.getType().getClassName();
         String config = device.getConfiguration();
-        
+
         if (topicRoot == null || className == null)
         {
             LOG.error("Can not start ROS node group.");
@@ -317,27 +304,26 @@ public class RosNodeServiceImpl implements RosNodeService
         }
 
         LOG.info("Starting ROS node group, topic=" + topicRoot);
-        
+
         try
         {
             Class<?> clazz = Class.forName(className);
-            System.out.println("startRosNode class " + clazz.getName() + " loaded.");
+            LOG.info("startRosNode class " + clazz.getName() + " loaded.");
 
             RosNodeGroup group = (RosNodeGroup) clazz.newInstance();
-            group.setConfig(config);
+            group.setConfig(parseConfig(config));
             group.setTopicRoot(topicRoot);
             group.setNodeConfiguration(nodeConfiguration);
-            
+
             group.start();
-            
+
             deviceNodes.put(topicRoot, group);
             LOG.info(String.format("ROS node group %s started.", topicRoot));
         }
-        catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException | ParseException e)
         {
             LOG.error("Can not instantiate the ROS node group for topic " + topicRoot, e);
         }
-
     }
     
     /**
@@ -351,5 +337,27 @@ public class RosNodeServiceImpl implements RosNodeService
             deviceNodes.get(topicRoot).shutdown();
             deviceNodes.remove(topicRoot);
         }
+    }
+    
+    /**
+     * @param config the configuration as a string.
+     * @return the configuration as a map.
+     * @throws ParseException thrown in case of errors.
+     * @throws IOException thrown in case of errors.
+     */
+    private Map<String, List<String>> parseConfig(String config) throws IOException, ParseException
+    {
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (Option option : optionsParser.parse(config))
+        {
+            List<Token> tokenList = option.getValue();
+            List<String> valueList = new ArrayList<String>();
+            for (Token token : tokenList)
+            {
+                valueList.add(token.getItemString());
+            }
+            map.put(option.getKey(), valueList);
+        }
+        return map;
     }
 }
