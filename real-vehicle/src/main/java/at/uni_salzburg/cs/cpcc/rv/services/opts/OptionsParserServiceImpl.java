@@ -79,7 +79,7 @@ public class OptionsParserServiceImpl implements OptionsParserService
             return new Option(myToken.getItemString(), Arrays.asList(new Token(token)));
         }
 
-        return parseList(scanner, token);
+        return parseList(scanner, myToken, token);
     }
 
     /**
@@ -87,9 +87,8 @@ public class OptionsParserServiceImpl implements OptionsParserService
      * @param token the current token.
      * @return the parsed option.
      */
-    private Option parseList(OptionsScanner scanner, Token token) throws IOException, ParseException
+    private Option parseList(OptionsScanner scanner, Token myToken, Token token) throws IOException, ParseException
     {
-        Token myToken = new Token(token);
         List<Token> tokenList = new ArrayList<Token>();
         
         while (token.getSymbol() != Symbol.END && token.getSymbol() != Symbol.RIGHT_PAREN)

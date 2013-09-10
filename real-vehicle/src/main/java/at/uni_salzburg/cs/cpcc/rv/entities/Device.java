@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.entities;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -33,7 +35,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"topicRoot"})})
-public class Device
+public class Device implements ITreeNode
 {
     @Id
     @GeneratedValue
@@ -47,7 +49,7 @@ public class Device
     @OneToOne
     private DeviceType type;
     
-    @Size(max = 100)
+    @Size(max = 255)
     private String configuration;
     
     /**
@@ -114,4 +116,51 @@ public class Device
         this.configuration = configuration;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLeaf() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasChildren() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ITreeNode> getChildren() {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getLabel() {
+        return topicRoot;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParentLabel() {
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getUniqueId() {
+        return "device:" + getId();
+    }
 }

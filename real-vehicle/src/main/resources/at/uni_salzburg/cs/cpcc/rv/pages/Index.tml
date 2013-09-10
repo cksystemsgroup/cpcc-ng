@@ -1,44 +1,51 @@
 <html t:type="layout" title="real-vehicle Index"
-      t:sidebarTitle="Framework Version"
-      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-      xmlns:p="tapestry:parameter">
-        <!-- Most of the page content, including <head>, <body>, etc. tags, comes from Layout.tml -->
+	t:sidebarTitle="Framework Version"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+<!-- Most of the page content, including <head>, <body>, etc. tags, comes from Layout.tml -->
 
-    <p>${message:greeting}</p>
+<!-- <p>${message:greeting}</p> -->
 
-    <p>The current time is: <strong>${currentTime}</strong></p>
+<!-- <p> -->
+<!-- 	The current time is: <strong>${currentTime}</strong> -->
+<!-- </p> -->
 
-    <!-- A Zone is a component that can be updated in place, triggered by other components. -->
-    <!--
-    <t:zone t:id="zone">
-        <p>
-            You have clicked the link <strong>${clickCount}</strong> times.
-        </p>
+	<!-- A Zone is a component that can be updated in place, triggered by other components. -->
+<!-- <t:zone t:id="zone" t:mixins='jquery/zonerefresh' t:period='5' -->
+<!-- 	t:update="show"> -->
+<!-- 	<p> -->
+<!-- 		You have clicked the link <strong>${clickCount}</strong> times. -->
+<!-- 	<p> -->
+<!-- 		The current time is: <strong>${currentTime}</strong> -->
+<!-- 	</p> -->
+<!-- 	</p> -->
 
-        <p>
-            [
-            <t:actionlink t:id="increment">increment</t:actionlink>
-            ]
-            &nbsp;
-            [
-            <t:actionlink t:id="incrementAjax" zone="^">increment (via Ajax)</t:actionlink>
-            ]
-        </p>
+<!-- 	<p> -->
+<!-- 		[ -->
+<!-- 		<t:actionlink t:id="increment">increment</t:actionlink> -->
+<!-- 		] &nbsp; [ -->
+<!-- 		<t:actionlink t:id="incrementAjax" zone="^">increment (via Ajax)</t:actionlink> -->
+<!-- 		] -->
+<!-- 	</p> -->
 
-    </t:zone>
+<!-- </t:zone> -->
 
-    <p:sidebar>
-        <p>
-            You are running Tapestry version <strong>${tapestryVersion}</strong>.
-        </p>
+<div class="row-fluid">
+	<div class="span3 bs-docs-sidebar">
+		<h4>
+			<t:pagelink page="index">${message:device.tree.label}</t:pagelink>
+		</h4>
+		<div t:id="deviceTree"></div>
+	</div>
 
+	<div class="span8">
+		<t:zone t:id="zone" t:mixins='jquery/zonerefresh' t:period='5' t:update="show">
+			<p>
+				The current time is: <strong>${currentTime}</strong>
+			</p>
+		</t:zone>
+	</div>
+</div>
 
-        <p>
-            [
-            <t:pagelink page="Index">refresh page</t:pagelink>
-            ]
-        </p>
-    </p:sidebar>
--->
 
 </html>

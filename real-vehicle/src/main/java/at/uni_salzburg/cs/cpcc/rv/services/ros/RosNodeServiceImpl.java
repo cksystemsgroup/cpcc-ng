@@ -311,9 +311,9 @@ public class RosNodeServiceImpl implements RosNodeService
             LOG.info("startRosNode class " + clazz.getName() + " loaded.");
 
             RosNodeGroup group = (RosNodeGroup) clazz.newInstance();
-            group.setConfig(parseConfig(config));
             group.setTopicRoot(topicRoot);
             group.setNodeConfiguration(nodeConfiguration);
+            group.setConfig(parseConfig(config));
 
             group.start();
 
@@ -359,5 +359,14 @@ public class RosNodeServiceImpl implements RosNodeService
             map.put(option.getKey(), valueList);
         }
         return map;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, RosNodeGroup> getDeviceNodes()
+    {
+        return deviceNodes;
     }
 }

@@ -37,7 +37,7 @@
 
 <section id="deviceList">
 	<h3>${message:deviceList}</h3>
-	<table t:type="grid" source="deviceList" exclude="builtin,id"
+	<table t:type="grid" source="deviceList" exclude="builtin,id,label,parentLabel,uniqueId,leaf"
 		add="typeName,affiliation,editDeviceActions"
 		reorder="topicRoot,affiliation,typeName,configuration,editDeviceActions"
 		row="deviceConfig"

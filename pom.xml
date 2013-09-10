@@ -270,6 +270,14 @@
 						</archive>
 					</configuration>
 				</plugin>
+<plugin>
+  <groupId>com.ning.maven.plugins</groupId>
+  <artifactId>maven-duplicate-finder-plugin</artifactId>
+  <version>1.0.4</version>
+  <configuration>
+    <!-- <failBuildInCaseOfConflict>true</failBuildInCaseOfConflict> -->
+  </configuration>
+</plugin>
 			</plugins>
 		</pluginManagement>
 

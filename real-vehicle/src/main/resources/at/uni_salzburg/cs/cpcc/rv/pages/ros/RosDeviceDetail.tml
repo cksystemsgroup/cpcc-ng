@@ -1,0 +1,35 @@
+<html t:type="layout" title="${message:rosList}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<section id="deviceDetail">
+
+	<div class="row-fluid">
+		<div class="span3 bs-docs-sidebar">
+			<h4>
+				<t:pagelink page="index">${message:device.tree.label}</t:pagelink>
+			</h4>
+			<div t:id="deviceTree"></div>
+		</div>
+
+		<div class="span8">
+			<p>${message:device.root.topic} ${deviceDetailLinkContext}</p>
+
+			<t:zone t:id="zone" t:mixins='jquery/zonerefresh' t:period='1'
+				t:update="show">
+				<table t:type="grid" source="deviceParameterList"
+					row="deviceParameter" add="parameter" exclude="empty"
+					class="table table-striped table-condensed topic-table">
+
+					<p:parameterCell>
+					${deviceParameter}
+				</p:parameterCell>
+
+				</table>
+			</t:zone>
+		</div>
+	</div>
+
+</section>
+
+</html>

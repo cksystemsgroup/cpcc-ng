@@ -1,0 +1,13 @@
+<t:container xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd" xmlns:p="tapestry:parameter">
+	<t:tree t:id="tree" t:model="treeModel" t:expansionModel="expansionModel" t:node="treeNode"
+		t:value="currentNode">
+		<p:label>
+			<t:if test="treeNode.leaf">
+				&#160;<a t:id="deviceDetailLink" class="textLink">${currentNode.label}</a>
+			</t:if>
+			<t:if test="!treeNode.leaf">
+				&#160;<!-- <a t:id="deviceDetailLink2" class="textLink">${currentNode.label}</a> -->
+			</t:if>
+		</p:label>
+	</t:tree>
+</t:container>

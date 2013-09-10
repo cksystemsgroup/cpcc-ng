@@ -21,7 +21,9 @@ package at.uni_salzburg.cs.cpcc.rv.services.ros;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Map;
 
+import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 import at.uni_salzburg.cs.cpcc.rv.entities.MappingAttributes;
 
@@ -69,4 +71,9 @@ public interface RosNodeService
      * @param mappings the mappings
      */
     void shutdownMappingAttributes(Collection<MappingAttributes> mappings);
+    
+    /**
+     * @return the device nodes.
+     */
+    Map<String, RosNodeGroup> getDeviceNodes();
 }
