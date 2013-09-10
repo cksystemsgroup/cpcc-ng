@@ -64,27 +64,42 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         
         automaton.transition(Event.UNLOCK);
         automaton.transition(Event.START);
-        initiateTakeoff();
-    }
 
+        LatLngAlt o = config.getOrigin();
+        plantState.setPosition(new PolarCoordinate(o.getLatitude(), o.getLongitude(), o.getAltitude()));
+        plantState.setTarget(new PolarCoordinate(plantState.getPosition()));
+        plantState.getTarget().setAltitude(config.getTakeOffHeight());
+        estimator = new PlantStateEstimator(config, plantState, State.TAKE_OFF);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void setup()
+    {
+        super.setup();
+        LOG.info("setup()");
+    }
+    
     /**
      * {@inheritDoc}
      */
     @Override
     protected void loop() throws InterruptedException
     {
-        ensurePositionIsAvailable();
-
         calculateNewPosition();
         
+        PolarCoordinate currentPosition = plantState.getPosition();
+       
         NavSatFix gpsPosition = connectedNode.getTopicMessageFactory().newFromType(NavSatFix._TYPE);
-        gpsPosition.setLatitude(position.getLatitude());
-        gpsPosition.setLongitude(position.getLongitude());
-        gpsPosition.setAltitude(position.getAltitude());
+        gpsPosition.setLatitude(currentPosition.getLatitude());
+        gpsPosition.setLongitude(currentPosition.getLongitude());
+        gpsPosition.setAltitude(currentPosition.getAltitude());
         gpsPublisher.publish(gpsPosition);
 
-        Float32 altitude = connectedNode.getTopicMessageFactory().newFromType(NavSatFix._TYPE);
-        altitude.setData((float) (position.getAltitude() - config.getOrigin().getAltitude()));
+        Float32 altitude = connectedNode.getTopicMessageFactory().newFromType(Float32._TYPE);
+        altitude.setData((float) (currentPosition.getAltitude() - config.getOrigin().getAltitude()));
         sonarPublisher.publish(altitude);
 
         Thread.sleep(config.getUpdateCycle());
@@ -111,26 +126,6 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         {
             calculateTakeoffPosition();
         }
-    }
-    
-    /**
-     * initiate take-off
-     */
-    private void initiateTakeoff()
-    {
-        plantState.setTarget(plantState.getPosition());
-        plantState.getTarget().setAltitude(config.getTakeOffHeight());
-        estimator = new PlantStateEstimator(config, plantState, State.TAKE_OFF);
-    }
-
-    /**
-     * initiate landing
-     */
-    private void initiateLanding()
-    {
-        plantState.setTarget(plantState.getPosition());
-        plantState.getTarget().setAltitude(0);
-        estimator = new PlantStateEstimator(config, plantState, State.LAND);
     }
 
     /**
@@ -163,6 +158,8 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         if (estimator.calculateState())
         {
             automaton.transition(Event.REACHED);
+            plantState.setAcceleration(0);
+            plantState.setElevation(0);
         }
     }
     
@@ -174,6 +171,8 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         if (estimator.calculateState())
         {
             automaton.transition(Event.REACHED);
+            plantState.setAcceleration(0);
+            plantState.setElevation(0);
         }
     }
 
@@ -185,27 +184,11 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         if (estimator.calculateState())
         {
             automaton.transition(Event.LANDED);
+            plantState.setAcceleration(0);
+            plantState.setElevation(0);
         }
     }
     
-    /**
-     * 
-     */
-    private void ensurePositionIsAvailable()
-    {
-        while (position == null)
-        {
-            try
-            {
-                Thread.sleep(100);
-            }
-            catch (InterruptedException e)
-            {
-                LOG.error("ensurePositionIsAvailable() has been interrupted",e);
-            }
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -225,5 +208,21 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
     public boolean isDestinationReached()
     {
         return automaton.getCurrentState() == State.HOVER;
+    }
+    
+    /**
+     * @return the plant state
+     */
+    public PlantState getPlantState()
+    {
+        return plantState;
+    }
+    
+    /**
+     * @return the current state.
+     */
+    public State getCurrentState()
+    {
+        return automaton.getCurrentState();
     }
 }

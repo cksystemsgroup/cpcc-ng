@@ -19,6 +19,12 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sim.quadrotor;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
 
@@ -194,4 +200,31 @@ public class PlantState
         this.remainingBatteryCapacity = remainingBatteryCapacity;
     }
 
+    /**
+     * @return the map of all state variables.
+     */
+    public Map<String, List<String>> getStateMap()
+    {
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+
+        map.put("state.acceleration", Arrays.asList(String.format(Locale.US, "%.2f", getAcceleration())));
+        map.put("state.elevation", Arrays.asList(String.format(Locale.US, "%.3f", Math.toDegrees(getElevation()))));
+        map.put("state.flyingTime", Arrays.asList(String.format(Locale.US, "%.2f", getFlyingTime())));
+        map.put("state.heading", Arrays.asList(String.format(Locale.US, "%.0f", Math.toDegrees(getHeading()))));
+        map.put("state.position", Arrays.asList(
+            String.format(Locale.US, "%.8f", getPosition().getLatitude()),
+            String.format(Locale.US, "%.8f", getPosition().getLongitude()),
+            String.format(Locale.US, "%.3f", getPosition().getAltitude())
+            ));
+        map.put("state.batteryCapacity", Arrays.asList(String.format(Locale.US, "%.1f", getRemainingBatteryCapacity())));
+        map.put("state.target", Arrays.asList(
+            String.format(Locale.US, "%.8f", getTarget().getLatitude()),
+            String.format(Locale.US, "%.8f", getTarget().getLongitude()),
+            String.format(Locale.US, "%.3f", getTarget().getAltitude())
+            ));
+        map.put("state.velocity", Arrays.asList(String.format(Locale.US, "%.2f", getVelocity())));
+
+        return map;
+    }
+    
 }

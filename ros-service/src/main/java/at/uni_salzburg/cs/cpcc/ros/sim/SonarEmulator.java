@@ -83,5 +83,15 @@ public class SonarEmulator implements RosNodeGroup
         LOG.info("shutdown()");
     }
 
-    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, List<String>> getCurrentState()
+    {
+//        LOG.info("getCurrentState()");
+        
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

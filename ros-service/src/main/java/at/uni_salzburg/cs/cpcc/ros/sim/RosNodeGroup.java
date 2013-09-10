@@ -53,4 +53,9 @@ public interface RosNodeGroup
      * Shutdown the ROS node group.
      */
     void shutdown();
+    
+    /**
+     * @return the current state of the ROS node group.
+     */
+    Map<String, List<String>> getCurrentState();
 }
