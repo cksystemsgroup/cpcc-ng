@@ -28,7 +28,7 @@ import java.util.Map;
 public class Automaton
 {
     @SuppressWarnings("serial")
-    private final static Map<State, Map<Event, State>> map =
+    private static final Map<State, Map<Event, State>> MAP =
         new HashMap<State, Map<Event, State>>()
         {
             {
@@ -111,14 +111,15 @@ public class Automaton
 
     /**
      * @param event the event.
+     * @return the new state or null.
      */
     public State transition(Event event)
     {
-        if (!map.get(currentState).containsKey(event))
+        if (!MAP.get(currentState).containsKey(event))
         {
             return null;
         }
-        currentState = map.get(currentState).get(event);
+        currentState = MAP.get(currentState).get(event);
         return currentState;
     }
 

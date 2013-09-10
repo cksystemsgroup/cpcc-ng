@@ -21,6 +21,9 @@ package at.uni_salzburg.cs.cpcc.rv.services;
 
 import at.uni_salzburg.cs.cpcc.ros.sensors.SensorType;
 
+/**
+ * SensorConfiguration
+ */
 public class SensorConfiguration extends TopicConfiguration
 {
     private SensorType sensorType;

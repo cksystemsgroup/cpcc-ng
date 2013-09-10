@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Sleeper
  */
+@Deprecated
 public final class Sleeper
 {
     private static final Logger LOG = LoggerFactory.getLogger(Sleeper.class);

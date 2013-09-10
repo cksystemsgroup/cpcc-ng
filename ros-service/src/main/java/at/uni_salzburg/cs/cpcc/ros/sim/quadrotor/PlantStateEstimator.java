@@ -31,7 +31,7 @@ import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
  */
 public class PlantStateEstimator
 {
-    private final static Logger LOG = LoggerFactory.getLogger(PlantStateEstimator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PlantStateEstimator.class);
 
     private Configuration config;
     private PlantState plantState;

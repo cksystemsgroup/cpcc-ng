@@ -44,7 +44,9 @@ public class PolarCoordinate
      */
     public PolarCoordinate()
     {
-        latitude = longitude = altitude = 0;
+        latitude = 0;
+        longitude = 0;
+        altitude = 0;
     }
 
     /**

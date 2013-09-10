@@ -39,6 +39,8 @@ public class UriTranslator implements Translator<URI>
 
     /**
      * URITranslator constructor.
+     *
+     * @param name the name.
      */
     public UriTranslator(String name)
     {

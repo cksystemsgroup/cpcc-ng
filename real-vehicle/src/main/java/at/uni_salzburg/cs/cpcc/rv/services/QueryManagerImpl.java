@@ -43,7 +43,7 @@ import at.uni_salzburg.cs.cpcc.rv.entities.Topic;
  */
 public class QueryManagerImpl implements QueryManager
 {
-    private final static Logger LOG = LoggerFactory.getLogger(QueryManagerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(QueryManagerImpl.class);
 
     private final Session session;
 
@@ -61,8 +61,8 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public Device findDeviceByTopicRoot(String topicRoot)
     {
-        return (Device) session.createQuery("from Device where topicRoot = :topicRoot").setString("topicRoot", topicRoot)
-            .uniqueResult();
+        return (Device) session.createQuery("from Device where topicRoot = :topicRoot")
+            .setString("topicRoot", topicRoot).uniqueResult();
     }
 
     /**

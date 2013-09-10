@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SonarEmulator implements RosNodeGroup
 {
-    private final static Logger LOG = LoggerFactory.getLogger(SonarEmulator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SonarEmulator.class);
     
     /**
      * {@inheritDoc}

@@ -44,7 +44,9 @@ public class CartesianCoordinate
      */
     public CartesianCoordinate()
     {
-        x = y = z = 0;
+        x = 0;
+        y = 0;
+        z = 0;
     }
 
     /**
@@ -200,7 +202,9 @@ public class CartesianCoordinate
         double n = norm();
 
         if (n == 0)
+        {
             return new CartesianCoordinate(1, 0, 0);
+        }
 
         return multiply(1 / n);
     }

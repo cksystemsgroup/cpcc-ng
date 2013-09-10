@@ -34,7 +34,7 @@ import at.uni_salzburg.cs.cpcc.rv.entities.Topic;
 public interface QueryManager
 {
     /**
-     * @param topic the device name.
+     * @param topicRoot the device name.
      * @return the retrieved device or null if not found.
      */
     Device findDeviceByTopicRoot(String topicRoot);
@@ -75,11 +75,11 @@ public interface QueryManager
 
     /**
      * @param device the device
-     * @param deviceType the device type
      */
     void saveOrUpdateMappingAttributes(Device device);
     
     /**
+     * @param name the parameter name.
      * @return the parameter or null if not found.
      */
     Parameter findParameterByName(String name);
@@ -100,7 +100,7 @@ public interface QueryManager
     void delete(Object o);
 
     /**
-     * @param o the database objects to be deleted.
+     * @param list the database objects to be deleted.
      */
     void deleteAll(Collection<?> list);
 

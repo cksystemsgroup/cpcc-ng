@@ -33,7 +33,7 @@ public interface GeodeticSystem
      * @return a new Position object containing the polar coordinates, i.e. the altitude in meter, longitude and
      *         latitude in degrees.
      */
-    public PolarCoordinate rectangularToPolarCoordinates(CartesianCoordinate coordinates);
+    PolarCoordinate rectangularToPolarCoordinates(CartesianCoordinate coordinates);
 
     /**
      * Convert rectangular coordinates to polar coordinates.
@@ -44,7 +44,7 @@ public interface GeodeticSystem
      * @return a new Position object containing the polar coordinates, i.e. latitude, longitude in degrees and altitude
      *         in meters
      */
-    public PolarCoordinate rectangularToPolarCoordinates(double x, double y, double z);
+    PolarCoordinate rectangularToPolarCoordinates(double x, double y, double z);
 
     /**
      * Convert polar coordinates in rectangular coordinates.
@@ -52,7 +52,7 @@ public interface GeodeticSystem
      * @param coordinates i.e. latitude, longitude in degrees and altitude in meters.
      * @return a new Position object containing the rectangular coordinates.
      */
-    public CartesianCoordinate polarToRectangularCoordinates(PolarCoordinate coordinates);
+    CartesianCoordinate polarToRectangularCoordinates(PolarCoordinate coordinates);
 
     /**
      * Convert polar coordinates in rectangular coordinates.
@@ -62,7 +62,7 @@ public interface GeodeticSystem
      * @param altitude the altitude value in meters.
      * @return a new Position object containing the rectangular coordinates x, ,y and z in meters.
      */
-    public CartesianCoordinate polarToRectangularCoordinates(double latitude, double longitude, double altitude);
+    CartesianCoordinate polarToRectangularCoordinates(double latitude, double longitude, double altitude);
 
     /**
      * Walk on the geodetic system. Negative <i>walking</i> values indicate the according opposite direction.
@@ -73,5 +73,5 @@ public interface GeodeticSystem
      * @param z the distance in meters to ascent.
      * @return the Position reached after walking in polar coordinates.
      */
-    public PolarCoordinate walk(PolarCoordinate startPosition, double x, double y, double z);
+    PolarCoordinate walk(PolarCoordinate startPosition, double x, double y, double z);
 }

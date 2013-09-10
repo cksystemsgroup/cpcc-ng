@@ -31,7 +31,7 @@ import java.util.Map;
 public class OptionsScanner
 {
     @SuppressWarnings("serial")
-    private static final Map<String, Token> charMap = new HashMap<String, Token>()
+    private static final Map<String, Token> CHAR_MAP = new HashMap<String, Token>()
     {
         {
             put(Symbol.EQUALS.getSymbolString(),
@@ -106,6 +106,10 @@ public class OptionsScanner
         return columnNumber;
     }
 
+    /**
+     * @return the next character.
+     * @throws IOException thrown in case of errors.
+     */
     private Character getChar() throws IOException
     {
         char[] cbuf = new char[1];
@@ -125,6 +129,10 @@ public class OptionsScanner
         return cbuf[0];
     }
 
+    /**
+     * @return the next token.
+     * @throws IOException thrown in case of errors.
+     */
     public Token next() throws IOException
     {
         if (firstRun)
@@ -143,68 +151,19 @@ public class OptionsScanner
             return new Token(Symbol.END, null, null);
         }
 
-        // number
         if (isDigit(ch))
         {
-            StringBuilder b = new StringBuilder();
-            boolean decimalSeparatorFound = false;
-
-            do
-            {
-                b.append(ch);
-                ch = getChar();
-                if (ch == null)
-                {
-                    break;
-                }
-                if (!decimalSeparatorFound && ch == '.')
-                {
-                    b.append(ch);
-                    decimalSeparatorFound = true;
-                    ch = getChar();
-                }
-            } while (isDigit(ch));
-
-            return new Token(Symbol.NUMBER, b.toString(), new BigDecimal(b.toString()));
+            return scanNumber();
         }
 
-        // string literal
         if (ch == '"' || ch == '\'')
         {
-            int delimiter = ch;
-
-            StringBuilder b = new StringBuilder();
-            while ((ch = getChar()) != null && ch != delimiter)
-            {
-                b.append(ch);
-            }
-
-            ch = getChar();
-
-            return new Token(Symbol.LITERAL, b.toString(), null);
+            return scanLiteral();
         }
 
-        // identifier
         if (isLetter(ch))
         {
-            StringBuilder b = new StringBuilder();
-            b.append(ch);
-
-            while ((ch = getChar()) != null && (isLetter(ch) || isDigit(ch)))
-            {
-                b.append(ch);
-            }
-
-            String identifier = b.toString();
-
-            Symbol sym = Symbol.getSymbol(identifier);
-
-            if (sym != null)
-            {
-                return new Token(sym, identifier, null);
-            }
-
-            return new Token(Symbol.IDENT, identifier, null);
+            return scanIdentifier();
         }
 
         if (ch == '=')
@@ -216,7 +175,7 @@ public class OptionsScanner
         String cs = String.valueOf(ch);
         ch = getChar();
 
-        Token token = charMap.get(cs);
+        Token token = CHAR_MAP.get(cs);
 
         if (token != null)
         {
@@ -224,5 +183,87 @@ public class OptionsScanner
         }
 
         return new Token(Symbol.OTHER, cs, null);
+    }
+
+    /**
+     * @return the parsed literal.
+     * @throws IOException thrown in case of errors.
+     */
+    private Token scanLiteral() throws IOException
+    {
+        int delimiter = ch;
+
+        StringBuilder b = new StringBuilder();
+//        while ((ch = getChar()) != null && ch != delimiter)
+//        {
+//            b.append(ch);
+//        }
+
+        for (ch = getChar(); ch != null && ch != delimiter; ch = getChar())
+        {
+            b.append(ch);
+        }
+        
+        ch = getChar();
+
+        return new Token(Symbol.LITERAL, b.toString(), null);
+    }
+
+    /**
+     * @return the parsed identifier token.
+     * @throws IOException thrown in case of errors.
+     */
+    private Token scanIdentifier() throws IOException
+    {
+        StringBuilder b = new StringBuilder();
+        b.append(ch);
+
+//        while ((ch = getChar()) != null && (isLetter(ch) || isDigit(ch)))
+//        {
+//            b.append(ch);
+//        }
+        for (ch = getChar(); isLetter(ch) || isDigit(ch); ch = getChar())
+        {
+            b.append(ch);
+        }
+        
+        String identifier = b.toString();
+
+        Symbol sym = Symbol.getSymbol(identifier);
+
+        if (sym != null)
+        {
+            return new Token(sym, identifier, null);
+        }
+
+        return new Token(Symbol.IDENT, identifier, null);
+    }
+
+    /**
+     * @return the parsed number token
+     * @throws IOException thrown in case of errors.
+     */
+    private Token scanNumber() throws IOException
+    {
+        StringBuilder b = new StringBuilder();
+        boolean decimalSeparatorFound = false;
+
+        do
+        {
+            b.append(ch);
+            ch = getChar();
+            if (ch == null)
+            {
+                break;
+            }
+            if (!decimalSeparatorFound && ch == '.')
+            {
+                b.append(ch);
+                decimalSeparatorFound = true;
+                ch = getChar();
+            }
+        } while (isDigit(ch));
+
+        return new Token(Symbol.NUMBER, b.toString(), new BigDecimal(b.toString()));
     }
 }

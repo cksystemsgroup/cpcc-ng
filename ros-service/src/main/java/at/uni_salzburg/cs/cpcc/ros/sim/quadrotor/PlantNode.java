@@ -31,14 +31,14 @@ import org.slf4j.LoggerFactory;
  */
 public class PlantNode extends AbstractNodeMain
 {
-    private final static Logger LOG = LoggerFactory.getLogger(PlantNode.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PlantNode.class);
 
     private Configuration config;
     private String nodeTopic;
     private Plant plant;
 
     /**
-     * @param topicRoot the topic root / base of the node.
+     * @param config the configuration.
      */
     public PlantNode(Configuration config)
     {

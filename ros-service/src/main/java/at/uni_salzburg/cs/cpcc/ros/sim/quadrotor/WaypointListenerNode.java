@@ -61,7 +61,7 @@ public class WaypointListenerNode extends AbstractNodeMain
     /**
      * @param listener a message listener to be removed.
      */
-    public void RemoveMessageListener(MessageListener<big_actor_msgs.LatLngAlt> listener)
+    public void removeMessageListener(MessageListener<big_actor_msgs.LatLngAlt> listener)
     {
         while (messageListenerList.contains(listener))
         {

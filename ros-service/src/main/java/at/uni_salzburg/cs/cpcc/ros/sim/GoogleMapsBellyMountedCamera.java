@@ -31,8 +31,8 @@ import org.slf4j.LoggerFactory;
  */
 public class GoogleMapsBellyMountedCamera implements RosNodeGroup
 {
-    private final static Logger LOG = LoggerFactory.getLogger(GoogleMapsBellyMountedCamera.class);
-    
+    private static final Logger LOG = LoggerFactory.getLogger(GoogleMapsBellyMountedCamera.class);
+
     /**
      * {@inheritDoc}
      */
@@ -40,17 +40,17 @@ public class GoogleMapsBellyMountedCamera implements RosNodeGroup
     public void setTopicRoot(String topicRoot)
     {
         // TODO Auto-generated method stub
-        
+        LOG.info("setTopicRoot()");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setConfig(Map<String,List<String>> config)
+    public void setConfig(Map<String, List<String>> config)
     {
         // TODO Auto-generated method stub
-        
+        LOG.info("setConfig()");
     }
 
     /**
@@ -60,7 +60,7 @@ public class GoogleMapsBellyMountedCamera implements RosNodeGroup
     public void setNodeConfiguration(NodeConfiguration nodeConfiguration)
     {
         // TODO Auto-generated method stub
-        
+        LOG.info("setNodeConfiguration()");
     }
 
     /**
@@ -90,7 +90,7 @@ public class GoogleMapsBellyMountedCamera implements RosNodeGroup
     public Map<String, List<String>> getCurrentState()
     {
         LOG.info("getCurrentState()");
-        
+
         // TODO Auto-generated method stub
         return null;
     }

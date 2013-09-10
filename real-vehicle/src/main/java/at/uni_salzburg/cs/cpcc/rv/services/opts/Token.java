@@ -32,6 +32,9 @@ public class Token
 
     private BigDecimal number;
 
+    /**
+     * @param token the token.
+     */
     public Token(Token token)
     {
         this.symbol = token.getSymbol();
@@ -39,6 +42,11 @@ public class Token
         this.number = token.getNumber();
     }
 
+    /**
+     * @param symbol the symbol.
+     * @param itemString the item string.
+     * @param number the number.
+     */
     public Token(Symbol symbol, String itemString, BigDecimal number)
     {
         this.symbol = symbol;
@@ -46,34 +54,39 @@ public class Token
         this.number = number;
     }
 
-    public Symbol getSymbol() {
-            return symbol;
+    /**
+     * @return the symbol.
+     */
+    public Symbol getSymbol()
+    {
+        return symbol;
     }
 
-    public void setSymbol(Symbol symbol) {
-            this.symbol = symbol;
+    /**
+     * @return the item string.
+     */
+    public String getItemString()
+    {
+        return itemString;
     }
 
-    public String getItemString() {
-            return itemString;
+    /**
+     * @return the number.
+     */
+    public BigDecimal getNumber()
+    {
+        return number;
     }
 
-    public void setItemString(String itemString) {
-            this.itemString = itemString;
-    }
-
-    public BigDecimal getNumber() {
-            return number;
-    }
-
-    public void setNumber(BigDecimal number) {
-            this.number = number;
-    }
-
-    public Token copyFields(Token master) {
-            this.symbol = master.symbol;
-            this.itemString = master.itemString;
-            this.number = master.number;
-            return this;
+    /**
+     * @param master the master token.
+     * @return this object.
+     */
+    public Token copyFields(Token master)
+    {
+        this.symbol = master.symbol;
+        this.itemString = master.itemString;
+        this.number = master.number;
+        return this;
     }
 }

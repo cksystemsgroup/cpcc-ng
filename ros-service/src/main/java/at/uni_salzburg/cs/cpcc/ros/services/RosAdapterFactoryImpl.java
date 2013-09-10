@@ -28,16 +28,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.ros.namespace.GraphName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.ros.actuators.SimpleWayPointControllerAdapter;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.CameraSensorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.GpsSensorAdapter;
 
+/**
+ * RosAdapterFactoryImpl
+ */
 public class RosAdapterFactoryImpl implements RosAdapterFactory
 {
+    private static final Logger LOG = LoggerFactory.getLogger(RosAdapterFactoryImpl.class);
+    
     @SuppressWarnings("serial")
-    private final static Map<String, List<String>> typeMap = new HashMap<String, List<String>>()
+    private static final Map<String, List<String>> TYPE_MAP = new HashMap<String, List<String>>()
     {
         {
             put("sensor_msgs/Image", Arrays.asList("sensor_msgs/Image", "sensor_msgs/CameraInfo"));
@@ -45,10 +52,10 @@ public class RosAdapterFactoryImpl implements RosAdapterFactory
         }
     };
 
-    private final static String[] topicSetters = {"setTopic", "setTopic2"};
+    private static final String[] TOPIC_SETTERS = {"setTopic", "setTopic2"};
 
     @SuppressWarnings("serial")
-    private final static Map<String, Class<? extends AbstractRosAdapter>> classMap =
+    private static final Map<String, Class<? extends AbstractRosAdapter>> CLASS_MAP =
         new HashMap<String, Class<? extends AbstractRosAdapter>>()
         {
             {
@@ -66,7 +73,7 @@ public class RosAdapterFactoryImpl implements RosAdapterFactory
     public AbstractRosAdapter build(RosTopic topic, Collection<RosTopicState> registered)
         throws InstantiationException, IllegalAccessException
     {
-        if (typeMap.containsKey(topic.getType()))
+        if (TYPE_MAP.containsKey(topic.getType()))
         {
             return buildMulti(topic, registered);
         }
@@ -85,7 +92,7 @@ public class RosAdapterFactoryImpl implements RosAdapterFactory
     private AbstractRosAdapter buildSimple(RosTopic topic)
         throws InstantiationException, IllegalAccessException
     {
-        Class<? extends AbstractRosAdapter> clazz = classMap.get(topic.getType());
+        Class<? extends AbstractRosAdapter> clazz = CLASS_MAP.get(topic.getType());
 
         if (clazz == null)
         {
@@ -117,28 +124,17 @@ public class RosAdapterFactoryImpl implements RosAdapterFactory
 
         try
         {
-            List<String> typeList = typeMap.get(topic.getType());
+            List<String> typeList = TYPE_MAP.get(topic.getType());
 
             for (int k = 0, l = typeList.size(); k < l; ++k)
             {
-                Method declaredMethod = newInstance.getClass().getDeclaredMethod(topicSetters[k], RosTopic.class);
+                Method declaredMethod = newInstance.getClass().getDeclaredMethod(TOPIC_SETTERS[k], RosTopic.class);
                 declaredMethod.invoke(newInstance, states.get(typeList.get(k)));
             }
         }
-        catch (NoSuchMethodException e)
+        catch (NoSuchMethodException | IllegalArgumentException | InvocationTargetException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (IllegalArgumentException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (InvocationTargetException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Can not build multi topic ROS adapter " + topic.getName() + " (" + topic.getType() + ")", e);
         }
 
         return newInstance;

@@ -23,6 +23,9 @@ import java.util.Collection;
 
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 
+/**
+ * RosAdapterFactory
+ */
 public interface RosAdapterFactory
 {
     /**

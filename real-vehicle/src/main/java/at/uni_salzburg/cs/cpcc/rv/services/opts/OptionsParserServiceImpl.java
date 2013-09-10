@@ -31,6 +31,7 @@ import java.util.List;
  */
 public class OptionsParserServiceImpl implements OptionsParserService
 {
+    private static final List<Symbol> LITERAL_IDENT_NUMBER = Arrays.asList(Symbol.LITERAL, Symbol.IDENT, Symbol.NUMBER);
 
     /**
      * {@inheritDoc}
@@ -64,18 +65,22 @@ public class OptionsParserServiceImpl implements OptionsParserService
         Token myToken = new Token(token);
         if (token.getSymbol().compareTo(Symbol.IDENT) != 0)
         {
-            throw new ParseException(Symbol.IDENT, scanner, token);
+            throw new ParseException(Arrays.asList(Symbol.IDENT), scanner, token);
         }
 
         token.copyFields(scanner.next());
         if (token.getSymbol().compareTo(Symbol.EQUALS) != 0)
         {
-            throw new ParseException(Symbol.EQUALS, scanner, token);
+            throw new ParseException(Arrays.asList(Symbol.EQUALS), scanner, token);
         }
 
         token.copyFields(scanner.next());
-        if (token.getSymbol().compareTo(Symbol.LEFT_PAREN) != 0)
+        if (token.getSymbol() != Symbol.LEFT_PAREN)
         {
+            if (!LITERAL_IDENT_NUMBER.contains(token.getSymbol()))
+            {
+                throw new ParseException(LITERAL_IDENT_NUMBER, scanner, token);
+            }
             return new Option(myToken.getItemString(), Arrays.asList(new Token(token)));
         }
 
@@ -90,21 +95,26 @@ public class OptionsParserServiceImpl implements OptionsParserService
     private Option parseList(OptionsScanner scanner, Token myToken, Token token) throws IOException, ParseException
     {
         List<Token> tokenList = new ArrayList<Token>();
-        
+
         while (token.getSymbol() != Symbol.END && token.getSymbol() != Symbol.RIGHT_PAREN)
         {
             token.copyFields(scanner.next());
-            if (token.getSymbol() != Symbol.IDENT && token.getSymbol() != Symbol.LITERAL && token.getSymbol() != Symbol.NUMBER)
+            if (!LITERAL_IDENT_NUMBER.contains(token.getSymbol()))
             {
-                throw new ParseException(Symbol.IDENT, scanner, token);
+                throw new ParseException(LITERAL_IDENT_NUMBER, scanner, token);
             }
             tokenList.add(new Token(token));
             token.copyFields(scanner.next());
         }
-        
+
+        if (token.getSymbol() != Symbol.RIGHT_PAREN)
+        {
+            throw new ParseException(Arrays.asList(Symbol.RIGHT_PAREN), scanner, token);
+        }
+
         return new Option(myToken.getItemString(), tokenList);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -113,22 +123,22 @@ public class OptionsParserServiceImpl implements OptionsParserService
     {
         StringBuilder b = new StringBuilder();
         String[] lines = source.split("\n");
-        for (int k=0, s=lines.length; k < s; ++k)
+        for (int k = 0, s = lines.length; k < s; ++k)
         {
-            if (e.getLineNumber()-1 == k)
+            if (e.getLineNumber() - 1 == k)
             {
-                b.append(lines[k].substring(0,e.getColumnNumber()));
+                b.append(lines[k].substring(0, e.getColumnNumber()));
                 b.append("<*>");
                 b.append(lines[k].substring(e.getColumnNumber()));
             }
             else
             {
                 b.append(lines[k]);
-                
+
             }
             b.append("\n");
         }
-        
+
         return String.format(format, b.toString());
     }
 }

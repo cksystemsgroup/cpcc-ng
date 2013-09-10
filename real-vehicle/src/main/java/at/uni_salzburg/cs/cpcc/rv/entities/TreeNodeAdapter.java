@@ -23,26 +23,44 @@ import java.util.List;
 
 import org.apache.tapestry5.tree.TreeModelAdapter;
 
-public class TreeNodeAdapter implements TreeModelAdapter<ITreeNode> {
+/**
+ * TreeNodeAdapter
+ */
+public class TreeNodeAdapter implements TreeModelAdapter<ITreeNode>
+{
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLeaf(ITreeNode node)
+    {
+        return node.isLeaf();
+    }
 
-	@Override
-	public boolean isLeaf(ITreeNode node) {
-		return node.isLeaf();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasChildren(ITreeNode node)
+    {
+        return node.hasChildren();
+    }
 
-	@Override
-	public boolean hasChildren(ITreeNode node) {
-		return node.hasChildren();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ITreeNode> getChildren(ITreeNode node)
+    {
+        return node.getChildren();
+    }
 
-	@Override
-	public List<ITreeNode> getChildren(ITreeNode node) {
-		return node.getChildren();
-	}
-
-	@Override
-	public String getLabel(ITreeNode node) {
-		return node.getLabel();
-	}
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getLabel(ITreeNode node)
+    {
+        return node.getLabel();
+    }
 }

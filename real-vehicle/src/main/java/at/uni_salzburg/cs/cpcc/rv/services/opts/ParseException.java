@@ -19,6 +19,7 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services.opts;
 
+import java.util.Collection;
 import java.util.Locale;
 
 /**
@@ -27,16 +28,20 @@ import java.util.Locale;
 @SuppressWarnings("serial")
 public class ParseException extends Exception
 {
-    private Symbol expectedSymbol;
+    private Collection<Symbol> expectedSymbol;
     private Symbol actualSymbol;
     private int lineNumber;
     private int columnNumber;
-    
-    
-    public ParseException(Symbol expected, OptionsScanner scanner, Token token)
+
+    /**
+     * @param expected the expected symbol.
+     * @param scanner the options scanner.
+     * @param token the current token.
+     */
+    public ParseException(Collection<Symbol> expected, OptionsScanner scanner, Token token)
     {
         super(String.format(Locale.US, "Expected a %s but got a %s in line %d column %d",
-            expected.name(), token.getSymbol().name(), scanner.getLineNumber(), scanner.getColumnNumber()));
+            joinIt(expected), token.getSymbol().name(), scanner.getLineNumber(), scanner.getColumnNumber()));
         expectedSymbol = expected;
         actualSymbol = token.getSymbol();
         lineNumber = scanner.getLineNumber();
@@ -44,13 +49,37 @@ public class ParseException extends Exception
     }
     
     /**
+     * @param symbols the symbols.
+     * @return the joint string of symbol names.
+     */
+    private static String joinIt(Collection<Symbol> symbols)
+    {
+        StringBuilder b = new StringBuilder();
+        boolean first = true;
+        int size = symbols.size() - 1;
+        for (Symbol e : symbols)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                b.append(--size > 0 ? ", " : " or ");
+            }
+            b.append(e.name());
+        }
+        return b.toString();
+    }
+
+    /**
      * @return the expectedSymbol
      */
-    public Symbol getExpectedSymbol()
+    public Collection<Symbol> getExpectedSymbol()
     {
         return expectedSymbol;
     }
-    
+
     /**
      * @return the actualSymbol
      */
@@ -58,7 +87,7 @@ public class ParseException extends Exception
     {
         return actualSymbol;
     }
-    
+
     /**
      * @return the lineNumber
      */
@@ -66,7 +95,7 @@ public class ParseException extends Exception
     {
         return lineNumber;
     }
-    
+
     /**
      * @return the columnNumber
      */

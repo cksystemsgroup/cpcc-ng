@@ -40,18 +40,18 @@ public class Device implements ITreeNode
     @Id
     @GeneratedValue
     private Integer id;
-    
+
     @NotNull
     @Size(max = 50)
     private String topicRoot;
-    
+
     @NotNull
     @OneToOne
     private DeviceType type;
-    
+
     @Size(max = 255)
     private String configuration;
-    
+
     /**
      * @return the device ID.
      */
@@ -75,7 +75,7 @@ public class Device implements ITreeNode
     {
         return topicRoot;
     }
-    
+
     /**
      * @param topicRoot the topic root path to set
      */
@@ -83,7 +83,7 @@ public class Device implements ITreeNode
     {
         this.topicRoot = topicRoot;
     }
-    
+
     /**
      * @return the device type.
      */
@@ -120,7 +120,8 @@ public class Device implements ITreeNode
      * {@inheritDoc}
      */
     @Override
-    public boolean isLeaf() {
+    public boolean isLeaf()
+    {
         return true;
     }
 
@@ -128,7 +129,8 @@ public class Device implements ITreeNode
      * {@inheritDoc}
      */
     @Override
-    public boolean hasChildren() {
+    public boolean hasChildren()
+    {
         return false;
     }
 
@@ -136,7 +138,8 @@ public class Device implements ITreeNode
      * {@inheritDoc}
      */
     @Override
-    public List<ITreeNode> getChildren() {
+    public List<ITreeNode> getChildren()
+    {
         return null;
     }
 
@@ -144,23 +147,26 @@ public class Device implements ITreeNode
      * {@inheritDoc}
      */
     @Override
-    public String getLabel() {
+    public String getLabel()
+    {
         return topicRoot;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getParentLabel() {
+    public String getParentLabel()
+    {
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getUniqueId() {
+    public String getUniqueId()
+    {
         return "device:" + getId();
     }
 }

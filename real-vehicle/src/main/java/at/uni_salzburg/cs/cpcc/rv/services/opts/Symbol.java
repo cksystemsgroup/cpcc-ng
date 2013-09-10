@@ -38,16 +38,26 @@ public enum Symbol
 
     private String symbolString;
 
+    /**
+     * @param symbolString the symbol string.
+     */
     Symbol(String symbolString)
     {
         this.symbolString = symbolString;
     }
 
+    /**
+     * @return the symbol string.
+     */
     public String getSymbolString()
     {
         return symbolString;
     }
 
+    /**
+     * @param ss the symbol as a string.
+     * @return the symbol.
+     */
     public static Symbol getSymbol(String ss)
     {
         if (ss == null)
@@ -64,18 +74,4 @@ public enum Symbol
         return null;
     }
 
-    public static Symbol getSymbol(char c)
-    {
-        for (Symbol s : values())
-        {
-            if (s.symbolString != null && s.symbolString.length() == 1)
-            {
-                if (s.symbolString.charAt(0) == c)
-                {
-                    return s;
-                }
-            }
-        }
-        return null;
-    }
 }

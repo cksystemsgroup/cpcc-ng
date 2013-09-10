@@ -20,18 +20,18 @@
 package at.uni_salzburg.cs.cpcc.rv.services.opts;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 /**
  * Option
  */
-public class Option implements Entry<String, List<Token>>
+public class Option
 {
     private String key;
     private List<Token> value;
 
     /**
-     * Constructor
+     * @param key the options key
+     * @param tokens the option tokens.
      */
     public Option(String key, List<Token> tokens)
     {
@@ -40,30 +40,18 @@ public class Option implements Entry<String, List<Token>>
     }
 
     /**
-     * {@inheritDoc}
+     * @return the options key.
      */
-    @Override
     public String getKey()
     {
         return key;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the list of option tokens.
      */
-    @Override
     public List<Token> getValue()
     {
-        return value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Token> setValue(List<Token> value)
-    {
-        this.value = value;
         return value;
     }
 }

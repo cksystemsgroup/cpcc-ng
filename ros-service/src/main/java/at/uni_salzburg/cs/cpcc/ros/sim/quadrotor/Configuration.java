@@ -33,22 +33,22 @@ import at.uni_salzburg.cs.cpcc.utilities.WGS84;
  */
 public class Configuration
 {
-    private final static String CFG_TOPIC_ROOT = "topicRoot";
-    private final static String CFG_ORIGIN = "origin";
-    private final static String CFG_MAX_VELOCITY = "maxVelocity";
-    private final static String CFG_MAX_ACCELERATION = "maxAcceleration";
-    private final static String CFG_PRECISION = "precision";
-    private final static String CFG_UPDATE_CYCLE = "updateCycle";
-    private final static String CFG_IDLE_POWER = "idlePower";
-    private final static String CFG_HOVER_POWER = "hoverPower";
-    private final static String CFG_MASS = "mass";
-    private final static String CFG_BATTERY_CAPACITY = "batteryCapacity";
-    private final static String CFG_RECHARGING_TIME = "rechargingTime";
-    private final static String CFG_TAKEOFF_HEIGHT = "takeOffHeight";
-    private final static String CFG_TAKEOFF_VELOCITY = "takeOffVelocity";
-    private final static String CFG_TAKEOFF_ACCELERATION = "takeOffAcceleration";
-    private final static String CFG_LANDING_VELOCITY = "landingVelocity";
-    private final static String CFG_LANDING_ACCELERATION = "landingAcceleration";
+    private static final String CFG_TOPIC_ROOT = "topicRoot";
+    private static final String CFG_ORIGIN = "origin";
+    private static final String CFG_MAX_VELOCITY = "maxVelocity";
+    private static final String CFG_MAX_ACCELERATION = "maxAcceleration";
+    private static final String CFG_PRECISION = "precision";
+    private static final String CFG_UPDATE_CYCLE = "updateCycle";
+    private static final String CFG_IDLE_POWER = "idlePower";
+    private static final String CFG_HOVER_POWER = "hoverPower";
+    private static final String CFG_MASS = "mass";
+    private static final String CFG_BATTERY_CAPACITY = "batteryCapacity";
+    private static final String CFG_RECHARGING_TIME = "rechargingTime";
+    private static final String CFG_TAKEOFF_HEIGHT = "takeOffHeight";
+    private static final String CFG_TAKEOFF_VELOCITY = "takeOffVelocity";
+    private static final String CFG_TAKEOFF_ACCELERATION = "takeOffAcceleration";
+    private static final String CFG_LANDING_VELOCITY = "landingVelocity";
+    private static final String CFG_LANDING_ACCELERATION = "landingAcceleration";
 
     private String topicRoot;
     private big_actor_msgs.LatLngAlt origin;
@@ -70,6 +70,10 @@ public class Configuration
     
     /**
      * @param config the configuration as a map.
+     */
+    /**
+     * @param nodeConfiguration the node configuration.
+     * @param config the parsed configuration parameters.
      */
     public Configuration(NodeConfiguration nodeConfiguration, Map<String, List<String>> config)
     {

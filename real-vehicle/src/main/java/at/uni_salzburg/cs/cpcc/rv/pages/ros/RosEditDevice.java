@@ -51,10 +51,10 @@ import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
  */
 public class RosEditDevice
 {
-    private final static String ERROR_TOPIC_ALREADY_USED = "error.topic.already.used";
-    private final static String ERROR_TOPIC_MUST_START_WITH_SLASH = "error.topic.must.start.with.slash";
-    private final static String ERROR_PARSING = "error.parsing";
-    private final static String ERROR_PARSING_SYNTAX = "error.parsing.syntax";
+    private static final String ERROR_TOPIC_ALREADY_USED = "error.topic.already.used";
+    private static final String ERROR_TOPIC_MUST_START_WITH_SLASH = "error.topic.must.start.with.slash";
+    private static final String ERROR_PARSING = "error.parsing";
+    private static final String ERROR_PARSING_SYNTAX = "error.parsing.syntax";
     
     @Inject
     private QueryManager qm;

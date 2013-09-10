@@ -21,18 +21,38 @@ package at.uni_salzburg.cs.cpcc.rv.entities;
 
 import java.util.List;
 
-public interface ITreeNode {
+/**
+ * ITreeNode
+ */
+public interface ITreeNode
+{
+    /**
+     * @return true if the node is a leaf.
+     */
+    boolean isLeaf();
 
-	boolean isLeaf();
+    /**
+     * @return true if the node has children
+     */
+    boolean hasChildren();
 
-	boolean hasChildren();
+    /**
+     * @return the node's children.
+     */
+    List<ITreeNode> getChildren();
 
-	List<ITreeNode> getChildren();
+    /**
+     * @return the node's label.
+     */
+    String getLabel();
 
-	String getLabel();
-	
-	String getParentLabel();
-	
-	String getUniqueId();
+    /**
+     * @return the label of the parent node.
+     */
+    String getParentLabel();
 
+    /**
+     * @return the node's unique identification.
+     */
+    String getUniqueId();
 }

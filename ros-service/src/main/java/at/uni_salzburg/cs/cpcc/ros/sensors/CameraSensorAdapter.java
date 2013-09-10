@@ -20,58 +20,19 @@
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
 import org.ros.message.MessageListener;
-import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.ros.services.RosTopic;
-
 /**
  * CameraSensor
  */
-public class CameraSensorAdapter extends AbstractSensorAdapter
+public class CameraSensorAdapter extends CameraInfoAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(CameraSensorAdapter.class);
     
-    private RosTopic infoTopic;
-    private sensor_msgs.CameraInfo cameraInfo;
     private sensor_msgs.Image image;
-    
-    /**
-     * @return the info topic.
-     */
-    public RosTopic getInfoTopic()
-    {
-        return infoTopic;
-    }
-
-    /**
-     * @param infoTopic the info topic.
-     */
-    public void setInfoTopic(RosTopic infoTopic)
-    {
-        this.infoTopic = infoTopic;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SensorType getType()
-    {
-        return SensorType.CAMERA;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public GraphName getDefaultNodeName()
-    {
-        return GraphName.newAnonymous();
-    }
 
     /**
      * {@inheritDoc}
@@ -89,7 +50,7 @@ public class CameraSensorAdapter extends AbstractSensorAdapter
             @Override
             public void onNewMessage(sensor_msgs.CameraInfo message)
             {
-                cameraInfo = message;
+                setCameraInfo(message);
             }
         });
 
@@ -104,14 +65,6 @@ public class CameraSensorAdapter extends AbstractSensorAdapter
                 image = message;
             }
         });
-    }
-    
-    /**
-     * @return the current camera info.
-     */
-    public sensor_msgs.CameraInfo getCameraInfo()
-    {
-        return cameraInfo;
     }
     
     /**

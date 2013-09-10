@@ -37,7 +37,7 @@ import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
  */
 public class NodeGroup implements RosNodeGroup
 {
-    private final static Logger LOG = LoggerFactory.getLogger(NodeGroup.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NodeGroup.class);
 
     private String topicRoot;
     private Map<String, List<String>> config;
@@ -108,7 +108,7 @@ public class NodeGroup implements RosNodeGroup
     public void shutdown()
     {
         LOG.info("shutdown()");
-        wayPointListenerNode.RemoveMessageListener(plantNode.getPlant());
+        wayPointListenerNode.removeMessageListener(plantNode.getPlant());
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(wayPointListenerNode);
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(plantNode);
     }

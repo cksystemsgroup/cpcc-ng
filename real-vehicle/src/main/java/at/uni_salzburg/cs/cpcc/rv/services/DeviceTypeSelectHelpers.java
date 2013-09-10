@@ -20,7 +20,6 @@
 package at.uni_salzburg.cs.cpcc.rv.services;
 
 import java.util.Collection;
-import java.util.Locale;
 
 import org.apache.tapestry5.OptionModel;
 import org.apache.tapestry5.SelectModel;
@@ -37,34 +36,44 @@ public final class DeviceTypeSelectHelpers
 {
     private QueryManager qm;
 
+    /**
+     * @param queryManager the query manager service.
+     */
     public DeviceTypeSelectHelpers(QueryManager queryManager)
     {
         this.qm = queryManager;
     }
-    
+
+    /**
+     * @return the new value encoder.
+     */
     public ValueEncoder<DeviceType> valueEncoder()
     {
-            return new ValueEncoder<DeviceType>()
-            {
-                public DeviceType toValue(String clientValue)
-                {
-                    return clientValue == null ? null : qm.findDeviceTypeByName(clientValue);
-                }
-        
-                public String toClient(DeviceType value)
-                {
-                    return value == null ? "" : value.getName();
-                }
-            };
-    } 
-    
-    public static SelectModel selectModel(Collection<DeviceType> deviceTypes)
-    {           
-        OptionModel[] optionModels = new OptionModel[deviceTypes.size()];
-        int i = 0;
-        for (DeviceType DeviceType : deviceTypes)
+        return new ValueEncoder<DeviceType>()
         {
-            optionModels[i++] = new OptionModelImpl(DeviceType.getName(), DeviceType);
+            public DeviceType toValue(String clientValue)
+            {
+                return clientValue == null ? null : qm.findDeviceTypeByName(clientValue);
+            }
+
+            public String toClient(DeviceType value)
+            {
+                return value == null ? "" : value.getName();
+            }
+        };
+    }
+
+    /**
+     * @param deviceTypeList the list of device type objects.
+     * @return the new selection model.
+     */
+    public static SelectModel selectModel(Collection<DeviceType> deviceTypeList)
+    {
+        OptionModel[] optionModels = new OptionModel[deviceTypeList.size()];
+        int i = 0;
+        for (DeviceType deviceType : deviceTypeList)
+        {
+            optionModels[i++] = new OptionModelImpl(deviceType.getName(), deviceType);
         }
 
         return new SelectModelImpl(optionModels);

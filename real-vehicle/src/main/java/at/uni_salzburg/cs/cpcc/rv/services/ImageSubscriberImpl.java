@@ -21,13 +21,18 @@ package at.uni_salzburg.cs.cpcc.rv.services;
 
 import javax.inject.Singleton;
 
+/**
+ * ImageSubscriberImpl
+ */
 @Singleton
 public class ImageSubscriberImpl implements ImageSubscriber
 {
+    /**
+     *  ImageSubscriberImpl
+     */
     public ImageSubscriberImpl()
     {
-
-        
+        // TODO
     }
-    
+
 }

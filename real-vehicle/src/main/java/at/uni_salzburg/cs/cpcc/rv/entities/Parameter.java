@@ -31,8 +31,8 @@ import javax.validation.constraints.Size;
 @Entity
 public class Parameter
 {
-    public final static String MASTER_SERVER_URI = "masterServerURI";
-    public final static String USE_INTERNAL_ROS_CORE = "useInternalRosCore";
+    public static final String MASTER_SERVER_URI = "masterServerURI";
+    public static final String USE_INTERNAL_ROS_CORE = "useInternalRosCore";
     
     @Id
     @GeneratedValue

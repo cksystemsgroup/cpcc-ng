@@ -30,6 +30,7 @@ import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 
 
@@ -38,7 +39,7 @@ import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
  */
 public class RosNodeWardenImpl implements RosNodeWarden
 {
-    private final static Logger LOG = LoggerFactory.getLogger(RosNodeWardenImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RosNodeWardenImpl.class);
 
     private static Map<String, AbstractRosAdapter> adapterMap = 
         Collections.synchronizedMap(new HashMap<String, AbstractRosAdapter>());
@@ -59,10 +60,11 @@ public class RosNodeWardenImpl implements RosNodeWarden
     /**
      * @param masterURI the new master URI
      */
+    @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     @Override
     public void setMasterURI(URI masterURI)
     {
-        if (masterURI == null)
+        if (masterURI != null)
         {
             RosNodeWardenImpl.masterURI = masterURI;
             String me = InetAddressFactory.newNonLoopback().getHostName();

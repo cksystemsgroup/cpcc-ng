@@ -38,6 +38,9 @@ import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 import at.uni_salzburg.cs.cpcc.rv.entities.ITreeNode;
 import at.uni_salzburg.cs.cpcc.rv.entities.TreeNodeAdapter;
 
+/**
+ * DeviceTree
+ */
 public class DeviceTree
 {
     @Parameter

@@ -25,18 +25,26 @@ import org.ros.namespace.GraphName;
 /**
  * GraphNameHelpers
  */
-public class GraphNameHelpers
+public final class GraphNameHelpers
 {
-    private static ValueEncoder<GraphName> INSTANCE;
+    /**
+     * GraphNameHelpers
+     */
+    private GraphNameHelpers()
+    {
+        // intentionally empty.
+    }
+    
+    private static ValueEncoder<GraphName> instance;
 
     /**
      * @return the <code>ValueEncoder</code> instance for <code>GraphName</code> objects.
      */
     public static ValueEncoder<GraphName> valueEncoder()
     {
-        if (INSTANCE == null)
+        if (instance == null)
         {
-            INSTANCE = new ValueEncoder<GraphName>()
+            instance = new ValueEncoder<GraphName>()
             {
                 public GraphName toValue(String clientValue)
                 {
@@ -50,7 +58,7 @@ public class GraphNameHelpers
             };
         }
 
-        return INSTANCE;
+        return instance;
     }
 
 }

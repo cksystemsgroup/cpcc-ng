@@ -128,7 +128,7 @@ public class Configuration
         
         for (MappingAttributes attribute : attributeList)
         {
-            StringBuilder b = new StringBuilder(attribute.getPk().device.getTopicRoot());
+            StringBuilder b = new StringBuilder(attribute.getPk().getDevice().getTopicRoot());
             String subPath = attribute.getPk().getTopic().getSubpath();
             if (subPath != null)
             {
@@ -168,7 +168,7 @@ public class Configuration
         List<MappingAttributes> attributeList = qm.findAllMappingAttributes();
         for (MappingAttributes attribute : attributeList)
         {
-            StringBuilder b = new StringBuilder(attribute.getPk().device.getTopicRoot());
+            StringBuilder b = new StringBuilder(attribute.getPk().getDevice().getTopicRoot());
             String subPath = attribute.getPk().getTopic().getSubpath();
             if (subPath != null)
             {

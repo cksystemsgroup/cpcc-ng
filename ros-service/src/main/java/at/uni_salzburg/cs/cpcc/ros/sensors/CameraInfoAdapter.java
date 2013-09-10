@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import at.uni_salzburg.cs.cpcc.ros.services.RosTopic;
 
 /**
- * CameraSensor
+ * CameraInfoAdapter
  */
 public class CameraInfoAdapter extends AbstractSensorAdapter
 {
@@ -99,5 +99,13 @@ public class CameraInfoAdapter extends AbstractSensorAdapter
     public sensor_msgs.CameraInfo getCameraInfo()
     {
         return cameraInfo;
+    }
+    
+    /**
+     * @param cameraInfo the camera info to set
+     */
+    protected void setCameraInfo(sensor_msgs.CameraInfo cameraInfo)
+    {
+        this.cameraInfo = cameraInfo;
     }
 }

@@ -39,6 +39,7 @@ import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 import at.uni_salzburg.cs.cpcc.rv.entities.MappingAttributes;
@@ -57,10 +58,8 @@ import at.uni_salzburg.cs.cpcc.rv.services.opts.Token;
 @Singleton
 public class RosNodeServiceImpl implements RosNodeService
 {
-    private final static Logger LOG = LoggerFactory.getLogger(RosNodeServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RosNodeServiceImpl.class);
 
-//    private static final String MASTER_SERVER_DEFAULT_URI = null;
-    
     private static RosCore rosCore = null;
     private static URI masterServerUri = null;
 
@@ -78,7 +77,8 @@ public class RosNodeServiceImpl implements RosNodeService
 //        .synchronizedMap(new TreeMap<String, RosNodeGroup>());
     
     /**
-     * Constructor
+     * @param qm the query manager.
+     * @param optionsParser the options parser.
      */
     public RosNodeServiceImpl(QueryManager qm, OptionsParserService optionsParser)
     {
@@ -153,6 +153,7 @@ public class RosNodeServiceImpl implements RosNodeService
     /**
      * {@inheritDoc}
      */
+    @SuppressFBWarnings(value = "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     @Override
     public void updateMasterServerURI(URI uri)
     {
@@ -207,7 +208,8 @@ public class RosNodeServiceImpl implements RosNodeService
      */
     private void startRosCore()
     {
-        LOG.info(String.format("Starting ROS core host=%s, port=%d", masterServerUri.getHost(), masterServerUri.getPort()));
+        LOG.info(String.format("Starting ROS core host=%s, port=%d", masterServerUri.getHost(),
+            masterServerUri.getPort()));
         String host = masterServerUri.getHost();
         int port = masterServerUri.getPort();
         rosCore = RosCore.newPublic(host, port);
@@ -320,7 +322,8 @@ public class RosNodeServiceImpl implements RosNodeService
             deviceNodes.put(topicRoot, group);
             LOG.info(String.format("ROS node group %s started.", topicRoot));
         }
-        catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException | ParseException e)
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+            | IOException | ParseException e)
         {
             LOG.error("Can not instantiate the ROS node group for topic " + topicRoot, e);
         }

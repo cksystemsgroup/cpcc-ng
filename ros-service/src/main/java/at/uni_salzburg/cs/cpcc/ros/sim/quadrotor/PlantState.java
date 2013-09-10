@@ -216,7 +216,8 @@ public class PlantState
             String.format(Locale.US, "%.8f", getPosition().getLongitude()),
             String.format(Locale.US, "%.3f", getPosition().getAltitude())
             ));
-        map.put("state.batteryCapacity", Arrays.asList(String.format(Locale.US, "%.1f", getRemainingBatteryCapacity())));
+        map.put("state.batteryCapacity", Arrays.asList(
+            String.format(Locale.US, "%.1f", getRemainingBatteryCapacity())));
         map.put("state.target", Arrays.asList(
             String.format(Locale.US, "%.8f", getTarget().getLatitude()),
             String.format(Locale.US, "%.8f", getTarget().getLongitude()),

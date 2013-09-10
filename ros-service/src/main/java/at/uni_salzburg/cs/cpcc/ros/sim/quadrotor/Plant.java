@@ -36,7 +36,7 @@ import big_actor_msgs.LatLngAlt;
  */
 public class Plant extends CancellableLoop implements MessageListener<big_actor_msgs.LatLngAlt>
 {
-    private final static Logger LOG = LoggerFactory.getLogger(Plant.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Plant.class);
     
     private Configuration config;
     private ConnectedNode connectedNode;
@@ -49,9 +49,8 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
     private PlantStateEstimator estimator;
     
     /**
-     * @param connectedNode
-     * @param gpsPublisher
-     * @param sonarPublisher
+     * @param config the configuration.
+     * @param connectedNode the connected node.
      */
     public Plant(Configuration config, ConnectedNode connectedNode)
     {

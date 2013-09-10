@@ -25,14 +25,25 @@ import java.util.Map;
 /**
  * ConfigUtils
  */
-public class ConfigUtils
+public final class ConfigUtils
 {
     /**
-     * @param property the property value to be parsed.
+     * ConfigUtils
+     */
+    private ConfigUtils()
+    {
+        // intentionally empty
+    }
+    
+    /**
+     * @param config the configuration.
+     * @param propertyName the property value to be parsed.
+     * @param index the index in the values list to use.
      * @param defaultValue the default value.
      * @return the parsed value.
      */
-    public static double parseDouble(Map<String, List<String>> config, String propertyName, int index, double defaultValue)
+    public static double parseDouble(Map<String, List<String>> config, String propertyName, int index,
+        double defaultValue)
     {
         List<String> property = config.get(propertyName);
         
@@ -47,7 +58,9 @@ public class ConfigUtils
     }
     
     /**
-     * @param property the property value to be parsed.
+     * @param config the configuration.
+     * @param propertyName the property value to be parsed.
+     * @param index the index in the values list to use.
      * @param defaultValue the default value.
      * @return the parsed value.
      */

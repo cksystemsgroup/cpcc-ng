@@ -27,12 +27,10 @@ package at.uni_salzburg.cs.cpcc.utilities;
  */
 public class WGS84 implements GeodeticSystem
 {
-    private final static double EQUATORIAL_AXIS = 6378137;
-    private final static double POLAR_AXIS = 6356752.3142;
-    private final static double ANGULAR_ECCENTRICITY = Math.acos(POLAR_AXIS / EQUATORIAL_AXIS);
-    private final static double FIRST_ECCENTRICITY = 8.1819190842622E-2;
-
-    private static final double PI180TH = Math.PI / 180;
+    private static final double EQUATORIAL_AXIS = 6378137;
+    private static final double POLAR_AXIS = 6356752.3142;
+    private static final double ANGULAR_ECCENTRICITY = Math.acos(POLAR_AXIS / EQUATORIAL_AXIS);
+    private static final double FIRST_ECCENTRICITY = 8.1819190842622E-2;
 
     /**
      * {@inheritDoc}
@@ -50,13 +48,13 @@ public class WGS84 implements GeodeticSystem
         double longitude, double altitude)
     {
 
-        double u = Math.sin(latitude * PI180TH) * FIRST_ECCENTRICITY;
-        double N = EQUATORIAL_AXIS / Math.sqrt(1 - u * u);
+        double u = Math.sin(Math.toRadians(latitude)) * FIRST_ECCENTRICITY;
+        double n = EQUATORIAL_AXIS / Math.sqrt(1 - u * u);
 
-        double x = (N + altitude) * Math.cos(latitude * PI180TH) * Math.cos(longitude * PI180TH);
-        double y = (N + altitude) * Math.cos(latitude * PI180TH) * Math.sin(longitude * PI180TH);
+        double x = (n + altitude) * Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(longitude));
+        double y = (n + altitude) * Math.cos(Math.toRadians(latitude)) * Math.sin(Math.toRadians(longitude));
         double v = POLAR_AXIS / EQUATORIAL_AXIS;
-        double z = (v * v * N + altitude) * Math.sin(latitude * PI180TH);
+        double z = (v * v * n + altitude) * Math.sin(Math.toRadians(latitude));
 
         return new CartesianCoordinate(x, y, z);
     }
@@ -77,7 +75,7 @@ public class WGS84 implements GeodeticSystem
 
         double newLatitude = 90;
         double latitude = 0;
-        double u, v, w, N = 0;
+        double u, v, w, n = 0;
         double sin2AE = Math.sin(2 * ANGULAR_ECCENTRICITY);
         double sinAE = Math.sin(ANGULAR_ECCENTRICITY);
 
@@ -86,10 +84,10 @@ public class WGS84 implements GeodeticSystem
             latitude = newLatitude;
 
             u = Math.sin(latitude) * Math.sin(ANGULAR_ECCENTRICITY);
-            N = EQUATORIAL_AXIS / Math.sqrt(1 - u * u);
+            n = EQUATORIAL_AXIS / Math.sqrt(1 - u * u);
 
-            v = N * Math.sin(latitude);
-            w = N * Math.cos(latitude);
+            v = n * Math.sin(latitude);
+            w = n * Math.cos(latitude);
 
             double numerator = EQUATORIAL_AXIS * EQUATORIAL_AXIS * z + v * v * v * sin2AE * sin2AE / 4;
             double denominator =
@@ -100,11 +98,11 @@ public class WGS84 implements GeodeticSystem
         double cosNLat = Math.cos(newLatitude);
         double sinNLat = Math.sin(newLatitude);
 
-        double altitude = cosNLat * Math.sqrt(x * x + y * y) + sinNLat * (z + sinAE * sinAE * N * sinNLat) - N;
+        double altitude = cosNLat * Math.sqrt(x * x + y * y) + sinNLat * (z + sinAE * sinAE * n * sinNLat) - n;
 
-        double longitude = Math.asin(y / ((N + altitude) * cosNLat));
+        double longitude = Math.asin(y / ((n + altitude) * cosNLat));
 
-        return new PolarCoordinate(newLatitude / PI180TH, longitude / PI180TH, altitude);
+        return new PolarCoordinate(Math.toDegrees(newLatitude), Math.toDegrees(longitude), altitude);
     }
 
     /**
@@ -113,21 +111,18 @@ public class WGS84 implements GeodeticSystem
     public PolarCoordinate walk(PolarCoordinate startPosition, double x, double y, double z)
     {
 
-        double latitude = startPosition.getLatitude() * PI180TH;
-        double longitude = startPosition.getLongitude() * PI180TH;
+        double latitude = Math.toRadians(startPosition.getLatitude());
+        double longitude = Math.toRadians(startPosition.getLongitude());
         double altitude = startPosition.getAltitude() + z;
 
-        double N = EQUATORIAL_AXIS;
+        double n = EQUATORIAL_AXIS;
 
         // TODO This is only an approximation using a sphere with radius N
-        double dLatitude = x / (N + startPosition.getAltitude());
-        double dLongitude = y / ((N + startPosition.getAltitude()) * Math.cos(latitude));
+        double dLatitude = x / (n + startPosition.getAltitude());
+        double dLongitude = y / ((n + startPosition.getAltitude()) * Math.cos(latitude));
         latitude -= dLatitude;
         longitude += dLongitude;
 
-        latitude /= PI180TH;
-        longitude /= PI180TH;
-
-        return new PolarCoordinate(latitude, longitude, altitude);
+        return new PolarCoordinate(Math.toDegrees(latitude), Math.toDegrees(longitude), altitude);
     }
 }

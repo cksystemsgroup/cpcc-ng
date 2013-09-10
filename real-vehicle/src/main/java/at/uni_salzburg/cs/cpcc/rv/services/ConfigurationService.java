@@ -80,12 +80,13 @@ public interface ConfigurationService
     Set<SensorConfiguration> getSensors();
 
     /**
+     * @param name the sensor name.
      * @return the requested sensor or null.
      */
     SensorConfiguration getSensorByName(GraphName name);
     
     /**
-     * @param subscriber a actuator to be registered.
+     * @param actuator a actuator to be registered.
      */
     void addActuator(ActuatorConfiguration actuator);
 
@@ -95,6 +96,7 @@ public interface ConfigurationService
     Set<ActuatorConfiguration> getActuators();
 
     /**
+     * @param name the actuator's name.
      * @return the requested actuator or null.
      */
     ActuatorConfiguration getActuatorByName(GraphName name);

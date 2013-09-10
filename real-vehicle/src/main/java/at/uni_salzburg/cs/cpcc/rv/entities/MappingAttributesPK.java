@@ -25,9 +25,12 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * MappingAttributesPK
  */
+@SuppressFBWarnings("SE_BAD_FIELD")
 @Embeddable
 public class MappingAttributesPK implements Serializable
 {
@@ -35,11 +38,11 @@ public class MappingAttributesPK implements Serializable
     
     @ManyToOne
     @JoinColumn(name = "DEVICE_ID", referencedColumnName="ID")
-    public Device device;
+    private Device device;
 
     @ManyToOne
     @JoinColumn(name = "TOPIC_ID", referencedColumnName="ID")
-    public Topic topic;
+    private Topic topic;
     
     /**
      * Constructor
@@ -50,7 +53,8 @@ public class MappingAttributesPK implements Serializable
     }
     
     /**
-     * Constructor
+     * @param device the device.
+     * @param topic the topic.
      */
     public MappingAttributesPK(Device device, Topic topic)
     {

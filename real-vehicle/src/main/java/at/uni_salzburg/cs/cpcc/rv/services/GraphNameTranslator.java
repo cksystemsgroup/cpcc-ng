@@ -38,6 +38,8 @@ public class GraphNameTranslator implements Translator<GraphName>
 
     /**
      * GraphNameTranslator constructor.
+     *
+     * @param name the name.
      */
     public GraphNameTranslator(String name)
     {

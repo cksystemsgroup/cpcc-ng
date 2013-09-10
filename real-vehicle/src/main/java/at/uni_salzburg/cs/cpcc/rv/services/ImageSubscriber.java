@@ -19,6 +19,9 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services;
 
+/**
+ * ImageSubscriber
+ */
 public interface ImageSubscriber
 {
 

@@ -40,7 +40,7 @@ import big_actor_msgs.LatLngAlt;
 public class PlantStateEstimatorTest
 {
     @SuppressWarnings("serial")
-    private final static Map<String, List<String>> configMap = new HashMap<String, List<String>>()
+    private static final Map<String, List<String>> configMap = new HashMap<String, List<String>>()
     {
         {
             put("topicRoot", Arrays.asList("/mav01"));
