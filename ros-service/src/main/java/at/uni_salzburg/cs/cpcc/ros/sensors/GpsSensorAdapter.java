@@ -28,28 +28,9 @@ import org.slf4j.LoggerFactory;
 /**
  * GpsSensor
  */
-public class GpsSensorAdapter extends AbstractSensorAdapter
+public class GpsSensorAdapter extends AbstractGpsSensorAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(GpsSensorAdapter.class);
-    
-    private sensor_msgs.NavSatFix position;
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SensorType getType()
-    {
-        return SensorType.GPS_RECEIVER;
-    }
-
-    /**
-     * @return the current GPS position.
-     */
-    public sensor_msgs.NavSatFix getPosition()
-    {
-        return position;
-    }
 
     /**
      * {@inheritDoc}
@@ -67,7 +48,7 @@ public class GpsSensorAdapter extends AbstractSensorAdapter
             @Override
             public void onNewMessage(sensor_msgs.NavSatFix message)
             {
-                position = message;
+                setPosition(message);
             }
         });
     }

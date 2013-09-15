@@ -19,38 +19,36 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
-import org.ros.message.MessageListener;
-import org.ros.node.ConnectedNode;
-import org.ros.node.topic.Subscriber;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * MorseGpsSensorAdapter
+ * AbstractGpsSensorAdapter
  */
-public class MorseGpsSensorAdapter extends AbstractGpsSensorAdapter
+public abstract class AbstractGpsSensorAdapter extends AbstractSensorAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(MorseGpsSensorAdapter.class);
+    private sensor_msgs.NavSatFix position;
     
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onStart(ConnectedNode connectedNode)
+    public SensorType getType()
     {
-        LOG.debug("onStart()");
+        return SensorType.GPS_RECEIVER;
+    }
 
-        Subscriber<sensor_msgs.NavSatFix> positionSubscriber =
-            connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.NavSatFix._TYPE);
-
-        positionSubscriber.addMessageListener(new MessageListener<sensor_msgs.NavSatFix>()
-        {
-            @Override
-            public void onNewMessage(sensor_msgs.NavSatFix message)
-            {
-                // TODO transform MORSE coordinates to WGS84
-                setPosition(message);
-            }
-        });
+    /**
+     * @return the current GPS position.
+     */
+    public sensor_msgs.NavSatFix getPosition()
+    {
+        return position;
+    }
+    
+    /**
+     * @param position the position to set
+     */
+    protected void setPosition(sensor_msgs.NavSatFix position)
+    {
+        this.position = position;
     }
 }
