@@ -21,6 +21,8 @@ package at.uni_salzburg.cs.cpcc.ros.services;
 
 import java.util.Set;
 
+import at.uni_salzburg.cs.cpcc.ros.base.RosTopic;
+
 /**
  * RosTopicState
  */

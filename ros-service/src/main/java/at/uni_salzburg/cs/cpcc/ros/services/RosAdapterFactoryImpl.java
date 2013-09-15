@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.ros.actuators.SimpleWayPointControllerAdapter;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
+import at.uni_salzburg.cs.cpcc.ros.base.RosTopic;
 import at.uni_salzburg.cs.cpcc.ros.sensors.CameraSensorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.GpsSensorAdapter;
 

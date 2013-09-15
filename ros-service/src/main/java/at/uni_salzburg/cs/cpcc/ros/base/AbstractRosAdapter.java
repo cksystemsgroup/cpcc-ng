@@ -22,17 +22,25 @@ package at.uni_salzburg.cs.cpcc.ros.base;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 
-import at.uni_salzburg.cs.cpcc.ros.services.RosTopic;
-
 /**
  * AbstractRosAdapter
  */
 public abstract class AbstractRosAdapter extends AbstractNodeMain
 {
+    private GraphName defaultNodeName = GraphName.newAnonymous();
+    
     private GraphName name;
     
     private RosTopic topic;
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GraphName getDefaultNodeName()
+    {
+        return defaultNodeName;
+    }
 
     /**
      * @return ROS node path

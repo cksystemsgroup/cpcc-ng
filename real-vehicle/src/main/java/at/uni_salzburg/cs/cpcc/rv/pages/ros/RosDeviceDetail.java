@@ -34,7 +34,7 @@ import org.apache.tapestry5.annotations.Property;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
 import at.uni_salzburg.cs.cpcc.rv.components.DeviceTree;
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
-import at.uni_salzburg.cs.cpcc.rv.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 
 /**

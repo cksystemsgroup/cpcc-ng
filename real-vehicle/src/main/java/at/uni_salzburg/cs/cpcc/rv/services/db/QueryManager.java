@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.rv.services;
+package at.uni_salzburg.cs.cpcc.rv.services.db;
 
 import java.util.Collection;
 import java.util.List;

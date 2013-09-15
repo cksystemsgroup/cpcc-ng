@@ -20,39 +20,19 @@
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
 import org.ros.message.MessageListener;
-import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.ros.services.RosTopic;
-
 /**
  * CameraInfoAdapter
  */
-public class CameraInfoAdapter extends AbstractSensorAdapter
+public class CameraInfoSensorAdapter extends AbstractSensorAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(CameraInfoAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CameraInfoSensorAdapter.class);
     
-    private RosTopic infoTopic;
     private sensor_msgs.CameraInfo cameraInfo;
-    
-    /**
-     * @return the info topic.
-     */
-    public RosTopic getInfoTopic()
-    {
-        return infoTopic;
-    }
-
-    /**
-     * @param infoTopic the info topic.
-     */
-    public void setInfoTopic(RosTopic infoTopic)
-    {
-        this.infoTopic = infoTopic;
-    }
 
     /**
      * {@inheritDoc}
@@ -60,16 +40,15 @@ public class CameraInfoAdapter extends AbstractSensorAdapter
     @Override
     public SensorType getType()
     {
-        return SensorType.CAMERA;
+        return SensorType.CAMERA_INFO;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the current camera info.
      */
-    @Override
-    public GraphName getDefaultNodeName()
+    public sensor_msgs.CameraInfo getCameraInfo()
     {
-        return GraphName.newAnonymous();
+        return cameraInfo;
     }
 
     /**
@@ -81,7 +60,7 @@ public class CameraInfoAdapter extends AbstractSensorAdapter
         LOG.debug("onStart()");
 
         Subscriber<sensor_msgs.CameraInfo> cameraInfoSubscriber =
-            connectedNode.newSubscriber(getInfoTopic().getName(), sensor_msgs.CameraInfo._TYPE);
+            connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.CameraInfo._TYPE);
 
         cameraInfoSubscriber.addMessageListener(new MessageListener<sensor_msgs.CameraInfo>()
         {
@@ -91,21 +70,5 @@ public class CameraInfoAdapter extends AbstractSensorAdapter
                 cameraInfo = message;
             }
         });
-    }
-    
-    /**
-     * @return the current camera info.
-     */
-    public sensor_msgs.CameraInfo getCameraInfo()
-    {
-        return cameraInfo;
-    }
-    
-    /**
-     * @param cameraInfo the camera info to set
-     */
-    protected void setCameraInfo(sensor_msgs.CameraInfo cameraInfo)
-    {
-        this.cameraInfo = cameraInfo;
     }
 }

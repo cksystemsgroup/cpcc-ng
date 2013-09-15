@@ -28,11 +28,13 @@ import org.slf4j.LoggerFactory;
 /**
  * SimpleWayPointController
  */
-public class SimpleWayPointControllerAdapter extends AbstractActuatorAdapter
+public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleWayPointControllerAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MorseWayPointControllerAdapter.class);
     
-    private Publisher<big_actor_msgs.LatLngAlt> publisher;
+    private Publisher<geometry_msgs.Pose> publisher;
+
+    private geometry_msgs.Pose position;
 
     /**
      * {@inheritDoc}
@@ -44,16 +46,20 @@ public class SimpleWayPointControllerAdapter extends AbstractActuatorAdapter
     }
 
     /**
-     * @param position the desired position.
+     * @param newPosition the desired position as latitude, longitude, and altitude over ground.
      */
-    public void setPosition(big_actor_msgs.LatLngAlt position)
+    public void setPosition(big_actor_msgs.LatLngAlt newPosition)
     {
         if (publisher != null)
         {
+            // TODO convert newPosition to MORSE coordinates
+            position.getPosition().setX(0);
+            position.getPosition().setY(0);
+            position.getPosition().setZ(0);
             publisher.publish(position);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -61,7 +67,9 @@ public class SimpleWayPointControllerAdapter extends AbstractActuatorAdapter
     public void onStart(ConnectedNode connectedNode)
     {
         LOG.debug("onStart()");
-        publisher = connectedNode.newPublisher(getTopic().getName(), big_actor_msgs.LatLngAlt._TYPE);
+        
+        publisher = connectedNode.newPublisher(getTopic().getName(), geometry_msgs.Pose._TYPE);
+        position = (geometry_msgs.Pose)connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Pose._TYPE);
     }
 
     /**

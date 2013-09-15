@@ -41,7 +41,7 @@ import at.uni_salzburg.cs.cpcc.rv.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.rv.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.rv.entities.Topic;
 import at.uni_salzburg.cs.cpcc.rv.entities.TopicCategory;
-import at.uni_salzburg.cs.cpcc.rv.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 
 /**

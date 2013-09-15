@@ -63,9 +63,9 @@ public class PlantStateEstimatorTest
 
     private Configuration config;
     private PlantState initialPlantState;
-    
+
     /**
-     * Tasks to be done before running tests. 
+     * Tasks to be done before running tests.
      */
     @BeforeClass
     public void beforeClass()
@@ -76,9 +76,10 @@ public class PlantStateEstimatorTest
         LatLngAlt org = config.getOrigin();
         initialPlantState.setPosition(new PolarCoordinate(org.getLatitude(), org.getLongitude(), org.getAltitude()));
     }
-    
+
     /**
      * Should take-off plant.
+     * 
      * @throws IOException thrown in case of errors.
      */
     @Test
@@ -102,15 +103,16 @@ public class PlantStateEstimatorTest
         } while (!e.calculateState());
 
         writer.close();
-        
+
         Assert.assertEquals(plantState.getElevation(), 0.5 * Math.PI, 1E-3);
         Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
         Assert.assertEquals(plantState.getPosition().getAltitude(), 10.0, 1E-3);
         Assert.assertEquals(iterationCounter, 549);
     }
-    
+
     /**
      * Should land plant.
+     * 
      * @throws IOException thrown in case of errors.
      */
     @Test
@@ -135,26 +137,27 @@ public class PlantStateEstimatorTest
         } while (!e.calculateState());
 
         writer.close();
-        
+
         Assert.assertEquals(plantState.getElevation(), -0.5 * Math.PI, 1E-3);
         Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
         Assert.assertEquals(plantState.getPosition().getAltitude(), 0.0, 1E-3);
         Assert.assertEquals(iterationCounter, 751);
     }
-    
+
     /**
-     * Should land plant.
+     * Should fly horizontally.
+     * 
      * @throws IOException thrown in case of errors.
      */
     @Test
-    public void shouldFlyHorizontally () throws IOException
+    public void shouldFlyHorizontallyNorthSouth() throws IOException
     {
         PlantState plantState = new PlantState(initialPlantState);
         plantState.getPosition().setAltitude(20.0);
-        plantState.setTarget(new PolarCoordinate(47.82146, 13.04321, 20.0));
+        plantState.setTarget(new PolarCoordinate(47.82146, 13.04085, 20.0));
         PlantStateEstimator e = new PlantStateEstimator(config, plantState, State.FLIGHT);
 
-        PrintWriter writer = new PrintWriter("target/flyHorizontally.csv");
+        PrintWriter writer = new PrintWriter("target/flyHorizontallyNorthSouth.csv");
         writer.println("posLat;posLon;posAlt;flyTime;heading;dstLat;dstLon;dstAlt;v;a;elevation;remCap");
 
         int iterationCounter = 0;
@@ -162,23 +165,63 @@ public class PlantStateEstimatorTest
         {
             ++iterationCounter;
             printStateToFile(plantState, writer);
-            Assert.assertTrue(Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 1E-3);
+            Assert.assertTrue(
+                    Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 1E-3);
         } while (!e.calculateState());
 
         writer.close();
-        
+
         Assert.assertEquals(plantState.getElevation(), 0.0, 1E-3);
         Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
         Assert.assertEquals(plantState.getPosition().getAltitude(), 20.0, 1E-3);
-        Assert.assertEquals(iterationCounter, 967);
+        Assert.assertEquals(iterationCounter, 544);
+    }
+
+    /**
+     * Should fly horizontally.
+     * 
+     * @throws IOException thrown in case of errors.
+     */
+    @Test
+    public void shouldFlyHorizontallyEastWest() throws IOException
+    {
+        PlantState plantState = new PlantState(initialPlantState);
+        plantState.getPosition().setAltitude(20.0);
+        plantState.setTarget(new PolarCoordinate(47.82199, 13.04000, 20.0));
+        PlantStateEstimator e = new PlantStateEstimator(config, plantState, State.FLIGHT);
+
+        PrintWriter writer = new PrintWriter("target/flyHorizontallyEastWest.csv");
+        writer.println("posLat;posLon;posAlt;flyTime;heading;dstLat;dstLon;dstAlt;v;a;elevation;remCap");
+
+        int iterationCounter = 0;
+        do
+        {
+            ++iterationCounter;
+            printStateToFile(plantState, writer);
+            writer.flush();
+            if (Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) > 1E-3)
+            {
+                System.out.println ("bugger");
+            }
+            Assert.assertTrue(
+                    Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 1E-3);
+        } while (!e.calculateState());
+
+        writer.close();
+
+        Assert.assertEquals(plantState.getElevation(), 0.0, 1E-3);
+        Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
+        Assert.assertEquals(plantState.getPosition().getAltitude(), 20.0, 1E-3);
+        Assert.assertEquals(iterationCounter, 566);
     }
     
     /**
      * Should land plant.
+     * 
      * @throws IOException thrown in case of errors.
      */
     @Test
-    public void shouldBreakBeforeFlyingToNewPoint () throws IOException
+    public void shouldBreakBeforeFlyingToNewPoint() throws IOException
     {
         PlantState plantState = new PlantState(initialPlantState);
         plantState.getPosition().setAltitude(20.0);
@@ -195,22 +238,18 @@ public class PlantStateEstimatorTest
         {
             ++iterationCounter;
             printStateToFile(plantState, writer);
-            if (Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) > 2E-3)
-            {
-                System.out.println("bugger");
-                writer.flush();
-            }
-            Assert.assertTrue(Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 2E-3);
+            Assert.assertTrue(
+                Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 2E-3);
         } while (!e.calculateState());
 
         writer.close();
-        
+
         Assert.assertEquals(plantState.getElevation(), 0.0, 1E-3);
         Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
         Assert.assertEquals(plantState.getPosition().getAltitude(), 20.0, 1E-3);
         Assert.assertEquals(iterationCounter, 1217);
     }
-    
+
     /**
      * @param plantState the plant state.
      * @param writer the writer.

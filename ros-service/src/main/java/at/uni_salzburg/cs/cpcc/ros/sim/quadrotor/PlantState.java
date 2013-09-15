@@ -201,29 +201,30 @@ public class PlantState
     }
 
     /**
+     * @param prefix the key prefix to be used.
      * @return the map of all state variables.
      */
-    public Map<String, List<String>> getStateMap()
+    public Map<String, List<String>> getStateMap(String prefix)
     {
         Map<String, List<String>> map = new HashMap<String, List<String>>();
 
-        map.put("state.acceleration", Arrays.asList(String.format(Locale.US, "%.2f", getAcceleration())));
-        map.put("state.elevation", Arrays.asList(String.format(Locale.US, "%.3f", Math.toDegrees(getElevation()))));
-        map.put("state.flyingTime", Arrays.asList(String.format(Locale.US, "%.2f", getFlyingTime())));
-        map.put("state.heading", Arrays.asList(String.format(Locale.US, "%.0f", Math.toDegrees(getHeading()))));
-        map.put("state.position", Arrays.asList(
+        map.put(prefix + ".acceleration", Arrays.asList(String.format(Locale.US, "%.2f", getAcceleration())));
+        map.put(prefix + ".elevation", Arrays.asList(String.format(Locale.US, "%.3f", Math.toDegrees(getElevation()))));
+        map.put(prefix + ".flyingTime", Arrays.asList(String.format(Locale.US, "%.2f", getFlyingTime())));
+        map.put(prefix + ".heading", Arrays.asList(String.format(Locale.US, "%.0f", Math.toDegrees(getHeading()))));
+        map.put(prefix + ".position", Arrays.asList(
             String.format(Locale.US, "%.8f", getPosition().getLatitude()),
             String.format(Locale.US, "%.8f", getPosition().getLongitude()),
             String.format(Locale.US, "%.3f", getPosition().getAltitude())
             ));
-        map.put("state.batteryCapacity", Arrays.asList(
+        map.put(prefix + ".batteryCapacity", Arrays.asList(
             String.format(Locale.US, "%.1f", getRemainingBatteryCapacity())));
-        map.put("state.target", Arrays.asList(
+        map.put(prefix + ".target", Arrays.asList(
             String.format(Locale.US, "%.8f", getTarget().getLatitude()),
             String.format(Locale.US, "%.8f", getTarget().getLongitude()),
             String.format(Locale.US, "%.3f", getTarget().getAltitude())
             ));
-        map.put("state.velocity", Arrays.asList(String.format(Locale.US, "%.2f", getVelocity())));
+        map.put(prefix + ".velocity", Arrays.asList(String.format(Locale.US, "%.2f", getVelocity())));
 
         return map;
     }

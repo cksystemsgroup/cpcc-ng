@@ -17,50 +17,60 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.sim;
+package at.uni_salzburg.cs.cpcc.ros.actuators;
 
-import java.util.List;
-import java.util.Map;
-
+import org.ros.node.ConnectedNode;
+import org.ros.node.Node;
+import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * GoogleMapsBellyMountedCamera
+ * Float32Adapter
  */
-public class GoogleMapsBellyMountedCamera extends AbstractRosNodeGroup
+public class Float32ActuatorAdapter extends AbstractActuatorAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(GoogleMapsBellyMountedCamera.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Float32ActuatorAdapter.class);
+    
+    private Publisher<std_msgs.Float32> publisher;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void start()
+    public ActuatorType getType()
     {
-        // TODO Auto-generated method stub
-        LOG.info("start()");
+        return ActuatorType.FLOAT_ADAPTER;
+    }
+
+    /**
+     * @param value the desired value.
+     */
+    public void setValue(std_msgs.Float32 value)
+    {
+        if (publisher != null)
+        {
+            publisher.publish(value);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void shutdown()
+    public void onStart(ConnectedNode connectedNode)
     {
-        // TODO Auto-generated method stub
-        LOG.info("shutdown()");
+        LOG.debug("onStart()");
+        publisher = connectedNode.newPublisher(getTopic().getName(), std_msgs.Float32._TYPE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Map<String, List<String>> getCurrentState()
+    public void onShutdown(Node node)
     {
-        LOG.info("getCurrentState()");
-
-        // TODO Auto-generated method stub
-        return super.getCurrentState();
+        super.onShutdown(node);
+        publisher = null;
     }
 }

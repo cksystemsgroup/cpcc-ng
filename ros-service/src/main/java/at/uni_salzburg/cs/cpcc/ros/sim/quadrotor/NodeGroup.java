@@ -20,28 +20,22 @@
 package at.uni_salzburg.cs.cpcc.ros.sim.quadrotor;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.ros.node.DefaultNodeMainExecutor;
-import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
+import at.uni_salzburg.cs.cpcc.ros.sim.AbstractRosNodeGroup;
 
 /**
  * NodeGroup
  */
-public class NodeGroup implements RosNodeGroup
+public class NodeGroup extends AbstractRosNodeGroup
 {
     private static final Logger LOG = LoggerFactory.getLogger(NodeGroup.class);
-
-    private String topicRoot;
-    private Map<String, List<String>> config;
-    private NodeConfiguration nodeConfiguration;
 
     private PlantNode plantNode;
 
@@ -51,42 +45,15 @@ public class NodeGroup implements RosNodeGroup
      * {@inheritDoc}
      */
     @Override
-    public void setTopicRoot(String topicRoot)
-    {
-        this.topicRoot = topicRoot;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setConfig(Map<String, List<String>> config)
-    {
-        this.config = config;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setNodeConfiguration(NodeConfiguration nodeConfiguration)
-    {
-        this.nodeConfiguration = nodeConfiguration;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void start()
     {
         LOG.info("start()");
-        
-        config.put("topicRoot", Arrays.asList(topicRoot));
-        Configuration cfg = new Configuration(nodeConfiguration, config);
-        
+
+        getConfig().put("topicRoot", Arrays.asList(getTopicRoot()));
+        Configuration cfg = new Configuration(getNodeConfiguration(), getConfig());
+
         plantNode = new PlantNode(cfg);
-        DefaultNodeMainExecutor.newDefault().execute(plantNode, nodeConfiguration);
+        DefaultNodeMainExecutor.newDefault().execute(plantNode, getNodeConfiguration());
         try
         {
             plantNode.awaitStartup();
@@ -96,9 +63,9 @@ public class NodeGroup implements RosNodeGroup
             LOG.error("node.awaitStartup() interrupted", e);
         }
 
-        wayPointListenerNode = new WaypointListenerNode(topicRoot + "/waypoint");
+        wayPointListenerNode = new WaypointListenerNode(getTopicRoot() + "/waypoint");
         wayPointListenerNode.addMessageListener(plantNode.getPlant());
-        DefaultNodeMainExecutor.newDefault().execute(wayPointListenerNode, nodeConfiguration);
+        DefaultNodeMainExecutor.newDefault().execute(wayPointListenerNode, getNodeConfiguration());
     }
 
     /**
@@ -119,24 +86,19 @@ public class NodeGroup implements RosNodeGroup
     @Override
     public Map<String, List<String>> getCurrentState()
     {
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
-        
-        for (Entry<String, List<String>> entry : config.entrySet())
-        {
-            map.put(entry.getKey(), entry.getValue());
-        }
-        
+        Map<String, List<String>> map = super.getCurrentState();
+
         Plant plant = plantNode.getPlant();
-        
+
         map.put("plant.destinationReached", Arrays.asList(Boolean.toString(plant.isDestinationReached())));
         map.put("plant.running", Arrays.asList(Boolean.toString(plant.isRunning())));
         map.put("plant.state", Arrays.asList(plant.getCurrentState().toString()));
-        
-        for (Entry<String, List<String>> entry : plant.getPlantState().getStateMap().entrySet())
+
+        for (Entry<String, List<String>> entry : plant.getPlantState().getStateMap("plant.dynamics").entrySet())
         {
             map.put(entry.getKey(), entry.getValue());
         }
-        
+
         return map;
     }
 }

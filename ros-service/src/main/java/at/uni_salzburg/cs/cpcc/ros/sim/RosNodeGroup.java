@@ -30,14 +30,29 @@ import org.ros.node.NodeConfiguration;
 public interface RosNodeGroup
 {
     /**
+     * @return the topic root
+     */
+    String getTopicRoot();
+    
+    /**
      * @param topicRoot the topic root of the node group.
      */
     void setTopicRoot(String topicRoot);
     
     /**
+     * @return the configuration
+     */
+    Map<String, List<String>> getConfig();
+    
+    /**
      * @param config the device's configuration string.
      */
     void setConfig(Map<String,List<String>> config);
+    
+    /**
+     * @return the ROS node configuration.
+     */
+    NodeConfiguration getNodeConfiguration();
     
     /**
      * @param nodeConfiguration the ROS node configuration.

@@ -23,7 +23,7 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 
 import at.uni_salzburg.cs.cpcc.rv.components.DeviceTree;
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
-import at.uni_salzburg.cs.cpcc.rv.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 
 /**

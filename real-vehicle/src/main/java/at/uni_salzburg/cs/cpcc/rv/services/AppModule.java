@@ -25,6 +25,8 @@ import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
 
+import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
+import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManagerImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserServiceImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
@@ -76,6 +78,7 @@ public final class AppModule
         // you can extend this list of locales (it's a comma separated series of locale names;
         // the first locale name is the default when there's no reasonable match).
         configuration.add(SymbolConstants.SUPPORTED_LOCALES, "en,de");
+        configuration.add(SymbolConstants.MINIFICATION_ENABLED, "false");
     }
 
     /**

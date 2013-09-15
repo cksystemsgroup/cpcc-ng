@@ -25,7 +25,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,21 +34,22 @@ import javax.inject.Singleton;
 import org.apache.tapestry5.ioc.annotations.EagerLoad;
 import org.ros.RosCore;
 import org.ros.address.InetAddressFactory;
+import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
+import at.uni_salzburg.cs.cpcc.ros.base.RosTopic;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 import at.uni_salzburg.cs.cpcc.rv.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.rv.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.rv.entities.Topic;
-import at.uni_salzburg.cs.cpcc.rv.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.rv.services.opts.Option;
+import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.ParseException;
-import at.uni_salzburg.cs.cpcc.rv.services.opts.Token;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * RosNodeServiceImpl
@@ -60,22 +60,14 @@ public class RosNodeServiceImpl implements RosNodeService
 {
     private static final Logger LOG = LoggerFactory.getLogger(RosNodeServiceImpl.class);
 
-    private static RosCore rosCore = null;
-    private static URI masterServerUri = null;
-
     private QueryManager qm;
 
     private OptionsParserService optionsParser;
 
     private NodeConfiguration nodeConfiguration;
 
+    private RosNodeSingleton rns;
 
-    private static Map<String, RosNodeGroup> deviceNodes = Collections
-        .synchronizedMap(new TreeMap<String, RosNodeGroup>());
-
-//    private static Map<String, RosNodeGroup> adapterNodes = Collections
-//        .synchronizedMap(new TreeMap<String, RosNodeGroup>());
-    
     /**
      * @param qm the query manager.
      * @param optionsParser the options parser.
@@ -84,6 +76,7 @@ public class RosNodeServiceImpl implements RosNodeService
     {
         this.qm = qm;
         this.optionsParser = optionsParser;
+        rns = RosNodeSingleton.getInstance();
         init();
     }
 
@@ -93,22 +86,30 @@ public class RosNodeServiceImpl implements RosNodeService
     private void init()
     {
         Parameter uri = qm.findParameterByName(Parameter.MASTER_SERVER_URI);
-        Parameter internal = qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE);
-        
+
         if (uri != null && uri.getValue() != null)
         {
             try
             {
-                updateMasterServerURI(new URI(uri.getValue()));
+                URI msi = new URI(uri.getValue());
+                rns.setMasterServerUri(msi);
+                // updateMasterServerURI(new URI(uri.getValue()));
+                String hostName = InetAddressFactory.newNonLoopback().getHostName();
+                nodeConfiguration = NodeConfiguration.newPublic(hostName, msi);
             }
             catch (URISyntaxException e)
             {
                 LOG.error(String.format("Can not set master server URI to '%s'.", uri.getValue().toString()));
             }
         }
-        
-        updateRosCore("true".equalsIgnoreCase(internal.getValue()));
-        
+
+        Parameter internal = qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE);
+        if ("true".equalsIgnoreCase(internal.getValue()))
+        {
+            startRosCore();
+        }
+        // updateRosCore("true".equalsIgnoreCase(internal.getValue()));
+
         List<Device> allDevices = qm.findAllDevices();
 
         LOG.info("init()");
@@ -116,38 +117,131 @@ public class RosNodeServiceImpl implements RosNodeService
         for (Device device : allDevices)
         {
             startRosNodeGroup(device);
-            launchDeviceAdapter(device, device.getType().getMainTopic());
-            for (Topic topic : device.getType().getSubTopics())
+        }
+    }
+
+    /**
+     * @param device the device.
+     * @param topic the topic.
+     * @throws ClassNotFoundExceptionthrown in case of errors.
+     */
+    private AbstractRosAdapter launchDeviceAdapter(Device device, Topic topic)
+    {
+        LOG.info("launchDeviceAdapter launchNode=" + device.getTopicRoot() + ", topic=" + topic.getSubpath()
+            + ", adapterClass=" + topic.getAdapterClassName());
+
+        if (topic.getAdapterClassName() != null)
+        {
+            try
             {
-                launchDeviceAdapter(device, topic);
+                Class<?> clazz = Class.forName(topic.getAdapterClassName());
+                LOG.info("Adapter class " + clazz.getName() + " loaded.");
+
+                AbstractRosAdapter instance = (AbstractRosAdapter) clazz.newInstance();
+                StringBuilder topicPath = new StringBuilder();
+                topicPath.append(device.getTopicRoot());
+                if (topic.getSubpath() != null)
+                {
+                    topicPath.append("/").append(topic.getSubpath());
+                }
+                RosTopic t = new RosTopic();
+                t.setName(topicPath.toString());
+                t.setType(topic.getMessageType());
+                instance.setTopic(t);
+                DefaultNodeMainExecutor.newDefault().execute(instance, nodeConfiguration);
+                LOG.info("Adapter class " + clazz.getName() + " started.");
+                return instance;
             }
+            catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
+            {
+                LOG.error("launchDeviceAdapter can not load class " + device.getType().getClassName(), e);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param device the device
+     */
+    private void launchAllDeviceAdapters(Device device)
+    {
+        List<Topic> topicList = new ArrayList<Topic>();
+        topicList.add(device.getType().getMainTopic());
+        if (device.getType().getSubTopics() != null)
+        {
+            topicList.addAll(device.getType().getSubTopics());
+        }
+
+        List<AbstractRosAdapter> adapterList = new ArrayList<AbstractRosAdapter>();
+        for (Topic topic : topicList)
+        {
+            AbstractRosAdapter adapter = launchDeviceAdapter(device, topic);
+            adapterList.add(adapter);
+        }
+
+        rns.getAdapterNodes().put(device.getTopicRoot(), adapterList);
+    }
+
+    /**
+     * start all devices and all device adapters.
+     */
+    private void startAllNodes()
+    {
+        for (Device device : qm.findAllDevices())
+        {
+            startRosNodeGroup(device);
         }
     }
 
     /**
      * @param device the device
      * @param topic the topic
-     * @throws ClassNotFoundException
      */
-    private void launchDeviceAdapter(Device device, Topic topic)
+    private void stopDeviceAdapter(AbstractRosAdapter adapter)
     {
-        
-        // TODO Auto-generated method stub
-        LOG.info("RosNodeServiceImpl launchNode=" + device.getTopicRoot() + ", topic=" + topic.getSubpath());
-
-        
-        if (device.getType().getClassName() != null)
+        if (adapter == null)
         {
-            try
+            return;
+        }
+        LOG.info("stopDeviceAdapter topic=" + adapter.getTopic() + ", name=" + adapter.getName());
+        DefaultNodeMainExecutor.newDefault().shutdownNodeMain(adapter);
+    }
+
+    /**
+     * @param topicRoot
+     */
+    private void stopAllDeviceAdapters(String topicRoot)
+    {
+        List<AbstractRosAdapter> adapterList = rns.getAdapterNodes().get(topicRoot);
+        if (adapterList == null)
+        {
+            return;
+        }
+        for (AbstractRosAdapter adapter : adapterList)
+        {
+            stopDeviceAdapter(adapter);
+        }
+        rns.getAdapterNodes().remove(topicRoot);
+    }
+
+    /**
+     * Shutdown all device nodes and all adapter nodes.
+     */
+    private void shutdownAllNodes()
+    {
+        for (RosNodeGroup group : rns.getDeviceNodes().values())
+        {
+            group.shutdown();
+        }
+        for (List<AbstractRosAdapter> adapterList : rns.getAdapterNodes().values())
+        {
+            for (AbstractRosAdapter adapter : adapterList)
             {
-                Class<?> name = Class.forName(device.getType().getClassName());
-                LOG.info("RosNodeServiceImpl class " + name.getName() + " loaded.");
-            }
-            catch (ClassNotFoundException e)
-            {
-                LOG.error("RosNodeServiceImpl can not load class " + device.getType().getClassName(), e);
+                DefaultNodeMainExecutor.newDefault().shutdownNodeMain(adapter);
             }
         }
+        rns.getDeviceNodes().clear();
+        rns.getAdapterNodes().clear();
     }
 
     /**
@@ -157,27 +251,27 @@ public class RosNodeServiceImpl implements RosNodeService
     @Override
     public void updateMasterServerURI(URI uri)
     {
-        // TODO Auto-generated method stub
         LOG.info("updateMasterServerURI " + uri.toASCIIString());
 
-        if (masterServerUri != null && masterServerUri.equals(uri))
+        if (rns.getMasterServerUri() != null && rns.getMasterServerUri().equals(uri))
         {
             return;
         }
 
-        masterServerUri = uri;
-        
+        rns.setMasterServerUri(uri);
+
         String hostName = InetAddressFactory.newNonLoopback().getHostName();
-        nodeConfiguration = NodeConfiguration.newPublic(hostName, masterServerUri);
-        
-        if (rosCore != null)
+        nodeConfiguration = NodeConfiguration.newPublic(hostName, uri);
+
+        shutdownAllNodes();
+
+        if (rns.getRosCore() != null)
         {
-            // TODO
-//            shutdownNodes();
             shutdownRosCore();
             startRosCore();
-//            startNodes();
         }
+
+        startAllNodes();
     }
 
     /**
@@ -186,17 +280,17 @@ public class RosNodeServiceImpl implements RosNodeService
     @Override
     public void updateRosCore(boolean internal)
     {
-        boolean rcore = rosCore != null;
+        boolean rcore = rns.getRosCore() != null;
         LOG.info("updateRosCore internal=" + internal + ", core-running=" + rcore);
 
         synchronized (LOG)
         {
-            if (internal && rosCore == null)
+            if (internal && rns.getRosCore() == null)
             {
                 startRosCore();
             }
-            
-            if (!internal && rosCore != null)
+
+            if (!internal && rns.getRosCore() != null)
             {
                 shutdownRosCore();
             }
@@ -208,11 +302,13 @@ public class RosNodeServiceImpl implements RosNodeService
      */
     private void startRosCore()
     {
-        LOG.info(String.format("Starting ROS core host=%s, port=%d", masterServerUri.getHost(),
-            masterServerUri.getPort()));
-        String host = masterServerUri.getHost();
-        int port = masterServerUri.getPort();
-        rosCore = RosCore.newPublic(host, port);
+        String host = rns.getMasterServerUri().getHost();
+        int port = rns.getMasterServerUri().getPort();
+
+        LOG.info(String.format("Starting ROS core host=%s, port=%d", host, port));
+
+        RosCore rosCore = RosCore.newPublic(host, port);
+        rns.setRosCore(rosCore);
         rosCore.start();
         try
         {
@@ -224,15 +320,15 @@ public class RosNodeServiceImpl implements RosNodeService
             LOG.error("Starting ROS core has been interrupted", e);
         }
     }
-    
+
     /**
      * shutdown ROS core.
      */
     private void shutdownRosCore()
     {
         LOG.info("Shutting down internal ROS core");
-        rosCore.shutdown();
-        rosCore = null;
+        rns.getRosCore().shutdown();
+        rns.setRosCore(null);
     }
 
     /**
@@ -243,13 +339,9 @@ public class RosNodeServiceImpl implements RosNodeService
     {
         // TODO Auto-generated method stub
         LOG.info("updateDevice " + device.getTopicRoot());
-        
-        stopRosNodeGroup(device.getTopicRoot());
-        
-        if (device.getType().getClassName() != null)
-        {
-            startRosNodeGroup(device);
-        }
+
+        shutdownDevice(device);
+        startRosNodeGroup(device);
     }
 
     /**
@@ -261,10 +353,11 @@ public class RosNodeServiceImpl implements RosNodeService
         // TODO Auto-generated method stub
         LOG.info("shutdownDevice " + device.getTopicRoot());
         stopRosNodeGroup(device.getTopicRoot());
-        
+
         // TODO delete from RTE
+
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -273,10 +366,9 @@ public class RosNodeServiceImpl implements RosNodeService
     {
         // TODO Auto-generated method stub
         LOG.info("updateMappingAttributes");
-        
-        
+
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -285,9 +377,9 @@ public class RosNodeServiceImpl implements RosNodeService
     {
         // TODO Auto-generated method stub
         LOG.info("shutdownMappingAttributes");
-        
+
     }
-    
+
     /**
      * @param topicRoot topic root
      * @param className class name
@@ -302,9 +394,10 @@ public class RosNodeServiceImpl implements RosNodeService
         if (topicRoot == null || className == null)
         {
             LOG.error("Can not start ROS node group.");
+            launchAllDeviceAdapters(device);
             return;
         }
-
+        
         LOG.info("Starting ROS node group, topic=" + topicRoot);
 
         try
@@ -315,11 +408,11 @@ public class RosNodeServiceImpl implements RosNodeService
             RosNodeGroup group = (RosNodeGroup) clazz.newInstance();
             group.setTopicRoot(topicRoot);
             group.setNodeConfiguration(nodeConfiguration);
-            group.setConfig(parseConfig(config));
+            group.setConfig(optionsParser.parseConfig(config));
 
             group.start();
 
-            deviceNodes.put(topicRoot, group);
+            getDeviceNodes().put(topicRoot, group);
             LOG.info(String.format("ROS node group %s started.", topicRoot));
         }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException
@@ -327,49 +420,126 @@ public class RosNodeServiceImpl implements RosNodeService
         {
             LOG.error("Can not instantiate the ROS node group for topic " + topicRoot, e);
         }
+
+        launchAllDeviceAdapters(device);
     }
-    
+
     /**
      * @param topicRoot topicRoot
      */
     private void stopRosNodeGroup(String topicRoot)
     {
         LOG.info("Stopping ROS node group, topic=" + topicRoot);
+
+        Map<String, RosNodeGroup> deviceNodes = getDeviceNodes();
         if (deviceNodes.containsKey(topicRoot))
         {
-            deviceNodes.get(topicRoot).shutdown();
+            stopAllDeviceAdapters(topicRoot);
+            RosNodeGroup group = deviceNodes.get(topicRoot);
+            group.shutdown();
             deviceNodes.remove(topicRoot);
         }
     }
-    
-    /**
-     * @param config the configuration as a string.
-     * @return the configuration as a map.
-     * @throws ParseException thrown in case of errors.
-     * @throws IOException thrown in case of errors.
-     */
-    private Map<String, List<String>> parseConfig(String config) throws IOException, ParseException
-    {
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
-        for (Option option : optionsParser.parse(config))
-        {
-            List<Token> tokenList = option.getValue();
-            List<String> valueList = new ArrayList<String>();
-            for (Token token : tokenList)
-            {
-                valueList.add(token.getItemString());
-            }
-            map.put(option.getKey(), valueList);
-        }
-        return map;
-    }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public Map<String, RosNodeGroup> getDeviceNodes()
     {
-        return deviceNodes;
+        return rns.getDeviceNodes();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, List<AbstractRosAdapter>> getAdapterNodes()
+    {
+        return rns.getAdapterNodes();
+    }
+
+    /**
+     * RosNodeSingleton
+     */
+    private static final class RosNodeSingleton
+    {
+        private static RosNodeSingleton instance;
+        private RosCore rosCore;
+        private URI masterServerUri;
+
+        private Map<String, RosNodeGroup> deviceNodes = Collections
+            .synchronizedMap(new TreeMap<String, RosNodeGroup>());
+
+        private Map<String, List<AbstractRosAdapter>> adapterNodes = Collections
+            .synchronizedMap(new TreeMap<String, List<AbstractRosAdapter>>());
+
+        /**
+         * Private constructor
+         */
+        private RosNodeSingleton()
+        {
+            // TODO Auto-generated constructor stub
+        }
+
+        /**
+         * @return the instance
+         */
+        public static synchronized RosNodeSingleton getInstance()
+        {
+            if (instance == null)
+            {
+                instance = new RosNodeSingleton();
+            }
+            return instance;
+        }
+
+        /**
+         * @return the rosCore
+         */
+        public RosCore getRosCore()
+        {
+            return rosCore;
+        }
+
+        /**
+         * @param rosCore the rosCore to set
+         */
+        public void setRosCore(RosCore rosCore)
+        {
+            this.rosCore = rosCore;
+        }
+
+        /**
+         * @return the masterServerUri
+         */
+        public URI getMasterServerUri()
+        {
+            return masterServerUri;
+        }
+
+        /**
+         * @param masterServerUri the masterServerUri to set
+         */
+        public void setMasterServerUri(URI masterServerUri)
+        {
+            this.masterServerUri = masterServerUri;
+        }
+
+        /**
+         * @return the deviceNodes
+         */
+        public Map<String, RosNodeGroup> getDeviceNodes()
+        {
+            return deviceNodes;
+        }
+
+        /**
+         * @return the adapterNodes
+         */
+        public Map<String, List<AbstractRosAdapter>> getAdapterNodes()
+        {
+            return adapterNodes;
+        }
     }
 }

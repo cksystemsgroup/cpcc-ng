@@ -1,5 +1,4 @@
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -14,9 +13,8 @@
 	<name>real-vehicle Tapestry 5 Application</name>
 
 	<dependencies>
-		<!-- Too set up an application with a database, change the artifactId below 
-			to tapestry-hibernate, and add a dependency on your JDBC driver. You'll also 
-			need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
+		<!-- Too set up an application with a database, change the artifactId below to tapestry-hibernate, and add a dependency 
+			on your JDBC driver. You'll also need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
 
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
@@ -36,7 +34,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<!-- <scope>provided</scope> -->
+<!-- 			<scope>provided</scope> -->
 		</dependency>
 
 		<!-- Uncomment this to add support for file uploads: -->
@@ -109,39 +107,39 @@
 				</configuration>
 			</plugin>
 
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-dependency-plugin</artifactId> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<id>copy</id> -->
-<!-- 						<phase>package</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>copy</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<artifactItems> -->
-<!-- 								<artifactItem> -->
-<!-- 									<groupId>org.scrutiny</groupId> -->
-<!-- 									<artifactId>scrutiny-agent</artifactId> -->
-<!-- 									<version>1.0.11</version> -->
-<!-- 									<type>war</type> -->
-<!-- 									<overWrite>true</overWrite> -->
-<!-- 									<outputDirectory>target/</outputDirectory> -->
-<!-- 								</artifactItem> -->
-<!-- 								<artifactItem> -->
-<!-- 									<groupId>org.scrutiny</groupId> -->
-<!-- 									<artifactId>scrutiny-monitor</artifactId> -->
-<!-- 									<version>1.0.11</version> -->
-<!-- 									<type>war</type> -->
-<!-- 									<overWrite>true</overWrite> -->
-<!-- 									<outputDirectory>target/</outputDirectory> -->
-<!-- 								</artifactItem> -->
-<!-- 							</artifactItems> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 			</plugin> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-dependency-plugin</artifactId> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <id>copy</id> -->
+			<!-- <phase>package</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>copy</goal> -->
+			<!-- </goals> -->
+			<!-- <configuration> -->
+			<!-- <artifactItems> -->
+			<!-- <artifactItem> -->
+			<!-- <groupId>org.scrutiny</groupId> -->
+			<!-- <artifactId>scrutiny-agent</artifactId> -->
+			<!-- <version>1.0.11</version> -->
+			<!-- <type>war</type> -->
+			<!-- <overWrite>true</overWrite> -->
+			<!-- <outputDirectory>target/</outputDirectory> -->
+			<!-- </artifactItem> -->
+			<!-- <artifactItem> -->
+			<!-- <groupId>org.scrutiny</groupId> -->
+			<!-- <artifactId>scrutiny-monitor</artifactId> -->
+			<!-- <version>1.0.11</version> -->
+			<!-- <type>war</type> -->
+			<!-- <overWrite>true</overWrite> -->
+			<!-- <outputDirectory>target/</outputDirectory> -->
+			<!-- </artifactItem> -->
+			<!-- </artifactItems> -->
+			<!-- </configuration> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
@@ -151,8 +149,8 @@
 				<configuration>
 					<!-- <useProvidedScope>true</useProvidedScope> -->
 					<!-- <requestLog implementation="org.mortbay.jetty.NCSARequestLog"> -->
-					<!-- This doesn't do anything for Jetty, but is a workaround for a Maven 
-						bug that prevents the requestLog from being set. -->
+					<!-- This doesn't do anything for Jetty, but is a workaround for a Maven bug that prevents the requestLog from being 
+						set. -->
 					<!-- <append>true</append> -->
 					<!-- </requestLog> -->
 					<systemProperties>
@@ -176,15 +174,119 @@
 					<!-- </contextHandlers> -->
 				</configuration>
 				<dependencies>
-					<!-- <dependency> -->
-					<!-- <groupId>com.h2database</groupId> -->
-					<!-- <artifactId>h2</artifactId> -->
-					<!-- <version>${com.h2database.version}</version> -->
-					<!-- </dependency> -->
+					<dependency>
+						<groupId>com.h2database</groupId>
+						<artifactId>h2</artifactId>
+						<version>${com.h2database.version}</version>
+					</dependency>
 					<dependency>
 						<groupId>javax.mail</groupId>
 						<artifactId>mail</artifactId>
 						<version>${javax.mail.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.1</version>
+				<executions>
+					<execution>
+						<id>tomcat-run</id>
+						<goals>
+							<goal>exec-war</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+							<path>/</path>
+							<!-- <serverXml>server.xml</serverXml> -->
+							<enableNaming>true</enableNaming>
+							<extraDependencies>
+								<extraDependency>
+									<groupId>com.h2database</groupId>
+									<artifactId>h2</artifactId>
+									<version>${com.h2database.version}</version>
+								</extraDependency>
+							</extraDependencies>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.tomcat.embed</groupId>
+						<artifactId>tomcat-embed-core</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-util</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-coyote</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-api</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-jdbc</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-dbcp</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-servlet-api</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-jsp-api</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-jasper</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-jasper-el</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-el-api</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-catalina</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-tribes</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-catalina-ha</artifactId>
+						<version>${tomcat7Version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.tomcat</groupId>
+						<artifactId>tomcat-annotations-api</artifactId>
+						<version>${tomcat7Version}</version>
 					</dependency>
 				</dependencies>
 			</plugin>

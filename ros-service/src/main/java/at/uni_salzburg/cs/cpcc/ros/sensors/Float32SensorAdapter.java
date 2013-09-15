@@ -17,50 +17,58 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.sim;
+package at.uni_salzburg.cs.cpcc.ros.sensors;
 
-import java.util.List;
-import java.util.Map;
-
+import org.ros.message.MessageListener;
+import org.ros.node.ConnectedNode;
+import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * GoogleMapsBellyMountedCamera
+ * CameraInfoAdapter
  */
-public class GoogleMapsBellyMountedCamera extends AbstractRosNodeGroup
+public class Float32SensorAdapter extends AbstractSensorAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(GoogleMapsBellyMountedCamera.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Float32SensorAdapter.class);
+    
+    private std_msgs.Float32 value;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void start()
+    public SensorType getType()
     {
-        // TODO Auto-generated method stub
-        LOG.info("start()");
+        return SensorType.FLOAT_SENSOR;
+    }
+
+    /**
+     * @return the current value
+     */
+    public std_msgs.Float32 getValue()
+    {
+        return value;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void shutdown()
+    public void onStart(ConnectedNode connectedNode)
     {
-        // TODO Auto-generated method stub
-        LOG.info("shutdown()");
-    }
+        LOG.debug("onStart()");
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Map<String, List<String>> getCurrentState()
-    {
-        LOG.info("getCurrentState()");
+        Subscriber<std_msgs.Float32> cameraInfoSubscriber =
+            connectedNode.newSubscriber(getTopic().getName(), std_msgs.Float32._TYPE);
 
-        // TODO Auto-generated method stub
-        return super.getCurrentState();
+        cameraInfoSubscriber.addMessageListener(new MessageListener<std_msgs.Float32>()
+        {
+            @Override
+            public void onNewMessage(std_msgs.Float32 message)
+            {
+                value = message;
+            }
+        });
     }
 }

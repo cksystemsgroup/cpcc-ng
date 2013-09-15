@@ -24,7 +24,9 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * OptionsParserServiceImpl
@@ -140,5 +142,25 @@ public class OptionsParserServiceImpl implements OptionsParserService
         }
 
         return String.format(format, b.toString());
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, List<String>> parseConfig(String config) throws IOException, ParseException
+    {
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (Option option : parse(config))
+        {
+            List<Token> tokenList = option.getValue();
+            List<String> valueList = new ArrayList<String>();
+            for (Token token : tokenList)
+            {
+                valueList.add(token.getItemString());
+            }
+            map.put(option.getKey(), valueList);
+        }
+        return map;
     }
 }

@@ -24,5 +24,5 @@ package at.uni_salzburg.cs.cpcc.ros.actuators;
  */
 public enum ActuatorType
 {
-    SIMPLE_WAYPOINT_CONTROLLER
+    SIMPLE_WAYPOINT_CONTROLLER, FLOAT_ADAPTER
 }

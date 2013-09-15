@@ -25,13 +25,17 @@ import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sensor_msgs.CameraInfo;
+import at.uni_salzburg.cs.cpcc.ros.base.RosTopic;
+
 /**
  * CameraSensor
  */
-public class CameraSensorAdapter extends CameraInfoAdapter
+public class CameraSensorAdapter extends AbstractSensorAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(CameraSensorAdapter.class);
-    
+    private RosTopic infoTopic;
+    private sensor_msgs.CameraInfo cameraInfo;
     private sensor_msgs.Image image;
 
     /**
@@ -50,7 +54,7 @@ public class CameraSensorAdapter extends CameraInfoAdapter
             @Override
             public void onNewMessage(sensor_msgs.CameraInfo message)
             {
-                setCameraInfo(message);
+                cameraInfo = message;
             }
         });
 
@@ -68,10 +72,45 @@ public class CameraSensorAdapter extends CameraInfoAdapter
     }
     
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SensorType getType()
+    {
+        return SensorType.CAMERA;
+    }
+    
+    /**
      * @return the current image.
      */
     public sensor_msgs.Image getImage()
     {
         return image;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public CameraInfo getCameraInfo()
+    {
+        return cameraInfo;
+    }
+    
+    /**
+     * @return the info topic.
+     */
+    public RosTopic getInfoTopic()
+    {
+        return infoTopic;
+    }
+
+    /**
+     * @param infoTopic the info topic.
+     */
+    public void setInfoTopic(RosTopic infoTopic)
+    {
+        this.infoTopic = infoTopic;
+    }
+
+    
 }

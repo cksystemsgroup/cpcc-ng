@@ -22,46 +22,15 @@ package at.uni_salzburg.cs.cpcc.ros.sim;
 import java.util.List;
 import java.util.Map;
 
-import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * SonarEmulator
  */
-public class SonarEmulator implements RosNodeGroup
+public class SonarEmulator extends AbstractRosNodeGroup
 {
     private static final Logger LOG = LoggerFactory.getLogger(SonarEmulator.class);
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setTopicRoot(String topicRoot)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setConfig(Map<String,List<String>> config)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setNodeConfiguration(NodeConfiguration nodeConfiguration)
-    {
-        // TODO Auto-generated method stub
-        
-    }
 
     /**
      * {@inheritDoc}
@@ -92,6 +61,8 @@ public class SonarEmulator implements RosNodeGroup
 //        LOG.info("getCurrentState()");
         
         // TODO Auto-generated method stub
-        return null;
+        
+        
+        return super.getCurrentState();
     }
 }

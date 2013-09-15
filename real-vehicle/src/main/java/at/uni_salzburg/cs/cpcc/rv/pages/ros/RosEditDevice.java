@@ -41,7 +41,7 @@ import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 import at.uni_salzburg.cs.cpcc.rv.entities.DeviceType;
 import at.uni_salzburg.cs.cpcc.rv.pages.Configuration;
 import at.uni_salzburg.cs.cpcc.rv.services.DeviceTypeSelectHelpers;
-import at.uni_salzburg.cs.cpcc.rv.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.ParseException;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;

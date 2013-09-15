@@ -30,4 +30,5 @@ public abstract class AbstractSensorAdapter extends AbstractRosAdapter
      * @return the type of the sensor.
      */
     public abstract SensorType getType();
+
 }

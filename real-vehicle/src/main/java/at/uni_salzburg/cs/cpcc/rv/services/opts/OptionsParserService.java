@@ -21,6 +21,8 @@ package at.uni_salzburg.cs.cpcc.rv.services.opts;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * OptionsParserService
@@ -35,6 +37,14 @@ public interface OptionsParserService
      */
     Collection<Option> parse(String options) throws IOException, ParseException;
 
+    /**
+     * @param config the configuration as a string.
+     * @return the configuration as a map.
+     * @throws ParseException thrown in case of errors.
+     * @throws IOException thrown in case of errors.
+     */
+    Map<String, List<String>> parseConfig(String config) throws IOException, ParseException;
+    
     /**
      * @param source the source.
      * @param format the localized message format.

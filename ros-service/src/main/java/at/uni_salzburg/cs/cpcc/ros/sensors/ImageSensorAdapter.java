@@ -20,39 +20,19 @@
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
 import org.ros.message.MessageListener;
-import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.ros.services.RosTopic;
-
 /**
  * ImageAdapter
  */
-public class ImageAdapter extends AbstractSensorAdapter
+public class ImageSensorAdapter extends AbstractSensorAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(ImageAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ImageSensorAdapter.class);
     
-    private RosTopic infoTopic;
     private sensor_msgs.Image image;
-    
-    /**
-     * @return the info topic.
-     */
-    public RosTopic getInfoTopic()
-    {
-        return infoTopic;
-    }
-
-    /**
-     * @param infoTopic the info topic.
-     */
-    public void setInfoTopic(RosTopic infoTopic)
-    {
-        this.infoTopic = infoTopic;
-    }
 
     /**
      * {@inheritDoc}
@@ -64,12 +44,11 @@ public class ImageAdapter extends AbstractSensorAdapter
     }
 
     /**
-     * {@inheritDoc}
+     * @return the current image.
      */
-    @Override
-    public GraphName getDefaultNodeName()
+    public sensor_msgs.Image getImage()
     {
-        return GraphName.newAnonymous();
+        return image;
     }
 
     /**
@@ -91,13 +70,5 @@ public class ImageAdapter extends AbstractSensorAdapter
                 image = message;
             }
         });
-    }
-    
-    /**
-     * @return the current image.
-     */
-    public sensor_msgs.Image getImage()
-    {
-        return image;
     }
 }

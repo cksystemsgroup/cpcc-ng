@@ -22,6 +22,7 @@ package at.uni_salzburg.cs.cpcc.ros.services;
 import java.util.Collection;
 
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
+import at.uni_salzburg.cs.cpcc.ros.base.RosTopic;
 
 /**
  * RosAdapterFactory

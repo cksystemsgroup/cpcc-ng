@@ -20,7 +20,6 @@
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
 import org.ros.message.MessageListener;
-import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
@@ -45,12 +44,11 @@ public class GpsSensorAdapter extends AbstractSensorAdapter
     }
 
     /**
-     * {@inheritDoc}
+     * @return the current GPS position.
      */
-    @Override
-    public GraphName getDefaultNodeName()
+    public sensor_msgs.NavSatFix getPosition()
     {
-        return GraphName.newAnonymous();
+        return position;
     }
 
     /**
@@ -72,13 +70,5 @@ public class GpsSensorAdapter extends AbstractSensorAdapter
                 position = message;
             }
         });
-    }
-    
-    /**
-     * @return the current GPS position.
-     */
-    public sensor_msgs.NavSatFix getPosition()
-    {
-        return position;
     }
 }

@@ -17,43 +17,40 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.actuators;
+package at.uni_salzburg.cs.cpcc.ros.sensors;
 
+import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
-import org.ros.node.Node;
-import org.ros.node.topic.Publisher;
+import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * SimpleWayPointController
+ * MorseGpsSensorAdapter
  */
-public class SimpleWayPointControllerAdapter extends AbstractActuatorAdapter
+public class MorseGpsSensorAdapter extends AbstractSensorAdapter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleWayPointControllerAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MorseGpsSensorAdapter.class);
     
-    private Publisher<big_actor_msgs.LatLngAlt> publisher;
-
+    private sensor_msgs.NavSatFix position;
+    
     /**
      * {@inheritDoc}
      */
     @Override
-    public ActuatorType getType()
+    public SensorType getType()
     {
-        return ActuatorType.SIMPLE_WAYPOINT_CONTROLLER;
+        return SensorType.GPS_RECEIVER;
     }
 
     /**
-     * @param position the desired position.
+     * @return the current GPS position.
      */
-    public void setPosition(big_actor_msgs.LatLngAlt position)
+    public sensor_msgs.NavSatFix getPosition()
     {
-        if (publisher != null)
-        {
-            publisher.publish(position);
-        }
+        return position;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -61,16 +58,18 @@ public class SimpleWayPointControllerAdapter extends AbstractActuatorAdapter
     public void onStart(ConnectedNode connectedNode)
     {
         LOG.debug("onStart()");
-        publisher = connectedNode.newPublisher(getTopic().getName(), big_actor_msgs.LatLngAlt._TYPE);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onShutdown(Node node)
-    {
-        super.onShutdown(node);
-        publisher = null;
+        Subscriber<sensor_msgs.NavSatFix> positionSubscriber =
+            connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.NavSatFix._TYPE);
+
+        positionSubscriber.addMessageListener(new MessageListener<sensor_msgs.NavSatFix>()
+        {
+            @Override
+            public void onNewMessage(sensor_msgs.NavSatFix message)
+            {
+                // TODO transform MORSE coordinates to WGS84
+                position = message;
+            }
+        });
     }
 }
