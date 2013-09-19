@@ -68,7 +68,9 @@
 										</tr>
 										<tr>
 											<td><t:if test="adapterHasImage">
+												<div style="width: ${dimension.Width}px; height: ${dimension.Height}px">
 													<t:outputRaw value="adapterImageTag" />
+												</div>
 												</t:if></td>
 										</tr>
 									</table>

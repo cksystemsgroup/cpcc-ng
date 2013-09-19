@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services;
 
+import java.awt.Dimension;
+
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 
 /**
@@ -27,8 +29,14 @@ import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 public interface ImageTagService
 {
     /**
-     * @param rosTopic the ROS topic.
+     * @param adapter the ROS adapter.
      * @return the image tag.
      */
-    String getRosImageTag(AbstractRosAdapter rosTopic);
+    String getRosImageTag(AbstractRosAdapter adapter);
+
+    /**
+     * @param adapter the ROS adapter.
+     * @return the image dimensions.
+     */
+    Dimension getRosImageDimension(AbstractRosAdapter adapter);
 }

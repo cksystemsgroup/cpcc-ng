@@ -19,6 +19,7 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.pages.ros;
 
+import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +34,6 @@ import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.PageActivationContext;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
-import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
@@ -153,7 +153,7 @@ public class RosDeviceDetail
     {
         if (adapter == null)
         {
-            return null;
+            return Boolean.FALSE;
         }
         return "sensor_msgs/Image".equals(adapter.getTopic().getType());
     }
@@ -164,6 +164,14 @@ public class RosDeviceDetail
     public String getAdapterImageTag()
     {
         return imageTagService.getRosImageTag(adapter);
+    }
+    
+    /**
+     * @return the image dimensions.
+     */
+    public Dimension getDimension()
+    {
+        return imageTagService.getRosImageDimension(adapter);
     }
     
     /**

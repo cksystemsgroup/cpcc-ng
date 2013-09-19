@@ -82,7 +82,6 @@ public final class ConfigUtils
      * @param config the configuration.
      * @param propertyName the property value to be parsed.
      * @param startIndex the start index in the values list to use.
-     * @param defaultValue the default value.
      * @return the parsed coordinate.
      */
     public static PolarCoordinate parsePolarCoordinate(Map<String, List<String>> config, String propertyName,

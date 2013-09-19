@@ -55,7 +55,7 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
 
     private CartesianCoordinate originCart;
     
-    private static final GeodeticSystem gs = new WGS84();
+    private static final GeodeticSystem GEODETIC_SYSTEM = new WGS84();
 
     /**
      * {@inheritDoc}
@@ -75,7 +75,7 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
         if (publisher != null)
         {
             PolarCoordinate p = new PolarCoordinate(pos.getLatitude(), pos.getLongitude(), pos.getAltitude());
-            CartesianCoordinate coord = gs.polarToRectangularCoordinates(p);
+            CartesianCoordinate coord = GEODETIC_SYSTEM.polarToRectangularCoordinates(p);
             CartesianCoordinate distance = coord.subtract(originCart);
             
             position.getPosition().setX(distance.getY());
@@ -97,7 +97,7 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
         position = (geometry_msgs.Pose)connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Pose._TYPE);
         
         origin = ConfigUtils.parsePolarCoordinate(getConfig(), CFG_ORIGIN, 0);
-        originCart = gs.polarToRectangularCoordinates(origin);
+        originCart = GEODETIC_SYSTEM.polarToRectangularCoordinates(origin);
     }
 
     /**

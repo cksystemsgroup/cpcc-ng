@@ -49,7 +49,7 @@ import sensor_msgs.Image;
 public class RosImageConverterImpl implements RosImageConverter
 {
     @SuppressWarnings("serial")
-    private static final Map<String, ImageConverter> map = new HashMap<String, ImageConverter>()
+    private static final Map<String, ImageConverter> CONVERTER_MAP = new HashMap<String, ImageConverter>()
     {
         {
             put("rgba8", new Rgb8aImageConverter());
@@ -65,9 +65,9 @@ public class RosImageConverterImpl implements RosImageConverter
     @Override
     public BufferedImage messageToBufferedImage(sensor_msgs.Image message)
     {
-        if (map.containsKey(message.getEncoding()))
+        if (CONVERTER_MAP.containsKey(message.getEncoding()))
         {
-            return map.get(message.getEncoding()).convert(message);
+            return CONVERTER_MAP.get(message.getEncoding()).convert(message);
 
         }
 

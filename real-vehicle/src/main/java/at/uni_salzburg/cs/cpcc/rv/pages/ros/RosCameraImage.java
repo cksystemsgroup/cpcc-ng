@@ -42,7 +42,7 @@ import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
  */
 public class RosCameraImage
 {
-    private final Logger LOG = LoggerFactory.getLogger(RosCameraImage.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RosCameraImage.class);
 
     @Inject
     private RosNodeService rns;
@@ -54,7 +54,8 @@ public class RosCameraImage
     private String ctx;
 
     /**
-     * @return the currently available camera snapshot as PNG image.
+     * @param rootTopicParam the root topic.
+     * @return the currently available camera snapshot as <code>StreamResponse</code> image.
      */
     public StreamResponse onActivate(String rootTopicParam)
     {
@@ -73,7 +74,7 @@ public class RosCameraImage
         if (image == null)
         {
             LOG.error("No image adapter found for root topic " + rootTopicParam);
-            return new PngImageStreamResponse((byte[]) null);
+            return new PngImageStreamResponse();
         }
 
         BufferedImage bufferedImage = imageConverter.messageToBufferedImage(image);
@@ -102,7 +103,7 @@ public class RosCameraImage
             LOG.error("Can not convert ROS image to PNG " + rootTopic, e);
         }
 
-        return new PngImageStreamResponse((byte[]) null);
+        return new PngImageStreamResponse();
     }
 
 }

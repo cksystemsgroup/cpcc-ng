@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services;
 
+import java.awt.Dimension;
+
 import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.services.RequestGlobals;
 
@@ -32,7 +34,8 @@ import at.uni_salzburg.cs.cpcc.ros.sensors.ImageProvider;
 public class ImageTagServiceImpl implements ImageTagService
 {
     private static final Object ROS_CAMERA_IMAGE = "ros/cameraimage";
-    private static final String ROS_CAMERA_IMAGE_TAG = "<img src=\"%s/%s/%s/%d\" width=\"%d\" height=\"%d\" alt=\"%s\" title=\"%s\">";
+    private static final String ROS_CAMERA_IMAGE_TAG =
+        "<img src=\"%s/%s/%s/%d\" width=\"%d\" height=\"%d\" alt=\"%s\" title=\"%s\">";
     private static final String ROS_CAMERA_IMAGE_TAG_ALT = "camera.image.alt";
     private static final String ROS_CAMERA_IMAGE_TAG_TITLE = "camera.image.title";
 
@@ -51,13 +54,11 @@ public class ImageTagServiceImpl implements ImageTagService
     }
 
     /**
-     * @param rosTopic the ROS topic.
-     * @return the image tag.
+     * {@inheritDoc}
      */
     @Override
     public String getRosImageTag(AbstractRosAdapter adapter)
     {
-
         int width = 10;
         int height = 10;
         if (adapter instanceof ImageProvider)
@@ -71,8 +72,25 @@ public class ImageTagServiceImpl implements ImageTagService
         String alt = messages.get(ROS_CAMERA_IMAGE_TAG_ALT);
         String title = messages.get(ROS_CAMERA_IMAGE_TAG_TITLE);
         long time = System.currentTimeMillis();
-//        long time = 0;
+        
         return String.format(ROS_CAMERA_IMAGE_TAG, contextPath, ROS_CAMERA_IMAGE, param, time, width, height, alt,
             title);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Dimension getRosImageDimension(AbstractRosAdapter adapter)
+    {
+        int width = 10;
+        int height = 10;
+        if (adapter instanceof ImageProvider)
+        {
+            Image image = ((ImageProvider) adapter).getImage();
+            width = image.getWidth();
+            height = image.getHeight();
+        }
+        return new Dimension(width, height);
     }
 }

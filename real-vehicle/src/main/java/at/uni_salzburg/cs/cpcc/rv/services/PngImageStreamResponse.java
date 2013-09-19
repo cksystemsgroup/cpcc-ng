@@ -19,14 +19,15 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services;
 
-import org.apache.tapestry5.StreamResponse;
-import org.apache.tapestry5.services.Response;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.tapestry5.StreamResponse;
+import org.apache.tapestry5.services.Response;
 
 /**
  * PngImageStreamResponse
@@ -55,24 +56,37 @@ public class PngImageStreamResponse implements StreamResponse
         (byte) 0x82
     };
 
-    private File image = null;
+    private InputStream stream;
 
-    private byte[] imageData = null;
-
+    /**
+     * Provide an one pixel wide empty PNG image.
+     */
+    public PngImageStreamResponse()
+    {
+        stream = null;
+    }
+    
     /**
      * @param image the image as file.
      */
-    public PngImageStreamResponse(File image)
+    public PngImageStreamResponse(final File image)
     {
-        this.image = image;
+        try
+        {
+            stream = new FileInputStream(image);
+        }
+        catch (FileNotFoundException e)
+        {
+            stream = null;
+        }
     }
 
     /**
-     * @param image the image as array of bytes.
+     * @param imageData the image as array of bytes.
      */
-    public PngImageStreamResponse(byte[] imageData)
+    public PngImageStreamResponse(final byte[] imageData)
     {
-        this.imageData = imageData;
+        this.stream = new ByteArrayInputStream(imageData);
     }
 
     /**
@@ -90,17 +104,7 @@ public class PngImageStreamResponse implements StreamResponse
     @Override
     public InputStream getStream() throws IOException
     {
-        if (image != null)
-        {
-            return new FileInputStream(image);
-        }
-
-        if (imageData != null && imageData.length > 0)
-        {
-            return new ByteArrayInputStream(imageData);
-        }
-
-        return new ByteArrayInputStream(ONE_PIXEL_EMPTY_PNG);
+        return stream != null ? stream : new ByteArrayInputStream(ONE_PIXEL_EMPTY_PNG);
     }
 
     /**
