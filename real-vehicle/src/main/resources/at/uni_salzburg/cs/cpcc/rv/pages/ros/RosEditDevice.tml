@@ -3,28 +3,34 @@
 	xmlns:p="tapestry:parameter">
 
 <section id="deviceEdit">
-	<form t:type="form" validate="device" t:id="form">
+	<form t:type="form" t:validate="device" t:id="form">
 		<t:errors />
 
-		<div t:type="beaneditor" object="device" exclude="id"
-			add="deviceTypeName" reorder="topicRoot,deviceTypeName,configuration">
+		<div t:type="beaneditor" t:object="device" t:exclude="id"
+			t:add="deviceTypeName"
+			t:reorder="topicRoot,deviceTypeName,configuration">
+			<p:topicRoot>
+				<t:label t:type="label" for="topicRoot" />
+				<input t:type="TextField" t:id="topicRoot" t:class="span4"
+					value="device.topicRoot" t:validate="maxlength=100" size="30" />
+			</p:topicRoot>
 			<p:deviceTypeName>
-				<label t:type="label" for="deviceTypeName" />
-				<select t:type="select" t:id="deviceTypeName"
-					model="deviceTypeNameSelectModel" encoder="deviceTypeNameEncoder"
-					value="device.type" />
+				<t:label t:type="label" for="deviceTypeName" />
+				<t:select t:type="select" t:id="deviceTypeName" t:class="span4"
+					t:model="deviceTypeNameSelectModel"
+					t:encoder="deviceTypeNameEncoder" t:value="device.type" />
 			</p:deviceTypeName>
 			<p:configuration>
 				<t:label for="configuration" />
-				<t:textarea t:id="configuration" rows="5"
+				<t:textarea t:id="configuration" rows="5" t:class="span4"
 					value="device.configuration" />
 			</p:configuration>
 		</div>
 
 		<div class="form-actions">
-			<input type="submit" t:type="submit" value="${message:btn.commit}"
-				class="btn btn-primary" /> <a t:type="pagelink"
-				page="configuration" class="btn">${message:btn.cancel}</a>
+			<input type="submit" t:type="submit" t:value="${message:btn.commit}"
+				t:class="btn btn-primary" /> <a t:type="pagelink"
+				t:page="configuration" t:class="btn">${message:btn.cancel}</a>
 		</div>
 	</form>
 </section>

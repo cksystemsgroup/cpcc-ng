@@ -13,18 +13,69 @@
 		</div>
 
 		<div class="span8">
-			<p>${message:device.root.topic} ${deviceDetailLinkContext}</p>
 
 			<t:zone t:id="zone" t:mixins='jquery/zonerefresh' t:period='1'
-				t:update="show">
-				<table t:type="grid" source="deviceParameterList"
-					row="deviceParameter" add="parameter" exclude="empty"
-					class="table table-striped table-condensed topic-table">
+				t:update="show" t:context="deviceDetailLinkContext">
 
-					<p:parameterCell>
-					${deviceParameter}
-				</p:parameterCell>
+				<div class="well well-small">
+					<p>
+						<strong>${message:device.type.name}</strong>:&nbsp;${deviceTypeName}
+						&nbsp;&nbsp; <strong>${message:device.root.topic}</strong>:&nbsp;${deviceDetailLinkContext}
+					</p>
+					<table t:type="grid" t:source="deviceParameterList"
+						t:row="deviceParameter" t:add="parameter" t:exclude="empty"
+						class="table table-striped table-condensed topic-table">
 
+						<p:parameterCell>
+							${deviceParameter}
+						</p:parameterCell>
+					</table>
+				</div>
+
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<tbody>
+						<tr t:type="Loop" t:source="adapterList" t:value="adapter">
+							<td>
+								<div class="well well-small">
+									<p>
+										<strong>${message:adapterNodeName}</strong>:&nbsp;${adapter.DefaultNodeName}
+										<t:if test="adapter.Topic">
+											&nbsp;&nbsp;
+											<strong>${message:adapterTopicName}</strong>:&nbsp;${adapter.Topic.Name}
+											&nbsp;&nbsp;
+											<strong>${message:adapterTopicType}</strong>:&nbsp;${adapter.Topic.Type}
+										</t:if>
+									</p>
+									<table>
+										<tr>
+											<td>
+												<table t:type="grid" t:source="adapterParameterList"
+													t:row="adapterParameter" t:add="parameter"
+													t:exclude="empty"
+													class="table table-striped table-condensed topic-table">
+
+													<p:parameterCell>
+														<t:if test="adapterParameter">
+															${adapterParameter}
+														</t:if>
+													</p:parameterCell>
+
+													<p:empty>
+														nothing to show!
+													</p:empty>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td><t:if test="adapterHasImage">
+													<t:outputRaw value="adapterImageTag" />
+												</t:if></td>
+										</tr>
+									</table>
+								</div>
+							</td>
+						</tr>
+					</tbody>
 				</table>
 			</t:zone>
 		</div>

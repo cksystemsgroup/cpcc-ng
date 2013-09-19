@@ -19,11 +19,16 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.base;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 
 /**
- * AbstractRosAdapter
+ * GenericRosAdapter
  */
 public abstract class AbstractRosAdapter extends AbstractNodeMain
 {
@@ -32,6 +37,8 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     private GraphName name;
     
     private RosTopic topic;
+
+    private Map<String, List<String>> config;
 
     /**
      * {@inheritDoc}
@@ -72,5 +79,38 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     public void setTopic(RosTopic topic)
     {
         this.topic = topic;
+    }
+
+    /**
+     * @param config the configuration.
+     */
+    public void setConfig(Map<String, List<String>> config)
+    {
+        this.config = config;
+    }
+    
+    /**
+     * @return the configuration.
+     */
+    public Map<String, List<String>> getConfig()
+    {
+        return config;
+    }
+    
+    /**
+     * @return the current state of the ROS adapter.
+     */
+    public Map<String, List<String>> getCurrentState()
+    {
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+
+        if (getConfig() != null)
+        {
+            for (Entry<String, List<String>> entry : getConfig().entrySet())
+            {
+                map.put("config." + entry.getKey(), entry.getValue());
+            }
+        }
+        return map;
     }
 }

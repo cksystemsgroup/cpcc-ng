@@ -24,8 +24,9 @@ import java.util.Map;
 
 import org.ros.node.NodeConfiguration;
 
-import at.uni_salzburg.cs.cpcc.ros.sim.ConfigUtils;
+import at.uni_salzburg.cs.cpcc.utilities.ConfigUtils;
 import at.uni_salzburg.cs.cpcc.utilities.GeodeticSystem;
+import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.utilities.WGS84;
 
 /**
@@ -79,11 +80,13 @@ public class Configuration
     {
         this.topicRoot = config.get(CFG_TOPIC_ROOT).get(0);
 
+        PolarCoordinate originPosition = ConfigUtils.parsePolarCoordinate(config, CFG_ORIGIN, 0);
+        
         origin = nodeConfiguration.getTopicMessageFactory().newFromType(big_actor_msgs.LatLngAlt._TYPE);
-        origin.setLatitude(ConfigUtils.parseDouble(config, CFG_ORIGIN, 0, 0));
-        origin.setLongitude(ConfigUtils.parseDouble(config, CFG_ORIGIN, 1, 0));
-        origin.setAltitude(ConfigUtils.parseDouble(config, CFG_ORIGIN, 2, 0));
-
+        origin.setLatitude(originPosition.getLatitude());
+        origin.setLongitude(originPosition.getLongitude());
+        origin.setAltitude(originPosition.getAltitude());
+        
         maxVelocity = ConfigUtils.parseDouble(config, CFG_MAX_VELOCITY, 0, 5);
         maxAcceleration = ConfigUtils.parseDouble(config, CFG_MAX_ACCELERATION, 0, 1);
         precision = ConfigUtils.parseDouble(config, CFG_PRECISION, 0, 3);

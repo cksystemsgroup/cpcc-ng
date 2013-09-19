@@ -19,6 +19,11 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 
 /**
  * AbstractGpsSensorAdapter
@@ -50,5 +55,25 @@ public abstract class AbstractGpsSensorAdapter extends AbstractSensorAdapter
     protected void setPosition(sensor_msgs.NavSatFix position)
     {
         this.position = position;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, List<String>> getCurrentState()
+    {
+        Map<String, List<String>> map = super.getCurrentState();
+        
+        if (position != null)
+        {
+            map.put("sensor.gps.position", Arrays.asList(
+                String.format(Locale.US, "%.8f", position.getLatitude()),
+                String.format(Locale.US, "%.8f", position.getLongitude()),
+                String.format(Locale.US, "%.3f", position.getAltitude())
+                ));
+        }
+        
+        return map;
     }
 }

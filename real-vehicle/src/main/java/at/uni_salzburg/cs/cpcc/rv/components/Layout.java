@@ -80,7 +80,7 @@ public class Layout
 
     public Collection<String> getPageNames()
     {
-        return Arrays.asList("configuration", "contact", "ros/Overview");
+        return Arrays.asList("configuration", "contact", "ros/Overview", "ros/CameraImage");
     }
 
     public String getPageLabel()

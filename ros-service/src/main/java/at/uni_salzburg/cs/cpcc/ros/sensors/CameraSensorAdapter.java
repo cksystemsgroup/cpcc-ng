@@ -31,7 +31,7 @@ import at.uni_salzburg.cs.cpcc.ros.base.RosTopic;
 /**
  * CameraSensor
  */
-public class CameraSensorAdapter extends AbstractSensorAdapter
+public class CameraSensorAdapter extends AbstractSensorAdapter implements ImageProvider
 {
     private static final Logger LOG = LoggerFactory.getLogger(CameraSensorAdapter.class);
     private RosTopic infoTopic;
@@ -81,8 +81,9 @@ public class CameraSensorAdapter extends AbstractSensorAdapter
     }
     
     /**
-     * @return the current image.
+     * {@inheritDoc}
      */
+    @Override
     public sensor_msgs.Image getImage()
     {
         return image;

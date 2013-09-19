@@ -19,6 +19,7 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.pages.ros;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,17 @@ import java.util.TreeMap;
 import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.Component;
+import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.PageActivationContext;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.corelib.components.Zone;
+import org.slf4j.Logger;
 
+import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
 import at.uni_salzburg.cs.cpcc.rv.components.DeviceTree;
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
+import at.uni_salzburg.cs.cpcc.rv.services.ImageTagService;
 import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 
@@ -46,10 +52,14 @@ public class RosDeviceDetail
     private QueryManager qm;
     
     @Inject
-    private RosNodeService nodeService;
+    private ImageTagService imageTagService;
     
     @Property
+    @Inject
+    private RosNodeService nodeService;
+    
     @PageActivationContext
+    @Property
     private String deviceDetailLinkContext;
     
     @Component(parameters = { "devices=deviceList" })
@@ -57,6 +67,15 @@ public class RosDeviceDetail
     
     @Property
     private String deviceParameter;
+    
+    @Property
+    private AbstractRosAdapter adapter;
+    
+    @Property
+    private String adapterParameter;
+    
+    @InjectComponent
+    private Zone zone;
     
     /**
      * @return the list of devices.
@@ -67,29 +86,103 @@ public class RosDeviceDetail
     }
     
     /**
+     * @return the device type name.
+     */
+    public String getDeviceTypeName()
+    {
+        Device device = qm.findDeviceByTopicRoot(deviceDetailLinkContext);
+        if (device == null)
+        {
+            return null;
+        }
+        return device.getType().getName();
+    }
+    
+    /**
      * @return the device parameter list.
      */
     public Collection<String> getDeviceParameterList()
     {
         Device device = qm.findDeviceByTopicRoot(deviceDetailLinkContext);
+        if (device == null)
+        {
+            return null;
+        }
         RosNodeGroup group = nodeService.getDeviceNodes().get(device.getTopicRoot());
         if (group == null)
         {
             return null;
         }
-        
-        Map<String, List<String>> state = group.getCurrentState();
-        if (state == null)
+        return renderParameterList(group.getCurrentState());
+    }
+    
+    /**
+     * @return the adapter list.
+     */
+    public Collection<AbstractRosAdapter> getAdapterList()
+    {
+        if (deviceDetailLinkContext == null)
         {
             return null;
         }
+        Device device = qm.findDeviceByTopicRoot(deviceDetailLinkContext);
+        if (device == null)
+        {
+            return null;
+        }
+        List<AbstractRosAdapter> l = nodeService.getAdapterNodes().get(device.getTopicRoot());
+        return l;
+    }
+    
+    /**
+     * @return the adapter parameter list.
+     */
+    public Collection<String> getAdapterParameterList()
+    {
+        if (adapter == null)
+        {
+            return null;
+        }
+        return renderParameterList(adapter.getCurrentState());
+    }
+
+    /**
+     * @return true if the current adapter has image data.
+     */
+    public Boolean getAdapterHasImage()
+    {
+        if (adapter == null)
+        {
+            return null;
+        }
+        return "sensor_msgs/Image".equals(adapter.getTopic().getType());
+    }
+    
+    /**
+     * @return the tag for the adapter's image data.
+     */
+    public String getAdapterImageTag()
+    {
+        return imageTagService.getRosImageTag(adapter);
+    }
+    
+    /**
+     * @param state the state map.
+     * @return the parameter list.
+     */
+    private static Collection<String> renderParameterList(Map<String, List<String>> state)
+    {
+        if (state == null)
+        {
+            return Arrays.asList(new String[0]);
+        }
         
-        Map<String,String> parameterMap = new TreeMap<String, String>();
+        Map<String, String> parameterMap = new TreeMap<String, String>();
         for (Entry<String, List<String>> entry : state.entrySet())
         {
             StringBuilder b = new StringBuilder();
             b.append(entry.getKey()).append(" = ");
-            
+
             List<String> valueList = entry.getValue();
             boolean first = true;
             if (valueList.size() > 1)
@@ -104,7 +197,7 @@ public class RosDeviceDetail
                 }
                 else
                 {
-                    b.append(",");                    
+                    b.append(",");
                 }
                 b.append(value);
             }
@@ -112,9 +205,10 @@ public class RosDeviceDetail
             {
                 b.append(")");
             }
-            parameterMap.put(entry.getKey() ,b.toString());
+            parameterMap.put(entry.getKey(), b.toString());
         }
 
         return parameterMap.values();
     }
+    
 }

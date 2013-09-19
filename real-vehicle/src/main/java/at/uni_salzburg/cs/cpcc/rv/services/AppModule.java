@@ -25,6 +25,8 @@ import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
 
+import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverter;
+import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverterImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManagerImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
@@ -33,8 +35,8 @@ import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeServiceImpl;
 
 /**
- * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to
- * configure and extend Tapestry, or to place your own service definitions.
+ * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to configure and extend
+ * Tapestry, or to place your own service definitions.
  */
 public final class AppModule
 {
@@ -48,9 +50,11 @@ public final class AppModule
      */
     public static void bind(ServiceBinder binder)
     {
+        binder.bind(ImageTagService.class, ImageTagServiceImpl.class);
+        binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
         binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
         binder.bind(RosNodeService.class, RosNodeServiceImpl.class).eagerLoad();
-        binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
+        binder.bind(RosImageConverter.class, RosImageConverterImpl.class);
     }
 
     /**

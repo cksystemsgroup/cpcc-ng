@@ -34,6 +34,7 @@ import javax.inject.Singleton;
 import org.apache.tapestry5.ioc.annotations.EagerLoad;
 import org.ros.RosCore;
 import org.ros.address.InetAddressFactory;
+import org.ros.exception.RosRuntimeException;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
@@ -127,8 +128,15 @@ public class RosNodeServiceImpl implements RosNodeService
      */
     private AbstractRosAdapter launchDeviceAdapter(Device device, Topic topic)
     {
-        LOG.info("launchDeviceAdapter launchNode=" + device.getTopicRoot() + ", topic=" + topic.getSubpath()
-            + ", adapterClass=" + topic.getAdapterClassName());
+        StringBuilder topicPath = new StringBuilder();
+        topicPath.append(device.getTopicRoot());
+        if (topic.getSubpath() != null)
+        {
+            topicPath.append("/").append(topic.getSubpath());
+        }
+
+        LOG.info("launchDeviceAdapter launchNode=" + device.getTopicRoot() + ", topicRoot=" + device.getTopicRoot()
+            + ", topic=" + topicPath.toString() + ", adapterClass=" + topic.getAdapterClassName());
 
         if (topic.getAdapterClassName() != null)
         {
@@ -137,24 +145,25 @@ public class RosNodeServiceImpl implements RosNodeService
                 Class<?> clazz = Class.forName(topic.getAdapterClassName());
                 LOG.info("Adapter class " + clazz.getName() + " loaded.");
 
+                RosTopic rosTopic = new RosTopic();
+                rosTopic.setName(topicPath.toString());
+                rosTopic.setType(topic.getMessageType());
+
                 AbstractRosAdapter instance = (AbstractRosAdapter) clazz.newInstance();
-                StringBuilder topicPath = new StringBuilder();
-                topicPath.append(device.getTopicRoot());
-                if (topic.getSubpath() != null)
+                instance.setTopic(rosTopic);
+                if (device.getConfiguration() != null)
                 {
-                    topicPath.append("/").append(topic.getSubpath());
+                    instance.setConfig(optionsParser.parseConfig(device.getConfiguration()));
                 }
-                RosTopic t = new RosTopic();
-                t.setName(topicPath.toString());
-                t.setType(topic.getMessageType());
-                instance.setTopic(t);
+
                 DefaultNodeMainExecutor.newDefault().execute(instance, nodeConfiguration);
                 LOG.info("Adapter class " + clazz.getName() + " started.");
                 return instance;
             }
-            catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
+            catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException
+                | ParseException e)
             {
-                LOG.error("launchDeviceAdapter can not load class " + device.getType().getClassName(), e);
+                LOG.error("launchDeviceAdapter can not load class " + topic.getAdapterClassName(), e);
             }
         }
         return null;
@@ -176,7 +185,10 @@ public class RosNodeServiceImpl implements RosNodeService
         for (Topic topic : topicList)
         {
             AbstractRosAdapter adapter = launchDeviceAdapter(device, topic);
-            adapterList.add(adapter);
+            if (adapter != null)
+            {
+                adapterList.add(adapter);
+            }
         }
 
         rns.getAdapterNodes().put(device.getTopicRoot(), adapterList);
@@ -309,15 +321,24 @@ public class RosNodeServiceImpl implements RosNodeService
 
         RosCore rosCore = RosCore.newPublic(host, port);
         rns.setRosCore(rosCore);
-        rosCore.start();
+
         try
         {
-            rosCore.awaitStart();
-            LOG.info("ROS core is up and running.");
+            rosCore.start();
+            try
+            {
+                rosCore.awaitStart();
+                LOG.info("ROS core is up and running.");
+            }
+            catch (InterruptedException e)
+            {
+                LOG.error("Starting ROS core has been interrupted", e);
+            }
         }
-        catch (InterruptedException e)
+        catch (RosRuntimeException e)
         {
-            LOG.error("Starting ROS core has been interrupted", e);
+            LOG.error("Starting ROS core failed", e);
+            rns.setRosCore(null);
         }
     }
 
@@ -459,6 +480,25 @@ public class RosNodeServiceImpl implements RosNodeService
         return rns.getAdapterNodes();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractRosAdapter getAdapterNodeByTopic(String topic)
+    {
+        for (List<AbstractRosAdapter> nodeList : rns.getAdapterNodes().values())
+        {
+            for (AbstractRosAdapter node : nodeList)
+            {
+                if (topic.equals(node.getTopic().getName()))
+                {
+                    return node;
+                }
+            }
+        }
+        return null;
+    }
+    
     /**
      * RosNodeSingleton
      */

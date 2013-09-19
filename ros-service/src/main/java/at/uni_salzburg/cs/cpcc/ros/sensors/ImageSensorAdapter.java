@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * ImageAdapter
  */
-public class ImageSensorAdapter extends AbstractSensorAdapter
+public class ImageSensorAdapter extends AbstractSensorAdapter implements ImageProvider
 {
     private static final Logger LOG = LoggerFactory.getLogger(ImageSensorAdapter.class);
     
@@ -44,8 +44,9 @@ public class ImageSensorAdapter extends AbstractSensorAdapter
     }
 
     /**
-     * @return the current image.
+     * {@inheritDoc}
      */
+    @Override
     public sensor_msgs.Image getImage()
     {
         return image;

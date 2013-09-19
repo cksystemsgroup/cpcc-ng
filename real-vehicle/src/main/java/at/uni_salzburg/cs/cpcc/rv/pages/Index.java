@@ -50,9 +50,6 @@ public class Index
     @Inject
     private QueryManager qm;
 
-    //    @Inject
-    //    private AlertManager alertManager;
-
     @Component(parameters = {"devices=deviceList"})
     private DeviceTree deviceTree;
 
@@ -71,21 +68,4 @@ public class Index
     {
         return new Date();
     }
-
-    //    void onActionFromIncrement()
-    //    {
-    ////        alertManager.info("Increment clicked");
-    //
-    //        clickCount++;
-    //    }
-    //
-    //    Object onActionFromIncrementAjax()
-    //    {
-    //        clickCount++;
-    //
-    ////        alertManager.info("Increment (via Ajax) clicked");
-    //
-    //        return zone;
-    //    }
-
 }

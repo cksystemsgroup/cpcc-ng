@@ -19,11 +19,21 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import at.uni_salzburg.cs.cpcc.utilities.ConfigUtils;
+import at.uni_salzburg.cs.cpcc.utilities.GeodeticSystem;
+import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.utilities.WGS84;
 
 /**
  * MorseGpsSensorAdapter
@@ -32,6 +42,12 @@ public class MorseGpsSensorAdapter extends AbstractGpsSensorAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(MorseGpsSensorAdapter.class);
     
+    private static final String CFG_ORIGIN = "origin";
+    
+    private sensor_msgs.NavSatFix position;
+    
+    private sensor_msgs.NavSatFix gpsPosition;
+    
     /**
      * {@inheritDoc}
      */
@@ -39,18 +55,52 @@ public class MorseGpsSensorAdapter extends AbstractGpsSensorAdapter
     public void onStart(ConnectedNode connectedNode)
     {
         LOG.debug("onStart()");
+        
+        gpsPosition = connectedNode.getTopicMessageFactory().newFromType(sensor_msgs.NavSatFix._TYPE);
 
         Subscriber<sensor_msgs.NavSatFix> positionSubscriber =
             connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.NavSatFix._TYPE);
 
+        final PolarCoordinate origin = ConfigUtils.parsePolarCoordinate(getConfig(), CFG_ORIGIN, 0);
+        
         positionSubscriber.addMessageListener(new MessageListener<sensor_msgs.NavSatFix>()
         {
+            private GeodeticSystem gs = new WGS84();
+            
             @Override
             public void onNewMessage(sensor_msgs.NavSatFix message)
             {
-                // TODO transform MORSE coordinates to WGS84
-                setPosition(message);
+                position = message;
+                double x = message.getLongitude();
+                double y = message.getLatitude();
+                double z = message.getAltitude();
+                PolarCoordinate p = gs.walk(origin, -x, y, z);
+                
+                gpsPosition.setLatitude(p.getLatitude());
+                gpsPosition.setLongitude(p.getLongitude());
+                gpsPosition.setAltitude(p.getAltitude());
+                setPosition(gpsPosition);
             }
         });
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, List<String>> getCurrentState()
+    {
+        Map<String, List<String>> map = super.getCurrentState();
+        
+        if (position != null)
+        {
+            map.put("sensor.morse.position", Arrays.asList(
+                String.format(Locale.US, "%.8f", position.getLatitude()),
+                String.format(Locale.US, "%.8f", position.getLongitude()),
+                String.format(Locale.US, "%.3f", position.getAltitude())
+                ));
+        }
+        
+        return map;
     }
 }

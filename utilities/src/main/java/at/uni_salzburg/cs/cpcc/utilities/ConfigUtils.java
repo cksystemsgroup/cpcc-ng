@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.sim;
+package at.uni_salzburg.cs.cpcc.utilities;
 
 import java.util.List;
 import java.util.Map;
@@ -76,5 +76,21 @@ public final class ConfigUtils
         String propertyValue = property.get(index);
         
         return propertyValue != null ? Integer.parseInt(propertyValue) : defaultValue;
+    }
+    
+    /**
+     * @param config the configuration.
+     * @param propertyName the property value to be parsed.
+     * @param startIndex the start index in the values list to use.
+     * @param defaultValue the default value.
+     * @return the parsed coordinate.
+     */
+    public static PolarCoordinate parsePolarCoordinate(Map<String, List<String>> config, String propertyName,
+        int startIndex)
+    {
+        double latitude = ConfigUtils.parseDouble(config, propertyName, startIndex, 0);
+        double longitude = ConfigUtils.parseDouble(config, propertyName, startIndex+1, 0);
+        double altitude = ConfigUtils.parseDouble(config, propertyName, startIndex+2, 0);
+        return new PolarCoordinate(latitude, longitude, altitude);
     }
 }

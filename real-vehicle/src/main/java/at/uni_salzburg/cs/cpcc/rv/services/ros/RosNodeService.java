@@ -73,4 +73,10 @@ public interface RosNodeService
      * @return the adapter nodes.
      */
     Map<String, List<AbstractRosAdapter>> getAdapterNodes();
+    
+    /**
+     * @param topic the ROS topic.
+     * @return the adapter node, or null if not found.
+     */
+    AbstractRosAdapter getAdapterNodeByTopic(String topic);
 }
