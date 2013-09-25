@@ -32,7 +32,6 @@ import java.util.TreeMap;
 import org.ros.address.InetAddressFactory;
 import org.ros.internal.node.client.MasterClient;
 import org.ros.internal.node.response.Response;
-import org.ros.internal.node.response.StatusCode;
 import org.ros.master.client.SystemState;
 import org.ros.master.client.TopicSystemState;
 import org.ros.master.client.TopicType;
@@ -47,45 +46,11 @@ import org.testng.annotations.Test;
 
 import sensor_msgs.CameraInfo;
 
+/**
+ * RosNodeStarterTest
+ */
 public class RosNodeStarterTest
 {
-//    RosNodeStarter nodeStarter;
-//    
-//    @BeforeClass
-//    public void beforeClass()
-//    {
-//        nodeStarter = new RosNodeStarterImpl();
-//    }
-//
-//    @AfterClass
-//    public void afterClass()
-//    {
-//        nodeStarter.shutdown();
-//    }
-
-//    @Test
-//    public void f()
-//    {
-//        RosCore core = nodeStarter.getRosCore();
-//        
-//        MasterServer master = core.getMasterServer();
-//        
-//        List<Object> publishedTopics = master.getPublishedTopics(GraphName.root(), GraphName.root());
-//        
-//        // [[/mav09/camera1/camera_info, sensor_msgs/CameraInfo], [/mav02/gps, sensor_msgs/NavSatFix], [/mav02/camera1/camera_info, sensor_msgs/CameraInfo], [/mav04/gps, sensor_msgs/NavSatFix], [/mav07/camera1/image, sensor_msgs/Image], [/mav01/camera1/camera_info, sensor_msgs/CameraInfo], [/mav03/camera1/camera_info, sensor_msgs/CameraInfo], [/mav07/gps, sensor_msgs/NavSatFix], [/mav00/camera1/camera_info, sensor_msgs/CameraInfo], [/mav02/camera1/image, sensor_msgs/Image], [/mav07/camera1/camera_info, sensor_msgs/CameraInfo], [/mav08/camera1/image, sensor_msgs/Image], [/mav03/camera1/image, sensor_msgs/Image], [/mav09/gps, sensor_msgs/NavSatFix], [/mav01/camera1/image, sensor_msgs/Image], [/mav08/camera1/camera_info, sensor_msgs/CameraInfo], [/mav06/camera1/camera_info, sensor_msgs/CameraInfo], [/mav01/gps, sensor_msgs/NavSatFix], [/mav04/camera1/image, sensor_msgs/Image], [/mav00/gps, sensor_msgs/NavSatFix], [/mav09/camera1/image, sensor_msgs/Image], [/mav05/gps, sensor_msgs/NavSatFix], [/mav08/gps, sensor_msgs/NavSatFix], [/mav06/camera1/image, sensor_msgs/Image], [/mav05/camera1/camera_info, sensor_msgs/CameraInfo], [/mav05/camera1/image, sensor_msgs/Image], [/mav06/gps, sensor_msgs/NavSatFix], [/mav00/camera1/image, sensor_msgs/Image], [/mav03/gps, sensor_msgs/NavSatFix], [/mav04/camera1/camera_info, sensor_msgs/CameraInfo], [/rosout, rosgraph_msgs/Log]]
-//        
-//        List<Object> systemState = master.getSystemState();
-//           
-//        // [[[/mav09/camera1/camera_info, [/morse]], [/mav02/gps, [/morse]], [/mav02/camera1/camera_info, [/morse]], [/mav04/gps, [/morse]], [/mav07/camera1/image, [/morse]], [/mav01/camera1/camera_info, [/morse]], [/mav03/camera1/camera_info, [/morse]], [/mav07/gps, [/morse]], [/mav00/camera1/camera_info, [/morse]], [/mav02/camera1/image, [/morse]], [/mav07/camera1/camera_info, [/morse]], [/mav08/camera1/image, [/morse]], [/mav03/camera1/image, [/morse]], [/mav09/gps, [/morse]], [/mav01/camera1/image, [/morse]], [/mav08/camera1/camera_info, [/morse]], [/mav06/camera1/camera_info, [/morse]], [/mav01/gps, [/morse]], [/mav04/camera1/image, [/morse]], [/mav00/gps, [/morse]], [/mav09/camera1/image, [/morse]], [/mav05/gps, [/morse]], [/mav08/gps, [/morse]], [/mav06/camera1/image, [/morse]], [/mav05/camera1/camera_info, [/morse]], [/mav05/camera1/image, [/morse]], [/mav06/gps, [/morse]], [/mav00/camera1/image, [/morse]], [/mav03/gps, [/morse]], [/mav04/camera1/camera_info, [/morse]], [/rosout, [/morse]]], [[/mav09/waypoint, [/morse]], [/mav06/waypoint, [/morse]], [/mav01/waypoint, [/morse]], [/mav00/waypoint, [/morse]], [/mav07/waypoint, [/morse]], [/mav03/waypoint, [/morse]], [/mav08/waypoint, [/morse]], [/mav02/waypoint, [/morse]], [/mav05/waypoint, [/morse]], [/mav04/waypoint, [/morse]]], [[/mav00/gps/get_local_data, [/mav00/gps/get_local_data]], [/mav05/waypoint/setdest, [/mav05/waypoint/setdest]], [/mav02/waypoint/setdest, [/mav02/waypoint/setdest]], [/mav07/waypoint/setdest, [/mav07/waypoint/setdest]], [/mav04/waypoint/get_status, [/mav04/waypoint/get_status]], [/mav03/gps/get_local_data, [/mav03/gps/get_local_data]], [/mav05/waypoint/get_status, [/mav05/waypoint/get_status]], [/mav06/camera1/get_local_data, [/mav06/camera1/get_local_data]], [/mav05/camera1/get_local_data, [/mav05/camera1/get_local_data]], [/mav08/gps/get_local_data, [/mav08/gps/get_local_data]], [/mav05/gps/get_local_data, [/mav05/gps/get_local_data]], [/mav02/camera1/get_local_data, [/mav02/camera1/get_local_data]], [/mav04/camera1/get_local_data, [/mav04/camera1/get_local_data]], [/mav09/waypoint/setdest, [/mav09/waypoint/setdest]], [/mav00/waypoint/get_status, [/mav00/waypoint/get_status]], [/mav01/waypoint/get_status, [/mav01/waypoint/get_status]], [/mav03/waypoint/get_status, [/mav03/waypoint/get_status]], [/mav02/waypoint/get_status, [/mav02/waypoint/get_status]], [/mav08/camera1/get_local_data, [/mav08/camera1/get_local_data]], [/mav06/waypoint/get_status, [/mav06/waypoint/get_status]], [/mav08/waypoint/setdest, [/mav08/waypoint/setdest]], [/mav01/gps/get_local_data, [/mav01/gps/get_local_data]], [/mav06/waypoint/setdest, [/mav06/waypoint/setdest]], [/mav02/gps/get_local_data, [/mav02/gps/get_local_data]], [/mav07/waypoint/get_status, [/mav07/waypoint/get_status]], [/morse/set_logger_level, [/morse/set_logger_level]], [/mav03/camera1/get_local_data, [/mav03/camera1/get_local_data]], [/mav09/waypoint/get_status, [/mav09/waypoint/get_status]], [/mav00/camera1/get_local_data, [/mav00/camera1/get_local_data]], [/mav00/waypoint/setdest, [/mav00/waypoint/setdest]], [/mav03/waypoint/setdest, [/mav03/waypoint/setdest]], [/mav06/gps/get_local_data, [/mav06/gps/get_local_data]], [/mav08/waypoint/get_status, [/mav08/waypoint/get_status]], [/mav04/waypoint/setdest, [/mav04/waypoint/setdest]], [/morse/get_loggers, [/morse/get_loggers]], [/mav01/waypoint/setdest, [/mav01/waypoint/setdest]], [/mav09/gps/get_local_data, [/mav09/gps/get_local_data]], [/mav04/gps/get_local_data, [/mav04/gps/get_local_data]], [/mav07/camera1/get_local_data, [/mav07/camera1/get_local_data]], [/mav07/gps/get_local_data, [/mav07/gps/get_local_data]], [/mav01/camera1/get_local_data, [/mav01/camera1/get_local_data]], [/mav09/camera1/get_local_data, [/mav09/camera1/get_local_data]]]]
-//        
-//        List<List<String>> topicTypes = master.getTopicTypes(GraphName.of("/mav05/camera1/camera_info"));
-//
-//        // [[/mav09/camera1/camera_info, sensor_msgs/CameraInfo], [/mav02/gps, sensor_msgs/NavSatFix], [/mav02/camera1/camera_info, sensor_msgs/CameraInfo], [/mav04/gps, sensor_msgs/NavSatFix], [/mav09/waypoint, geometry_msgs/Pose], [/mav06/waypoint, geometry_msgs/Pose], [/mav01/waypoint, geometry_msgs/Pose], [/mav07/camera1/image, sensor_msgs/Image], [/mav01/camera1/camera_info, sensor_msgs/CameraInfo], [/mav03/camera1/camera_info, sensor_msgs/CameraInfo], [/mav00/waypoint, geometry_msgs/Pose], [/mav07/gps, sensor_msgs/NavSatFix], [/mav00/camera1/camera_info, sensor_msgs/CameraInfo], [/mav07/waypoint, geometry_msgs/Pose], [/mav03/waypoint, geometry_msgs/Pose], [/mav02/camera1/image, sensor_msgs/Image], [/mav08/waypoint, geometry_msgs/Pose], [/mav02/waypoint, geometry_msgs/Pose], [/mav05/waypoint, geometry_msgs/Pose], [/mav07/camera1/camera_info, sensor_msgs/CameraInfo], [/mav08/camera1/image, sensor_msgs/Image], [/mav04/waypoint, geometry_msgs/Pose], [/mav03/camera1/image, sensor_msgs/Image], [/mav09/gps, sensor_msgs/NavSatFix], [/mav01/camera1/image, sensor_msgs/Image], [/mav08/camera1/camera_info, sensor_msgs/CameraInfo], [/mav06/camera1/camera_info, sensor_msgs/CameraInfo], [/mav01/gps, sensor_msgs/NavSatFix], [/mav04/camera1/image, sensor_msgs/Image], [/mav00/gps, sensor_msgs/NavSatFix], [/mav09/camera1/image, sensor_msgs/Image], [/mav05/gps, sensor_msgs/NavSatFix], [/mav08/gps, sensor_msgs/NavSatFix], [/mav06/camera1/image, sensor_msgs/Image], [/mav05/camera1/camera_info, sensor_msgs/CameraInfo], [/mav05/camera1/image, sensor_msgs/Image], [/mav06/gps, sensor_msgs/NavSatFix], [/mav00/camera1/image, sensor_msgs/Image], [/mav03/gps, sensor_msgs/NavSatFix], [/mav04/camera1/camera_info, sensor_msgs/CameraInfo], [/rosout, rosgraph_msgs/Log]]
-//        
-//        System.out.println();
-//    }
-    
-    
     @Test(enabled = false)
     public void f2() throws URISyntaxException
     {
@@ -110,9 +75,9 @@ public class RosNodeStarterTest
         
         Response<SystemState> systemState = master.getSystemState(GraphName.newAnonymous());
         
-        StatusCode statusCode = systemState.getStatusCode();
-        String statusMessage = systemState.getStatusMessage();
-        boolean success = systemState.isSuccess();
+//        StatusCode statusCode = systemState.getStatusCode();
+//        String statusMessage = systemState.getStatusMessage();
+//        boolean success = systemState.isSuccess();
         SystemState result = systemState.getResult();
         Collection<TopicSystemState> topics = result.getTopics();
         Map<String,TopicSystemState> topicMap = new TreeMap<String,TopicSystemState>();
@@ -122,9 +87,9 @@ public class RosNodeStarterTest
         }
         
         Response<List<TopicType>> topicTypes = master.getTopicTypes(GraphName.newAnonymous());
-        StatusCode statusCode3 = topicTypes.getStatusCode();
-        String statusMessage3 = topicTypes.getStatusMessage();
-        boolean success3 = topicTypes.isSuccess();
+//        StatusCode statusCode3 = topicTypes.getStatusCode();
+//        String statusMessage3 = topicTypes.getStatusMessage();
+//        boolean success3 = topicTypes.isSuccess();
         List<TopicType> result3 = topicTypes.getResult();
         Map<String,String> typeMap = new HashMap<String,String>();
         for (TopicType tt : result3)

@@ -41,6 +41,9 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+
 import sensor_msgs.Image;
 
 /**
@@ -53,6 +56,10 @@ public class RosImageConverterImpl implements RosImageConverter
     {
         {
             put("rgba8", new Rgb8aImageConverter());
+            put("png", new GenericImageConverter());
+            put("gif", new GenericImageConverter());
+            put("jpg", new GenericImageConverter());
+            put("jpeg", new GenericImageConverter());
         }
     };
 
@@ -65,7 +72,7 @@ public class RosImageConverterImpl implements RosImageConverter
     @Override
     public BufferedImage messageToBufferedImage(sensor_msgs.Image message)
     {
-        if (CONVERTER_MAP.containsKey(message.getEncoding()))
+        if (CONVERTER_MAP.containsKey(message.getEncoding().toLowerCase()))
         {
             return CONVERTER_MAP.get(message.getEncoding()).convert(message);
 
@@ -117,6 +124,40 @@ public class RosImageConverterImpl implements RosImageConverter
         }
     }
 
+    /**
+     * GenericImageConverter
+     */
+    private static class GenericImageConverter implements ImageConverter
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public BufferedImage convert(Image message)
+        {
+            try
+            {
+                ChannelBuffer cb = ChannelBuffers.copiedBuffer(message.getData().array());
+                if (cb.hasArray())
+                {
+                    ByteArrayInputStream stream = new ByteArrayInputStream(cb.array(), 40, cb.capacity());
+//                    FileOutputStream fos = new FileOutputStream(new File("bugger.png"));
+//                    IOUtils.copy(stream, fos);
+//                    stream.close();
+//                    fos.close();
+//                    stream = new ByteArrayInputStream(cb.array(), 40, cb.capacity());
+                    return ImageIO.read(stream);
+                }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            
+            return new BufferedImage(message.getWidth(), message.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        }
+    }
+    
     /**
      * @param message the ROS image message.
      * @return the <code>BufferedImage</code>

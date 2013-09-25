@@ -24,13 +24,18 @@ package at.uni_salzburg.cs.cpcc.utilities;
  * 
  * @see http://earth-info.nga.mil/GandG/publications/tr8350.2/tr8350_2.html NGA: DoD World Geodetic System 1984, Its
  *      Definition and Relationships with Local Geodetic Systems
+ * @see http://www.oc.nps.edu/oc2902w/coord/llhxyz.htm
+ * @see http://en.wikipedia.org/wiki/Geodetic_system
+ * @see Book "Integrierte Navigationssysteme" by Jan Wendel, Listings 3.22 - 3.28.
+ * @see Book "Global Positioning Systems, Inertial Navigation, and Integration" by Grewal, Weill, and Andrews.
  */
 public class WGS84 implements GeodeticSystem
 {
-    private static final double EQUATORIAL_AXIS = 6378137;
+    private static final double EQUATORIAL_AXIS = 6378137.0;
     private static final double POLAR_AXIS = 6356752.3142;
-    private static final double ANGULAR_ECCENTRICITY = Math.acos(POLAR_AXIS / EQUATORIAL_AXIS);
     private static final double FIRST_ECCENTRICITY = 8.1819190842622E-2;
+    private static final double FIRST_ECCENTRICITY_SQ = FIRST_ECCENTRICITY * FIRST_ECCENTRICITY;
+    private static final double ES2 = EQUATORIAL_AXIS * EQUATORIAL_AXIS / (POLAR_AXIS * POLAR_AXIS) - 1;
 
     /**
      * {@inheritDoc}
@@ -49,7 +54,7 @@ public class WGS84 implements GeodeticSystem
     {
 
         double u = Math.sin(Math.toRadians(latitude)) * FIRST_ECCENTRICITY;
-        double n = EQUATORIAL_AXIS / Math.sqrt(1 - u * u);
+        double n = EQUATORIAL_AXIS / Math.sqrt(1.0 - u * u);
 
         double x = (n + altitude) * Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(longitude));
         double y = (n + altitude) * Math.cos(Math.toRadians(latitude)) * Math.sin(Math.toRadians(longitude));
@@ -68,41 +73,39 @@ public class WGS84 implements GeodeticSystem
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc} Converts an ECEF coordinate to a WGS84 coordinate. Algorithm from the book
+     * "Integrierte Navigationssysteme" by Jan Wendel, Listings 3.22 - 3.28. Note: this method uses a simplified formula
+     * which is only valid for the Low Earth Orbit (LEO) which goes up to approximately 2000km above ground.
+     * 
+     * @param x value in meters
+     * @param y value in meters
+     * @param z value in meters
+     * @return WGS84 coordinate as double-array with value[0]: latitude in degrees value[1]: longitude in degrees
+     *         value[2]: altitude in metres over ellipsoid
      */
     public PolarCoordinate rectangularToPolarCoordinates(double x, double y, double z)
     {
-
-        double newLatitude = 90;
-        double latitude = 0;
-        double u, v, w, n = 0;
-        double sin2AE = Math.sin(2 * ANGULAR_ECCENTRICITY);
-        double sinAE = Math.sin(ANGULAR_ECCENTRICITY);
-
-        while (Math.abs(latitude - newLatitude) > 1E-13)
+        if (x == 0 && y == 0)
         {
-            latitude = newLatitude;
-
-            u = Math.sin(latitude) * Math.sin(ANGULAR_ECCENTRICITY);
-            n = EQUATORIAL_AXIS / Math.sqrt(1 - u * u);
-
-            v = n * Math.sin(latitude);
-            w = n * Math.cos(latitude);
-
-            double numerator = EQUATORIAL_AXIS * EQUATORIAL_AXIS * z + v * v * v * sin2AE * sin2AE / 4;
-            double denominator =
-                EQUATORIAL_AXIS * EQUATORIAL_AXIS * Math.sqrt(x * x + y * y) - w * w * w * sinAE * sinAE;
-            newLatitude = Math.atan(numerator / denominator);
+            if (z > 0)
+            {
+                return new PolarCoordinate(90.0, 0.0, z - POLAR_AXIS);
+            }
+            else
+            {
+                return new PolarCoordinate(-90.0, 0.0, z + POLAR_AXIS);
+            }
         }
-
-        double cosNLat = Math.cos(newLatitude);
-        double sinNLat = Math.sin(newLatitude);
-
-        double altitude = cosNLat * Math.sqrt(x * x + y * y) + sinNLat * (z + sinAE * sinAE * n * sinNLat) - n;
-
-        double longitude = Math.asin(y / ((n + altitude) * cosNLat));
-
-        return new PolarCoordinate(Math.toDegrees(newLatitude), Math.toDegrees(longitude), altitude);
+        double p = Math.sqrt((x * x) + (y * y));
+        double theta = Math.atan((z * EQUATORIAL_AXIS) / (p * POLAR_AXIS));
+        double sinTheta = Math.sin(theta);
+        double cosTheta = Math.cos(theta);
+        double lat = Math.atan((z + (ES2 * POLAR_AXIS * sinTheta * sinTheta * sinTheta))
+            / (p - (FIRST_ECCENTRICITY_SQ * EQUATORIAL_AXIS * cosTheta * cosTheta * cosTheta)));
+        double lon = Math.atan2(y, x);
+        double N = EQUATORIAL_AXIS / Math.sqrt(1 - FIRST_ECCENTRICITY_SQ * Math.sin(lat) * Math.sin(lat));
+        double alt = (p / Math.cos(lat)) - N;
+        return new PolarCoordinate(Math.toDegrees(lat), Math.toDegrees(lon), alt);
     }
 
     /**
@@ -125,4 +128,5 @@ public class WGS84 implements GeodeticSystem
 
         return new PolarCoordinate(Math.toDegrees(latitude), Math.toDegrees(longitude), altitude);
     }
+
 }

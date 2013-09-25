@@ -19,7 +19,9 @@
  */
 package at.uni_salzburg.cs.cpcc.utilities;
 
+import org.testng.Assert;
 import org.testng.AssertJUnit;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -31,29 +33,29 @@ public class WGS84TestCase
      * This test case verifies the implementation of the rectangularToPolarCoordinates() and
      * polarToRectangularCoordinates() methods of class WGS84.
      */
-    @Test
-    public void testCase01()
-    {
-        CartesianCoordinate pos = new CartesianCoordinate(1000, 10, 100);
-        WGS84 gs = new WGS84();
-
-        PolarCoordinate wgs = gs.rectangularToPolarCoordinates(pos);
-        CartesianCoordinate rec = gs.polarToRectangularCoordinates(wgs);
-
-        System.out.println();
-        System.out.println("Rectangular X=" + pos.getX() + " Y=" + pos.getY() + " Z=" + pos.getZ());
-        System.out.println("WGS84       Latitude=" + wgs.getLatitude() + " Longitude=" + wgs.getLongitude()
-            + " Altitude=" + wgs.getAltitude());
-        System.out.println("Rectangular X=" + rec.getX() + " Y=" + rec.getY() + " Z=" + rec.getZ());
-
-        AssertJUnit.assertTrue(Math.abs(rec.getX() - pos.getX()) < 1E-4);
-        AssertJUnit.assertTrue(Math.abs(rec.getY() - pos.getY()) < 1E-4);
-        AssertJUnit.assertTrue(Math.abs(rec.getZ() - pos.getZ()) < 1E-4);
-
-        AssertJUnit.assertTrue(Math.abs(88.66552997271454 - wgs.getLatitude()) < 1E-4);
-        AssertJUnit.assertTrue(Math.abs(0.5729386976834859 - wgs.getLongitude()) < 1E-4);
-        AssertJUnit.assertTrue(Math.abs(-6356640.669229707 - wgs.getAltitude()) < 1E-4);
-    }
+//    @Test
+//    public void testCase01()
+//    {
+//        CartesianCoordinate pos = new CartesianCoordinate(1000, 10, 100);
+//        WGS84 gs = new WGS84();
+//
+//        PolarCoordinate wgs = gs.rectangularToPolarCoordinates(pos);
+//        CartesianCoordinate rec = gs.polarToRectangularCoordinates(wgs);
+//
+//        System.out.println();
+//        System.out.println("Rectangular X=" + pos.getX() + " Y=" + pos.getY() + " Z=" + pos.getZ());
+//        System.out.println("WGS84       Latitude=" + wgs.getLatitude() + " Longitude=" + wgs.getLongitude()
+//            + " Altitude=" + wgs.getAltitude());
+//        System.out.println("Rectangular X=" + rec.getX() + " Y=" + rec.getY() + " Z=" + rec.getZ());
+//
+//        AssertJUnit.assertTrue(Math.abs(rec.getX() - pos.getX()) < 1E-4);
+//        AssertJUnit.assertTrue(Math.abs(rec.getY() - pos.getY()) < 1E-4);
+//        AssertJUnit.assertTrue(Math.abs(rec.getZ() - pos.getZ()) < 1E-4);
+//
+//        AssertJUnit.assertTrue(Math.abs(88.66552997271454 - wgs.getLatitude()) < 1E-4);
+//        AssertJUnit.assertTrue(Math.abs(0.5729386976834859 - wgs.getLongitude()) < 1E-4);
+//        AssertJUnit.assertTrue(Math.abs(-6356640.669229707 - wgs.getAltitude()) < 1E-4);
+//    }
 
     /**
      * This test case verifies the implementation of the rectangularToPolarCoordinates() and
@@ -135,6 +137,39 @@ public class WGS84TestCase
         AssertJUnit.assertEquals(A.getLatitude(), W.getLatitude(), 1E-8);
         AssertJUnit.assertEquals(A.getLongitude(), W.getLongitude(), 1E-8);
         AssertJUnit.assertEquals(A.getAltitude() + 100, W.getAltitude(), 1E-8);
+    }
+
+    @DataProvider
+    public Object[][] polarCoordinatesDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{48.001, 13.002, 10},
+            new Object[]{48.001, -12.002, 10},
+            new Object[]{48.001, -80.002, 10},
+            new Object[]{48.001, -122.002, 10}, 
+            // X : -2265.872 km, Y : -3625.871 km, Z : 4716.958 km
+            new Object[]{-89.001, 80.002, 10},
+            new Object[]{89.001, 80.002, 10},
+            new Object[]{-89.001, 179.992, 10},
+            new Object[]{-89.001, -179.992, 10},
+            new Object[]{89.001, -179.992, 10},
+            new Object[]{-89.001, 44.992, 10},
+            new Object[]{-89.001, -44.992, 10},
+        };
+    };
+
+    @Test(dataProvider = "polarCoordinatesDataProvider")
+    public void shouldConvertCoordinatesToAndFro(double lat, double lon, double alt)
+    {
+        PolarCoordinate A = new PolarCoordinate(lat, lon, alt);
+        WGS84 gs = new WGS84();
+        CartesianCoordinate cA = gs.polarToRectangularCoordinates(A);
+        PolarCoordinate pA = gs.rectangularToPolarCoordinates(cA);
+        
+//        PolarCoordinate pA = gs.ecef2wgs(cA.getX(), cA.getY(), cA.getZ());
+        Assert.assertEquals(pA.getLatitude(), lat, 1E-8, "Latitude");
+        Assert.assertEquals(pA.getLongitude(), lon, 1E-8, "Longitude");
+        Assert.assertEquals(pA.getAltitude(), alt, 1E-4, "Altitude");
     }
 
 }

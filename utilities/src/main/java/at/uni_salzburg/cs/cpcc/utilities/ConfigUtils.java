@@ -34,7 +34,29 @@ public final class ConfigUtils
     {
         // intentionally empty
     }
-    
+
+    /**
+     * @param config the configuration.
+     * @param propertyName the property value to be parsed.
+     * @param index the index in the values list to use.
+     * @param defaultValue the default value.
+     * @return the parsed value.
+     */
+    public static String parseString(Map<String, List<String>> config, String propertyName, int index,
+        String defaultValue)
+    {
+        List<String> property = config.get(propertyName);
+
+        if (property == null)
+        {
+            return defaultValue;
+        }
+
+        String propertyValue = property.get(index);
+
+        return propertyValue != null ? propertyValue : defaultValue;
+    }
+
     /**
      * @param config the configuration.
      * @param propertyName the property value to be parsed.
@@ -46,17 +68,17 @@ public final class ConfigUtils
         double defaultValue)
     {
         List<String> property = config.get(propertyName);
-        
+
         if (property == null)
         {
             return defaultValue;
         }
-        
+
         String propertyValue = property.get(index);
-        
+
         return propertyValue != null ? Double.parseDouble(propertyValue) : defaultValue;
     }
-    
+
     /**
      * @param config the configuration.
      * @param propertyName the property value to be parsed.
@@ -67,17 +89,17 @@ public final class ConfigUtils
     public static int parseInteger(Map<String, List<String>> config, String propertyName, int index, int defaultValue)
     {
         List<String> property = config.get(propertyName);
-        
+
         if (property == null)
         {
             return defaultValue;
         }
-        
+
         String propertyValue = property.get(index);
-        
+
         return propertyValue != null ? Integer.parseInt(propertyValue) : defaultValue;
     }
-    
+
     /**
      * @param config the configuration.
      * @param propertyName the property value to be parsed.
@@ -88,8 +110,8 @@ public final class ConfigUtils
         int startIndex)
     {
         double latitude = ConfigUtils.parseDouble(config, propertyName, startIndex, 0);
-        double longitude = ConfigUtils.parseDouble(config, propertyName, startIndex+1, 0);
-        double altitude = ConfigUtils.parseDouble(config, propertyName, startIndex+2, 0);
+        double longitude = ConfigUtils.parseDouble(config, propertyName, startIndex + 1, 0);
+        double altitude = ConfigUtils.parseDouble(config, propertyName, startIndex + 2, 0);
         return new PolarCoordinate(latitude, longitude, altitude);
     }
 }

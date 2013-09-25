@@ -19,11 +19,17 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
+import java.util.List;
+import java.util.Map;
+
 import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sensor_msgs.NavSatFix;
+import sensor_msgs.NavSatStatus;
 
 /**
  * GpsSensor
@@ -51,5 +57,26 @@ public class GpsSensorAdapter extends AbstractGpsSensorAdapter
                 setPosition(message);
             }
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, List<String>> getCurrentState()
+    {
+        Map<String, List<String>> map = super.getCurrentState();
+
+        if (getPosition() != null)
+        {
+            NavSatFix p = getPosition();
+            NavSatStatus s = p.getStatus();
+            map.put("sensor.gps.position.covariance", doubleListAsString(p.getPositionCovariance()));
+            map.put("sensor.gps.position.covariance.type", byteAsString(p.getPositionCovarianceType()));
+            map.put("sensor.gps.status.status", byteAsString(s.getStatus()));
+            map.put("sensor.gps.status.service", shortAsString(s.getService()));
+        }
+
+        return map;
     }
 }

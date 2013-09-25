@@ -123,6 +123,38 @@ public class OptionsParserServiceTest
         Assert.assertEquals(buggerList.get(2).getNumber().doubleValue(), 3.141592, 1E-8);
     }
 
+    @Test
+    public void shouldParseCorrectGpsCoordinates() throws IOException, ParseException
+    {
+        Collection<Option> result = svc.parse("origin=(37.86644;-122.30954;0)");
+        Assert.assertTrue(result.size() == 1);
+
+        Option origin = null;
+
+        for (Option option : result)
+        {
+            if ("origin".equals(option.getKey()))
+            {
+                origin = option;
+            }
+        }
+
+        Assert.assertNotNull(origin);
+        List<Token> buggerList = origin.getValue();
+        Assert.assertEquals(buggerList.size(), 3);
+        Assert.assertEquals(buggerList.get(0).getSymbol(), Symbol.NUMBER);
+        Assert.assertEquals(buggerList.get(0).getItemString(), "37.86644");
+        Assert.assertEquals(buggerList.get(0).getNumber().doubleValue(), 37.86644, 1E-8);
+
+        Assert.assertEquals(buggerList.get(1).getSymbol(), Symbol.NUMBER);
+        Assert.assertEquals(buggerList.get(1).getItemString(), "-122.30954");
+        Assert.assertEquals(buggerList.get(1).getNumber().doubleValue(), -122.30954, 1E-8);
+
+        Assert.assertEquals(buggerList.get(2).getSymbol(), Symbol.NUMBER);
+        Assert.assertEquals(buggerList.get(2).getItemString(), "0");
+        Assert.assertEquals(buggerList.get(2).getNumber().doubleValue(), 0, 1E-8);
+    }
+    
     @Test()
     public void shouldFailOnInvalidItem() throws IOException
     {

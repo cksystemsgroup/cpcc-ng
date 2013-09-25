@@ -81,6 +81,11 @@ public class OptionsScanner
         }
         return c == ' ' || c == '\t' || c == '\r' || c == '\n';
     }
+    
+    private static boolean isSign(Character c)
+    {
+        return c == '-' || c == '+';
+    }
 
     /**
      * @param reader the reader
@@ -151,7 +156,7 @@ public class OptionsScanner
             return new Token(Symbol.END, null, null);
         }
 
-        if (isDigit(ch))
+        if (isDigit(ch) || isSign(ch))
         {
             return scanNumber();
         }

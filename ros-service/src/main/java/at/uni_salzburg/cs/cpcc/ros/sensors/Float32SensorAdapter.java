@@ -19,6 +19,9 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
+import java.util.List;
+import java.util.Map;
+
 import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
@@ -70,5 +73,21 @@ public class Float32SensorAdapter extends AbstractSensorAdapter
                 value = message;
             }
         });
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, List<String>> getCurrentState()
+    {
+        Map<String, List<String>> map = super.getCurrentState();
+
+        if (value != null)
+        {
+            map.put("sensor.float.value", floatAsString(value.getData()));
+        }
+
+        return map;
     }
 }

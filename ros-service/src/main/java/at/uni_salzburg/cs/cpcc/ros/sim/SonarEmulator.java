@@ -19,11 +19,20 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sim;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.ros.concurrent.CancellableLoop;
+import org.ros.node.ConnectedNode;
+import org.ros.node.DefaultNodeMainExecutor;
+import org.ros.node.topic.Publisher;
+import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sensor_msgs.NavSatFix;
+import at.uni_salzburg.cs.cpcc.utilities.ConfigUtils;
 
 /**
  * SonarEmulator
@@ -31,15 +40,87 @@ import org.slf4j.LoggerFactory;
 public class SonarEmulator extends AbstractRosNodeGroup
 {
     private static final Logger LOG = LoggerFactory.getLogger(SonarEmulator.class);
-
+    private AnonymousNodeMain<sensor_msgs.NavSatFix> publisherNode;
+    private AnonymousNodeMain<sensor_msgs.NavSatFix> listenerNode;
+    private double origin;
+    private String listenTopic;
+    private float value;
+    private NavSatFix receivedMessage;
+    
     /**
      * {@inheritDoc}
      */
     @Override
     public void start()
     {
-        // TODO Auto-generated method stub
         LOG.info("start()");
+        
+        origin = ConfigUtils.parseDouble(getConfig(), "origin", 0, 0);
+        listenTopic = getConfig().get("gps").get(0);
+        
+        getConfig().put("topicRoot", Arrays.asList(getTopicRoot()));
+        
+        publisherNode = new AnonymousNodeMain<sensor_msgs.NavSatFix>(){
+            
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public void onStart(final ConnectedNode connectedNode)
+            {
+                LOG.info("onStart");
+                
+                final Publisher<std_msgs.Float32> publisher = connectedNode.newPublisher(getTopicRoot(), std_msgs.Float32._TYPE);
+                
+                CancellableLoop loop = new CancellableLoop()
+                {
+                    @Override
+                    protected void loop() throws InterruptedException
+                    {
+                        if (receivedMessage == null)
+                        {
+                            return;
+                        }
+                        std_msgs.Float32 message = connectedNode.getTopicMessageFactory().newFromType(std_msgs.Float32._TYPE);
+                        value = (float)(receivedMessage.getAltitude() - origin);
+                        message.setData(value);
+                        publisher.publish(message);
+                        Thread.sleep(200);
+                    }
+                };
+                
+                connectedNode.executeCancellableLoop(loop);
+            }
+            
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public void onNewMessage(NavSatFix message)
+            {
+                receivedMessage = message;
+            }
+        };
+        
+        listenerNode = new AnonymousNodeMain<sensor_msgs.NavSatFix>(){
+            
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public void onStart(ConnectedNode connectedNode)
+            {
+                LOG.info("onStart()");
+
+                Subscriber<sensor_msgs.NavSatFix> subscriber =
+                    connectedNode.newSubscriber(listenTopic, sensor_msgs.NavSatFix._TYPE);
+
+                subscriber.addMessageListener(publisherNode);
+            }
+        };
+        
+        DefaultNodeMainExecutor.newDefault().execute(publisherNode, getNodeConfiguration());
+        DefaultNodeMainExecutor.newDefault().execute(listenerNode, getNodeConfiguration());
     }
 
     /**
@@ -48,8 +129,9 @@ public class SonarEmulator extends AbstractRosNodeGroup
     @Override
     public void shutdown()
     {
-        // TODO Auto-generated method stub
         LOG.info("shutdown()");
+        DefaultNodeMainExecutor.newDefault().shutdownNodeMain(listenerNode);
+        DefaultNodeMainExecutor.newDefault().shutdownNodeMain(publisherNode);
     }
 
     /**
@@ -58,11 +140,14 @@ public class SonarEmulator extends AbstractRosNodeGroup
     @Override
     public Map<String, List<String>> getCurrentState()
     {
-//        LOG.info("getCurrentState()");
+        Map<String, List<String>> map = super.getCurrentState();
         
-        // TODO Auto-generated method stub
+        if (receivedMessage != null)
+        {
+            map.put("sensor.gps.altitude", Arrays.asList(Double.toString(receivedMessage.getAltitude())));
+        }
+        map.put("sensor.sonar.altitude", Arrays.asList(Float.toString(value)));
         
-        
-        return super.getCurrentState();
+        return map;
     }
 }

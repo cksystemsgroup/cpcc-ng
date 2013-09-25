@@ -60,11 +60,15 @@ public class RosCameraImage
     public StreamResponse onActivate(String rootTopicParam)
     {
         String rootTopic = rootTopicParam.replaceAll("_", "/");
-        LOG.info("ctx=" + ctx + ", rootTopic=" + rootTopic);
-
+        
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("ctx=" + ctx + ", rootTopic=" + rootTopic);
+            LOG.debug("Preparing image for root topic " + rootTopicParam);
+        }
+        
         AbstractRosAdapter adapter = rns.getAdapterNodeByTopic(rootTopic);
-
-        LOG.error("Preparing image for root topic " + rootTopicParam);
+        
         sensor_msgs.Image image = null;
         if (adapter instanceof ImageProvider)
         {
@@ -89,6 +93,12 @@ public class RosCameraImage
      */
     private StreamResponse convertImageToStreamResponse(String rootTopic, BufferedImage image)
     {
+        if (image == null)
+        {
+            LOG.error("Image is NULL " + rootTopic);
+            return new PngImageStreamResponse();
+        }
+        
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try
         {

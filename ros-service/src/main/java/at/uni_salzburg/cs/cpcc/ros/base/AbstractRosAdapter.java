@@ -19,6 +19,7 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.base;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,5 +113,56 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
             }
         }
         return map;
+    }
+    
+    /**
+     * @param values the double values.
+     * @return the values as a list of strings.
+     */
+    public List<String> doubleListAsString(double[] values)
+    {
+        StringBuilder b = new StringBuilder("[");
+        boolean first = true;
+        for (double v : values)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                b.append(", ");
+            }
+            b.append(v);
+        }
+        b.append("]");
+        return Arrays.asList(b.toString());
+    }
+    
+    /**
+     * @param values the double values.
+     * @return the values as a list of strings.
+     */
+    public List<String> byteAsString(byte value)
+    {
+        return Arrays.asList(Integer.toString(0xFF & value));
+    }
+    
+    /**
+     * @param values the double values.
+     * @return the values as a list of strings.
+     */
+    public List<String> shortAsString(short value)
+    {
+        return Arrays.asList(Short.toString(value));
+    }
+    
+    /**
+     * @param values the double values.
+     * @return the values as a list of strings.
+     */
+    public List<String> floatAsString(float value)
+    {
+        return Arrays.asList(Float.toString(value));
     }
 }

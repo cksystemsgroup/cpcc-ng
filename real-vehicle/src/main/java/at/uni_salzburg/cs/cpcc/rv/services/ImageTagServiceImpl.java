@@ -64,8 +64,11 @@ public class ImageTagServiceImpl implements ImageTagService
         if (adapter instanceof ImageProvider)
         {
             Image image = ((ImageProvider) adapter).getImage();
-            width = image.getWidth();
-            height = image.getHeight();
+            if (image != null)
+            {
+                width = image.getWidth();
+                height = image.getHeight();
+            }
         }
 
         String param = adapter.getTopic().getName().replaceAll("/", "_");
@@ -76,7 +79,7 @@ public class ImageTagServiceImpl implements ImageTagService
         return String.format(ROS_CAMERA_IMAGE_TAG, contextPath, ROS_CAMERA_IMAGE, param, time, width, height, alt,
             title);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -88,8 +91,11 @@ public class ImageTagServiceImpl implements ImageTagService
         if (adapter instanceof ImageProvider)
         {
             Image image = ((ImageProvider) adapter).getImage();
-            width = image.getWidth();
-            height = image.getHeight();
+            if (image != null)
+            {
+                width = image.getWidth();
+                height = image.getHeight();
+            }
         }
         return new Dimension(width, height);
     }

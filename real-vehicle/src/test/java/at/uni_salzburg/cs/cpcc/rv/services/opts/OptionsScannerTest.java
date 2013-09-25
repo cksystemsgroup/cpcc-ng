@@ -279,4 +279,60 @@ public class OptionsScannerTest
         Assert.assertEquals(token.getSymbol(), Symbol.LITERAL);
         Assert.assertEquals(token.getItemString(), "xxx uu");
     }
+    
+    /**
+     * @throws IOException thrown in case of errors.
+     * @throws ParseException thrown in case of errors.
+     */
+    @Test
+    public void shouldScanGpsCoordinates() throws IOException, ParseException
+    {
+        Reader reader = new StringReader("origin=(37.86644;-122.30954;0)");
+        OptionsScanner scanner = new OptionsScanner(reader );
+        
+        Token token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
+        Assert.assertEquals(token.getItemString(), "origin");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
+        Assert.assertEquals(token.getItemString(), "=");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.LEFT_PAREN);
+        Assert.assertEquals(token.getItemString(), "(");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
+        Assert.assertEquals(token.getItemString(), "37.86644");
+        Assert.assertEquals(token.getNumber().doubleValue(), 37.86644, 1E-8);
+    
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.SEMICOLON);
+        Assert.assertEquals(token.getItemString(), ";");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
+        Assert.assertEquals(token.getItemString(), "-122.30954");
+        Assert.assertEquals(token.getNumber().doubleValue(), -122.30954, 1E-8);
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.SEMICOLON);
+        Assert.assertEquals(token.getItemString(), ";");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
+        Assert.assertEquals(token.getItemString(), "0");
+        Assert.assertEquals(token.getNumber().doubleValue(), 0, 1E-8);
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.RIGHT_PAREN);
+        Assert.assertEquals(token.getItemString(), ")");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+    }
 }

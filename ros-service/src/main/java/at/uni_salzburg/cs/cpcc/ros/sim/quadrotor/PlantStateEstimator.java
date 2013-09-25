@@ -156,7 +156,7 @@ public class PlantStateEstimator
         double latDst = plantState.getTarget().getLatitude();
         double lonDst = plantState.getTarget().getLongitude();
 
-        double heading = Math.atan2((lonCur - lonDst) * Math.cos(latDst), latDst - latCur);
+        double heading = Math.atan2((lonDst - lonCur) * Math.cos(latDst), latDst - latCur);
         while(heading < 0)
         {
             heading += 2.0 * Math.PI;

@@ -70,9 +70,6 @@ public class Configuration
     private GeodeticSystem geodeticSystem;
     
     /**
-     * @param config the configuration as a map.
-     */
-    /**
      * @param nodeConfiguration the node configuration.
      * @param config the parsed configuration parameters.
      */
