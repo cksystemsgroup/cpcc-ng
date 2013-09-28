@@ -18,12 +18,14 @@
  */
 package at.uni_salzburg.cs.cpcc.javascript;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Constructor;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 public class UtilsTestCase
 {
@@ -228,4 +230,12 @@ public class UtilsTestCase
         }
     }
 
+    @Test
+    public void shouldHavePrivateConstructor() throws Exception
+    {
+        Constructor<Utils> cnt = Utils.class.getDeclaredConstructor();
+        assertFalse(cnt.isAccessible());
+        cnt.setAccessible(true);
+        cnt.newInstance();
+    }
 }
