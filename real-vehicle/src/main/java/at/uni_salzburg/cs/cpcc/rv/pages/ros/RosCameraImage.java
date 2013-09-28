@@ -59,7 +59,7 @@ public class RosCameraImage
      */
     public StreamResponse onActivate(String rootTopicParam)
     {
-        String rootTopic = rootTopicParam.replaceAll("_", "/");
+        String rootTopic = rootTopicParam.replaceAll("_", "/").replaceAll("image/raw", "image_raw");
         
         if (LOG.isDebugEnabled())
         {
