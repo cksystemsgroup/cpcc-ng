@@ -26,6 +26,13 @@ import java.math.BigDecimal;
  */
 public class Token
 {
+    public static final Token EQUALS = new Token(Symbol.EQUALS, Symbol.EQUALS.getSymbolString(), null);
+    public static final Token LEFT_PAREN = new Token(Symbol.LEFT_PAREN, Symbol.LEFT_PAREN.getSymbolString(), null);
+    public static final Token RIGHT_PAREN = new Token(Symbol.RIGHT_PAREN, Symbol.RIGHT_PAREN.getSymbolString(), null);
+    public static final Token SEMICOLON = new Token(Symbol.SEMICOLON, Symbol.SEMICOLON.getSymbolString(), null);
+    public static final Token COLON = new Token(Symbol.COLON, Symbol.COLON.getSymbolString(), null);
+    public static final Token COMMA = new Token(Symbol.COMMA, Symbol.COMMA.getSymbolString(), null);
+
     private Symbol symbol;
 
     private String itemString;

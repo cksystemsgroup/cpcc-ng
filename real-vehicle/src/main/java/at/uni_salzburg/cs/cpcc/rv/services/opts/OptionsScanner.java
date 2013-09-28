@@ -34,18 +34,12 @@ public class OptionsScanner
     private static final Map<String, Token> CHAR_MAP = new HashMap<String, Token>()
     {
         {
-            put(Symbol.EQUALS.getSymbolString(),
-                new Token(Symbol.EQUALS, Symbol.EQUALS.getSymbolString(), null));
-            put(Symbol.LEFT_PAREN.getSymbolString(),
-                new Token(Symbol.LEFT_PAREN, Symbol.LEFT_PAREN.getSymbolString(), null));
-            put(Symbol.RIGHT_PAREN.getSymbolString(),
-                new Token(Symbol.RIGHT_PAREN, Symbol.RIGHT_PAREN.getSymbolString(), null));
-            put(Symbol.SEMICOLON.getSymbolString(),
-                new Token(Symbol.SEMICOLON, Symbol.SEMICOLON.getSymbolString(), null));
-            put(Symbol.COLON.getSymbolString(),
-                new Token(Symbol.COLON, Symbol.COLON.getSymbolString(), null));
-            put(Symbol.COMMA.getSymbolString(),
-                new Token(Symbol.COMMA, Symbol.COMMA.getSymbolString(), null));
+            put(Symbol.EQUALS.getSymbolString(), Token.EQUALS);
+            put(Symbol.LEFT_PAREN.getSymbolString(), Token.LEFT_PAREN);
+            put(Symbol.RIGHT_PAREN.getSymbolString(), Token.RIGHT_PAREN);
+            put(Symbol.SEMICOLON.getSymbolString(), Token.SEMICOLON);
+            put(Symbol.COLON.getSymbolString(), Token.COLON);
+            put(Symbol.COMMA.getSymbolString(), Token.COMMA);
         }
     };
 
@@ -81,7 +75,7 @@ public class OptionsScanner
         }
         return c == ' ' || c == '\t' || c == '\r' || c == '\n';
     }
-    
+
     private static boolean isSign(Character c)
     {
         return c == '-' || c == '+';
@@ -177,6 +171,15 @@ public class OptionsScanner
             return new Token(Symbol.EQUALS, "=", null);
         }
 
+        return scanOneCharacterSymbol();
+    }
+
+    /**
+     * @return the scanned symbol.
+     * @throws IOException thrown in case of errors.
+     */
+    private Token scanOneCharacterSymbol() throws IOException
+    {
         String cs = String.valueOf(ch);
         ch = getChar();
 
@@ -199,16 +202,11 @@ public class OptionsScanner
         int delimiter = ch;
 
         StringBuilder b = new StringBuilder();
-//        while ((ch = getChar()) != null && ch != delimiter)
-//        {
-//            b.append(ch);
-//        }
-
         for (ch = getChar(); ch != null && ch != delimiter; ch = getChar())
         {
             b.append(ch);
         }
-        
+
         ch = getChar();
 
         return new Token(Symbol.LITERAL, b.toString(), null);
@@ -223,25 +221,12 @@ public class OptionsScanner
         StringBuilder b = new StringBuilder();
         b.append(ch);
 
-//        while ((ch = getChar()) != null && (isLetter(ch) || isDigit(ch)))
-//        {
-//            b.append(ch);
-//        }
         for (ch = getChar(); isLetter(ch) || isDigit(ch); ch = getChar())
         {
             b.append(ch);
         }
-        
-        String identifier = b.toString();
 
-        Symbol sym = Symbol.getSymbol(identifier);
-
-        if (sym != null)
-        {
-            return new Token(sym, identifier, null);
-        }
-
-        return new Token(Symbol.IDENT, identifier, null);
+        return new Token(Symbol.IDENT, b.toString(), null);
     }
 
     /**
