@@ -28,8 +28,6 @@ import java.util.Locale;
 @SuppressWarnings("serial")
 public class ParseException extends Exception
 {
-    private Collection<Symbol> expectedSymbol;
-    private Symbol actualSymbol;
     private int lineNumber;
     private int columnNumber;
 
@@ -42,8 +40,6 @@ public class ParseException extends Exception
     {
         super(String.format(Locale.US, "Expected a %s but got a %s in line %d column %d",
             joinIt(expected), token.getSymbol().name(), scanner.getLineNumber(), scanner.getColumnNumber()));
-        expectedSymbol = expected;
-        actualSymbol = token.getSymbol();
         lineNumber = scanner.getLineNumber();
         columnNumber = scanner.getColumnNumber();
     }
@@ -70,22 +66,6 @@ public class ParseException extends Exception
             b.append(e.name());
         }
         return b.toString();
-    }
-
-    /**
-     * @return the expectedSymbol
-     */
-    public Collection<Symbol> getExpectedSymbol()
-    {
-        return expectedSymbol;
-    }
-
-    /**
-     * @return the actualSymbol
-     */
-    public Symbol getActualSymbol()
-    {
-        return actualSymbol;
     }
 
     /**

@@ -66,7 +66,7 @@ public enum Symbol
         }
         for (Symbol s : values())
         {
-            if (s != null && s.symbolString != null && s.symbolString.equalsIgnoreCase(ss))
+            if (s.symbolString != null && s.symbolString.equalsIgnoreCase(ss))
             {
                 return s;
             }
