@@ -55,6 +55,7 @@ public class RosImageConverterImpl implements RosImageConverter
     private static final Map<String, ImageConverter> CONVERTER_MAP = new HashMap<String, ImageConverter>()
     {
         {
+            put("rgb8", new Rgb8ImageConverter());
             put("rgba8", new Rgb8aImageConverter());
             put("png", new GenericImageConverter());
             put("gif", new GenericImageConverter());
@@ -93,6 +94,37 @@ public class RosImageConverterImpl implements RosImageConverter
         BufferedImage convert(sensor_msgs.Image message);
     }
 
+    /**
+     * Rgb8ImageConverter
+     */
+    private static class Rgb8ImageConverter implements ImageConverter
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public BufferedImage convert(Image message)
+        {
+            DataBufferByte dataBuffer = new DataBufferByte(message.getData().array(), message.getData().array().length);
+
+            int width = message.getWidth();
+            int height = message.getHeight();
+            int step = message.getStep();
+            int[] bandOffsets = new int[]{41, 42, 43};
+            PixelInterleavedSampleModel sampleModel =
+                new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, width, height, 3, step, bandOffsets);
+
+            WritableRaster raster = Raster.createWritableRaster(sampleModel, dataBuffer, new Point(0, 0));
+
+            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            ColorModel colourModel =
+                new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+
+            BufferedImage im = new BufferedImage(colourModel, raster, false, null);
+            return im;
+        }
+    }
+    
     /**
      * Rgb8aImageConverter
      */
