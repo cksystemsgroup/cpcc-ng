@@ -25,20 +25,60 @@ import org.testng.annotations.Test;
 
 public class MercatorProjectionTest
 {
+
     @DataProvider
     public Object[][] mercatorData()
     {
         return new Object[][]{
-            new Object[]{19, 37.80789, -122.42697, 83846, 202587},
-            new Object[]{18, 37.80789, -122.42697, 41923, 101293},
+            new Object[]{19, 37.80789, -122.42697, 83846, 202587, 205, 125},
+            new Object[]{18, 37.80789, -122.42697, 41923, 101293, 102, 190},
         };
     }
 
     @Test(dataProvider = "mercatorData")
-    public void shouldConvertMercatorToTileCoordinates(int zoomLevel, double latitude, double longitude, int x, int y)
+    public void shouldConvertMercatorToTileCoordinates(int zoomLevel, double latitude, double longitude, int x, int y,
+        int xPixel, int yPixel)
     {
         MercatorProjection mp = new MercatorProjection(zoomLevel, latitude, longitude);
         Assert.assertEquals(mp.getxTile(), x);
         Assert.assertEquals(mp.getyTile(), y);
+        Assert.assertEquals(mp.getxPixel(), xPixel);
+        Assert.assertEquals(mp.getyPixel(), yPixel);
+        Assert.assertTrue(mp.equalsTile(mp));
+    }
+
+    @Test
+    public void shouldRecognizeTheSameTileCoordinates()
+    {
+        MercatorProjection mp1 = new MercatorProjection(19, 37.80789, -122.42697);
+        MercatorProjection mp2 = new MercatorProjection(19, 37.80788, -122.42696);
+
+        Assert.assertTrue(mp1.equalsTile(mp2));
+        Assert.assertFalse(mp1.equals(mp2));
+    }
+
+    @DataProvider
+    public Object[][] nonEqualMercatorProjectionDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{
+                new MercatorProjection(19, 37.80789, -122.42697),
+                new MercatorProjection(19, 37.80789, -102.42697)
+            },
+            new Object[]{
+                new MercatorProjection(19, 37.80789, -122.42697),
+                new MercatorProjection(19, 36.80789, -122.42697)
+            },
+            new Object[]{
+                new MercatorProjection(19, 37.80788, -122.42696),
+                new MercatorProjection(18, 37.80789, -122.42697)
+            },
+        };
+    };
+
+    @Test(dataProvider = "nonEqualMercatorProjectionDataProvider")
+    public void shouldRecognizeDifferentTileCoordinates(MercatorProjection a, MercatorProjection b)
+    {
+        Assert.assertFalse(a.equalsTile(b));
     }
 }

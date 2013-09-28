@@ -103,8 +103,8 @@ public class WGS84 implements GeodeticSystem
         double lat = Math.atan((z + (ES2 * POLAR_AXIS * sinTheta * sinTheta * sinTheta))
             / (p - (FIRST_ECCENTRICITY_SQ * EQUATORIAL_AXIS * cosTheta * cosTheta * cosTheta)));
         double lon = Math.atan2(y, x);
-        double N = EQUATORIAL_AXIS / Math.sqrt(1 - FIRST_ECCENTRICITY_SQ * Math.sin(lat) * Math.sin(lat));
-        double alt = (p / Math.cos(lat)) - N;
+        double n = EQUATORIAL_AXIS / Math.sqrt(1 - FIRST_ECCENTRICITY_SQ * Math.sin(lat) * Math.sin(lat));
+        double alt = (p / Math.cos(lat)) - n;
         return new PolarCoordinate(Math.toDegrees(lat), Math.toDegrees(lon), alt);
     }
 

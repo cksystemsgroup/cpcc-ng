@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -36,9 +37,9 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanOneOption() throws IOException, ParseException
+    public void shouldScanOneOption() throws IOException
     {
-        Reader reader = new StringReader("bugger=lala");
+        Reader reader = new StringReader("bugger=LA_LA");
         OptionsScanner scanner = new OptionsScanner(reader );
         
         Token token = scanner.next();
@@ -51,7 +52,7 @@ public class OptionsScannerTest
         
         token = scanner.next();
         Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "lala");
+        Assert.assertEquals(token.getItemString(), "LA_LA");
         
         token = scanner.next();
         Assert.assertEquals(token.getSymbol(), Symbol.END);
@@ -68,7 +69,39 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanMultipleOptions() throws IOException, ParseException
+    public void shouldScanOneLiteralOption() throws IOException
+    {
+        Reader reader = new StringReader("bugger=\"LA_LA\"");
+        OptionsScanner scanner = new OptionsScanner(reader );
+        
+        Token token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
+        Assert.assertEquals(token.getItemString(), "bugger");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
+        Assert.assertEquals(token.getItemString(), "=");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.LITERAL);
+        Assert.assertEquals(token.getItemString(), "LA_LA");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+    }
+    
+    /**
+     * @throws IOException thrown in case of errors.
+     * @throws ParseException thrown in case of errors.
+     */
+    @Test
+    public void shouldScanMultipleOptions() throws IOException
     {
         Reader reader = new StringReader("bugger=lala\nbugger2=lala2");
         OptionsScanner scanner = new OptionsScanner(reader );
@@ -112,7 +145,7 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanOptionsLists() throws IOException, ParseException
+    public void shouldScanOptionsLists() throws IOException
     {
         Reader reader = new StringReader("bugger=(lala,blbla,'nix xx')\nbugger2=('lala2';'xxx')\n");
         OptionsScanner scanner = new OptionsScanner(reader );
@@ -198,9 +231,9 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanNumberOptions01() throws IOException, ParseException
+    public void shouldScanNumberOptions01() throws IOException
     {
-        Reader reader = new StringReader("bugger=3.14\nbugger2=99999");
+        Reader reader = new StringReader("bugger=+3.14\nbugger2=99999");
         OptionsScanner scanner = new OptionsScanner(reader );
         
         Token token = scanner.next();
@@ -213,7 +246,7 @@ public class OptionsScannerTest
         
         token = scanner.next();
         Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(token.getItemString(), "3.14");
+        Assert.assertEquals(token.getItemString(), "+3.14");
         Assert.assertEquals(token.getNumber().doubleValue(), 3.14, 1E-5);
     
         token = scanner.next();
@@ -235,7 +268,7 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanNumberOptions02() throws IOException, ParseException
+    public void shouldScanNumberOptions02() throws IOException
     {
         Reader reader = new StringReader("bugger=lala looney=3.141592 caspar='xxx uu'");
         OptionsScanner scanner = new OptionsScanner(reader );
@@ -285,7 +318,7 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanGpsCoordinates() throws IOException, ParseException
+    public void shouldScanGpsCoordinates() throws IOException
     {
         Reader reader = new StringReader("origin=(37.86644;-122.30954;0)");
         OptionsScanner scanner = new OptionsScanner(reader );
@@ -332,6 +365,85 @@ public class OptionsScannerTest
         token = scanner.next();
         Assert.assertEquals(token.getSymbol(), Symbol.END);
         
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+    }
+    
+    @Test
+    public void shouldScanMalformedIdentifier() throws IOException
+    {
+        Reader reader = new StringReader("orig#in=3");
+        OptionsScanner scanner = new OptionsScanner(reader );
+        
+        Token token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
+        Assert.assertEquals(token.getItemString(), "orig");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.OTHER);
+        Assert.assertEquals(token.getItemString(), "#");
+
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
+        Assert.assertEquals(token.getItemString(), "in");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
+        Assert.assertEquals(token.getItemString(), "=");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
+        Assert.assertEquals(token.getItemString(), "3");
+        Assert.assertEquals(token.getNumber().doubleValue(), 3, 1E-8);
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+    }
+    
+    @Test
+    public void shouldScanIdentifier() throws IOException
+    {
+        Reader reader = new StringReader("orig");
+        OptionsScanner scanner = new OptionsScanner(reader );
+        
+        Token token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
+        Assert.assertEquals(token.getItemString(), "orig");
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+    }
+    
+    @DataProvider
+    public Object[][] literalDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{"'orig'", Symbol.LITERAL, "orig", null},
+            new Object[]{"'orig", Symbol.LITERAL, "orig", null},
+            new Object[]{"\"orig", Symbol.LITERAL, "orig", null},
+        };
+    };
+        
+    @Test(dataProvider = "literalDataProvider")
+    public void shouldScanLiteral(String string, Symbol sym, String scannedResult, Double number)
+        throws IOException
+    {
+        Reader reader = new StringReader(string);
+        OptionsScanner scanner = new OptionsScanner(reader);
+
+        Token token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), sym);
+        Assert.assertEquals(token.getItemString(), scannedResult);
+
+        token = scanner.next();
+        Assert.assertEquals(token.getSymbol(), Symbol.END);
+
         token = scanner.next();
         Assert.assertEquals(token.getSymbol(), Symbol.END);
     }

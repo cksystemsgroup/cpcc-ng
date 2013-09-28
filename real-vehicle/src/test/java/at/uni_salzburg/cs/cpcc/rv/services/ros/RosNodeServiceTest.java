@@ -22,10 +22,14 @@ package at.uni_salzburg.cs.cpcc.rv.services.ros;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -47,10 +51,12 @@ import at.uni_salzburg.cs.cpcc.rv.entities.Topic;
 import at.uni_salzburg.cs.cpcc.rv.entities.TopicCategory;
 import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.rv.services.opts.ParseException;
 
 public class RosNodeServiceTest
 {
     private QueryManager qm;
+    private OptionsParserService optionsParser;
     private URI masterServer;
     private URI masterServer2;
     private Parameter masterServerURI;
@@ -60,14 +66,14 @@ public class RosNodeServiceTest
     private Topic topic10;
 
     @BeforeMethod
-    public void setupTest() throws URISyntaxException
+    public void setupTest() throws URISyntaxException, IOException, ParseException
     {
         final int port = 40000 + (int) (Math.random() * 10000.0);
         final String uriString = "http://localhost:" + port + "/";
-        final String uriString2 = "http://localhost:" + Integer.toString(port+1) + "/";
+        final String uriString2 = "http://localhost:" + Integer.toString(port + 1) + "/";
         masterServer = new URI(uriString);
         masterServer2 = new URI(uriString2);
-        
+
         masterServerURI = new Parameter()
         {
             {
@@ -88,10 +94,6 @@ public class RosNodeServiceTest
             }
         };
 
-        qm = mock(QueryManager.class);
-        when(qm.findParameterByName(Parameter.MASTER_SERVER_URI)).thenReturn(masterServerURI);
-        when(qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE)).thenReturn(useInternalRosCore);
-        
         topic10 = new Topic();
         topic10.setId(10);
         topic10.setMessageType("std_msgs/Float32");
@@ -99,26 +101,40 @@ public class RosNodeServiceTest
         topic10.setSubpath(null);
         topic10.setAdapterClassName("at.uni_salzburg.cs.cpcc.ros.sensors.Float32SensorAdapter");
         topic10.setCategory(TopicCategory.ALTITUDE_OVER_GROUND);
-        
+
         type8 = new DeviceType();
         type8.setId(8);
         type8.setClassName("at.uni_salzburg.cs.cpcc.ros.sim.SonarEmulator");
         type8.setMainTopic(topic10);
         type8.setName("Sonar Emulator");
         type8.setSubTopics(null);
-        
+
         device21 = new Device();
         device21.setId(21);
         device21.setTopicRoot("mav01/sonar");
         device21.setType(type8);
         device21.setConfiguration("origin=471 gps='/mav01/gps'");
+
+        qm = mock(QueryManager.class);
+        when(qm.findParameterByName(Parameter.MASTER_SERVER_URI)).thenReturn(masterServerURI);
+        when(qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE)).thenReturn(useInternalRosCore);
+        when(qm.findAllDevices()).thenReturn(Arrays.asList(device21));
+
+        @SuppressWarnings("serial")
+        Map<String, List<String>> options = new HashMap<String, List<String>>()
+        {
+            {
+                put("origin", Arrays.asList("471"));
+                put("gps", Arrays.asList("/mav01/gps"));
+            }
+        };
+        optionsParser = mock(OptionsParserService.class);
+        when(optionsParser.parseConfig("origin=471 gps='/mav01/gps'")).thenReturn(options);
     }
 
     @Test
     public void shouldStartAndStopAndStartInternalRosCore()
     {
-        OptionsParserService optionsParser = mock(OptionsParserService.class);
-
         RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser);
         Assert.assertNotNull(svc);
 
@@ -126,7 +142,7 @@ public class RosNodeServiceTest
 
         Response<SystemState> systemState = master.getSystemState(GraphName.newAnonymous());
         Assert.assertNotNull(systemState);
-        
+
         StatusCode statusCode = systemState.getStatusCode();
         Assert.assertNotNull(statusCode);
         Assert.assertEquals(StatusCode.SUCCESS, statusCode);
@@ -148,63 +164,59 @@ public class RosNodeServiceTest
         {
             Assert.assertTrue(e.getCause() instanceof SocketException);
         }
-        
+
         svc.updateRosCore(true);
-        
+
         systemState = master.getSystemState(GraphName.newAnonymous());
         Assert.assertNotNull(systemState);
-        
+
         statusCode = systemState.getStatusCode();
         Assert.assertNotNull(statusCode);
         Assert.assertEquals(StatusCode.SUCCESS, statusCode);
     }
-    
+
     @Test
     public void shouldRestartInternalRosCoreOnMasterUriChange()
     {
-        OptionsParserService optionsParser = mock(OptionsParserService.class);
-
         RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser);
         Assert.assertNotNull(svc);
-        
+
         MasterClient master = new MasterClient(masterServer);
 
         Response<SystemState> systemState = master.getSystemState(GraphName.newAnonymous());
         Assert.assertNotNull(systemState);
-        
+
         StatusCode statusCode = systemState.getStatusCode();
         Assert.assertNotNull(statusCode);
         Assert.assertEquals(StatusCode.SUCCESS, statusCode);
-        
+
         svc.updateMasterServerURI(masterServer2);
-        
+
         master = new MasterClient(masterServer2);
         systemState = master.getSystemState(GraphName.newAnonymous());
         Assert.assertNotNull(systemState);
-        
+
         statusCode = systemState.getStatusCode();
         Assert.assertNotNull(statusCode);
         Assert.assertEquals(StatusCode.SUCCESS, statusCode);
     }
-    
-    @Test
-    public void shouldUpdateDevice()
-    {
-        OptionsParserService optionsParser = mock(OptionsParserService.class);
 
+    @Test
+    public void shouldUpdateDevice() throws IOException, ParseException
+    {
         RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser);
         Assert.assertNotNull(svc);
-        
+
         Map<String, RosNodeGroup> deviceNodes = svc.getDeviceNodes();
         Assert.assertNotNull(deviceNodes);
-        Assert.assertEquals(0, deviceNodes.size());
-        
+        Assert.assertEquals(1, deviceNodes.size());
+
         svc.updateDevice(device21);
-        
+
         deviceNodes = svc.getDeviceNodes();
         Assert.assertNotNull(deviceNodes);
         Assert.assertEquals(1, deviceNodes.size());
-        
+
         svc.shutdownDevice(device21);
     }
 }

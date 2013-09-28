@@ -35,12 +35,12 @@ import org.slf4j.LoggerFactory;
 import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
 /**
- * OpenStreetMap camera
+ * An OpenStreetMap camera.
  */
 public class Camera
 {
-    private final static Logger LOG = LoggerFactory.getLogger(Camera.class);
-    
+    private static final Logger LOG = LoggerFactory.getLogger(Camera.class);
+
     private TileCache tileCache;
     private BufferedImage map;
     private MercatorProjection topLeftTile;
@@ -77,8 +77,8 @@ public class Camera
         {
             for (int h = 0; h < mapHeight; ++h)
             {
-                tiles[w][h] =
-                    g2d.create(w * cfg.getTileWidth(), h * cfg.getTileHeight(), cfg.getTileWidth(), cfg.getTileHeight());
+                tiles[w][h] = g2d.create(w * cfg.getTileWidth(), h * cfg.getTileHeight(), cfg.getTileWidth(),
+                    cfg.getTileHeight());
             }
         }
     }

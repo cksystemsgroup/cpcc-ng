@@ -46,11 +46,18 @@ public final class GraphNameHelpers
         {
             instance = new ValueEncoder<GraphName>()
             {
+                /**
+                 * {@inheritDoc}
+                 */
                 public GraphName toValue(String clientValue)
                 {
                     return clientValue == null ? GraphName.empty() : GraphName.of(clientValue);
                 }
 
+                /**
+                 * @param value the graph name.
+                 * @return the graph name as string.
+                 */
                 public String toClient(GraphName value)
                 {
                     return value == null ? "" : value.toString();

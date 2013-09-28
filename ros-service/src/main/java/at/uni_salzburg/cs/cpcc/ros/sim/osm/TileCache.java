@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -33,15 +34,17 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * OpenStreetMap tile cache
  */
 public class TileCache
 {
-    private final static Logger LOG = LoggerFactory.getLogger(TileCache.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TileCache.class);
 
-    private final static String FORMAT_TILE_CACHE_DIR = "%1$s/%2$d/%3$d";
-    private final static String FORMAT_TILE_CACHE_FILE = "%1$s/%2$d/%3$d/%4$d.png";
+    private static final String FORMAT_TILE_CACHE_DIR = "%1$s/%2$d/%3$d";
+    private static final String FORMAT_TILE_CACHE_FILE = "%1$s/%2$d/%3$d/%4$d.png";
 
     private String tileCacheBaseDir;
 
@@ -63,6 +66,7 @@ public class TileCache
      * @return the tile as a <code>File</code> object.
      * @throws IOException thrown in case of errors.
      */
+    @SuppressFBWarnings("PATH_TRAVERSAL_IN")
     public File getTile(int zoom, int x, int y) throws IOException
     {
         String tileCacheFileName = String.format(Locale.US, FORMAT_TILE_CACHE_FILE, tileCacheBaseDir, zoom, x, y);
@@ -75,11 +79,11 @@ public class TileCache
             return tileCacheFile;
         }
 
-        String tileCacheDirName = String.format(Locale.US, FORMAT_TILE_CACHE_DIR, tileCacheBaseDir, zoom, x, y);
+        String tileCacheDirName = String.format(Locale.US, FORMAT_TILE_CACHE_DIR, tileCacheBaseDir, zoom, x);
         File tileCacheDir = new File(tileCacheDirName);
         if (!tileCacheDir.exists())
         {
-            tileCacheDir.mkdirs();
+            FileUtils.forceMkdir(tileCacheDir);
         }
 
         String tileDownloadUrl = String.format(Locale.US, tileServerUrl, zoom, x, y);
@@ -91,6 +95,11 @@ public class TileCache
         return tileCacheFile;
     }
 
+    /**
+     * @param url the URL of the desired file.
+     * @param file the path where to store the retrieved data.
+     * @throws IOException thrown in case of errors.
+     */
     public static void downloadFile(String url, File file) throws IOException
     {
         // TODO extract in a service.

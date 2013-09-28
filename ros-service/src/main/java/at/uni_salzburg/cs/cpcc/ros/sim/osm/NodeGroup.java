@@ -37,7 +37,7 @@ import at.uni_salzburg.cs.cpcc.ros.sim.AnonymousNodeMain;
 public class NodeGroup extends AbstractRosNodeGroup
 {
     private static final Logger LOG = LoggerFactory.getLogger(NodeGroup.class);
-    private AnonymousNodeMain<sensor_msgs.NavSatFix> publisherNode;
+    private AnonymousNodeMain<sensor_msgs.NavSatFix> imagePublisherNode;
     private AnonymousNodeMain<sensor_msgs.NavSatFix> listenerNode;
     private Configuration config;
 
@@ -53,10 +53,10 @@ public class NodeGroup extends AbstractRosNodeGroup
 
         config = new Configuration(getNodeConfiguration(), getConfig());
 
-        publisherNode = new ImagePublisherNode(config);
-        listenerNode = new GpsListenerNode(config, publisherNode);
+        imagePublisherNode = new ImagePublisherNode(config);
+        listenerNode = new GpsListenerNode(config, imagePublisherNode);
 
-        DefaultNodeMainExecutor.newDefault().execute(publisherNode, getNodeConfiguration());
+        DefaultNodeMainExecutor.newDefault().execute(imagePublisherNode, getNodeConfiguration());
         DefaultNodeMainExecutor.newDefault().execute(listenerNode, getNodeConfiguration());
     }
 
@@ -68,7 +68,7 @@ public class NodeGroup extends AbstractRosNodeGroup
     {
         LOG.info("shutdown()");
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(listenerNode);
-        DefaultNodeMainExecutor.newDefault().shutdownNodeMain(publisherNode);
+        DefaultNodeMainExecutor.newDefault().shutdownNodeMain(imagePublisherNode);
     }
 
     /**
@@ -78,12 +78,12 @@ public class NodeGroup extends AbstractRosNodeGroup
     public Map<String, List<String>> getCurrentState()
     {
         Map<String, List<String>> map = super.getCurrentState();
-        if (publisherNode.getReceivedMessage() != null)
+        if (imagePublisherNode.getReceivedMessage() != null)
         {
             map.put("image.position", Arrays.asList(
-                String.format(Locale.US, "%.8f", publisherNode.getReceivedMessage().getLatitude()),
-                String.format(Locale.US, "%.8f", publisherNode.getReceivedMessage().getLongitude()),
-                String.format(Locale.US, "%.3f", publisherNode.getReceivedMessage().getAltitude())
+                String.format(Locale.US, "%.8f", imagePublisherNode.getReceivedMessage().getLatitude()),
+                String.format(Locale.US, "%.8f", imagePublisherNode.getReceivedMessage().getLongitude()),
+                String.format(Locale.US, "%.3f", imagePublisherNode.getReceivedMessage().getAltitude())
                 ));
         }
         

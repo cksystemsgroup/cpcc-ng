@@ -147,7 +147,6 @@ public class WGS84TestCase
             new Object[]{48.001, -12.002, 10},
             new Object[]{48.001, -80.002, 10},
             new Object[]{48.001, -122.002, 10}, 
-            // X : -2265.872 km, Y : -3625.871 km, Z : 4716.958 km
             new Object[]{-89.001, 80.002, 10},
             new Object[]{89.001, 80.002, 10},
             new Object[]{-89.001, 179.992, 10},
@@ -166,10 +165,30 @@ public class WGS84TestCase
         CartesianCoordinate cA = gs.polarToRectangularCoordinates(A);
         PolarCoordinate pA = gs.rectangularToPolarCoordinates(cA);
         
-//        PolarCoordinate pA = gs.ecef2wgs(cA.getX(), cA.getY(), cA.getZ());
         Assert.assertEquals(pA.getLatitude(), lat, 1E-8, "Latitude");
         Assert.assertEquals(pA.getLongitude(), lon, 1E-8, "Longitude");
         Assert.assertEquals(pA.getAltitude(), alt, 1E-4, "Altitude");
     }
 
+    @DataProvider
+    public Object[][] specialCasesDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{0, 0, 1, 90.0, 0.0, 1.0 - 6356752.3142},
+            new Object[]{0, 0, -1, -90.0, 0.0, -1.0 + 6356752.3142},
+            new Object[]{0, 1, 1, -45.38862666932452, 90.0, -6388982.402021714},
+            new Object[]{1, 0, 1, -45.38862666932452, 0.0, -6388982.402021714},
+        };
+    };
+
+    @Test(dataProvider = "specialCasesDataProvider")
+    public void shouldConsiderConvertingOfSpecialCases(double x, double y, double z, double lat, double lon, double alt)
+    {
+        WGS84 gs = new WGS84();
+        CartesianCoordinate cA = new CartesianCoordinate(x, y, z);
+        PolarCoordinate pA = gs.rectangularToPolarCoordinates(cA);
+        Assert.assertEquals(pA.getLatitude(), lat, 1E-3);
+        Assert.assertEquals(pA.getLongitude(), lon, 1E-3);
+        Assert.assertEquals(pA.getAltitude(), alt, 1E-3);
+    }
 }

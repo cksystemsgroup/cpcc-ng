@@ -24,18 +24,21 @@ package at.uni_salzburg.cs.cpcc.ros.sim.osm;
  */
 public class MercatorProjection
 {
+    private int zoomLevel;
     private int xTile;
     private int yTile;
     private int xPixel;
     private int yPixel;
+    
 
     /**
      * @param zoomLevel the zoom level
      * @param latitude the latitude
      * @param longitude the longitude
      */
-    public MercatorProjection(double zoomLevel, double latitude, double longitude)
+    public MercatorProjection(int zoomLevel, double latitude, double longitude)
     {
+        this.zoomLevel = zoomLevel;
         double latRad = Math.toRadians(latitude);
         long n = (long) Math.pow(2, zoomLevel);
         double xTileD = ((longitude + 180.0) / 360.0) * n;
@@ -84,6 +87,6 @@ public class MercatorProjection
      */
     public boolean equalsTile(MercatorProjection other)
     {
-        return xTile == other.xTile && yTile == other.yTile;
+        return zoomLevel == other.zoomLevel && xTile == other.xTile && yTile == other.yTile;
     }
 }

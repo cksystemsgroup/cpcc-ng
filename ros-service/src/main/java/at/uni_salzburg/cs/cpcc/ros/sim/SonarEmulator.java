@@ -46,7 +46,7 @@ public class SonarEmulator extends AbstractRosNodeGroup
     private String listenTopic;
     private float value;
     private NavSatFix receivedMessage;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -54,14 +54,15 @@ public class SonarEmulator extends AbstractRosNodeGroup
     public void start()
     {
         LOG.info("start()");
-        
+
         origin = ConfigUtils.parseDouble(getConfig(), "origin", 0, 0);
         listenTopic = getConfig().get("gps").get(0);
-        
+
         getConfig().put("topicRoot", Arrays.asList(getTopicRoot()));
-        
-        publisherNode = new AnonymousNodeMain<sensor_msgs.NavSatFix>(){
-            
+
+        publisherNode = new AnonymousNodeMain<sensor_msgs.NavSatFix>()
+        {
+
             /**
              * {@inheritDoc}
              */
@@ -69,9 +70,10 @@ public class SonarEmulator extends AbstractRosNodeGroup
             public void onStart(final ConnectedNode connectedNode)
             {
                 LOG.info("onStart");
-                
-                final Publisher<std_msgs.Float32> publisher = connectedNode.newPublisher(getTopicRoot(), std_msgs.Float32._TYPE);
-                
+
+                final Publisher<std_msgs.Float32> publisher =
+                    connectedNode.newPublisher(getTopicRoot(), std_msgs.Float32._TYPE);
+
                 CancellableLoop loop = new CancellableLoop()
                 {
                     @Override
@@ -81,17 +83,18 @@ public class SonarEmulator extends AbstractRosNodeGroup
                         {
                             return;
                         }
-                        std_msgs.Float32 message = connectedNode.getTopicMessageFactory().newFromType(std_msgs.Float32._TYPE);
-                        value = (float)(receivedMessage.getAltitude() - origin);
+                        std_msgs.Float32 message =
+                            connectedNode.getTopicMessageFactory().newFromType(std_msgs.Float32._TYPE);
+                        value = (float) (receivedMessage.getAltitude() - origin);
                         message.setData(value);
                         publisher.publish(message);
                         Thread.sleep(200);
                     }
                 };
-                
+
                 connectedNode.executeCancellableLoop(loop);
             }
-            
+
             /**
              * {@inheritDoc}
              */
@@ -101,9 +104,10 @@ public class SonarEmulator extends AbstractRosNodeGroup
                 receivedMessage = message;
             }
         };
-        
-        listenerNode = new AnonymousNodeMain<sensor_msgs.NavSatFix>(){
-            
+
+        listenerNode = new AnonymousNodeMain<sensor_msgs.NavSatFix>()
+        {
+
             /**
              * {@inheritDoc}
              */
@@ -118,7 +122,7 @@ public class SonarEmulator extends AbstractRosNodeGroup
                 subscriber.addMessageListener(publisherNode);
             }
         };
-        
+
         DefaultNodeMainExecutor.newDefault().execute(publisherNode, getNodeConfiguration());
         DefaultNodeMainExecutor.newDefault().execute(listenerNode, getNodeConfiguration());
     }
@@ -141,13 +145,13 @@ public class SonarEmulator extends AbstractRosNodeGroup
     public Map<String, List<String>> getCurrentState()
     {
         Map<String, List<String>> map = super.getCurrentState();
-        
+
         if (receivedMessage != null)
         {
             map.put("sensor.gps.altitude", Arrays.asList(Double.toString(receivedMessage.getAltitude())));
         }
         map.put("sensor.sonar.altitude", Arrays.asList(Float.toString(value)));
-        
+
         return map;
     }
 }

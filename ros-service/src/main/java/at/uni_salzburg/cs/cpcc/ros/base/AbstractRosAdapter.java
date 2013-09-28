@@ -140,7 +140,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     }
     
     /**
-     * @param values the double values.
+     * @param value the byte value.
      * @return the values as a list of strings.
      */
     public List<String> byteAsString(byte value)
@@ -149,7 +149,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     }
     
     /**
-     * @param values the double values.
+     * @param value the short value.
      * @return the values as a list of strings.
      */
     public List<String> shortAsString(short value)
@@ -158,7 +158,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     }
     
     /**
-     * @param values the double values.
+     * @param value the float value.
      * @return the values as a list of strings.
      */
     public List<String> floatAsString(float value)

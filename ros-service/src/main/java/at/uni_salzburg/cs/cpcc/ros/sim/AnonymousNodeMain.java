@@ -25,6 +25,8 @@ import org.ros.node.AbstractNodeMain;
 
 /**
  * AnonymousNodeMain
+ * 
+ * @param <T> the message type concerned by this node.
  */
 public abstract class AnonymousNodeMain<T> extends AbstractNodeMain implements MessageListener<T>
 {
@@ -37,7 +39,7 @@ public abstract class AnonymousNodeMain<T> extends AbstractNodeMain implements M
     @Override
     public GraphName getDefaultNodeName()
     {
-        return myNodeName ;
+        return myNodeName;
     }
 
     /**
@@ -48,7 +50,7 @@ public abstract class AnonymousNodeMain<T> extends AbstractNodeMain implements M
     {
         receivedMessage = message;
     }
-    
+
     /**
      * @return the received message
      */

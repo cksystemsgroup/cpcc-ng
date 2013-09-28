@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Layout component for pages of application mse-viewer.
+ * Layout component for pages of application real vehicle web application.
  */
 @Exclude(stylesheet = {"core"})
 @Import(stylesheet = {
@@ -73,16 +73,25 @@ public class Layout
         return messages.get("pagetitle." + resources.getPageName());
     }
 
+    /**
+     * @return the class associated to a page name.
+     */
     public String getClassForPageName()
     {
         return resources.getPageName().equals(pageName) ? "active" : null;
     }
 
+    /**
+     * @return the page names in the main menu.
+     */
     public Collection<String> getPageNames()
     {
-        return Arrays.asList("configuration", "contact", "ros/Overview", "ros/CameraImage");
+        return Arrays.asList("configuration", "contact", "ros/Overview");
     }
 
+    /**
+     * @return the label for a given page name.
+     */
     public String getPageLabel()
     {
         return messages.get("pagetitle." + pageName);

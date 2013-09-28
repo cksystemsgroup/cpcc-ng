@@ -44,16 +44,25 @@ public class RosEditDevice extends AbstractRosModifyDevice
         device = qm.findDeviceByTopicRoot(deviceTopic);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public SelectModel getDeviceTypeNameSelectModel()
     {
         return DeviceTypeSelectHelpers.selectModel(qm.findAllDeviceTypes());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public ValueEncoder<DeviceType> getDeviceTypeNameEncoder()
     {
         return new DeviceTypeSelectHelpers(qm).valueEncoder();
     }
 
+    /**
+     * Callback function for validating form data.
+     */
     void onValidateFromForm()
     {
         if (!device.getTopicRoot().startsWith("/"))

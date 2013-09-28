@@ -45,10 +45,11 @@ public class Configuration
     private static final String CFG_TILE_HEIGTH = "osmTileHeight";
     private static final String CFG_TILE_CACHE_DIR = "osmTileCache.dir";
     private static final String CFG_TILE_DOWNLOAD_URL = "osmTileServerUrl";
-    
-    private static final String TILE_CACHE_DEFAULT_DIR = "/tmp/tiles";
-    private static final String TILE_DEFAULT_DOWNLOAD_URL = "http://otile1.mqcdn.com/tiles/1.0.0/sat/%1$d/%2$d/%3$d.png";
-    
+
+    private static final String TILE_DEFAULT_CACHE_DIR = "/tmp/tiles";
+    private static final String TILE_DEFAULT_DOWNLOAD_URL =
+        "http://otile1.mqcdn.com/tiles/1.0.0/sat/%1$d/%2$d/%3$d.png";
+
     // OK:
     // http://otile1.mqcdn.com/tiles/1.0.0/sat/%1$d/%2$d/%3$d.png
     // http://mtile03.mqcdn.com/tiles/1.0.0/vy/sat/%1$d/%2$d/%3$d.png
@@ -77,11 +78,11 @@ public class Configuration
     // https://khms1.google.at/kh/v=137&src=app&x=277&y=181&z=9&s=Gali
     // https://khms1.google.at/kh/v=137&src=app&x=277&y=179&z=9&s=Ga
     // https://khms1.google.de/kh/v=117&src=app&x=17623&s=&y=10959&z=15&s=Gali
-    
+
     // https://mts0.google.com/vt/lyrs=h@231053698&hl=de&src=app&opts=o&deg=0&x=70278&s=&y=51482&z=17&s=Gali&deg=0
     // https://mts0.google.com/vt/lyrs=h@231017399&hl=de&src=app&opts=o&deg=0&x=70282&s=&y=51482&z=17&s=&deg=0
     // https://khms0.google.com/kh?v=81&src=app&x=140560&y=102961&z=18&s=G&deg=0
-    
+
     private String topicRoot;
     private PolarCoordinate originPosition = null;
     private String gpsTopic;
@@ -94,7 +95,7 @@ public class Configuration
     private int zoomLevel;
     private String tileCacheBaseDir;
     private String tileServerUrl;
-    
+
     /**
      * @param nodeConfiguration the node configuration.
      * @param config the parsed configuration parameters.
@@ -105,12 +106,12 @@ public class Configuration
         gpsTopic = config.get(CFG_GPS_TOPIC).get(0);
 
         geodeticSystem = new WGS84();
-        
+
         if (config.containsKey(CFG_ORIGIN))
         {
             originPosition = ConfigUtils.parsePolarCoordinate(config, CFG_ORIGIN, 0);
         }
-        
+
         cameraApertureAngle = ConfigUtils.parseDouble(config, CFG_CAMERA_APERTURE_ANGLE, 0, 1.0);
         cameraWidth = ConfigUtils.parseInteger(config, CFG_CAMERA_WIDTH, 0, 320);
         cameraHeight = ConfigUtils.parseInteger(config, CFG_CAMERA_HEIGTH, 0, 240);
@@ -118,7 +119,7 @@ public class Configuration
         tileHeight = ConfigUtils.parseInteger(config, CFG_TILE_HEIGTH, 0, 256);
         zoomLevel = ConfigUtils.parseInteger(config, CFG_ZOOM_LEVEL, 0, 18);
 
-        tileCacheBaseDir = ConfigUtils.parseString(config, CFG_TILE_CACHE_DIR, 0, TILE_CACHE_DEFAULT_DIR);
+        tileCacheBaseDir = ConfigUtils.parseString(config, CFG_TILE_CACHE_DIR, 0, TILE_DEFAULT_CACHE_DIR);
         tileServerUrl = ConfigUtils.parseString(config, CFG_TILE_DOWNLOAD_URL, 0, TILE_DEFAULT_DOWNLOAD_URL);
     }
 
@@ -137,7 +138,7 @@ public class Configuration
     {
         return originPosition;
     }
-    
+
     /**
      * @return the GPS topic
      */
@@ -201,7 +202,7 @@ public class Configuration
     {
         return zoomLevel;
     }
-    
+
     /**
      * @return the tile cache base-directory
      */
@@ -209,7 +210,7 @@ public class Configuration
     {
         return tileCacheBaseDir;
     }
-    
+
     /**
      * @return the tile server URL
      */

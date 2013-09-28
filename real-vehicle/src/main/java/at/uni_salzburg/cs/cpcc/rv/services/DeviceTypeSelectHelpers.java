@@ -52,11 +52,18 @@ public final class DeviceTypeSelectHelpers
     {
         return new ValueEncoder<DeviceType>()
         {
+            /**
+             * {@inheritDoc}
+             */
             public DeviceType toValue(String clientValue)
             {
                 return clientValue == null ? null : qm.findDeviceTypeByName(clientValue);
             }
 
+            /**
+             * @param value the device type.
+             * @return the device type as a string.
+             */
             public String toClient(DeviceType value)
             {
                 return value == null ? "" : value.getName();
