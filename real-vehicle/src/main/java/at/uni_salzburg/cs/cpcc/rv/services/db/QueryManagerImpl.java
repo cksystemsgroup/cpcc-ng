@@ -21,8 +21,10 @@ package at.uni_salzburg.cs.cpcc.rv.services.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.HibernateException;
@@ -136,6 +138,52 @@ public class QueryManagerImpl implements QueryManager
     public List<MappingAttributes> findAllMappingAttributes()
     {
         return (List<MappingAttributes>) session.createCriteria(MappingAttributes.class).list();
+    }
+    
+    /**
+     * @param attributes the mapping attributes
+     * @return
+     */
+    private static String getAttributesTopicPath(MappingAttributes attributes)
+    {
+        StringBuilder b = new StringBuilder(attributes.getPk().getDevice().getTopicRoot());
+        String subPath = attributes.getPk().getTopic().getSubpath();
+        if (subPath != null)
+        {
+            b.append("/").append(subPath);
+        }
+        return b.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, MappingAttributes> findAllMappingAttributesAsMap()
+    {
+        Map<String, MappingAttributes> attributeMap = new HashMap<String, MappingAttributes>();
+
+        for (MappingAttributes attribute : findAllMappingAttributes())
+        {
+            attributeMap.put(getAttributesTopicPath(attribute), attribute);
+        }
+        return attributeMap;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public MappingAttributes findMappingAttributesByTopic(String topic)
+    {
+        for (MappingAttributes attribute : findAllMappingAttributes())
+        {
+            if (getAttributesTopicPath(attribute).equals(topic))
+            {
+                return attribute;
+            }
+        }
+        return null;
     }
     
     /**

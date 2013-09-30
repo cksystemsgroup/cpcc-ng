@@ -21,6 +21,7 @@ package at.uni_salzburg.cs.cpcc.rv.services.db;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 import at.uni_salzburg.cs.cpcc.rv.entities.DeviceType;
@@ -72,6 +73,17 @@ public interface QueryManager
      * @return the mapping attributes.
      */
     List<MappingAttributes> findAllMappingAttributes();
+    
+    /**
+     * @return the mapping attributes.
+     */
+    Map<String, MappingAttributes> findAllMappingAttributesAsMap();
+    
+    /**
+     * @param topic the topic as a string
+     * @return the mapping attributes associated with the given topic.
+     */
+    MappingAttributes findMappingAttributesByTopic(String topic);
 
     /**
      * @param device the device

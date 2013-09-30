@@ -60,6 +60,7 @@ public class RosNodeServiceTest
     private URI masterServer;
     private URI masterServer2;
     private Parameter masterServerURI;
+    private Parameter wrongMasterServerURI;
     private Parameter useInternalRosCore;
     private Device device21;
     private DeviceType type8;
@@ -81,6 +82,16 @@ public class RosNodeServiceTest
                 setName("masterServerURI");
                 setSort(2);
                 setValue(uriString);
+            }
+        };
+
+        wrongMasterServerURI = new Parameter()
+        {
+            {
+                setId(2);
+                setName("masterServerURI");
+                setSort(3);
+                setValue("this://is/a/wrong/master/Uri");
             }
         };
 
@@ -218,5 +229,16 @@ public class RosNodeServiceTest
         Assert.assertEquals(1, deviceNodes.size());
 
         svc.shutdownDevice(device21);
+    }
+    
+    @Test
+    public void shouldThrowUSEOnWreckedMasterURI()
+    {
+        QueryManager qmi = mock(QueryManager.class);
+        when(qmi.findParameterByName(Parameter.MASTER_SERVER_URI)).thenReturn(wrongMasterServerURI);
+        RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser);
+        Assert.assertNull(svc);
+        
+        
     }
 }

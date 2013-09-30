@@ -44,6 +44,7 @@ public class CameraSensorAdapter extends AbstractSensorAdapter implements ImageP
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
+        super.onStart(connectedNode);
         LOG.debug("onStart()");
 
         Subscriber<sensor_msgs.CameraInfo> cameraInfoSubscriber =
@@ -69,6 +70,8 @@ public class CameraSensorAdapter extends AbstractSensorAdapter implements ImageP
                 image = message;
             }
         });
+        
+        setStartCompleted();
     }
     
     /**

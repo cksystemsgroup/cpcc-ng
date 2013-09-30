@@ -57,6 +57,7 @@ public class CameraInfoSensorAdapter extends AbstractSensorAdapter
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
+        super.onStart(connectedNode);
         LOG.debug("onStart()");
 
         Subscriber<sensor_msgs.CameraInfo> cameraInfoSubscriber =
@@ -70,5 +71,7 @@ public class CameraInfoSensorAdapter extends AbstractSensorAdapter
                 cameraInfo = message;
             }
         });
+        
+        setStartCompleted();
     }
 }

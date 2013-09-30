@@ -60,6 +60,7 @@ public class Float32SensorAdapter extends AbstractSensorAdapter
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
+        super.onStart(connectedNode);
         LOG.debug("onStart()");
 
         Subscriber<std_msgs.Float32> cameraInfoSubscriber =
@@ -73,6 +74,8 @@ public class Float32SensorAdapter extends AbstractSensorAdapter
                 value = message;
             }
         });
+        
+        setStartCompleted();
     }
     
     /**

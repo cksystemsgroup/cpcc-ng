@@ -60,8 +60,10 @@ public class SimpleWayPointControllerAdapter extends AbstractActuatorAdapter
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
+        super.onStart(connectedNode);
         LOG.debug("onStart()");
         publisher = connectedNode.newPublisher(getTopic().getName(), big_actor_msgs.LatLngAlt._TYPE);
+        setStartCompleted();
     }
 
     /**

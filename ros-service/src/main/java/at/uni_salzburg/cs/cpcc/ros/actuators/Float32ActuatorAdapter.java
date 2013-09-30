@@ -60,8 +60,10 @@ public class Float32ActuatorAdapter extends AbstractActuatorAdapter
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
+        super.onStart(connectedNode);
         LOG.debug("onStart()");
         publisher = connectedNode.newPublisher(getTopic().getName(), std_msgs.Float32._TYPE);
+        setStartCompleted();
     }
 
     /**

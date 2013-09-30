@@ -82,8 +82,30 @@
 			class="table table-striped table-condensed topic-table">
 
 			<p:vvVisibleCbCell>
-				<t:checkbox t:id="vvVisibleCB" value="mappingConfig.vvVisible"
-					onclick="this.form.submit();" />
+				<t:if test="mappingConfig.vvVisible">
+					<t:if test="mappingConfig.pk.topic.subpath">
+						<a t:type="eventlink" t:event="setInvisibleInVirtualVehicle"
+							t:context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
+							title="${message:connectedToAutoPilot}"><t:checkbox t:id="vvVisibleOn1" value="true" /></a>
+						<p:else>
+							<a t:type="eventlink" t:event="setInvisibleInVirtualVehicle"
+								t:context="${mappingConfig.pk.device.topicRoot}" href="#"
+								title="${message:connectedToAutoPilot}"><t:checkbox t:id="vvVisibleOn2" value="true" /></a>				
+						</p:else>
+					</t:if>
+					<p:else>
+						<t:if test="mappingConfig.pk.topic.subpath">
+							<a t:type="eventlink" t:event="setVisibleInVirtualVehicle"
+								t:context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
+								title="${message:connectedToAutoPilot}"><t:checkbox t:id="vvVisibleOff1" value="false" /></a>
+							<p:else>
+							<a t:type="eventlink" t:event="setVisibleInVirtualVehicle"
+								t:context="${mappingConfig.pk.device.topicRoot}" href="#"
+								title="${message:connectedToAutoPilot}"><t:checkbox t:id="vvVisibleOff2" value="false" /></a>
+							</p:else>
+						</t:if>
+					</p:else>
+				</t:if>
 			</p:vvVisibleCbCell>
 			
 			<p:autoPilotCbCell>
@@ -98,20 +120,19 @@
 								title="${message:connectedToAutoPilot}"> <i class="icon-plane"></i></a>						
 						</p:else>
 					</t:if>
-				<p:else>
-					<t:if test="mappingConfig.pk.topic.subpath">
-						<a t:type="eventlink" t:event="connectToAutoPilot"
-							t:context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
-							title="${message:connectToAutoPilot}"><t:checkbox t:id="autoPilotCB1" value="false" /></a>
-						<p:else>
+					<p:else>
+						<t:if test="mappingConfig.pk.topic.subpath">
 							<a t:type="eventlink" t:event="connectToAutoPilot"
-								t:context="${mappingConfig.pk.device.topicRoot}" href="#"
-								title="${message:connectToAutoPilot}"><t:checkbox t:id="autoPilotCB2" value="false" /></a>						
-						</p:else>
-					</t:if>
-				</p:else>
-			</t:if>
-			
+								t:context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
+								title="${message:connectToAutoPilot}"><t:checkbox t:id="autoPilotCB1" value="false" /></a>
+							<p:else>
+								<a t:type="eventlink" t:event="connectToAutoPilot"
+									t:context="${mappingConfig.pk.device.topicRoot}" href="#"
+									title="${message:connectToAutoPilot}"><t:checkbox t:id="autoPilotCB2" value="false" /></a>						
+							</p:else>
+						</t:if>
+					</p:else>
+				</t:if>
 			</p:autoPilotCbCell>
 
 			<p:topicPathCell>
@@ -133,35 +154,5 @@
 		</table>
 	</t:form>
 </section>
-
-<!-- <section id="realVehicle"> -->
-<!-- 	<h3>${message:realVehicleConfiguration}</h3> -->
-<!-- 	<table t:type="grid" source="mappingList" -->
-<!-- 		exclude="device,topic,vvVisible,primaryCategory" -->
-<!-- 		add="topicPath,typeName,category" reorder="topicPath,typeName" -->
-<!-- 		row="mappingConfig" -->
-<!-- 		class="table table-striped table-condensed topic-table"> -->
-
-<!-- 		<p:topicPathCell> -->
-<!-- 			${mappingConfig.pk.device.topicRoot}<t:if -->
-<!-- 				test="mappingConfig.pk.topic.subpath">/${mappingConfig.pk.topic.subpath}</t:if> -->
-<!-- 		</p:topicPathCell> -->
-
-<!-- 		<p:typeNameCell> -->
-<!-- 				${mappingConfig.pk.topic.messageType} -->
-<!-- 		</p:typeNameCell> -->
-
-<!-- 		<p:categoryCell> -->
-<!-- 				${mappingConfig.pk.topic.category} -->
-<!-- 		</p:categoryCell> -->
-		
-<!-- 		<p:empty> -->
-<!-- 			<p>${message:noMappingFound}</p> -->
-<!-- 		</p:empty> -->
-
-<!-- 	</table> -->
-
-<!-- </section> -->
-
 
 </html>

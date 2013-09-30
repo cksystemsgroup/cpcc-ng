@@ -44,6 +44,7 @@ public class GpsSensorAdapter extends AbstractGpsSensorAdapter
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
+        super.onStart(connectedNode);
         LOG.debug("onStart()");
 
         Subscriber<sensor_msgs.NavSatFix> positionSubscriber =
@@ -57,6 +58,8 @@ public class GpsSensorAdapter extends AbstractGpsSensorAdapter
                 setPosition(message);
             }
         });
+        
+        setStartCompleted();
     }
 
     /**

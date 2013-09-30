@@ -58,6 +58,7 @@ public class ImageSensorAdapter extends AbstractSensorAdapter implements ImagePr
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
+        super.onStart(connectedNode);
         LOG.debug("onStart()");
 
         Subscriber<sensor_msgs.Image> imageSubscriber = 
@@ -71,5 +72,7 @@ public class ImageSensorAdapter extends AbstractSensorAdapter implements ImagePr
                 image = message;
             }
         });
+        
+        setStartCompleted();
     }
 }

@@ -94,13 +94,13 @@ public class RosNodeServiceImpl implements RosNodeService
             {
                 URI msi = new URI(uri.getValue());
                 rns.setMasterServerUri(msi);
-                // updateMasterServerURI(new URI(uri.getValue()));
                 String hostName = InetAddressFactory.newNonLoopback().getHostName();
                 nodeConfiguration = NodeConfiguration.newPublic(hostName, msi);
             }
             catch (URISyntaxException e)
             {
                 LOG.error(String.format("Can not set master server URI to '%s'.", uri.getValue().toString()));
+                return;
             }
         }
 

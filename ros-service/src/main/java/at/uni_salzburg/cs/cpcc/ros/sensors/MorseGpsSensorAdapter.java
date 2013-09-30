@@ -54,6 +54,7 @@ public class MorseGpsSensorAdapter extends AbstractGpsSensorAdapter
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
+        super.onStart(connectedNode);
         LOG.debug("onStart()");
         
         gpsPosition = connectedNode.getTopicMessageFactory().newFromType(sensor_msgs.NavSatFix._TYPE);
@@ -82,6 +83,7 @@ public class MorseGpsSensorAdapter extends AbstractGpsSensorAdapter
                 setPosition(gpsPosition);
             }
         });
+        setStartCompleted();
     }
     
     /**

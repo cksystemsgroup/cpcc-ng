@@ -24,8 +24,6 @@ import static org.apache.tapestry5.EventConstants.PREPARE;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -120,44 +118,52 @@ public class Configuration
     @CommitAfter
     void connectToAutoPilot(String topic)
     {
-        List<MappingAttributes> attributeList = qm.findAllMappingAttributes();
-
-        Map<String, MappingAttributes> attributeMap = new HashMap<String, MappingAttributes>();
-
-        TopicCategory category = null;
+//        List<MappingAttributes> attributeList = qm.findAllMappingAttributes();
+//
+//        Map<String, MappingAttributes> attributeMap = new HashMap<String, MappingAttributes>();
+//
+//        TopicCategory category = null;
+//        
+//        for (MappingAttributes attribute : attributeList)
+//        {
+//            StringBuilder b = new StringBuilder(attribute.getPk().getDevice().getTopicRoot());
+//            String subPath = attribute.getPk().getTopic().getSubpath();
+//            if (subPath != null)
+//            {
+//                b.append("/").append(subPath);
+//            }
+//            attributeMap.put(b.toString(), attribute);
+//            String attributeTopic = b.toString();
+//            if (attributeTopic.equals(topic))
+//            {
+//                category = attribute.getPk().getTopic().getCategory();
+//            }
+//        }
+//
+//        if (category == null)
+//        {
+//            return;
+//        }
         
-        for (MappingAttributes attribute : attributeList)
-        {
-            StringBuilder b = new StringBuilder(attribute.getPk().getDevice().getTopicRoot());
-            String subPath = attribute.getPk().getTopic().getSubpath();
-            if (subPath != null)
-            {
-                b.append("/").append(subPath);
-            }
-            attributeMap.put(b.toString(), attribute);
-            String attributeTopic = b.toString();
-            if (attributeTopic.equals(topic))
-            {
-                category = attribute.getPk().getTopic().getCategory();
-            }
-        }
-
-        if (category == null)
+        Map<String, MappingAttributes> attributeMap = qm.findAllMappingAttributesAsMap();
+        if (!attributeMap.containsKey(topic))
         {
             return;
         }
         
+        TopicCategory category = attributeMap.get(topic).getPk().getTopic().getCategory();
+        
         for (Entry<String, MappingAttributes> entry : attributeMap.entrySet())
         {
-            MappingAttributes attribute = entry.getValue();
-            Topic attributeTopic = attribute.getPk().getTopic();
+            MappingAttributes attributes = entry.getValue();
+            Topic attributeTopic = attributes.getPk().getTopic();
             if (category != attributeTopic.getCategory())
             {
                 continue;
             }
             boolean connectedToAutopilot = topic.equals(entry.getKey());
-            attribute.setConnectedToAutopilot(connectedToAutopilot);
-            qm.saveOrUpdate(attribute);
+            attributes.setConnectedToAutopilot(connectedToAutopilot);
+            qm.saveOrUpdate(attributes);
         }
     }
     
@@ -165,22 +171,35 @@ public class Configuration
     @CommitAfter
     void disconnectFromAutoPilot(String topic)
     {
-        List<MappingAttributes> attributeList = qm.findAllMappingAttributes();
-        for (MappingAttributes attribute : attributeList)
+        MappingAttributes attributes = qm.findMappingAttributesByTopic(topic);
+        if (attributes != null)
         {
-            StringBuilder b = new StringBuilder(attribute.getPk().getDevice().getTopicRoot());
-            String subPath = attribute.getPk().getTopic().getSubpath();
-            if (subPath != null)
-            {
-                b.append("/").append(subPath);
-            }
-            String attributeTopic = b.toString();
-            if (attributeTopic.equals(topic))
-            {
-                attribute.setConnectedToAutopilot(Boolean.FALSE);
-                qm.saveOrUpdate(attribute);
-                break;
-            }
+            attributes.setConnectedToAutopilot(Boolean.FALSE);
+            qm.saveOrUpdate(attributes);
+        }
+    }
+
+    @OnEvent("setInvisibleInVirtualVehicle")
+    @CommitAfter
+    void setInvisibleInVirtualVehicle(String topic)
+    {
+        MappingAttributes attributes = qm.findMappingAttributesByTopic(topic);
+        if (attributes != null)
+        {
+            attributes.setVvVisible(Boolean.FALSE);
+            qm.saveOrUpdate(attributes);
+        }
+    }
+
+    @OnEvent("setVisibleInVirtualVehicle")
+    @CommitAfter
+    void setVisibleInVirtualVehicle(String topic)
+    {
+        MappingAttributes attributes = qm.findMappingAttributesByTopic(topic);
+        if (attributes != null)
+        {
+            attributes.setVvVisible(Boolean.TRUE);
+            qm.saveOrUpdate(attributes);
         }
     }
 

@@ -27,6 +27,8 @@ import java.util.Map.Entry;
 
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
+import org.ros.node.ConnectedNode;
+import org.ros.node.Node;
 
 /**
  * GenericRosAdapter
@@ -40,6 +42,64 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     private RosTopic topic;
 
     private Map<String, List<String>> config;
+
+    private RosNodeState state = RosNodeState.INITIAL;
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStart(ConnectedNode connectedNode)
+    {
+        super.onStart(connectedNode);
+        state = RosNodeState.STARTED;
+    }
+    
+    /**
+     * Set state to running.
+     */
+    public void setStartCompleted()
+    {
+        state = RosNodeState.RUNNING;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShutdown(Node node)
+    {
+        super.onShutdown(node);
+        state = RosNodeState.TERMINATING;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShutdownComplete(Node node)
+    {
+        super.onShutdownComplete(node);
+        state = RosNodeState.TERMINATED;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onError(Node node, Throwable throwable)
+    {
+        super.onError(node, throwable);
+        state = RosNodeState.ERROR;
+    }
+    
+    /**
+     * @return the state of this node.
+     */
+    public RosNodeState getState()
+    {
+        return state;
+    }
 
     /**
      * {@inheritDoc}
@@ -112,6 +172,9 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
                 map.put("config." + entry.getKey(), entry.getValue());
             }
         }
+        
+        map.put("node.state", Arrays.asList(state.toString()));
+        
         return map;
     }
     

@@ -91,6 +91,7 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
+        super.onStart(connectedNode);
         LOG.debug("onStart()");
         
         publisher = connectedNode.newPublisher(getTopic().getName(), geometry_msgs.Pose._TYPE);
@@ -98,6 +99,7 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
         
         origin = ConfigUtils.parsePolarCoordinate(getConfig(), CFG_ORIGIN, 0);
         originCart = GEODETIC_SYSTEM.polarToRectangularCoordinates(origin);
+        setStartCompleted();
     }
 
     /**
