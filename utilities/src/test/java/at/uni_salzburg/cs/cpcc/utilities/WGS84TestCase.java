@@ -19,8 +19,10 @@
  */
 package at.uni_salzburg.cs.cpcc.utilities;
 
-import org.testng.Assert;
-import org.testng.AssertJUnit;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.offset;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -29,75 +31,51 @@ import org.testng.annotations.Test;
  */
 public class WGS84TestCase
 {
-    /**
-     * This test case verifies the implementation of the rectangularToPolarCoordinates() and
-     * polarToRectangularCoordinates() methods of class WGS84.
-     */
-//    @Test
-//    public void testCase01()
-//    {
-//        CartesianCoordinate pos = new CartesianCoordinate(1000, 10, 100);
-//        WGS84 gs = new WGS84();
-//
-//        PolarCoordinate wgs = gs.rectangularToPolarCoordinates(pos);
-//        CartesianCoordinate rec = gs.polarToRectangularCoordinates(wgs);
-//
-//        System.out.println();
-//        System.out.println("Rectangular X=" + pos.getX() + " Y=" + pos.getY() + " Z=" + pos.getZ());
-//        System.out.println("WGS84       Latitude=" + wgs.getLatitude() + " Longitude=" + wgs.getLongitude()
-//            + " Altitude=" + wgs.getAltitude());
-//        System.out.println("Rectangular X=" + rec.getX() + " Y=" + rec.getY() + " Z=" + rec.getZ());
-//
-//        AssertJUnit.assertTrue(Math.abs(rec.getX() - pos.getX()) < 1E-4);
-//        AssertJUnit.assertTrue(Math.abs(rec.getY() - pos.getY()) < 1E-4);
-//        AssertJUnit.assertTrue(Math.abs(rec.getZ() - pos.getZ()) < 1E-4);
-//
-//        AssertJUnit.assertTrue(Math.abs(88.66552997271454 - wgs.getLatitude()) < 1E-4);
-//        AssertJUnit.assertTrue(Math.abs(0.5729386976834859 - wgs.getLongitude()) < 1E-4);
-//        AssertJUnit.assertTrue(Math.abs(-6356640.669229707 - wgs.getAltitude()) < 1E-4);
-//    }
+    GeodeticSystem gs;
 
-    /**
-     * This test case verifies the implementation of the rectangularToPolarCoordinates() and
-     * polarToRectangularCoordinates() methods of class WGS84.
-     */
-    @Test
-    public void testCase02()
+    @BeforeMethod
+    public void setUp()
     {
-        double latitude = 47.99043439493213;
-        double longitude = 12.93670580800686;
-        double altitude = 435.94417220;
-        WGS84 gs = new WGS84();
+        gs = new WGS84();
+    }
 
-        PolarCoordinate wgs = new PolarCoordinate(latitude, longitude, altitude);
+    @DataProvider
+    public Object[][] polarAndRectangularDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{
+                new PolarCoordinate(47.99043439493213, 12.93670580800686, 435.94417220),
+                new CartesianCoordinate(4168246.0564496145, 957466.6063627704, 4716488.496489645)
+            },
+        };
+    };
+
+    /**
+     * This test case verifies the implementation of the rectangularToPolarCoordinates() and
+     * polarToRectangularCoordinates() methods of class WGS84.
+     */
+    @Test(dataProvider = "polarAndRectangularDataProvider")
+    public void shouldConvertCoodinates(PolarCoordinate wgs, CartesianCoordinate rect)
+    {
+        PolarCoordinate pos = gs.rectangularToPolarCoordinates(rect);
+        assertThat(wgs.getLatitude()).isEqualTo(pos.getLatitude(), offset(1E-4));
+        assertThat(wgs.getLongitude()).isEqualTo(pos.getLongitude(), offset(1E-4));
+        assertThat(wgs.getAltitude()).isEqualTo(pos.getAltitude(), offset(1E-4));
+
         CartesianCoordinate rec = gs.polarToRectangularCoordinates(wgs);
-        PolarCoordinate pos = gs.rectangularToPolarCoordinates(rec);
-
-        System.out.println();
-        System.out.println("WGS84       Latitude=" + wgs.getLatitude() + " Longitude=" + wgs.getLongitude()
-            + " Altitude=" + wgs.getAltitude());
-        System.out.println("Rectangular X=" + rec.getX() + " Y=" + rec.getY() + " Z=" + rec.getZ());
-        System.out.println("WGS84       Latitude=" + pos.getLatitude() + " Longitude=" + pos.getLongitude()
-            + " Altitude=" + pos.getAltitude());
-
-        AssertJUnit.assertTrue(Math.abs(wgs.getLatitude() - pos.getLatitude()) < 1E-4);
-        AssertJUnit.assertTrue(Math.abs(wgs.getLongitude() - pos.getLongitude()) < 1E-4);
-        AssertJUnit.assertTrue(Math.abs(wgs.getAltitude() - pos.getAltitude()) < 1E-4);
-
-        AssertJUnit.assertTrue(Math.abs(4168246.0564496145 - rec.getX()) < 1E-4);
-        AssertJUnit.assertTrue(Math.abs(957466.6063627704 - rec.getY()) < 1E-4);
-        AssertJUnit.assertTrue(Math.abs(4716488.496489645 - rec.getZ()) < 1E-4);
+        assertThat(rec.getX()).isEqualTo(rect.getX(), offset(1E-4));
+        assertThat(rec.getY()).isEqualTo(rect.getY(), offset(1E-4));
+        assertThat(rec.getZ()).isEqualTo(rect.getZ(), offset(1E-4));
     }
 
     /**
      * This test calculates the elevation of a course.
      */
     @Test
-    public void testCase13()
+    public void shouldCalculateElevation()
     {
         PolarCoordinate A = new PolarCoordinate(48, 13, 1010);
         PolarCoordinate B = new PolarCoordinate(48.001, 13.002, 1000);
-        GeodeticSystem gs = new WGS84();
         CartesianCoordinate a = gs.polarToRectangularCoordinates(A);
         CartesianCoordinate b = gs.polarToRectangularCoordinates(B);
 
@@ -111,84 +89,140 @@ public class WGS84TestCase
             x = -1;
         double elevation = Math.toDegrees(Math.asin(x));
 
-        AssertJUnit.assertEquals(-3.1902590577710233, elevation, 1E-9);
+        assertThat(elevation).isEqualTo(-3.1902590577710233, offset(1E-9));
     }
+
+    @DataProvider
+    public Object[][] walkAroundDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{
+                new PolarCoordinate(48, 13, 1010),
+                new CartesianCoordinate(100, 0, 0),
+                new PolarCoordinate(47.99910182694469, 13, 1010)
+            },
+            new Object[]{
+                new PolarCoordinate(48, 13, 1010),
+                new CartesianCoordinate(0, 100, 0),
+                new PolarCoordinate(48, 13.001342298568892, 1010)},
+            new Object[]{
+                new PolarCoordinate(48, 13, 1010),
+                new CartesianCoordinate(0, 0, 100),
+                new PolarCoordinate(48, 13, 1110)
+            },
+        };
+    };
 
     /**
      * This test verifies the walk() method.
      */
-    @Test
-    public void testCase14()
+    @Test(dataProvider = "walkAroundDataProvider")
+    public void shouldWalkAround(PolarCoordinate startPos, CartesianCoordinate way, PolarCoordinate destPos)
     {
-        PolarCoordinate A = new PolarCoordinate(48, 13, 1010);
-        GeodeticSystem gs = new WGS84();
-
-        PolarCoordinate U = gs.walk(A, 100, 0, 0);
-        AssertJUnit.assertEquals(47.99910182694469, U.getLatitude(), 1E-8);
-        AssertJUnit.assertEquals(A.getLongitude(), U.getLongitude(), 1E-8);
-        AssertJUnit.assertEquals(A.getAltitude(), U.getAltitude(), 1E-8);
-
-        PolarCoordinate V = gs.walk(A, 0, 100, 0);
-        AssertJUnit.assertEquals(A.getLatitude(), V.getLatitude(), 1E-8);
-        AssertJUnit.assertEquals(13.001342298568892, V.getLongitude(), 1E-8);
-        AssertJUnit.assertEquals(A.getAltitude(), V.getAltitude(), 1E-8);
-
-        PolarCoordinate W = gs.walk(A, 0, 0, 100);
-        AssertJUnit.assertEquals(A.getLatitude(), W.getLatitude(), 1E-8);
-        AssertJUnit.assertEquals(A.getLongitude(), W.getLongitude(), 1E-8);
-        AssertJUnit.assertEquals(A.getAltitude() + 100, W.getAltitude(), 1E-8);
+        PolarCoordinate b = gs.walk(startPos, way.getX(), way.getY(), way.getZ());
+        assertThat(b.getLatitude()).isEqualTo(destPos.getLatitude(), offset(1E-8));
+        assertThat(b.getLongitude()).isEqualTo(destPos.getLongitude(), offset(1E-8));
+        assertThat(b.getAltitude()).isEqualTo(destPos.getAltitude(), offset(1E-8));
     }
 
     @DataProvider
     public Object[][] polarCoordinatesDataProvider()
     {
         return new Object[][]{
-            new Object[]{48.001, 13.002, 10},
-            new Object[]{48.001, -12.002, 10},
-            new Object[]{48.001, -80.002, 10},
-            new Object[]{48.001, -122.002, 10}, 
-            new Object[]{-89.001, 80.002, 10},
-            new Object[]{89.001, 80.002, 10},
-            new Object[]{-89.001, 179.992, 10},
-            new Object[]{-89.001, -179.992, 10},
-            new Object[]{89.001, -179.992, 10},
-            new Object[]{-89.001, 44.992, 10},
-            new Object[]{-89.001, -44.992, 10},
+            new Object[]{new PolarCoordinate(48.001, 13.002, 10)},
+            new Object[]{new PolarCoordinate(48.001, -12.002, 10)},
+            new Object[]{new PolarCoordinate(48.001, -80.002, 10)},
+            new Object[]{new PolarCoordinate(48.001, -122.002, 10)},
+            new Object[]{new PolarCoordinate(-89.001, 80.002, 10)},
+            new Object[]{new PolarCoordinate(89.001, 80.002, 10)},
+            new Object[]{new PolarCoordinate(-89.001, 179.992, 10)},
+            new Object[]{new PolarCoordinate(-89.001, -179.992, 10)},
+            new Object[]{new PolarCoordinate(89.001, -179.992, 10)},
+            new Object[]{new PolarCoordinate(-89.001, 44.992, 10)},
+            new Object[]{new PolarCoordinate(-89.001, -44.992, 10)},
         };
     };
 
     @Test(dataProvider = "polarCoordinatesDataProvider")
-    public void shouldConvertCoordinatesToAndFro(double lat, double lon, double alt)
+    public void shouldConvertCoordinatesToAndFro(PolarCoordinate pos)
     {
-        PolarCoordinate A = new PolarCoordinate(lat, lon, alt);
-        WGS84 gs = new WGS84();
-        CartesianCoordinate cA = gs.polarToRectangularCoordinates(A);
-        PolarCoordinate pA = gs.rectangularToPolarCoordinates(cA);
-        
-        Assert.assertEquals(pA.getLatitude(), lat, 1E-8, "Latitude");
-        Assert.assertEquals(pA.getLongitude(), lon, 1E-8, "Longitude");
-        Assert.assertEquals(pA.getAltitude(), alt, 1E-4, "Altitude");
+        CartesianCoordinate cartA = gs.polarToRectangularCoordinates(pos);
+        PolarCoordinate posA = gs.rectangularToPolarCoordinates(cartA);
+
+        assertThat(posA.getLatitude())
+            .overridingErrorMessage("Latitude")
+            .isEqualTo(pos.getLatitude(), offset(1E-8));
+        assertThat(posA.getLongitude())
+            .overridingErrorMessage("Longitude")
+            .isEqualTo(pos.getLongitude(), offset(1E-8));
+        assertThat(posA.getAltitude())
+            .overridingErrorMessage("Altitude")
+            .isEqualTo(pos.getAltitude(), offset(1E-4));
     }
 
     @DataProvider
     public Object[][] specialCasesDataProvider()
     {
         return new Object[][]{
-            new Object[]{0, 0, 1, 90.0, 0.0, 1.0 - 6356752.3142},
-            new Object[]{0, 0, -1, -90.0, 0.0, -1.0 + 6356752.3142},
-            new Object[]{0, 1, 1, -45.38862666932452, 90.0, -6388982.402021714},
-            new Object[]{1, 0, 1, -45.38862666932452, 0.0, -6388982.402021714},
+            new Object[]{
+                new CartesianCoordinate(0, 0, 1),
+                new PolarCoordinate(90.0, 0.0, 1.0 - 6356752.3142)
+            },
+            new Object[]{
+                new CartesianCoordinate(0, 0, -1),
+                new PolarCoordinate(-90.0, 0.0, -1.0 + 6356752.3142)
+            },
+            new Object[]{
+                new CartesianCoordinate(0, 1, 1),
+                new PolarCoordinate(-45.38862666932452, 90.0, -6388982.402021714)
+            },
+            new Object[]{
+                new CartesianCoordinate(1, 0, 1),
+                new PolarCoordinate(-45.38862666932452, 0.0, -6388982.402021714)
+            },
         };
     };
 
     @Test(dataProvider = "specialCasesDataProvider")
-    public void shouldConsiderConvertingOfSpecialCases(double x, double y, double z, double lat, double lon, double alt)
+    public void shouldConsiderConvertingOfSpecialCases(CartesianCoordinate cartA, PolarCoordinate posA)
     {
-        WGS84 gs = new WGS84();
-        CartesianCoordinate cA = new CartesianCoordinate(x, y, z);
-        PolarCoordinate pA = gs.rectangularToPolarCoordinates(cA);
-        Assert.assertEquals(pA.getLatitude(), lat, 1E-3);
-        Assert.assertEquals(pA.getLongitude(), lon, 1E-3);
-        Assert.assertEquals(pA.getAltitude(), alt, 1E-3);
+        assertThat(posA.getLatitude())
+            .overridingErrorMessage("Latitude")
+            .isEqualTo(posA.getLatitude(), offset(1E-3));
+        assertThat(posA.getLongitude())
+            .overridingErrorMessage("Longitude")
+            .isEqualTo(posA.getLongitude(), offset(1E-3));
+        assertThat(posA.getAltitude())
+            .overridingErrorMessage("Altitude")
+            .isEqualTo(posA.getAltitude(), offset(1E-3));
     }
+
+    @DataProvider
+    public Object[][] distancesDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{
+                new PolarCoordinate(48.0, 13.0, 1010.0),
+                new PolarCoordinate(47.99910182694469, 13.0, 1010.0),
+                100.0D, 2E-1
+            },
+            new Object[]{
+                new PolarCoordinate(48.0, 13.0, 1010.0),
+                new PolarCoordinate(48.0, 13.001342298568892, 1010.0),
+                100.0D, 2E-1
+            },
+            new Object[]{
+                new PolarCoordinate(48.0, 13.0, 1010.0),
+                new PolarCoordinate(48.0, 13.0, 1110.0),
+                100.0D, 1E-4
+            },
+        };
+    };
+    
+    @Test(dataProvider = "distancesDataProvider")
+    public void shouldCalculateDistances(PolarCoordinate a, PolarCoordinate b, double distance, double delta)
+    {
+        assertThat(gs.calculateDistance(a, b)).isEqualTo(distance, offset(delta));
+    }
+    
 }
