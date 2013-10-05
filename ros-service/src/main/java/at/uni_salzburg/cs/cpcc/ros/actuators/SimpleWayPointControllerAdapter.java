@@ -19,11 +19,15 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.actuators;
 
+import org.ros.message.MessageFactory;
 import org.ros.node.ConnectedNode;
 import org.ros.node.Node;
+import org.ros.node.NodeConfiguration;
 import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
 /**
  * SimpleWayPointController
@@ -31,8 +35,18 @@ import org.slf4j.LoggerFactory;
 public class SimpleWayPointControllerAdapter extends AbstractActuatorAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(SimpleWayPointControllerAdapter.class);
-    
+
     private Publisher<big_actor_msgs.LatLngAlt> publisher;
+
+    private MessageFactory factory;
+
+    /**
+     * Constructor
+     */
+    public SimpleWayPointControllerAdapter()
+    {
+        factory = NodeConfiguration.newPrivate().getTopicMessageFactory();
+    }
 
     /**
      * {@inheritDoc}
@@ -46,14 +60,20 @@ public class SimpleWayPointControllerAdapter extends AbstractActuatorAdapter
     /**
      * @param position the desired position.
      */
-    public void setPosition(big_actor_msgs.LatLngAlt position)
+    public void setPosition(PolarCoordinate position)
     {
         if (publisher != null)
         {
-            publisher.publish(position);
+            big_actor_msgs.LatLngAlt pos = factory.newFromType(big_actor_msgs.LatLngAlt._TYPE);
+
+            pos.setLatitude(position.getLatitude());
+            pos.setLongitude(position.getLongitude());
+            pos.setAltitude(position.getAltitude());
+
+            publisher.publish(pos);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
