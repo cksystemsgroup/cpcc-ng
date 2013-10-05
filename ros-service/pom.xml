@@ -13,43 +13,14 @@
 	<name>ros-service</name>
 
 	<dependencies>
-		<!-- Too set up an application with a database, change the artifactId below 
-			to tapestry-hibernate, and add a dependency on your JDBC driver. You'll also 
-			need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
-<!-- 
-		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-core</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-upload</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-javadoc</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.trsvax</groupId>
-			<artifactId>tapestry-bootstrap</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
- -->
+		<!-- Too set up an application with a database, change the artifactId below to tapestry-hibernate, and add a dependency 
+			on your JDBC driver. You'll also need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
+		<!-- <dependency> <groupId>org.apache.tapestry</groupId> <artifactId>tapestry-core</artifactId> </dependency> <dependency> 
+			<groupId>org.apache.tapestry</groupId> <artifactId>tapestry-test</artifactId> <scope>test</scope> </dependency> <dependency> 
+			<groupId>org.apache.tapestry</groupId> <artifactId>tapestry-upload</artifactId> </dependency> <dependency> <groupId>org.apache.tapestry</groupId> 
+			<artifactId>tapestry-javadoc</artifactId> <scope>provided</scope> </dependency> <dependency> <groupId>com.trsvax</groupId> 
+			<artifactId>tapestry-bootstrap</artifactId> </dependency> <dependency> <groupId>javax.servlet</groupId> <artifactId>servlet-api</artifactId> 
+			<scope>provided</scope> </dependency> -->
 
 
 		<dependency>
@@ -59,8 +30,20 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.easytesting</groupId>
+			<artifactId>fest-assert-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.catch-exception</groupId>
+			<artifactId>catch-exception</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -70,15 +53,15 @@
 		</dependency>
 
 		<dependency>
-			 <groupId>org.apache.httpcomponents</groupId>
-			 <artifactId>httpclient</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-			
+
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
 			<artifactId>utilities</artifactId>
