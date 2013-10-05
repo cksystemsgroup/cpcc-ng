@@ -19,10 +19,36 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sensors;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- * SensorType
+ * AltimeterAdapter
  */
-public enum SensorType
+public class AltimeterAdapter extends Float32SensorAdapter
 {
-    CAMERA, GPS_RECEIVER, ALTIMETER, IMAGE, CAMERA_INFO, FLOAT_SENSOR
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SensorType getType()
+    {
+        return SensorType.ALTIMETER;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, List<String>> getCurrentState()
+    {
+        Map<String, List<String>> map = super.getCurrentState();
+
+        if (getValue() != null)
+        {
+            map.put("sensor.altitude", floatAsString(getValue().getData()));
+        }
+
+        return map;
+    }
 }

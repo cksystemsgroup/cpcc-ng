@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * CameraInfoAdapter
+ * Float32SensorAdapter
  */
 public class Float32SensorAdapter extends AbstractSensorAdapter
 {
