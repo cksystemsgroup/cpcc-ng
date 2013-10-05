@@ -29,8 +29,11 @@ import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverter;
 import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverterImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManagerImpl;
+import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagService;
+import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagServiceImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserServiceImpl;
+import at.uni_salzburg.cs.cpcc.rv.services.ros.GraphNameTranslator;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeServiceImpl;
 

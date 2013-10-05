@@ -39,8 +39,8 @@ import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
 import at.uni_salzburg.cs.cpcc.rv.components.DeviceTree;
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
-import at.uni_salzburg.cs.cpcc.rv.services.ImageTagService;
 import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
+import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagService;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 
 /**

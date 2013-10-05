@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.ImageProvider;
 import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverter;
-import at.uni_salzburg.cs.cpcc.rv.services.PngImageStreamResponse;
+import at.uni_salzburg.cs.cpcc.rv.services.image.PngImageStreamResponse;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 
 /**
