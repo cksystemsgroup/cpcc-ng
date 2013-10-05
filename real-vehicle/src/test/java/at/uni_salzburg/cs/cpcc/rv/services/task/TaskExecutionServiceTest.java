@@ -30,6 +30,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +61,8 @@ public class TaskExecutionServiceTest
 {
     private Task taskA;
     private Task taskB;
+    private Task taskC;
+    private Task taskD;
     private TaskExecutionService executor;
     private TaskSchedulerService scheduler;
     private RosNodeService rosNodeService;
@@ -78,10 +82,25 @@ public class TaskExecutionServiceTest
     @BeforeMethod
     public void setUp()
     {
-        taskA = new Task();
-        taskA.setPosition(new PolarCoordinate(47.1234, 13.7897, 12));
-        taskB = new Task();
-        taskB.setPosition(new PolarCoordinate(47.2345, 13.1234, 23));
+        taskA = mock(Task.class);
+        when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1234, 13.7897, 8));
+        when(taskA.getCreationTime()).thenReturn(1L);
+        when(taskA.toString()).thenReturn("taskA (47.1234, 13.7897, 8), time=1");
+
+        taskB = mock(Task.class);
+        when(taskB.getPosition()).thenReturn(new PolarCoordinate(47.2345, 13.1234, 23));
+        when(taskB.getCreationTime()).thenReturn(2L);
+        when(taskB.toString()).thenReturn("taskB (47.2345, 13.1234, 23), time=2");
+
+        taskC = mock(Task.class);
+        when(taskC.getPosition()).thenReturn(new PolarCoordinate(47.3345, 13.5234, 13));
+        when(taskC.getCreationTime()).thenReturn(3L);
+        when(taskC.toString()).thenReturn("taskC (47.3345, 13.5234, 13), time=3");
+
+        taskD = mock(Task.class);
+        when(taskD.getPosition()).thenReturn(new PolarCoordinate(47.4345, 13.3234, 18));
+        when(taskD.getCreationTime()).thenReturn(4L);
+        when(taskD.toString()).thenReturn("taskD (47.4345, 13.3234, 18), time=4");
 
         float32altitude = NodeConfiguration.newPrivate().getTopicMessageFactory().newFromType(Float32._TYPE);
         position = NodeConfiguration.newPrivate().getTopicMessageFactory().newFromType(NavSatFix._TYPE);
@@ -103,7 +122,7 @@ public class TaskExecutionServiceTest
                 position.setLatitude(pos.getLatitude());
                 position.setLongitude(pos.getLongitude());
                 position.setAltitude(pos.getAltitude());
-                float32altitude.setData((float)pos.getAltitude());
+                float32altitude.setData((float) pos.getAltitude());
                 return null;
             }
         }).when(wpc).setPosition((PolarCoordinate) anyObject());
@@ -230,13 +249,12 @@ public class TaskExecutionServiceTest
         executor.addTask(taskA);
 
         assertThat(executor.getScheduledTasks()).containsExactly(taskA);
-
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("did not return expected task A")
             .isNull();
 
         ((TimerTask) executor).run();
-        
+
         verify(wpc).setPosition((PolarCoordinate) anyObject());
 
         assertThat(executor.getCurrentRunningTask())
@@ -245,7 +263,7 @@ public class TaskExecutionServiceTest
     }
 
     /**
-     * The task executor should execute the first task it gets at once.
+     * The task executor should execute multiple tasks
      */
     @Test
     public void shouldExecuteMultipleTask()
@@ -257,31 +275,127 @@ public class TaskExecutionServiceTest
 
         assertThat(executor.getPendingTasks()).isEmpty();
         assertThat(executor.getScheduledTasks()).containsExactly(taskA, taskB);
-
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("should not return a current task")
             .isNull();
 
         ((TimerTask) executor).run();
-        
-        verify(wpc).setPosition((PolarCoordinate) anyObject());
+
+        verify(wpc).setPosition(taskA.getPosition());
 
         assertThat(executor.getPendingTasks()).isEmpty();
-        assertThat(executor.getCurrentRunningTask())
-            .overridingErrorMessage("should not return a current task")
-            .isNull();
-
         assertThat(executor.getScheduledTasks()).containsExactly(taskB);
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("should not return a current task")
+            .isNull();
 
         ((TimerTask) executor).run();
-        
-        verify(wpc, times(2)).setPosition((PolarCoordinate) anyObject());
+
+        verify(wpc).setPosition(taskB.getPosition());
 
         assertThat(executor.getPendingTasks()).isEmpty();
+        assertThat(executor.getScheduledTasks()).isEmpty();
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("should have processed all tasks")
             .isNull();
-
-        assertThat(executor.getScheduledTasks()).isEmpty();
     }
+
+    /**
+     * The task executor should execute multiple tasks in the correct order
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldExecuteMultipleTasksInCorrectOrder()
+    {
+        doAnswer(new MultipleTasksOrderedByCreationTime()).when(scheduler).schedule(anyList(), anyList());
+
+        executor.addTask(taskA);
+        executor.addTask(taskB);
+
+        assertThat(executor.getPendingTasks()).isEmpty();
+        assertThat(executor.getScheduledTasks()).containsExactly(taskB, taskA);
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("should not return a current task")
+            .isNull();
+
+        ((TimerTask) executor).run();
+
+        verify(wpc).setPosition(taskB.getPosition());
+
+        executor.addTask(taskC);
+        assertThat(executor.getPendingTasks()).isEmpty();
+        assertThat(executor.getScheduledTasks()).containsExactly(taskC, taskA);
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("should not return a current task")
+            .isNull();
+
+        ((TimerTask) executor).run();
+
+        verify(wpc).setPosition(taskC.getPosition());
+
+        executor.addTask(taskD);
+        assertThat(executor.getPendingTasks()).isEmpty();
+        assertThat(executor.getScheduledTasks()).containsExactly(taskD, taskA);
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("should not return a current task")
+            .isNull();
+
+        ((TimerTask) executor).run();
+
+        verify(wpc).setPosition(taskD.getPosition());
+
+        assertThat(executor.getPendingTasks()).isEmpty();
+        assertThat(executor.getScheduledTasks()).containsExactly(taskA);
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("should not return a current task")
+            .isNull();
+
+        ((TimerTask) executor).run();
+
+        verify(wpc).setPosition(taskA.getPosition());
+
+        assertThat(executor.getPendingTasks()).isEmpty();
+        assertThat(executor.getScheduledTasks()).isEmpty();
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("should have processed all tasks")
+            .isNull();
+    }
+
+    /**
+     * MultipleTasksOrderedByCreationTime
+     */
+    private static class MultipleTasksOrderedByCreationTime implements Answer<Object>
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public Object answer(InvocationOnMock invocation) throws Throwable
+        {
+            Object[] args = invocation.getArguments();
+            List<Task> a = (List<Task>) args[0];
+            List<Task> b = (List<Task>) args[1];
+            a.addAll(b);
+            b.clear();
+            Collections.sort(a, new TaskCreationTimeComparator());
+            return null;
+        }
+    }
+
+    /**
+     * TaskCreationTimeComparator
+     */
+    private static class TaskCreationTimeComparator implements Comparator<Task>
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int compare(Task a, Task b)
+        {
+            return (int) (b.getCreationTime() - a.getCreationTime());
+        }
+
+    };
 }

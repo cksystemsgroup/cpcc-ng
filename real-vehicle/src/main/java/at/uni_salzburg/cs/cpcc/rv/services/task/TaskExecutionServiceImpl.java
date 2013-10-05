@@ -164,6 +164,8 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
         {
             currentRunningTask = null;
         }
+        
+        // TODO now the action points of the tasks are in the trajectory, but no "action" takes place yet. 
     }
 
     /**

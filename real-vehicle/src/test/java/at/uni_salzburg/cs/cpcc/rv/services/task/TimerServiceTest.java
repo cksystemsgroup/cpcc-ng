@@ -25,6 +25,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.lang.reflect.Method;
 import java.util.TimerTask;
@@ -158,5 +159,12 @@ public class TimerServiceTest
         assertThat(caughtException())
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("TimerTask already has a schedule.");
+    }
+    
+    @Test
+    public void shouldNotCancelUnscheduledTask()
+    {
+        timerService.cancelSchedule(timerTaskA);
+        verifyZeroInteractions(timerTaskA);
     }
 }

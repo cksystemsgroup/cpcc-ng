@@ -27,9 +27,10 @@ import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 public class Task
 {
     private PolarCoordinate position;
+    private long creationTime;
 
     /**
-     * @return the task's position
+     * @return the task's position.
      */
     public PolarCoordinate getPosition()
     {
@@ -37,10 +38,26 @@ public class Task
     }
 
     /**
-     * @param position the position to set
+     * @param position the position to set.
      */
     public void setPosition(PolarCoordinate position)
     {
         this.position = position;
+    }
+
+    /**
+     * @return the creation time.
+     */
+    public long getCreationTime()
+    {
+        return creationTime;
+    }
+
+    /**
+     * @param creationTime the creation time.
+     */
+    public void setCreationTime(long creationTime)
+    {
+        this.creationTime = creationTime;
     }
 }
