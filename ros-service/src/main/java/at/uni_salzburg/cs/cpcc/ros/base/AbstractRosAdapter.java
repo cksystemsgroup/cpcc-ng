@@ -44,7 +44,9 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     private Map<String, List<String>> config;
 
     private RosNodeState state = RosNodeState.INITIAL;
-    
+
+    private boolean connectedToAutopilot;
+
     /**
      * {@inheritDoc}
      */
@@ -179,6 +181,22 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     }
     
     /**
+     * @return the connectedToAutopilot
+     */
+    public boolean getConnectedToAutopilot()
+    {
+        return connectedToAutopilot;
+    }
+    
+    /**
+     * @param connectedToAutopilot true if this adapter is connected to the autopilot.
+     */
+    public void setConnectedToAutopilot(boolean connectedToAutopilot)
+    {
+        this.connectedToAutopilot = connectedToAutopilot;
+    }
+
+    /**
      * @param values the double values.
      * @return the values as a list of strings.
      */
@@ -228,4 +246,5 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     {
         return Arrays.asList(Float.toString(value));
     }
+
 }
