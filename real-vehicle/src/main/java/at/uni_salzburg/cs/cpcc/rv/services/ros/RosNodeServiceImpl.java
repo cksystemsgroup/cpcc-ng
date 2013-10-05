@@ -187,6 +187,8 @@ public class RosNodeServiceImpl implements RosNodeService
             AbstractRosAdapter adapter = launchDeviceAdapter(device, topic);
             if (adapter != null)
             {
+                MappingAttributes attribute = qm.findMappingAttribute(device, topic);
+                adapter.setConnectedToAutopilot(attribute.getConnectedToAutopilot());
                 adapterList.add(adapter);
             }
         }

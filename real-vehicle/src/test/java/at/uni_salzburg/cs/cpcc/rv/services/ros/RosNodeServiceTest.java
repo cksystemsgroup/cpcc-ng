@@ -46,6 +46,7 @@ import at.uni_salzburg.cs.cpcc.ros.services.RosNodeType;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
 import at.uni_salzburg.cs.cpcc.rv.entities.Device;
 import at.uni_salzburg.cs.cpcc.rv.entities.DeviceType;
+import at.uni_salzburg.cs.cpcc.rv.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.rv.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.rv.entities.Topic;
 import at.uni_salzburg.cs.cpcc.rv.entities.TopicCategory;
@@ -65,6 +66,7 @@ public class RosNodeServiceTest
     private Device device21;
     private DeviceType type8;
     private Topic topic10;
+    private MappingAttributes mappingAttribute;
 
     @BeforeMethod
     public void setupTest() throws URISyntaxException, IOException, ParseException
@@ -125,11 +127,15 @@ public class RosNodeServiceTest
         device21.setTopicRoot("mav01/sonar");
         device21.setType(type8);
         device21.setConfiguration("origin=471 gps='/mav01/gps'");
-
+        
+        mappingAttribute = mock(MappingAttributes.class);
+        when(mappingAttribute.getConnectedToAutopilot()).thenReturn(true);
+        
         qm = mock(QueryManager.class);
         when(qm.findParameterByName(Parameter.MASTER_SERVER_URI)).thenReturn(masterServerURI);
         when(qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE)).thenReturn(useInternalRosCore);
         when(qm.findAllDevices()).thenReturn(Arrays.asList(device21));
+        when(qm.findMappingAttribute(device21, topic10)).thenReturn(mappingAttribute);
 
         @SuppressWarnings("serial")
         Map<String, List<String>> options = new HashMap<String, List<String>>()
@@ -231,14 +237,14 @@ public class RosNodeServiceTest
         svc.shutdownDevice(device21);
     }
     
-    @Test
-    public void shouldThrowUSEOnWreckedMasterURI()
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void shouldThrowIAEOnWreckedMasterURI()
     {
         QueryManager qmi = mock(QueryManager.class);
         when(qmi.findParameterByName(Parameter.MASTER_SERVER_URI)).thenReturn(wrongMasterServerURI);
-        RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser);
+        when(qmi.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE)).thenReturn(useInternalRosCore);
+
+        RosNodeServiceImpl svc = new RosNodeServiceImpl(qmi, optionsParser);
         Assert.assertNull(svc);
-        
-        
     }
 }
