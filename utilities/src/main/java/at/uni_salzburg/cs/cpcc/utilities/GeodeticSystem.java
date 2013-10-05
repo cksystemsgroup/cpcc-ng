@@ -74,4 +74,13 @@ public interface GeodeticSystem
      * @return the Position reached after walking in polar coordinates.
      */
     PolarCoordinate walk(PolarCoordinate startPosition, double x, double y, double z);
+
+    /**
+     * Calculate the distance between two polar coordinates.
+     * 
+     * @param a the first location.
+     * @param b the second location.
+     * @return the distance between location a and location b.
+     */
+    double calculateDistance(PolarCoordinate a, PolarCoordinate b);
 }

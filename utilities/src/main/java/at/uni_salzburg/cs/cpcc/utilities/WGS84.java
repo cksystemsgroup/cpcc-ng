@@ -129,4 +129,12 @@ public class WGS84 implements GeodeticSystem
         return new PolarCoordinate(Math.toDegrees(latitude), Math.toDegrees(longitude), altitude);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double calculateDistance(PolarCoordinate a, PolarCoordinate b)
+    {
+        return polarToRectangularCoordinates(a).subtract(polarToRectangularCoordinates(b)).norm();
+    }
 }
