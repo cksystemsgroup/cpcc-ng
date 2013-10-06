@@ -186,13 +186,14 @@ public class WGS84TestCase
     @Test(dataProvider = "specialCasesDataProvider")
     public void shouldConsiderConvertingOfSpecialCases(CartesianCoordinate cartA, PolarCoordinate posA)
     {
-        assertThat(posA.getLatitude())
+        PolarCoordinate result = gs.rectangularToPolarCoordinates(cartA);
+        assertThat(result.getLatitude())
             .overridingErrorMessage("Latitude")
             .isEqualTo(posA.getLatitude(), offset(1E-3));
-        assertThat(posA.getLongitude())
+        assertThat(result.getLongitude())
             .overridingErrorMessage("Longitude")
             .isEqualTo(posA.getLongitude(), offset(1E-3));
-        assertThat(posA.getAltitude())
+        assertThat(result.getAltitude())
             .overridingErrorMessage("Altitude")
             .isEqualTo(posA.getAltitude(), offset(1E-3));
     }

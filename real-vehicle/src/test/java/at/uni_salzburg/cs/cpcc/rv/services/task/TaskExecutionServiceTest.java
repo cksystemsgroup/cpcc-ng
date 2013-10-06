@@ -71,6 +71,8 @@ public class TaskExecutionServiceTest
     private SimpleWayPointControllerAdapter wpc;
     private AbstractGpsSensorAdapter gps;
     private AltimeterAdapter altimeter;
+    private AbstractRosAdapter unknownAdapterA;
+    private AbstractRosAdapter unknownAdapterB;
 
     private NavSatFix position;
     private Float32 float32altitude;
@@ -136,6 +138,12 @@ public class TaskExecutionServiceTest
         when(altimeter.getType()).thenReturn(SensorType.ALTIMETER);
         when(altimeter.getConnectedToAutopilot()).thenReturn(true);
         when(altimeter.getValue()).thenReturn(float32altitude);
+
+        unknownAdapterA = mock(AbstractRosAdapter.class);
+        when(unknownAdapterA.getConnectedToAutopilot()).thenReturn(true);
+
+        unknownAdapterB = mock(AbstractRosAdapter.class);
+        when(unknownAdapterB.getConnectedToAutopilot()).thenReturn(true);
 
         adapterNodes = new HashMap<String, List<AbstractRosAdapter>>();
         adapterNodes.put("/mav01", Arrays.asList(wpc, gps, altimeter));
