@@ -32,18 +32,19 @@ public class ParseException extends Exception
     private int columnNumber;
 
     /**
-     * @param expected the expected symbol.
-     * @param scanner the options scanner.
-     * @param token the current token.
+     * @param expected the expected symbol(s).
+     * @param symbol the actual symbol.
+     * @param lineNumber the current line number.
+     * @param columnNumber the current column number.
      */
-    public ParseException(Collection<Symbol> expected, OptionsScanner scanner, Token token)
+    public ParseException(Collection<Symbol> expected, Symbol symbol, int lineNumber, int columnNumber)
     {
         super(String.format(Locale.US, "Expected a %s but got a %s in line %d column %d",
-            joinIt(expected), token.getSymbol().name(), scanner.getLineNumber(), scanner.getColumnNumber()));
-        lineNumber = scanner.getLineNumber();
-        columnNumber = scanner.getColumnNumber();
+            joinIt(expected), symbol.name(), lineNumber, columnNumber));
+        this.lineNumber = lineNumber;
+        this.columnNumber = columnNumber;
     }
-    
+
     /**
      * @param symbols the symbols.
      * @return the joint string of symbol names.

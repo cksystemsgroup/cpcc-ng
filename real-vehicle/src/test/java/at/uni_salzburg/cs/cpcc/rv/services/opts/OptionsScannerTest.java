@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services.opts;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -446,5 +448,33 @@ public class OptionsScannerTest
 
         token = scanner.next();
         Assert.assertEquals(token.getSymbol(), Symbol.END);
+    }
+    
+    @DataProvider
+    public Object[][] wreckedItemsProvider()
+    {
+        return new Object[][]{
+            new Object[]{"lala\u00fc\u00fc\u00fc", Symbol.IDENT, "lala", null, 5, 1},
+            new Object[]{"\nblabla\u00fc\u00fc\u00fc", Symbol.IDENT, "blabla", null, 7, 2},
+            new Object[]{"\t\rnix\u00fc", Symbol.IDENT, "nix", null, 6, 1},
+        };
+    };
+    
+    @Test(dataProvider = "wreckedItemsProvider")
+    public void shouldNotScanUmlautAsItems(String string, Symbol sym, String scannedResult, Double number, int column, int line)
+        throws IOException
+    {
+        Reader reader = new StringReader(string);
+        OptionsScanner scanner = new OptionsScanner(reader);
+
+        Token token = scanner.next();
+        assertThat(token.getSymbol()).isNotNull().isEqualTo(sym);
+        assertThat(token.getItemString()).isNotNull().isEqualTo(scannedResult);
+
+        assertThat(scanner.getColumnNumber()).isEqualTo(column);
+        assertThat(scanner.getLineNumber()).isEqualTo(line);
+        
+        token = scanner.next();
+        assertThat(token.getSymbol()).isNotNull().isEqualTo(Symbol.OTHER);
     }
 }

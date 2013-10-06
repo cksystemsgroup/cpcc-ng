@@ -67,13 +67,15 @@ public class OptionsParserServiceImpl implements OptionsParserService
         Token myToken = new Token(token);
         if (token.getSymbol().compareTo(Symbol.IDENT) != 0)
         {
-            throw new ParseException(Arrays.asList(Symbol.IDENT), scanner, token);
+            throw new ParseException(Arrays.asList(Symbol.IDENT), token.getSymbol(),
+                scanner.getLineNumber(), scanner.getColumnNumber());
         }
 
         token.copyFields(scanner.next());
         if (token.getSymbol().compareTo(Symbol.EQUALS) != 0)
         {
-            throw new ParseException(Arrays.asList(Symbol.EQUALS), scanner, token);
+            throw new ParseException(Arrays.asList(Symbol.EQUALS), token.getSymbol(),
+                scanner.getLineNumber(), scanner.getColumnNumber());
         }
 
         token.copyFields(scanner.next());
@@ -81,7 +83,8 @@ public class OptionsParserServiceImpl implements OptionsParserService
         {
             if (!LITERAL_IDENT_NUMBER.contains(token.getSymbol()))
             {
-                throw new ParseException(LITERAL_IDENT_NUMBER, scanner, token);
+                throw new ParseException(LITERAL_IDENT_NUMBER, token.getSymbol(),
+                    scanner.getLineNumber(), scanner.getColumnNumber());
             }
             return new Option(myToken.getItemString(), Arrays.asList(new Token(token)));
         }
@@ -103,7 +106,8 @@ public class OptionsParserServiceImpl implements OptionsParserService
             token.copyFields(scanner.next());
             if (!LITERAL_IDENT_NUMBER.contains(token.getSymbol()))
             {
-                throw new ParseException(LITERAL_IDENT_NUMBER, scanner, token);
+                throw new ParseException(LITERAL_IDENT_NUMBER, token.getSymbol(),
+                    scanner.getLineNumber(), scanner.getColumnNumber());
             }
             tokenList.add(new Token(token));
             token.copyFields(scanner.next());
@@ -111,7 +115,8 @@ public class OptionsParserServiceImpl implements OptionsParserService
 
         if (token.getSymbol() != Symbol.RIGHT_PAREN)
         {
-            throw new ParseException(Arrays.asList(Symbol.RIGHT_PAREN), scanner, token);
+            throw new ParseException(Arrays.asList(Symbol.RIGHT_PAREN), token.getSymbol(),
+                scanner.getLineNumber(), scanner.getColumnNumber());
         }
 
         return new Option(myToken.getItemString(), tokenList);
@@ -143,7 +148,7 @@ public class OptionsParserServiceImpl implements OptionsParserService
 
         return String.format(format, b.toString());
     }
-    
+
     /**
      * {@inheritDoc}
      */

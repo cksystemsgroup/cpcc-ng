@@ -19,12 +19,19 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services.opts;
 
+import static com.googlecode.catchexception.CatchException.catchException;
+import static com.googlecode.catchexception.CatchException.caughtException;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.offset;
+
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -44,14 +51,15 @@ public class OptionsParserServiceTest
     public void shouldParseEmptyOptions() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse("");
-        Assert.assertTrue(result.size() == 0);
+        assertThat(result).isNotNull().isEmpty();
     }
 
     @Test
     public void shouldParseCorrectOptions() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse("bugger=lala looney=3.141592 caspar='xxx uu'");
-        Assert.assertTrue(result.size() == 3);
+        
+        assertThat(result).isNotNull().hasSize(3);
 
         Option bugger = null;
         Option looney = null;
@@ -73,149 +81,170 @@ public class OptionsParserServiceTest
             }
         }
 
-        Assert.assertNotNull(bugger);
+        assertThat(bugger).isNotNull();
         List<Token> buggerList = bugger.getValue();
-        Assert.assertEquals(buggerList.size(), 1);
-        Assert.assertEquals(buggerList.get(0).getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(buggerList.get(0).getItemString(), "lala");
+        assertThat(buggerList).isNotNull().hasSize(1);
+        assertThat(buggerList.get(0).getSymbol()).isNotNull().isEqualTo(Symbol.IDENT);
+        assertThat(buggerList.get(0).getItemString()).isNotNull().isEqualTo("lala");
 
-        Assert.assertNotNull(looney);
+        assertThat(looney).isNotNull();
         List<Token> looneyList = looney.getValue();
-        Assert.assertEquals(looneyList.size(), 1);
-        Assert.assertEquals(looneyList.get(0).getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(looneyList.get(0).getItemString(), "3.141592");
-        Assert.assertEquals(looneyList.get(0).getNumber().doubleValue(), 3.141592, 1E-8);
+        assertThat(looneyList).isNotNull().hasSize(1);
+        assertThat(looneyList.get(0).getSymbol()).isNotNull().isEqualTo(Symbol.NUMBER);
+        assertThat(looneyList.get(0).getItemString()).isNotNull().isEqualTo("3.141592");
+        assertThat(looneyList.get(0).getNumber().doubleValue()).isEqualTo(3.141592, offset(1E-8));
 
-        Assert.assertNotNull(caspar);
+        assertThat(caspar).isNotNull();
         List<Token> casparList = caspar.getValue();
-        Assert.assertEquals(casparList.size(), 1);
-        Assert.assertEquals(casparList.get(0).getSymbol(), Symbol.LITERAL);
-        Assert.assertEquals(casparList.get(0).getItemString(), "xxx uu");
+        assertThat(casparList).isNotNull().hasSize(1);
+        assertThat(casparList.get(0).getSymbol()).isNotNull().isEqualTo(Symbol.LITERAL);
+        assertThat(casparList.get(0).getItemString()).isNotNull().isEqualTo("xxx uu");
     }
 
     @Test
     public void shouldParseCorrectOptionList() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse("bugger=(lala,'looney',3.141592)");
-        Assert.assertTrue(result.size() == 1);
+        assertThat(result).isNotNull().hasSize(1);
 
-        Option bugger = null;
+        Option entry = result.iterator().next();
+        assertThat(entry.getKey()).isNotNull().isEqualTo("bugger");
+        assertThat(entry.getValue()).isNotNull().hasSize(3);
 
-        for (Option option : result)
-        {
-            if ("bugger".equals(option.getKey()))
-            {
-                bugger = option;
-            }
-        }
+        assertThat(entry.getValue().get(0).getSymbol()).isNotNull().isEqualTo(Symbol.IDENT);
+        assertThat(entry.getValue().get(0).getItemString()).isNotNull().isEqualTo("lala");
 
-        Assert.assertNotNull(bugger);
-        List<Token> buggerList = bugger.getValue();
-        Assert.assertEquals(buggerList.size(), 3);
-        Assert.assertEquals(buggerList.get(0).getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(buggerList.get(0).getItemString(), "lala");
+        assertThat(entry.getValue().get(1).getSymbol()).isNotNull().isEqualTo(Symbol.LITERAL);
+        assertThat(entry.getValue().get(1).getItemString()).isNotNull().isEqualTo("looney");
 
-        Assert.assertEquals(buggerList.get(1).getSymbol(), Symbol.LITERAL);
-        Assert.assertEquals(buggerList.get(1).getItemString(), "looney");
-
-        Assert.assertEquals(buggerList.get(2).getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(buggerList.get(2).getItemString(), "3.141592");
-        Assert.assertEquals(buggerList.get(2).getNumber().doubleValue(), 3.141592, 1E-8);
+        assertThat(entry.getValue().get(2).getSymbol()).isNotNull().isEqualTo(Symbol.NUMBER);
+        assertThat(entry.getValue().get(2).getItemString()).isNotNull().isEqualTo("3.141592");
+        assertThat(entry.getValue().get(2).getNumber().doubleValue()).isEqualTo(3.141592, offset(1E-8));
     }
 
     @Test
     public void shouldParseCorrectGpsCoordinates() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse("origin=(37.86644;-122.30954;0)");
-        Assert.assertTrue(result.size() == 1);
+        assertThat(result).isNotNull().hasSize(1);
 
-        Option origin = null;
+        Option entry = result.iterator().next();
+        assertThat(entry.getKey()).isNotNull().isEqualTo("origin");
+        assertThat(entry.getValue()).isNotNull().hasSize(3);
 
-        for (Option option : result)
-        {
-            if ("origin".equals(option.getKey()))
-            {
-                origin = option;
-            }
-        }
+        assertThat(entry.getValue().get(0).getSymbol()).isNotNull().isEqualTo(Symbol.NUMBER);
+        assertThat(entry.getValue().get(0).getItemString()).isNotNull().isEqualTo("37.86644");
+        assertThat(entry.getValue().get(0).getNumber().doubleValue()).isEqualTo(37.86644, offset(1E-8));
 
-        Assert.assertNotNull(origin);
-        List<Token> buggerList = origin.getValue();
-        Assert.assertEquals(buggerList.size(), 3);
-        Assert.assertEquals(buggerList.get(0).getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(buggerList.get(0).getItemString(), "37.86644");
-        Assert.assertEquals(buggerList.get(0).getNumber().doubleValue(), 37.86644, 1E-8);
+        assertThat(entry.getValue().get(1).getSymbol()).isNotNull().isEqualTo(Symbol.NUMBER);
+        assertThat(entry.getValue().get(1).getItemString()).isNotNull().isEqualTo("-122.30954");
+        assertThat(entry.getValue().get(1).getNumber().doubleValue()).isEqualTo(-122.30954, offset(1E-8));
 
-        Assert.assertEquals(buggerList.get(1).getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(buggerList.get(1).getItemString(), "-122.30954");
-        Assert.assertEquals(buggerList.get(1).getNumber().doubleValue(), -122.30954, 1E-8);
+        assertThat(entry.getValue().get(2).getSymbol()).isNotNull().isEqualTo(Symbol.NUMBER);
+        assertThat(entry.getValue().get(2).getItemString()).isNotNull().isEqualTo("0");
+        assertThat(entry.getValue().get(2).getNumber().doubleValue()).isEqualTo(0, offset(1E-8));
+    }
 
-        Assert.assertEquals(buggerList.get(2).getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(buggerList.get(2).getItemString(), "0");
-        Assert.assertEquals(buggerList.get(2).getNumber().doubleValue(), 0, 1E-8);
+    @Test()
+    public void shouldFailOnInvalidItem() throws IOException, ParseException
+    {
+        catchException(svc).parse("1.bugger=nix");
+
+        assertThat(caughtException())
+            .isInstanceOf(ParseException.class)
+            .hasMessage("Expected a IDENT but got a NUMBER in line 1 column 3");
+    }
+
+    @Test()
+    public void shouldFailOnMissingEqualSymbol() throws IOException, ParseException
+    {
+        String source = "bugger nix";
+        catchException(svc).parse(source);
+
+        assertThat(caughtException())
+            .isInstanceOf(ParseException.class)
+            .hasMessage("Expected a EQUALS but got a IDENT in line 1 column 10");
+
+        assertThat(svc.formatParserErrorMessage(source, "%s", (ParseException) caughtException()))
+            .isEqualTo("bugger nix<*>\n");
+    }
+
+    @Test()
+    public void shouldFailOnInvalidList() throws IOException, ParseException
+    {
+        String source = "bugger=(nix";
+        catchException(svc).parse(source);
+
+        assertThat(caughtException())
+            .isInstanceOf(ParseException.class)
+            .hasMessage("Expected a RIGHT_PAREN but got a END in line 1 column 11");
+
+        assertThat(svc.formatParserErrorMessage(source, "%s", (ParseException) caughtException()))
+            .isEqualTo("bugger=(nix<*>\n");
+    }
+
+    @Test()
+    public void shouldFailOnAdditionalEqualsSymbol() throws IOException, ParseException
+    {
+        String source = "bugger==nix=a";
+        catchException(svc).parse(source);
+
+        assertThat(caughtException())
+            .isInstanceOf(ParseException.class)
+            .hasMessage("Expected a LITERAL, IDENT or NUMBER but got a EQUALS in line 1 column 9");
+
+        assertThat(svc.formatParserErrorMessage(source, "%s", (ParseException) caughtException()))
+            .isEqualTo("bugger==n<*>ix=a\n");
+    }
+
+    @Test
+    public void shouldParseConfigurationCorrectly() throws IOException, ParseException
+    {
+        String source = "lala=13.4\npos=(47.1,13.2,10)";
+        Map<String, List<String>> result = svc.parseConfig(source);
+
+        assertThat(result.keySet()).containsExactly("lala", "pos");
+        assertThat(result.get("lala")).containsExactly("13.4");
+        assertThat(result.get("pos")).containsExactly("47.1", "13.2", "10");
     }
     
     @Test()
-    public void shouldFailOnInvalidItem() throws IOException
+    public void shouldFailOnMalformedList() throws IOException, ParseException
     {
-        try
-        {
-            Collection<Option> result = svc.parse("1.bugger=nix");
-            Assert.assertNull(result);
-        }
-        catch (ParseException e)
-        {
-            Assert.assertEquals(e.getMessage(), "Expected a IDENT but got a NUMBER in line 1 column 3");
-        }
-    }
+        String source = "bugger=(1,=";
+        catchException(svc).parse(source);
 
-    @Test()
-    public void shouldFailOnMissingEqualSymbol() throws IOException
-    {
-        String source = "bugger nix";
-        try
-        {
-            Collection<Option> result = svc.parse(source);
-            Assert.assertNull(result);
-        }
-        catch (ParseException e)
-        {
-            Assert.assertEquals(e.getMessage(), "Expected a EQUALS but got a IDENT in line 1 column 10");
-            Assert.assertEquals(svc.formatParserErrorMessage(source, "%s", e), "bugger nix<*>\n");
-        }
-    }
+        assertThat(caughtException())
+            .isInstanceOf(ParseException.class)
+            .hasMessage("Expected a LITERAL, IDENT or NUMBER but got a EQUALS in line 1 column 11");
 
-    @Test()
-    public void shouldFailOnInvalidList() throws IOException
-    {
-        String source = "bugger=(nix";
-        try
-        {
-            Collection<Option> result = svc.parse(source);
-            Assert.assertNull(result);
-        }
-        catch (ParseException e)
-        {
-            Assert.assertEquals(e.getMessage(), "Expected a RIGHT_PAREN but got a END in line 1 column 11");
-            Assert.assertEquals(svc.formatParserErrorMessage(source, "%s", e), "bugger=(nix<*>\n");
-        }
+        assertThat(svc.formatParserErrorMessage(source, "%s", (ParseException) caughtException()))
+            .isEqualTo("bugger=(1,=<*>\n");
     }
-
-    @Test()
-    public void shouldFailOnAdditionalEqualsSymbol() throws IOException
+    
+    @DataProvider
+    public Object[][] errorMessageDataProvider()
     {
-        String source = "bugger==nix=a";
-        try
-        {
-            Collection<Option> result = svc.parse(source);
-            Assert.assertNull(result);
-        }
-        catch (ParseException e)
-        {
-            Assert.assertEquals(e.getMessage(),
-                "Expected a LITERAL, IDENT or NUMBER but got a EQUALS in line 1 column 9");
-            
-            Assert.assertEquals(svc.formatParserErrorMessage(source, "%s", e), "bugger==n<*>ix=a\n");
-        }
+        return new Object[][]{
+            new Object[]{
+                "bugger=(nix",
+                "%s",
+                "bugger=(nix<*>\n",
+                new ParseException(Arrays.asList(Symbol.COMMA, Symbol.RIGHT_PAREN), Symbol.END, 1, 11)
+            },
+            new Object[]{
+                "bugger\n=\n(nix",
+                "%s",
+                "bugger\n=\n(nix<*>\n",
+                new ParseException(Arrays.asList(Symbol.RIGHT_PAREN), Symbol.END, 3, 4)
+            },
+        };
+    };
+
+    @Test(dataProvider = "errorMessageDataProvider")
+    public void shouldFormatParserErrorMessageCorrectly(String source, String format, String expected, ParseException e)
+    {
+        String result = svc.formatParserErrorMessage(source, format, e);
+        assertThat(result).isNotNull().isEqualTo(expected);
     }
 }
