@@ -34,17 +34,17 @@ import at.uni_salzburg.cs.cpcc.utilities.WGS84;
  */
 public class Configuration
 {
-    private static final String CFG_TOPIC_ROOT = "topicRoot";
-    private static final String CFG_ORIGIN = "origin";
-    private static final String CFG_GPS_TOPIC = "gps";
-    private static final String CFG_CAMERA_APERTURE_ANGLE = "cameraApertureAngle";
-    private static final String CFG_CAMERA_WIDTH = "cameraWidth";
-    private static final String CFG_CAMERA_HEIGTH = "cameraHeight";
-    private static final String CFG_ZOOM_LEVEL = "osmZoomLevel";
-    private static final String CFG_TILE_WIDTH = "osmTileWidth";
-    private static final String CFG_TILE_HEIGTH = "osmTileHeight";
-    private static final String CFG_TILE_CACHE_DIR = "osmTileCache.dir";
-    private static final String CFG_TILE_DOWNLOAD_URL = "osmTileServerUrl";
+    static final String CFG_TOPIC_ROOT = "topicRoot";
+    static final String CFG_ORIGIN = "origin";
+    static final String CFG_GPS_TOPIC = "gps";
+    static final String CFG_CAMERA_APERTURE_ANGLE = "cameraApertureAngle";
+    static final String CFG_CAMERA_WIDTH = "cameraWidth";
+    static final String CFG_CAMERA_HEIGTH = "cameraHeight";
+    static final String CFG_ZOOM_LEVEL = "osmZoomLevel";
+    static final String CFG_TILE_WIDTH = "osmTileWidth";
+    static final String CFG_TILE_HEIGTH = "osmTileHeight";
+    static final String CFG_TILE_CACHE_DIR = "osmTileCache.dir";
+    static final String CFG_TILE_DOWNLOAD_URL = "osmTileServerUrl";
 
     private static final String TILE_DEFAULT_CACHE_DIR = "/tmp/tiles";
     private static final String TILE_DEFAULT_DOWNLOAD_URL =

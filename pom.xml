@@ -149,12 +149,40 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- <dependency> -->
+			<!-- <groupId>org.powermock</groupId> -->
+			<!-- <artifactId>powermock-release-with-testng-mockito-dependencies</artifactId> -->
+			<!-- <version>1.5.1</version> -->
+			<!-- <scope>test</scope> -->
+			<!-- </dependency> -->
+
 			<dependency>
-				<groupId>org.easymock</groupId>
-				<artifactId>easymock</artifactId>
-				<version>${easymock-release-version}</version>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-core</artifactId>
+				<version>1.5.1</version>
 				<scope>test</scope>
 			</dependency>
+			
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-module-testng</artifactId>
+				<version>1.5.1</version>
+				<scope>test</scope>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-api-mockito</artifactId>
+				<version>1.5.1</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- <dependency> -->
+			<!-- <groupId>org.easymock</groupId> -->
+			<!-- <artifactId>easymock</artifactId> -->
+			<!-- <version>${easymock-release-version}</version> -->
+			<!-- <scope>test</scope> -->
+			<!-- </dependency> -->
 
 			<dependency>
 				<groupId>org.apache.tapestry</groupId>
@@ -294,6 +322,10 @@
 		</pluginManagement>
 
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
