@@ -19,6 +19,9 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sim.quadrotor;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.offset;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -29,6 +32,7 @@ import java.util.Map;
 import org.ros.node.NodeConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
@@ -249,7 +253,49 @@ public class PlantStateEstimatorTest
         Assert.assertEquals(plantState.getPosition().getAltitude(), 20.0, 1E-3);
         Assert.assertEquals(iterationCounter, 1217);
     }
+    
+    @DataProvider
+    public Object[][] numberDataProvider()
+    {
+        return new Object[][]{
+            new Object[] {-10D},
+            new Object[] {0D},
+            new Object[] {1D},
+            new Object[] {100D},
+        };
+    }
+    
+    @Test(dataProvider = "numberDataProvider")
+    public void shouldStoreRemainingBatteryCapacity(double capacity)
+    {
+        PlantState plantState = new PlantState(initialPlantState);
+        plantState.setRemainingBatteryCapacity(capacity);
+        assertThat(plantState.getRemainingBatteryCapacity()).isNotNull().isEqualTo(capacity, offset(1E-6));
+    }
 
+    @Test
+    public void shouldHaveFullStateMap()
+    {
+        PlantState plantState = new PlantState(initialPlantState);
+        Map<String, List<String>> map = plantState.getStateMap("test");
+
+        assertThat(map.keySet())
+            .isNotNull()
+            .isNotEmpty()
+            .contains("test.acceleration", "test.elevation", "test.flyingTime", "test.heading",
+                "test.position", "test.batteryCapacity", "test.target", "test.velocity");
+
+        assertThat(map.get("test.acceleration")).isNotNull().isNotEmpty().containsExactly("0.00");
+        assertThat(map.get("test.elevation")).isNotNull().isNotEmpty().containsExactly("0.000");
+        assertThat(map.get("test.flyingTime")).isNotNull().isNotEmpty().containsExactly("0.00");
+        assertThat(map.get("test.heading")).isNotNull().isNotEmpty().containsExactly("0");
+        assertThat(map.get("test.position")).isNotNull().isNotEmpty().containsExactly("47.82199000","13.04085000","0.000");
+        assertThat(map.get("test.batteryCapacity")).isNotNull().isNotEmpty().containsExactly("0.0");
+        assertThat(map.get("test.target")).isNotNull().isNotEmpty().containsExactly("0.00000000","0.00000000","0.000");
+        assertThat(map.get("test.velocity")).isNotNull().isNotEmpty().containsExactly("0.00");
+
+    }
+    
     /**
      * @param plantState the plant state.
      * @param writer the writer.
@@ -274,4 +320,5 @@ public class PlantStateEstimatorTest
             Math.toDegrees(elevation), remCap
             );
     }
+    
 }
