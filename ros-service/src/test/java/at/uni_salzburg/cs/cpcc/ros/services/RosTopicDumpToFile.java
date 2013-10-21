@@ -32,7 +32,6 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -43,8 +42,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
-
-import org.apache.commons.io.IOUtils;
 
 /**
  * RosTopicDumpToFile

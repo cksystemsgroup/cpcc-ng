@@ -39,6 +39,8 @@ import javax.imageio.ImageIO;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sensor_msgs.Image;
 
@@ -47,6 +49,8 @@ import sensor_msgs.Image;
  */
 public class RosImageConverterImpl implements RosImageConverter
 {
+    private static final Logger LOG = LoggerFactory.getLogger(RosImageConverterImpl.class);
+    
     @SuppressWarnings("serial")
     private static final Map<String, ImageConverter> CONVERTER_MAP = new HashMap<String, ImageConverter>()
     {
@@ -107,7 +111,9 @@ public class RosImageConverterImpl implements RosImageConverter
             int width = message.getWidth();
             int height = message.getHeight();
             int step = message.getStep();
-            int[] bandOffsets = new int[]{41, 42, 43};
+//            int[] bandOffsets = new int[]{41, 42, 43};
+            int arrayOffset = message.getData().arrayOffset();
+            int[] bandOffsets = new int[]{arrayOffset, arrayOffset+1, arrayOffset+2};
             PixelInterleavedSampleModel sampleModel =
                 new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, width, height, 3, step, bandOffsets);
 
@@ -134,11 +140,12 @@ public class RosImageConverterImpl implements RosImageConverter
         public BufferedImage convert(Image message)
         {
             DataBufferByte dataBuffer = new DataBufferByte(message.getData().array(), message.getData().array().length);
-
+            
             int width = message.getWidth();
             int height = message.getHeight();
             int step = message.getStep();
-            int[] bandOffsets = new int[]{67, 68, 69, 70};
+            int arrayOffset = message.getData().arrayOffset(); 
+            int[] bandOffsets = new int[]{arrayOffset, arrayOffset+1, arrayOffset+2, arrayOffset+3};
             PixelInterleavedSampleModel sampleModel =
                 new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, width, height, 4, step, bandOffsets);
 
@@ -167,12 +174,13 @@ public class RosImageConverterImpl implements RosImageConverter
             try
             {
                 ChannelBuffer cb = ChannelBuffers.copiedBuffer(message.getData().array());
-                ByteArrayInputStream stream = new ByteArrayInputStream(cb.array(), 40, cb.capacity());
+                int arrayOffset = message.getData().arrayOffset();
+                ByteArrayInputStream stream = new ByteArrayInputStream(cb.array(), arrayOffset, cb.capacity());
                 return ImageIO.read(stream);
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                LOG.error("Can not read image data.", e.getMessage());
             }
 
             return new BufferedImage(message.getWidth(), message.getHeight(), BufferedImage.TYPE_INT_ARGB);

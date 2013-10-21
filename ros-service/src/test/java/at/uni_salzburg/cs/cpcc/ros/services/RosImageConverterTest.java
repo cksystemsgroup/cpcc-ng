@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
@@ -119,7 +118,7 @@ public class RosImageConverterTest
         when(message.getHeight()).thenReturn(height);
         when(message.getWidth()).thenReturn(width);
         when(message.getData()).thenReturn(
-            ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), new byte[40], imageData));
+            ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), imageData));
 
         BufferedImage result = conv.messageToBufferedImage(message);
         assertThat(result).isNotNull();
@@ -154,7 +153,7 @@ public class RosImageConverterTest
         when(message.getHeight()).thenReturn(height);
         when(message.getWidth()).thenReturn(width);
         when(message.getData()).thenReturn(
-            ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), new byte[40], imageData));
+            ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), imageData));
         
         BufferedImage result = conv.messageToBufferedImage(message);
         assertThat(result).isNotNull();
@@ -222,7 +221,7 @@ public class RosImageConverterTest
         when(message.getWidth()).thenReturn(width);
         when(message.getStep()).thenReturn(step);
         when(message.getData()).thenReturn(
-            ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), new byte[41], imageData));
+            ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), imageData));
 
         BufferedImage result = conv.messageToBufferedImage(message);
         assertThat(result).isNotNull();
@@ -258,7 +257,7 @@ public class RosImageConverterTest
         when(message.getWidth()).thenReturn(width);
         when(message.getStep()).thenReturn(step);
         when(message.getData()).thenReturn(
-            ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), new byte[67], imageData));
+            ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), imageData));
 
         BufferedImage result = conv.messageToBufferedImage(message);
         assertThat(result).isNotNull();
