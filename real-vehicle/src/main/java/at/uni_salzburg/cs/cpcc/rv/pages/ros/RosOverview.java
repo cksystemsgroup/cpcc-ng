@@ -30,8 +30,8 @@ import javax.inject.Inject;
 import org.apache.tapestry5.annotations.Property;
 
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
+import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
-import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
 
 
 /**

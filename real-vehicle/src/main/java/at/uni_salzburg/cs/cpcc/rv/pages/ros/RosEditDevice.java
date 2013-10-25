@@ -26,8 +26,8 @@ import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.PageActivationContext;
 
-import at.uni_salzburg.cs.cpcc.rv.entities.Device;
-import at.uni_salzburg.cs.cpcc.rv.entities.DeviceType;
+import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
+import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
 import at.uni_salzburg.cs.cpcc.rv.services.DeviceTypeSelectHelpers;
 
 /**

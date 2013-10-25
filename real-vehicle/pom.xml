@@ -99,9 +99,16 @@
 			<groupId>ros.rosjava_core</groupId>
 			<artifactId>rosjava</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
 			<artifactId>ros-service</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>at.uni-salzburg.cs.cpcc</groupId>
+			<artifactId>cpcc-persistence</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 	</dependencies>

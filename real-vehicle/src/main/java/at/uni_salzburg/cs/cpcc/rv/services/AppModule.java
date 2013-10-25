@@ -25,17 +25,17 @@ import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
 
+import at.uni_salzburg.cs.cpcc.persistence.db.QueryManager;
+import at.uni_salzburg.cs.cpcc.persistence.db.QueryManagerImpl;
 import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverter;
 import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverterImpl;
-import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
-import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManagerImpl;
+import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
+import at.uni_salzburg.cs.cpcc.ros.services.RosNodeServiceImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagService;
 import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagServiceImpl;
-import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
-import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserServiceImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.GraphNameTranslator;
-import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
-import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeServiceImpl;
+import at.uni_salzburg.cs.cpcc.utilities.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.utilities.opts.OptionsParserServiceImpl;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to configure and extend
@@ -45,7 +45,7 @@ public final class AppModule
 {
     private AppModule()
     {
-        // TODO Auto-generated constructor stub
+        // intentionally empty.
     }
     
     /**

@@ -43,6 +43,7 @@
 		<module>virtual-vehicle-rte</module>
 		<module>real-vehicle</module>
 		<module>ros-service</module>
+		<module>cpcc-persistence</module>
 	</modules>
 
 	<!-- <scm> <connection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</connection> <developerConnection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</developerConnection> 

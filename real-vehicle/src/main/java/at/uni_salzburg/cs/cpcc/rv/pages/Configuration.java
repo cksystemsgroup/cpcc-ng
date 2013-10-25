@@ -34,13 +34,13 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
-import at.uni_salzburg.cs.cpcc.rv.entities.Device;
-import at.uni_salzburg.cs.cpcc.rv.entities.MappingAttributes;
-import at.uni_salzburg.cs.cpcc.rv.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.rv.entities.Topic;
-import at.uni_salzburg.cs.cpcc.rv.entities.TopicCategory;
-import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
-import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
+import at.uni_salzburg.cs.cpcc.persistence.db.QueryManager;
+import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
+import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
+import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
+import at.uni_salzburg.cs.cpcc.persistence.entities.TopicCategory;
+import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 
 /**
  * Configuration

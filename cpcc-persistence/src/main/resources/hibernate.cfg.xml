@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+          "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<!-- Data Source -->
+		<property name="connection.datasource">java:comp/env/jdbc/RV</property>
+
+		<!-- Database Settings -->
+		<!-- <property name="dialect">org.hibernate.dialect.HSQLDialect</property> -->
+		<property name="dialect">org.hibernate.dialect.H2Dialect</property>
+		<property name="show_sql">false</property>
+
+		<!-- Cache settings -->
+		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+
+		<!-- Other settings -->
+		<property name="current_session_context_class">thread</property>
+		<property name="format_sql">true</property>
+		<property name="hbm2ddl.auto">update</property>
+<!-- 		<mapping package="at.uni_salzburg.cs.cpcc.rv.entities" /> -->
+		<mapping package="at.uni_salzburg.cs.cpcc.persistence.entities" />
+	</session-factory>
+</hibernate-configuration>

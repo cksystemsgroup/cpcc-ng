@@ -35,14 +35,14 @@ import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
-import at.uni_salzburg.cs.cpcc.rv.entities.Device;
-import at.uni_salzburg.cs.cpcc.rv.entities.DeviceType;
+import at.uni_salzburg.cs.cpcc.persistence.db.QueryManager;
+import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
+import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
+import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 import at.uni_salzburg.cs.cpcc.rv.pages.Configuration;
 import at.uni_salzburg.cs.cpcc.rv.services.DeviceTypeSelectHelpers;
-import at.uni_salzburg.cs.cpcc.rv.services.db.QueryManager;
-import at.uni_salzburg.cs.cpcc.rv.services.opts.OptionsParserService;
-import at.uni_salzburg.cs.cpcc.rv.services.opts.ParseException;
-import at.uni_salzburg.cs.cpcc.rv.services.ros.RosNodeService;
+import at.uni_salzburg.cs.cpcc.utilities.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.utilities.opts.ParseException;
 
 /**
  * AbstractRosModifyDevice
