@@ -45,10 +45,12 @@ import org.testng.annotations.Test;
 
 import sensor_msgs.NavSatFix;
 import std_msgs.Float32;
+import at.uni_salzburg.cs.cpcc.ros.actuators.AbstractActuatorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.actuators.ActuatorType;
 import at.uni_salzburg.cs.cpcc.ros.actuators.SimpleWayPointControllerAdapter;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractGpsSensorAdapter;
+import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractSensorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.AltimeterAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.SensorType;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
@@ -73,10 +75,11 @@ public class TaskExecutionServiceTest
     private AltimeterAdapter altimeter;
     private AbstractRosAdapter unknownAdapterA;
     private AbstractRosAdapter unknownAdapterB;
-
+    private AbstractRosAdapter unknownAdapterC;
+    private AbstractRosAdapter unknownAdapterD;
+    
     private NavSatFix position;
     private Float32 float32altitude;
-    
 
     /**
      * Test setup.
@@ -140,14 +143,21 @@ public class TaskExecutionServiceTest
         when(altimeter.getConnectedToAutopilot()).thenReturn(true);
         when(altimeter.getValue()).thenReturn(float32altitude);
 
-        unknownAdapterA = mock(AbstractRosAdapter.class);
+        unknownAdapterA = mock(AbstractSensorAdapter.class);
         when(unknownAdapterA.getConnectedToAutopilot()).thenReturn(true);
 
-        unknownAdapterB = mock(AbstractRosAdapter.class);
+        unknownAdapterB = mock(AbstractActuatorAdapter.class);
         when(unknownAdapterB.getConnectedToAutopilot()).thenReturn(true);
 
+        unknownAdapterC = mock(AbstractRosAdapter.class);
+        when(unknownAdapterC.getConnectedToAutopilot()).thenReturn(false);
+
+        unknownAdapterD = mock(AbstractRosAdapter.class);
+        when(unknownAdapterD.getConnectedToAutopilot()).thenReturn(true);
+
         adapterNodes = new HashMap<String, List<AbstractRosAdapter>>();
-        adapterNodes.put("/mav01", Arrays.asList(wpc, gps, altimeter));
+        adapterNodes.put("/mav01",
+            Arrays.asList(wpc, gps, altimeter, unknownAdapterA, unknownAdapterB, unknownAdapterC, unknownAdapterD));
 
         rosNodeService = mock(RosNodeService.class);
         when(rosNodeService.getAdapterNodes()).thenReturn(adapterNodes);
@@ -226,8 +236,7 @@ public class TaskExecutionServiceTest
         executor.addTask(taskA);
         List<Task> taskList = executor.getScheduledTasks();
         verify(scheduler).schedule(anyList(), anyList());
-        assertThat(taskList.size()).isEqualTo(1);
-        assertThat(taskList.get(0)).overridingErrorMessage("did not return expected task A").isEqualTo(taskA);
+        assertThat(taskList).isNotEmpty().containsExactly(taskA);
     }
 
     /**
@@ -242,9 +251,7 @@ public class TaskExecutionServiceTest
         verify(scheduler, times(2)).schedule(anyList(), anyList());
 
         List<Task> taskList = executor.getScheduledTasks();
-        assertThat(taskList.size()).isEqualTo(2);
-        assertThat(taskList.get(0)).overridingErrorMessage("did not return expected task A").isEqualTo(taskA);
-        assertThat(taskList.get(1)).overridingErrorMessage("did not return expected task B").isEqualTo(taskB);
+        assertThat(taskList).isNotEmpty().containsExactly(taskA, taskB);
     }
 
     /**
@@ -265,12 +272,12 @@ public class TaskExecutionServiceTest
         ((TimerTask) executor).run();
 
         verify(wpc).setPosition(taskA.getPosition());
-        
+
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("returned an unexpected task")
             .isNull();
     }
-    
+
     /**
      * The task executor should execute a single task.
      */
@@ -291,7 +298,7 @@ public class TaskExecutionServiceTest
         ((TimerTask) executor).run();
 
         verify(wpc).setPosition(taskA.getPosition());
-        
+
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("returned an unexpected task")
             .isNull();
@@ -394,6 +401,79 @@ public class TaskExecutionServiceTest
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("should have processed all tasks")
             .isNull();
+    }
+    
+    /**
+     * The task executor should do nothing, if there is nothing to do.
+     */
+    @Test
+    public void shouldHandleEmptyTaskListCorrectly()
+    {
+        assertThat(executor.getPendingTasks()).isEmpty();
+        assertThat(executor.getScheduledTasks()).isEmpty();
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("should not return a current task")
+            .isNull();
+        
+        ((TimerTask) executor).run();
+        
+        assertThat(executor.getPendingTasks()).isEmpty();
+        assertThat(executor.getScheduledTasks()).isEmpty();
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("should not return a current task")
+            .isNull();
+    }
+    
+    @Test
+    public void shouldWaitForEndOfTravelling()
+    {
+        assertThat(executor.getCurrentRunningTask()).isNull();
+        assertThat(executor.getScheduledTasks()).isEmpty();
+        assertThat(executor.getPendingTasks()).isEmpty();
+
+        NavSatFix position2 = NodeConfiguration.newPrivate().getTopicMessageFactory().newFromType(NavSatFix._TYPE);
+        position2.setLatitude(taskA.getPosition().getLatitude());
+        position2.setLongitude(taskA.getPosition().getLongitude() + 22.0);
+        position2.setAltitude(taskA.getPosition().getAltitude());
+        when(gps.getPosition()).thenReturn(position2);
+
+        executor.addTask(taskA);
+        assertThat(executor.getCurrentRunningTask()).isNull();
+        assertThat(executor.getScheduledTasks()).containsExactly(taskA);
+        assertThat(executor.getPendingTasks()).isEmpty();
+
+        ((TimerTask) executor).run();
+        assertThat(executor.getCurrentRunningTask()).isNotNull();
+        assertThat(executor.getScheduledTasks()).isEmpty();
+        assertThat(executor.getPendingTasks()).isEmpty();
+
+        when(gps.getPosition()).thenReturn(position);
+        
+        ((TimerTask) executor).run();
+        assertThat(executor.getCurrentRunningTask()).isNull();
+        assertThat(executor.getScheduledTasks()).isEmpty();
+        assertThat(executor.getPendingTasks()).isEmpty();
+    }
+    
+    @Test
+    public void shouldDoNothingIfGpsIsUnavailable()
+    {
+        assertThat(executor.getCurrentRunningTask()).isNull();
+        assertThat(executor.getScheduledTasks()).isEmpty();
+        assertThat(executor.getPendingTasks()).isEmpty();
+
+        when(gps.getPosition()).thenReturn(null);
+        
+        executor.addTask(taskA);
+        assertThat(executor.getCurrentRunningTask()).isNull();
+        assertThat(executor.getScheduledTasks()).containsExactly(taskA);
+        assertThat(executor.getPendingTasks()).isEmpty();
+
+        ((TimerTask) executor).run();
+        
+        assertThat(executor.getCurrentRunningTask()).isNotNull();
+        assertThat(executor.getScheduledTasks()).isEmpty();
+        assertThat(executor.getPendingTasks()).isEmpty();
     }
 
     /**

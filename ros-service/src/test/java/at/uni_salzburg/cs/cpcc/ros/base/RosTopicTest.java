@@ -19,43 +19,35 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.base;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
 /**
- * RosTopic
+ * RosTopicTest
  */
-public class RosTopic
+public class RosTopicTest
 {
-    private String name;
-    private String type;
-    
-    /**
-     * @param name the name of the registered topic.
-     */
-    public void setName(String name)
+    @DataProvider
+    public static Object[][] topicDataProvider()
     {
-        this.name = name;
+        return new Object[][]{
+            new Object[]{null, null},
+            new Object[]{"name1", null},
+            new Object[]{null, "topic1"},
+            new Object[]{"name1", "topic1"},
+        };
     }
-    
-    /**
-     * @return the name of the registered topic.
-     */
-    public String getName()
+
+    @Test(dataProvider = "topicDataProvider")
+    public void shouldStoreNameAndType(String name, String type)
     {
-        return name;
-    }
-    
-    /**
-     * @param type the registered message type.
-     */
-    public void setType(String type)
-    {
-        this.type = type;
-    }
-    
-    /**
-     * @return the registered message type.
-     */
-    public String getType()
-    {
-        return type;
+        RosTopic topic = new RosTopic();
+        topic.setName(name);
+        topic.setType(type);
+
+        assertThat(name).isEqualTo(name);
+        assertThat(type).isEqualTo(type);
     }
 }

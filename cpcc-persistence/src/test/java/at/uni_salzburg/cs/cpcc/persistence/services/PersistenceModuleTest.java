@@ -20,9 +20,12 @@
 package at.uni_salzburg.cs.cpcc.persistence.services;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.anyString;
 import java.lang.reflect.Constructor;
 
+import org.apache.tapestry5.ioc.Configuration;
 import org.testng.annotations.Test;
 
 /**
@@ -37,5 +40,16 @@ public class PersistenceModuleTest
         assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
+    }
+
+    @Test
+    public void shouldContributeToHibernateEntityPackageManager()
+    {
+        @SuppressWarnings("unchecked")
+        Configuration<String> configuration = mock(Configuration.class);
+
+        PersistenceModule.contributeHibernateEntityPackageManager(configuration);
+
+        verify(configuration).add(anyString());
     }
 }
