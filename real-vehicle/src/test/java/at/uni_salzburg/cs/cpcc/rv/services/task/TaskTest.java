@@ -19,19 +19,11 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services.task;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import at.uni_salzburg.cs.cpcc.rv.services.opts.Symbol;
 import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
 /**
