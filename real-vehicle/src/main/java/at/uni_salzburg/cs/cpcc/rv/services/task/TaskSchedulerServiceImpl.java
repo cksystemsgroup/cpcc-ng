@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services.task;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -26,14 +28,35 @@ import java.util.List;
  */
 public class TaskSchedulerServiceImpl implements TaskSchedulerService
 {
+    private TaskSchedulingAlgorithm algorithm = null;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
     {
-        // TODO Auto-generated method stub
-        
+        if (algorithm != null)
+        {
+            algorithm.schedule(scheduledTasks, pendingTasks);
+        }
+        else
+        {
+            scheduledTasks.addAll(pendingTasks);
+            pendingTasks.clear();
+        }
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAlgorithm(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
+        InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+    {
+        Class<?> clazz = Class.forName(className);
+        Constructor<?> ctor = clazz.getDeclaredConstructor(new Class<?>[0]);
+        Object instance = ctor.newInstance(new Object[0]);
+        algorithm = (TaskSchedulingAlgorithm) instance;
+    }
 }

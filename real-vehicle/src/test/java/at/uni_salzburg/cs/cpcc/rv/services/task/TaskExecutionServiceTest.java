@@ -76,6 +76,7 @@ public class TaskExecutionServiceTest
 
     private NavSatFix position;
     private Float32 float32altitude;
+    
 
     /**
      * Test setup.
@@ -263,8 +264,34 @@ public class TaskExecutionServiceTest
 
         ((TimerTask) executor).run();
 
-        verify(wpc).setPosition((PolarCoordinate) anyObject());
+        verify(wpc).setPosition(taskA.getPosition());
+        
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("returned an unexpected task")
+            .isNull();
+    }
+    
+    /**
+     * The task executor should execute a single task.
+     */
+    @Test
+    public void shouldExecuteASingleTaskWithoutAltimeter()
+    {
+        adapterNodes.put("/mav01", Arrays.asList(wpc, gps));
+        executor = new TaskExecutionServiceImpl(scheduler, rosNodeService, timerService);
+        assertThat(executor.getAltimeter()).isNull();
 
+        executor.addTask(taskA);
+
+        assertThat(executor.getScheduledTasks()).containsExactly(taskA);
+        assertThat(executor.getCurrentRunningTask())
+            .overridingErrorMessage("did not return expected task A")
+            .isNull();
+
+        ((TimerTask) executor).run();
+
+        verify(wpc).setPosition(taskA.getPosition());
+        
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("returned an unexpected task")
             .isNull();

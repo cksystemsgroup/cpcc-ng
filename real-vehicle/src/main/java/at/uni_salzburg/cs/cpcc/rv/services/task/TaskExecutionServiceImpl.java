@@ -156,7 +156,7 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
         }
         
         PolarCoordinate vehiclePosition = new PolarCoordinate(pos.getLatitude(), pos.getLongitude(),
-            altimeter.getValue().getData());
+            altimeter != null ? altimeter.getValue().getData() : pos.getAltitude());
 
         double distance = gs.calculateDistance(currentRunningTask.getPosition(), vehiclePosition);
 

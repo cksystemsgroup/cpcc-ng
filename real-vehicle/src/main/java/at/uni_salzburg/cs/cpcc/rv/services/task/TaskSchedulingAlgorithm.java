@@ -19,23 +19,19 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.services.task;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
- * TaskSchedulerService
+ * TaskSchedulingAlgorithm
  */
-public interface TaskSchedulerService extends TaskSchedulingAlgorithm
+public interface TaskSchedulingAlgorithm
 {
     /**
-     * @param className the class name of the scheduling algorithm.
-     * @throws ClassNotFoundException in case of errors.
-     * @throws NoSuchMethodException in case of errors.
-     * @throws SecurityException in case of errors.
-     * @throws InstantiationException in case of errors.
-     * @throws IllegalAccessException in case of errors.
-     * @throws IllegalArgumentException in case of errors.
-     * @throws InvocationTargetException in case of errors.
+     * This method takes pending tasks and adds them to the list of scheduled tasks. Furthermore, it sorts the scheduled
+     * tasks. Lower indices in this list indicate earlier execution.
+     * 
+     * @param scheduledTasks the already scheduled tasks.
+     * @param pendingTasks the currently pending tasks.
      */
-    void setAlgorithm(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
-        InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+    void schedule(List<Task> scheduledTasks, List<Task> pendingTasks);
 }
