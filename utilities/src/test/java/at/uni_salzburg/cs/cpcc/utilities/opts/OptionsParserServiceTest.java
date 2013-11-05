@@ -60,7 +60,14 @@ public class OptionsParserServiceTest
         Collection<Option> result = svc.parse("");
         assertThat(result).isNotNull().isEmpty();
     }
-
+    
+    @Test
+    public void shouldParseNullOptions() throws IOException, ParseException
+    {
+        Collection<Option> result = svc.parse(null);
+        assertThat(result).isNotNull().isEmpty();
+    }
+    
     @Test
     public void shouldParseCorrectOptions() throws IOException, ParseException
     {
