@@ -43,6 +43,11 @@ public class OptionsParserServiceImpl implements OptionsParserService
     {
         List<Option> optionsList = new ArrayList<Option>();
 
+        if (options == null)
+        {
+            return optionsList;
+        }
+
         OptionsScanner scanner = new OptionsScanner(new StringReader(options));
 
         Token token = scanner.next();
