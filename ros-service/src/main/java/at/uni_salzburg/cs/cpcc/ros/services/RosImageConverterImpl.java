@@ -139,6 +139,11 @@ public class RosImageConverterImpl implements RosImageConverter
         @Override
         public BufferedImage convert(Image message)
         {
+            if (message.getData().array().length <= 0)
+            {
+                return new BufferedImage(message.getWidth(), message.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            }            
+            
             DataBufferByte dataBuffer = new DataBufferByte(message.getData().array(), message.getData().array().length);
             
             int width = message.getWidth();
