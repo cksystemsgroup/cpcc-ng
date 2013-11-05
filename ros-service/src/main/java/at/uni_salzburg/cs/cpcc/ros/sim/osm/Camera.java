@@ -29,9 +29,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
 /**
@@ -39,8 +36,6 @@ import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
  */
 public class Camera
 {
-    private static final Logger LOG = LoggerFactory.getLogger(Camera.class);
-
     private TileCache tileCache;
     private BufferedImage map;
     private MercatorProjection topLeftTile;
@@ -106,12 +101,6 @@ public class Camera
             position =
                 cfg.getGeodeticSystem().walk(cfg.getOriginPosition(), -position.getLatitude(), position.getLongitude(),
                     position.getAltitude());
-        }
-
-        if (LOG.isDebugEnabled())
-        {
-            LOG.debug("getImage(): " + position.getLatitude() + ", " + position.getLongitude() + ", "
-                + position.getAltitude());
         }
 
         double dx = position.getAltitude() * Math.tan(cfg.getCameraApertureAngle() / 2.0);
@@ -205,10 +194,6 @@ public class Camera
         cameraImage.createGraphics().drawImage(scaledImage, 0, 0, null);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ImageIO.write(cameraImage, "PNG", bos);
-
-        // ImageIO.write(map, "PNG", new File("map.png"));
-        // ImageIO.write(image, "PNG", new File("image.png"));
-        // ImageIO.write(cameraImage, "PNG", new File("cameraImage.png"));
 
         return bos.toByteArray();
     }
