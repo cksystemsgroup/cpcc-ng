@@ -25,8 +25,8 @@ import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
 
-import at.uni_salzburg.cs.cpcc.persistence.db.QueryManager;
-import at.uni_salzburg.cs.cpcc.persistence.db.QueryManagerImpl;
+import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.persistence.services.QueryManagerImpl;
 import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverter;
 import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverterImpl;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;

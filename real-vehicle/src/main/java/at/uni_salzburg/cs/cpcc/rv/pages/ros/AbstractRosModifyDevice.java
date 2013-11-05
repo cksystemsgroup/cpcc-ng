@@ -35,9 +35,9 @@ import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
-import at.uni_salzburg.cs.cpcc.persistence.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
 import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
+import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 import at.uni_salzburg.cs.cpcc.rv.pages.Configuration;
 import at.uni_salzburg.cs.cpcc.rv.services.DeviceTypeSelectHelpers;

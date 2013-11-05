@@ -27,8 +27,8 @@ import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.internal.OptionModelImpl;
 import org.apache.tapestry5.internal.SelectModelImpl;
 
-import at.uni_salzburg.cs.cpcc.persistence.db.QueryManager;
 import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
+import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 
 /**
  * DeviceTypeSelectHelpers

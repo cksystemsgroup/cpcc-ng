@@ -50,15 +50,6 @@ public class RosImageConverterTest
     private ChannelBuffer buffer;
     private Image message;
 
-    //    private static final byte[] SIXTY_BYTES = new byte[]{
-    //        0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    //        0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    //        0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    //        0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    //        0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    //        0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-    //    };
-
     @BeforeMethod
     public void setUp()
     {
@@ -95,6 +86,28 @@ public class RosImageConverterTest
     }
 
     @DataProvider
+    public Object[][] emptyImageDataprovider2()
+    {
+        return new Object[][]{
+            new Object[]{40, 30, "rgba8"},
+        };
+    }
+
+    @Test(dataProvider = "emptyImageDataprovider2")
+    public void shouldReturnEmptyImageOnNullImage(int height, int width, String encoding)
+    {
+        when(buffer.array()).thenReturn(new byte[0]);
+        when(buffer.hasArray()).thenReturn(false);
+
+        when(message.getEncoding()).thenReturn(encoding);
+        when(message.getHeight()).thenReturn(height);
+        when(message.getWidth()).thenReturn(width);
+
+        BufferedImage result = conv.messageToBufferedImage(message);
+        assertThat(result).isNotNull();
+    }
+
+    @DataProvider
     public Object[][] imageDataprovider()
     {
         return new Object[][]{
@@ -112,7 +125,7 @@ public class RosImageConverterTest
         byte[] imageData = IOUtils.toByteArray(stream);
 
         when(buffer.array()).thenReturn(imageData);
-//        when(buffer.hasArray()).thenReturn(true);
+        //        when(buffer.hasArray()).thenReturn(true);
 
         when(message.getEncoding()).thenReturn(encoding);
         when(message.getHeight()).thenReturn(height);
@@ -134,19 +147,19 @@ public class RosImageConverterTest
         assertThat(resultImageData.length).isEqualTo(imageData.length);
         // assertThat(resultImageData).isEqualTo(imageData);
     }
-    
+
     @Test
     public void shouldReturnAnEmptyImageForACorruptedPNG() throws IOException
     {
-        int height=90;
-        int width=120;
-        String encoding="PNG";
-        String imageName="data/test-image.png";
-        
+        int height = 90;
+        int width = 120;
+        String encoding = "PNG";
+        String imageName = "data/test-image.png";
+
         InputStream stream = RosImageConverterTest.class.getResourceAsStream(imageName);
         byte[] saneImageData = IOUtils.toByteArray(stream);
-        byte[] imageData = Arrays.copyOfRange(saneImageData, 0, saneImageData.length-100);
-        
+        byte[] imageData = Arrays.copyOfRange(saneImageData, 0, saneImageData.length - 100);
+
         when(buffer.array()).thenReturn(imageData);
 
         when(message.getEncoding()).thenReturn(encoding);
@@ -154,33 +167,33 @@ public class RosImageConverterTest
         when(message.getWidth()).thenReturn(width);
         when(message.getData()).thenReturn(
             ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), imageData));
-        
+
         BufferedImage result = conv.messageToBufferedImage(message);
         assertThat(result).isNotNull();
-        
+
         assertThat(result.getHeight()).isEqualTo(height);
         assertThat(result.getWidth()).isEqualTo(width);
-        
+
         assertThatImageIsEmpty(result);
     }
-    
+
     @Test
     public void shouldReturnAnEmptyImageForUnknownImageFormats()
     {
-        int height=91;
-        int width=121;
-        String encoding="unknownImageFormat";
-        
+        int height = 91;
+        int width = 121;
+        String encoding = "unknownImageFormat";
+
         when(message.getEncoding()).thenReturn(encoding);
         when(message.getHeight()).thenReturn(height);
         when(message.getWidth()).thenReturn(width);
-        
+
         BufferedImage result = conv.messageToBufferedImage(message);
         assertThat(result).isNotNull();
-        
+
         assertThat(result.getHeight()).isEqualTo(height);
         assertThat(result.getWidth()).isEqualTo(width);
-        
+
         assertThatImageIsEmpty(result);
     }
 
@@ -210,10 +223,10 @@ public class RosImageConverterTest
 
         InputStream stream = RosImageConverterTest.class.getResourceAsStream(imageName);
         byte[] imageData = IOUtils.toByteArray(stream);
-        
+
         stream = RosImageConverterTest.class.getResourceAsStream(convertedImageName);
         byte[] convertedImageData = IOUtils.toByteArray(stream);
-        
+
         when(buffer.array()).thenReturn(imageData);
 
         when(message.getEncoding()).thenReturn(encoding);
@@ -230,7 +243,7 @@ public class RosImageConverterTest
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ImageIO.write(result, "PNG", bos);
-        
+
         assertThat(bos.toByteArray()).isEqualTo(convertedImageData);
     }
 
@@ -246,10 +259,10 @@ public class RosImageConverterTest
 
         InputStream stream = RosImageConverterTest.class.getResourceAsStream(imageName);
         byte[] imageData = IOUtils.toByteArray(stream);
-        
+
         stream = RosImageConverterTest.class.getResourceAsStream(convertedImageName);
         byte[] convertedImageData = IOUtils.toByteArray(stream);
-        
+
         when(buffer.array()).thenReturn(imageData);
 
         when(message.getEncoding()).thenReturn(encoding);
@@ -266,7 +279,7 @@ public class RosImageConverterTest
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ImageIO.write(result, "PNG", bos);
-        
+
         assertThat(bos.toByteArray()).isEqualTo(convertedImageData);
     }
 }
