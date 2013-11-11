@@ -48,6 +48,9 @@
 
 	<!-- <scm> <connection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</connection> <developerConnection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</developerConnection> 
 		</scm> -->
+	<scm>
+		<connection>scm:git:ssh://git@bitbucket.org/ckrainer/cpcc-ng.git</connection>
+	</scm>
 
 	<dependencyManagement>
 		<dependencies>
@@ -163,14 +166,14 @@
 				<version>1.5.1</version>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-module-testng</artifactId>
 				<version>1.5.1</version>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.powermock</groupId>
 				<artifactId>powermock-api-mockito</artifactId>
@@ -335,6 +338,24 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- <plugin> -->
+			<!-- <groupId>org.pitest</groupId> -->
+			<!-- <artifactId>pitest-maven</artifactId> -->
+			<!-- <version>0.31</version> -->
+			<!-- <configuration> -->
+			<!-- <verbose>false</verbose> -->
+			<!-- <failWhenNoMutations>false</failWhenNoMutations> -->
+			<!-- <targetClasses> -->
+			<!-- <param>at.uni_salzburg.cs.cpcc.utilities*</param> -->
+			<!-- </targetClasses> -->
+			<!-- <targetTests> -->
+			<!-- <param>at.uni_salzburg.cs.cpcc.utilities*</param> -->
+			<!-- </targetTests> -->
+			<!-- <jvmArgs> -->
+			<!-- <value>-XX:-UseSplitVerifier</value> -->
+			<!-- </jvmArgs> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
 		</plugins>
 
 		<extensions>
