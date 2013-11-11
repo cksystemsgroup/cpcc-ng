@@ -17,37 +17,26 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.base;
+package at.uni_salzburg.cs.cpcc.ros.services;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.apache.tapestry5.ioc.ServiceBinder;
 
 /**
- * RosTopicTest
+ * RosServiceModule
  */
-public class RosTopicTest
+public final class RosServiceModule
 {
-    @DataProvider
-    public static Object[][] topicDataProvider()
+    private RosServiceModule()
     {
-        return new Object[][]{
-            new Object[]{null, null},
-            new Object[]{"name1", null},
-            new Object[]{null, "topic1"},
-            new Object[]{"name1", "topic1"},
-        };
+        // intentionally empty.
     }
 
-    @Test(dataProvider = "topicDataProvider")
-    public void shouldStoreNameAndType(String name, String type)
+    /**
+     * @param binder the service binder
+     */
+    public static void bind(ServiceBinder binder)
     {
-        RosTopic topic = new RosTopic();
-        topic.setName(name);
-        topic.setType(type);
-
-        assertThat(topic.getName()).isEqualTo(name);
-        assertThat(topic.getType()).isEqualTo(type);
+        binder.bind(RosNodeService.class, RosNodeServiceImpl.class).eagerLoad();
+        binder.bind(RosImageConverter.class, RosImageConverterImpl.class);
     }
 }

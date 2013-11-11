@@ -111,7 +111,6 @@ public class RosImageConverterImpl implements RosImageConverter
             int width = message.getWidth();
             int height = message.getHeight();
             int step = message.getStep();
-//            int[] bandOffsets = new int[]{41, 42, 43};
             int arrayOffset = message.getData().arrayOffset();
             int[] bandOffsets = new int[]{arrayOffset, arrayOffset+1, arrayOffset+2};
             PixelInterleavedSampleModel sampleModel =

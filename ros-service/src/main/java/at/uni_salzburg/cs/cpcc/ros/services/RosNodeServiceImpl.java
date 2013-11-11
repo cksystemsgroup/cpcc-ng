@@ -109,7 +109,6 @@ public class RosNodeServiceImpl implements RosNodeService
         {
             startRosCore();
         }
-        // updateRosCore("true".equalsIgnoreCase(internal.getValue()));
 
         List<Device> allDevices = qm.findAllDevices();
 
@@ -327,20 +326,28 @@ public class RosNodeServiceImpl implements RosNodeService
         try
         {
             rosCore.start();
-            try
-            {
-                rosCore.awaitStart();
-                LOG.info("ROS core is up and running.");
-            }
-            catch (InterruptedException e)
-            {
-                LOG.error("Starting ROS core has been interrupted", e);
-            }
+            awaitStartOfRosCore(rosCore);
         }
         catch (RosRuntimeException e)
         {
             LOG.error("Starting ROS core failed", e);
             rns.setRosCore(null);
+        }
+    }
+
+    /**
+     * @param rosCore the ROS core instance.
+     */
+    private void awaitStartOfRosCore(RosCore rosCore)
+    {
+        try
+        {
+            rosCore.awaitStart();
+            LOG.info("ROS core is up and running.");
+        }
+        catch (InterruptedException e)
+        {
+            LOG.error("Starting ROS core has been interrupted", e);
         }
     }
 
