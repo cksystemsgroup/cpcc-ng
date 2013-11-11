@@ -49,7 +49,7 @@ public class Device implements ITreeNode
     @OneToOne
     private DeviceType type;
 
-    @Size(max = 255)
+    @Size(max = 512)
     private String configuration;
 
     /**

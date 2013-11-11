@@ -20,6 +20,7 @@
 package at.uni_salzburg.cs.cpcc.persistence.services;
 
 import org.apache.tapestry5.ioc.Configuration;
+import org.apache.tapestry5.ioc.ServiceBinder;
 
 /**
  * PersistenceModule
@@ -31,6 +32,14 @@ public final class PersistenceModule
         // intentionally empty.
     }
 
+    /**
+     * @param binder the service binder
+     */
+    public static void bind(ServiceBinder binder)
+    {
+        binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
+    }
+    
     /**
      * @param configuration the IoC configuration.
      */

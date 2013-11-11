@@ -22,10 +22,13 @@ package at.uni_salzburg.cs.cpcc.persistence.services;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
 import java.lang.reflect.Constructor;
 
 import org.apache.tapestry5.ioc.Configuration;
+import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.ServiceBindingOptions;
 import org.testng.annotations.Test;
 
 /**
@@ -43,6 +46,19 @@ public class PersistenceModuleTest
     }
 
     @Test
+    public void shouldBindQueryManager()
+    {
+        ServiceBindingOptions options = mock(ServiceBindingOptions.class);
+        ServiceBinder binder = mock(ServiceBinder.class);
+        when(binder.bind(QueryManager.class, QueryManagerImpl.class)).thenReturn(options);
+        
+        PersistenceModule.bind(binder);
+        
+        verify(binder).bind(QueryManager.class, QueryManagerImpl.class);
+        verify(options).eagerLoad();
+    }
+    
+    @Test
     public void shouldContributeToHibernateEntityPackageManager()
     {
         @SuppressWarnings("unchecked")
@@ -50,6 +66,6 @@ public class PersistenceModuleTest
 
         PersistenceModule.contributeHibernateEntityPackageManager(configuration);
 
-        verify(configuration).add(anyString());
+        verify(configuration).add("at.uni_salzburg.cs.cpcc.persistence.entities");
     }
 }
