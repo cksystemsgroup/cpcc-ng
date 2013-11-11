@@ -19,17 +19,44 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import at.uni_salzburg.cs.cpcc.vvrte.entities.Vehicle;
+import java.util.Collection;
+import java.util.List;
+
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 
 /**
- * VehicleLoader
+ * VvRteRepository
  */
-public interface VehicleLauncher
+public interface VvRteRepository
 {
     /**
-     * @param vehicle the vehicle to launch.
-     * @throws VehicleLaunchException thrown in case of errors.
+     * @return the available virtual vehicles.
      */
-    void start(Vehicle vehicle) throws VehicleLaunchException;
+    List<VirtualVehicle> findAllVehicles();
 
+    /**
+     * @param list the database objects to be saved.
+     */
+    void saveOrUpdateAll(Collection<?> list);
+    
+    /**
+     * @param o the database object to be saved.
+     */
+    void saveOrUpdate(Object o);
+
+    /**
+     * @param o the database object to be deleted.
+     */
+    void delete(Object o);
+
+    /**
+     * @param list the database objects to be deleted.
+     */
+    void deleteAll(Collection<?> list);
+
+    /**
+     * @param id the virtual vehicle ID
+     * @return the virtual vehicle or null, if not found.
+     */
+    VirtualVehicle findVirtualVehicleById(Integer id);
 }

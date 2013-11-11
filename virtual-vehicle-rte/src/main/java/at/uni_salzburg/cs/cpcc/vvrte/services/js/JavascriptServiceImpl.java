@@ -19,10 +19,14 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +36,9 @@ import org.slf4j.LoggerFactory;
 public class JavascriptServiceImpl implements JavascriptService
 {
     private static final Logger LOG = LoggerFactory.getLogger(JavascriptServiceImpl.class);
-    
+
     private Set<String> allowedClasses = new HashSet<String>();
-    
+
     /**
      * JavascriptServiceImpl
      */
@@ -57,13 +61,13 @@ public class JavascriptServiceImpl implements JavascriptService
      * {@inheritDoc}
      */
     @Override
-    public JsWorker execute(String script, int apiVersion)
+    public JsWorker execute(String script, int apiVersion) throws IOException
     {
         JsWorker w = new JsWorker(script, apiVersion, allowedClasses);
         new Thread(w).start();
         return w;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -91,5 +95,37 @@ public class JavascriptServiceImpl implements JavascriptService
     public void addAllowedClass(String className)
     {
         allowedClasses.add(className);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object[] codeVerification(String script, int apiVersion) throws IOException
+    {
+        JsWorker w = new JsWorker(script, apiVersion, allowedClasses);
+        String completedScript = w.getScript();
+
+        Context cx = Context.enter();
+        cx.setOptimizationLevel(-1);
+
+        try
+        {
+            Script compiledScript = cx.compileString(completedScript, "<check>", 1, null);
+            if (compiledScript != null)
+            {
+                return null;
+            }
+        }
+        catch (RhinoException e)
+        {
+            return new Object[]{e.columnNumber(), e.lineNumber() - w.getScriptStartLine(), e.details(), e.lineSource()};
+        }
+        finally
+        {
+            Context.exit();
+        }
+
+        return new Object[]{0, 0, "Can not compile script!", ""};
     }
 }

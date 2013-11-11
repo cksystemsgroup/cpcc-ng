@@ -19,35 +19,17 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import at.uni_salzburg.cs.cpcc.vvrte.entities.Vehicle;
-import at.uni_salzburg.cs.cpcc.vvrte.entities.VehicleState;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 
 /**
- * VehicleLauncherImpl
+ * VehicleLoader
  */
-public class VehicleLauncherImpl implements VehicleLauncher
+public interface VirtualVehicleLauncher
 {
     /**
-     * {@inheritDoc}
+     * @param vehicle the vehicle to launch.
+     * @throws VirtualVehicleLaunchException thrown in case of errors.
      */
-    @Override
-    public void start(Vehicle vehicle) throws VehicleLaunchException
-    {
-        // TODO Auto-generated method stub
+    void start(VirtualVehicle vehicle) throws VirtualVehicleLaunchException;
 
-        VehicleState state = vehicle.getState();
-
-        if (state != VehicleState.INIT)
-        {
-            throw new VehicleLaunchException("Expected vehicle in state " + VehicleState.INIT + ", but got " + state);
-        }
-        
-        if (!state.canTraverseTo(VehicleState.RUNNING))
-        {
-            throw new VehicleLaunchException("Can not switch vehicle to state " + VehicleState.RUNNING);
-        }
-
-        vehicle.setState(state.traverse(VehicleState.RUNNING));
-        
-    }
 }

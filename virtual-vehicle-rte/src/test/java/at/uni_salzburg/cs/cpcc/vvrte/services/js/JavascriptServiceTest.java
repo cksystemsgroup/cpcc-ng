@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 
+import static com.googlecode.catchexception.CatchException.catchException;
+import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.IOException;
@@ -32,6 +34,7 @@ import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -40,43 +43,40 @@ import org.testng.annotations.Test;
 public class JavascriptServiceTest
 {
     @Test
-    public void shouldExecuteSimpleJS() throws InterruptedException
+    public void shouldExecuteSimpleJS() throws InterruptedException, IOException
     {
         JavascriptService jss = new JavascriptServiceImpl();
         JsWorker x = jss.execute("function f(x){return x+1} f(7)", 1);
-        x.awaitCopmletion();
+        x.awaitCompletion();
 
         assertThat(x.getResult()).isNotNull().isEqualTo("undefined");
         assertThat(x.isDefective()).isFalse();
     }
 
     @Test
-    public void shouldNotExecuteNaughtyScript() throws InterruptedException
+    public void shouldNotExecuteNaughtyScript() throws InterruptedException, IOException
     {
         JavascriptService jss = new JavascriptServiceImpl();
         JsWorker x = jss.execute("java.lang.System.currentTimeMillis()", 1);
-        x.awaitCopmletion();
+        x.awaitCompletion();
 
         assertThat(x.isDefective()).isTrue();
         assertThat(x.getResult()).isNotNull().startsWith("TypeError: Cannot call property currentTimeMillis in object");
     }
 
     @Test
-    public void shouldDenyWrongApiVersion() throws InterruptedException
+    public void shouldDenyWrongApiVersion() throws InterruptedException, IOException
     {
         JavascriptService jss = new JavascriptServiceImpl();
-        JsWorker x = jss.execute("function f(x){return x+1} f(7)", 1000);
-        x.awaitCopmletion();
+        catchException(jss).execute("function f(x){return x+1} f(7)", 1000);
 
-        assertThat(x.isDefective()).overridingErrorMessage("VV should be defective.").isTrue();
-        assertThat(x.getResult()).isNotNull().isEqualTo("Can not handle API version 1000");
+        assertThat(caughtException()).isInstanceOf(IOException.class);
+        assertThat(caughtException().getMessage()).isEqualTo("Can not handle API version 1000");
     }
 
     @Test
     public void shouldHandleVvRte() throws IOException, InterruptedException
     {
-        // BuiltInFunctions functions = mock(BuiltInFunctions.class);
-
         MyBuiltInFunctions functions = new MyBuiltInFunctions();
         JavascriptService jss = new JavascriptServiceImpl();
         jss.setVvRteFunctions(functions);
@@ -88,20 +88,94 @@ public class JavascriptServiceTest
 
         functions.setMigrate(true);
         JsWorker x = jss.execute(script, 1);
-        x.awaitCopmletion();
+        x.awaitCompletion();
         System.out.println("shouldHandleVvRte() result1: '" + x.getResult() + "'");
         assertThat(x.isInterrupted()).isTrue();
 
         functions.setMigrate(false);
         byte[] snapshot = x.getSnapshot();
         x = jss.execute(snapshot);
-        x.awaitCopmletion();
+        x.awaitCompletion();
         assertThat(x.isInterrupted()).isFalse();
 
         System.out.println("shouldHandleVvRte() result2: '" + x.getResult() + "'");
         assertThat(x.isDefective()).isFalse();
     }
 
+    @DataProvider
+    public static Object[][] emptyScriptDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{null},
+            new Object[]{""},
+            new Object[]{"\n"},
+            new Object[]{"\n\n\n\n\r\n"},
+        };
+    }
+
+    @Test(dataProvider = "emptyScriptDataProvider")
+    public void shouldHandleEmptyScripts(String script) throws IOException, InterruptedException
+    {
+        JavascriptService jss = new JavascriptServiceImpl();
+        JsWorker x = jss.execute(script, 1);
+        x.awaitCompletion();
+        assertThat(x.isDefective()).isFalse();
+    }
+    
+    @Test(dataProvider = "emptyScriptDataProvider")
+    public void shouldCompileEmptyScript(String script) throws IOException
+    {
+        JavascriptService jss = new JavascriptServiceImpl();
+        Object[] result = jss.codeVerification(script, 1);
+        assertThat(result).isNull();
+    }
+    
+    @Test
+    public void shouldHandleNullContinuation() throws InterruptedException
+    {
+        JavascriptService jss = new JavascriptServiceImpl();
+        JsWorker x = jss.execute(null);
+        x.awaitCompletion();
+        assertThat(x.isDefective()).isTrue();
+    }
+    
+    @Test
+    public void shouldReturnScriptWithApiPrefix() throws IOException
+    {
+        String script = "function f(x){return x+1} f(7)";
+        JavascriptService jss = new JavascriptServiceImpl();
+        JsWorker x = jss.execute(script, 1);
+        assertThat(x.getScript()).isNotNull().endsWith(script + "\n})();");
+    }
+    
+    @Test
+    public void shouldNotCompileErroneousScript() throws IOException
+    {
+        String script = "var x = 0;\nx x x";
+        JavascriptService jss = new JavascriptServiceImpl();
+        Object[] result = jss.codeVerification(script, 1);
+        assertThat(result).isNotNull();
+        
+        Integer column = (Integer)result[0];
+        Integer line = (Integer)result[1];
+        String errorMessage = (String)result[2];
+        String sourceLine = (String)result[3];
+
+        assertThat(column).isNotNull().isEqualTo(4);
+        assertThat(line).isNotNull().isEqualTo(2);
+        assertThat(errorMessage).isNotNull().isEqualTo("missing ; before statement");
+        assertThat(sourceLine).isNotNull().isEqualTo("x x x");
+    }
+    
+    @Test
+    public void shouldCompileProperScript() throws IOException
+    {
+        String script = "function f(x){return x+1} f(7)";
+        JavascriptService jss = new JavascriptServiceImpl();
+        Object[] result = jss.codeVerification(script, 1);
+        assertThat(result).isNull();
+    }
+    
     /**
      * MyBuiltInFunctions
      */

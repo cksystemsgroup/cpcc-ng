@@ -60,16 +60,14 @@ public class JsWorker implements Runnable
      * @param scriptSource the script source code.
      * @param apiVersion the used API version.
      * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
+     * @throws IOException thrown in case of errors.
      */
-    public JsWorker(String scriptSource, int apiVersion, Set<String> allowedClasses)
+    public JsWorker(String scriptSource, int apiVersion, Set<String> allowedClasses) throws IOException
     {
         this.allowedClasses = allowedClasses;
         String apiScript = loadApiScript(apiVersion);
         scriptStartLine = StringUtils.countMatches(apiScript, "\n") + 1;
-        if (apiScript != null)
-        {
-            script = "(function(){ " + apiScript + "\n" + scriptSource + "\n})();";
-        }
+        script = "(function(){ " + apiScript + "\n" + scriptSource + "\n})();";
     }
 
     /**
@@ -178,25 +176,17 @@ public class JsWorker implements Runnable
 
     /**
      * @return the API script or null in case of errors.
+     * @throws IOException thrown in case of errors.
      */
-    private String loadApiScript(int apiVersion)
+    private String loadApiScript(int apiVersion) throws IOException
     {
         InputStream apiStream = this.getClass().getResourceAsStream(String.format(VVRTE_API_FORMAT, apiVersion));
         if (apiStream == null)
         {
-            result = "Can not handle API version " + apiVersion;
-            return null;
+            throw new IOException("Can not handle API version " + apiVersion);
         }
 
-        try
-        {
-            return IOUtils.toString(apiStream, "UTF-8");
-        }
-        catch (IOException e1)
-        {
-            result = e1.getMessage();
-        }
-        return null;
+        return IOUtils.toString(apiStream, "UTF-8");
     }
 
     /**
@@ -251,11 +241,27 @@ public class JsWorker implements Runnable
     /**
      * @throws InterruptedException in case of an interruption.
      */
-    public void awaitCopmletion() throws InterruptedException
+    public void awaitCompletion() throws InterruptedException
     {
         while (isInitialized() || isRunning())
         {
             Thread.sleep(100);
         }
+    }
+    
+    /**
+     * @return the script
+     */
+    public String getScript()
+    {
+        return script;
+    }
+    
+    /**
+     * @return the scriptStartLine
+     */
+    public int getScriptStartLine()
+    {
+        return scriptStartLine;
     }
 }

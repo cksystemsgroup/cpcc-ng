@@ -44,19 +44,15 @@ public class SandboxClassShutter implements ClassShutter
             add(java.util.HashSet.class.getName());
         }
     };
-    
-    private Set<String>  allowedClasses = new HashSet<String>();
-    
+
+    private Set<String> allowedClasses = new HashSet<String>();
+
     /**
      * @param extraAllowedClasses the extra allowed class names.
      */
     public SandboxClassShutter(Set<String> extraAllowedClasses)
     {
-        if (extraAllowedClasses != null)
-        {
-            allowedClasses.addAll(extraAllowedClasses);
-        }
-        
+        allowedClasses.addAll(extraAllowedClasses);
         allowedClasses.addAll(ALLOWED_CLASSES);
     }
 

@@ -29,8 +29,6 @@ import java.util.TimerTask;
  */
 public class TimerServiceImpl implements TimerService
 {
-//    private Map<TimerTask, Timer> schedules = new HashMap<TimerTask, Timer>();
-
     private Set<TimerTask> schedules = new HashSet<TimerTask>();
     private Timer timer = new Timer();
     

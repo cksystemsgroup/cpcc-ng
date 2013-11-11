@@ -20,9 +20,7 @@
 package at.uni_salzburg.cs.cpcc.vvrte.entities;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
-import java.sql.Clob;
 import java.util.UUID;
 
 import org.testng.annotations.Test;
@@ -38,15 +36,21 @@ public class VehicleTest
     {
         int id = 10;
         UUID uuid = UUID.randomUUID();
-        Clob clob = mock(Clob.class);
+        String vehicleName = "veh01";
+        String clob = "bugger that!";
+        byte[] blob = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-        Vehicle v = new Vehicle();
+        VirtualVehicle v = new VirtualVehicle();
         v.setId(id);
         v.setUuid(uuid.toString());
+        v.setName(vehicleName);
         v.setCode(clob);
+        v.setContinuation(blob);
 
         assertThat(v.getId()).isNotNull().isEqualTo(10);
         assertThat(v.getUuid()).isNotNull().isEqualTo(uuid.toString());
+        assertThat(v.getName()).isNotNull().isEqualTo(vehicleName);
         assertThat(v.getCode()).isNotNull().isEqualTo(clob);
+        assertThat(v.getContinuation()).isNotNull().isEqualTo(blob);
     }
 }

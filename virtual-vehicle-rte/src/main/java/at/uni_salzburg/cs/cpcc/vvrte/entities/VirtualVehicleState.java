@@ -22,7 +22,7 @@ package at.uni_salzburg.cs.cpcc.vvrte.entities;
 /**
  * VehicleState
  */
-public enum VehicleState
+public enum VirtualVehicleState
 {
     INIT
     {
@@ -30,7 +30,7 @@ public enum VehicleState
          * {@inheritDoc}
          */
         @Override
-        public VehicleState traverse(VehicleState newState)
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
         {
             switch (newState)
             {
@@ -48,7 +48,7 @@ public enum VehicleState
          * {@inheritDoc}
          */
         @Override
-        public VehicleState traverse(VehicleState newState)
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
         {
             switch (newState)
             {
@@ -68,7 +68,7 @@ public enum VehicleState
          * {@inheritDoc}
          */
         @Override
-        public VehicleState traverse(VehicleState newState)
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
         {
             switch (newState)
             {
@@ -88,7 +88,7 @@ public enum VehicleState
          * {@inheritDoc}
          */
         @Override
-        public VehicleState traverse(VehicleState newState)
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
         {
             switch (newState)
             {
@@ -106,7 +106,7 @@ public enum VehicleState
          * {@inheritDoc}
          */
         @Override
-        public VehicleState traverse(VehicleState newState)
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
         {
             return null;
         }
@@ -118,7 +118,7 @@ public enum VehicleState
          * {@inheritDoc}
          */
         @Override
-        public VehicleState traverse(VehicleState newState)
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
         {
             return newState;
         }
@@ -127,7 +127,7 @@ public enum VehicleState
     DEFECTIVE
     {
         @Override
-        public VehicleState traverse(VehicleState newState)
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
         {
             return null;
         }
@@ -137,13 +137,13 @@ public enum VehicleState
      * @param newState the new state to traverse to.
      * @return the new state, if traversal is possible and null otherwise.
      */
-    public abstract VehicleState traverse(VehicleState newState);
+    public abstract VirtualVehicleState traverse(VirtualVehicleState newState);
 
     /**
      * @param newState the new state to traverse to.
      * @return true if traversal is possible and false otherwise.
      */
-    public boolean canTraverseTo(VehicleState newState)
+    public boolean canTraverseTo(VirtualVehicleState newState)
     {
         return traverse(newState) != null;
     }

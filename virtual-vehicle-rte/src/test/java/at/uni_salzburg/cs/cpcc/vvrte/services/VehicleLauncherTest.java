@@ -25,44 +25,38 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Clob;
 import java.sql.SQLException;
 
-import javax.sql.rowset.serial.SerialClob;
 import javax.sql.rowset.serial.SerialException;
 
 import org.apache.commons.io.IOUtils;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.vvrte.entities.Vehicle;
-import at.uni_salzburg.cs.cpcc.vvrte.entities.VehicleState;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 
 /**
  * VehicleLauncherTest
  */
 public class VehicleLauncherTest
 {
-    
-    
+
     @Test
-    public void shouldLaunchSimpleVirtualVehicle() throws SerialException, SQLException, IOException, VehicleLaunchException
+    public void shouldLaunchSimpleVirtualVehicle()
+        throws SerialException, SQLException, IOException, VirtualVehicleLaunchException
     {
         String vvProgramFileName = "simple-vv.js";
         InputStream scriptStream = VehicleLauncherTest.class.getResourceAsStream(vvProgramFileName);
         String program = IOUtils.toString(scriptStream, "UTF-8");
-        
-        Clob clob = new SerialClob(program.toCharArray());
-//        Vehicle v = mock(Vehicle.class);
-//        when(v.getCode()).thenReturn(clob);
-//        when(v.getState()).thenReturn(VehicleState.INIT);
-        Vehicle v = spy(new Vehicle());
-        v.setCode(clob);
-        v.setState(VehicleState.INIT);
-        
-        VehicleLauncher launcher = new VehicleLauncherImpl();
+
+        VirtualVehicle v = spy(new VirtualVehicle());
+        v.setCode(program);
+        v.setState(VirtualVehicleState.INIT);
+
+        VirtualVehicleLauncher launcher = new VirtualVehicleLauncherImpl();
         launcher.start(v);
-        
-        verify(v).setState(VehicleState.RUNNING);
-        assertThat(v.getState()).isNotNull().isEqualTo(VehicleState.RUNNING);
+
+        verify(v).setState(VirtualVehicleState.RUNNING);
+        assertThat(v.getState()).isNotNull().isEqualTo(VirtualVehicleState.RUNNING);
     }
 }
