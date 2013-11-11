@@ -40,7 +40,7 @@ public final class GraphNameHelpers
     /**
      * @return the <code>ValueEncoder</code> instance for <code>GraphName</code> objects.
      */
-    public static ValueEncoder<GraphName> valueEncoder()
+    public static synchronized ValueEncoder<GraphName> valueEncoder()
     {
         if (instance == null)
         {

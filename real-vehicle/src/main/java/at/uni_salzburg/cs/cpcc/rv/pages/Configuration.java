@@ -118,33 +118,6 @@ public class Configuration
     @CommitAfter
     void connectToAutoPilot(String topic)
     {
-//        List<MappingAttributes> attributeList = qm.findAllMappingAttributes();
-//
-//        Map<String, MappingAttributes> attributeMap = new HashMap<String, MappingAttributes>();
-//
-//        TopicCategory category = null;
-//        
-//        for (MappingAttributes attribute : attributeList)
-//        {
-//            StringBuilder b = new StringBuilder(attribute.getPk().getDevice().getTopicRoot());
-//            String subPath = attribute.getPk().getTopic().getSubpath();
-//            if (subPath != null)
-//            {
-//                b.append("/").append(subPath);
-//            }
-//            attributeMap.put(b.toString(), attribute);
-//            String attributeTopic = b.toString();
-//            if (attributeTopic.equals(topic))
-//            {
-//                category = attribute.getPk().getTopic().getCategory();
-//            }
-//        }
-//
-//        if (category == null)
-//        {
-//            return;
-//        }
-        
         Map<String, MappingAttributes> attributeMap = qm.findAllMappingAttributesAsMap();
         if (!attributeMap.containsKey(topic))
         {

@@ -99,7 +99,7 @@
 			<groupId>ros.rosjava_core</groupId>
 			<artifactId>rosjava</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
 			<artifactId>ros-service</artifactId>
@@ -110,6 +110,23 @@
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
 			<artifactId>cpcc-persistence</artifactId>
 			<version>${project.parent.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>at.uni-salzburg.cs.cpcc</groupId>
+			<artifactId>virtual-vehicle-rte</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.tynamo</groupId>
+			<artifactId>tapestry-ckeditor</artifactId>
+			<version>0.0.1-MOD</version>
+		</dependency>
+
+		<dependency>
+			<groupId>at.uni-salzburg.cs</groupId>
+			<artifactId>tapestry-ace-textarea</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -161,10 +178,13 @@
 			<!-- </plugin> -->
 
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.1.11.v20130520</version>
+				<!-- <groupId>org.mortbay.jetty</groupId> -->
+				<!-- <artifactId>jetty-maven-plugin</artifactId> -->
+				<!-- <version>8.1.11.v20130520</version> -->
 				<!-- <version>9.0.5.v20130815</version> -->
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.1.0.RC1</version>
 				<configuration>
 					<!-- <useProvidedScope>true</useProvidedScope> -->
 					<!-- <requestLog implementation="org.mortbay.jetty.NCSARequestLog"> -->

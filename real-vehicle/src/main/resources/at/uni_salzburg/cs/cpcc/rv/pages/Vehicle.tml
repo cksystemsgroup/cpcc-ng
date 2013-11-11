@@ -1,0 +1,55 @@
+<html t:type="layout" title="${message:virtualVehicleOverview}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<br />
+
+<section id="buttons">
+	<a t:type="pagelink" t:page="vehicle/new" href="#"
+		class="btn btn-primary">${message:createNewVehicle}</a>
+</section>
+
+<section id="virtualVehicleList">
+	<h3>${message:virtualVehicleList}</h3>
+	<t:form t:id="virtualVehicleForm">
+		<table t:type="grid" t:source="virtualVehicleList"
+			t:exclude="code,continuation" t:reorder="id,name,state,uuid,apiVersion"
+			t:row="virtualVehicle"
+			t:add="vehicleActions"
+			class="table table-striped table-condensed topic-table">
+
+			<p:vehicleActionsCell>
+				<a t:type="pagelink" t:page="vehicle/edit"
+					t:context="virtualVehicle.id" href="#"
+					t:title="${message:editVehicle}"> <i class="icon-pencil"></i>
+				</a>
+				&nbsp;
+				<a t:type="eventlink" t:event="startVehicle"
+					t:context="virtualVehicle.id" href="#"
+					title="${message:startVehicle}"> <i class="icon-play"></i>
+				</a>
+				&nbsp;
+				<a t:type="eventlink" t:event="pauseVehicle"
+					t:context="virtualVehicle.id" href="#"
+					title="${message:pauseVehicle}"> <i class="icon-pause"></i>
+				</a>
+				&nbsp;
+				<a t:type="eventlink" t:event="stopVehicle"
+					t:context="virtualVehicle.id" href="#"
+					title="${message:stopVehicle}"> <i class="icon-stop"></i>
+				</a>
+				&nbsp;
+				<a t:type="eventlink" t:event="deleteVehicle"
+					t:context="virtualVehicle.id" href="#"
+					title="${message:deleteVehicle}"> <i class="icon-remove"></i>
+				</a>
+			</p:vehicleActionsCell>
+
+			<p:empty>
+				<p>${message:noVirtualVehicleFound}</p>
+			</p:empty>
+		</table>
+	</t:form>
+</section>
+
+</html>

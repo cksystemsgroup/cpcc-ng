@@ -25,12 +25,6 @@ import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
 
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManagerImpl;
-import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverter;
-import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverterImpl;
-import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
-import at.uni_salzburg.cs.cpcc.ros.services.RosNodeServiceImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagService;
 import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagServiceImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.GraphNameTranslator;
@@ -55,9 +49,6 @@ public final class AppModule
     {
         binder.bind(ImageTagService.class, ImageTagServiceImpl.class);
         binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
-        binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
-        binder.bind(RosNodeService.class, RosNodeServiceImpl.class).eagerLoad();
-        binder.bind(RosImageConverter.class, RosImageConverterImpl.class);
     }
 
     /**
@@ -79,11 +70,6 @@ public final class AppModule
      */
     public static void contributeApplicationDefaults(MappedConfiguration<String, Object> configuration)
     {
-        // Contributions to ApplicationDefaults will override any contributions to
-        // FactoryDefaults (with the same key). Here we're restricting the supported
-        // locales to just "en" (English). As you add localized message catalogs and other assets,
-        // you can extend this list of locales (it's a comma separated series of locale names;
-        // the first locale name is the default when there's no reasonable match).
         configuration.add(SymbolConstants.SUPPORTED_LOCALES, "en,de");
         configuration.add(SymbolConstants.MINIFICATION_ENABLED, "false");
     }

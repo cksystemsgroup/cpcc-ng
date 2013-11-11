@@ -1,4 +1,4 @@
-<html t:type="layout" title="${message:rosList}"
+<html t:type="layout" title="${message:rosEditDevice}"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
 	xmlns:p="tapestry:parameter">
 
