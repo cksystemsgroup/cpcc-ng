@@ -24,14 +24,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 /**
  * AbstractGpsSensorAdapter
  */
 public abstract class AbstractGpsSensorAdapter extends AbstractSensorAdapter
 {
     private sensor_msgs.NavSatFix position;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -48,7 +47,7 @@ public abstract class AbstractGpsSensorAdapter extends AbstractSensorAdapter
     {
         return position;
     }
-    
+
     /**
      * @param position the position to set
      */
@@ -56,7 +55,7 @@ public abstract class AbstractGpsSensorAdapter extends AbstractSensorAdapter
     {
         this.position = position;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -64,7 +63,7 @@ public abstract class AbstractGpsSensorAdapter extends AbstractSensorAdapter
     public Map<String, List<String>> getCurrentState()
     {
         Map<String, List<String>> map = super.getCurrentState();
-        
+
         if (position != null)
         {
             map.put("sensor.gps.position", Arrays.asList(
@@ -73,7 +72,25 @@ public abstract class AbstractGpsSensorAdapter extends AbstractSensorAdapter
                 String.format(Locale.US, "%.3f", position.getAltitude())
                 ));
         }
-        
+
         return map;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public sensor_msgs.NavSatFix getValue()
+    {
+        return position;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setValue(Object object)
+    {
+        throw new IllegalStateException();
     }
 }

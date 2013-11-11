@@ -19,11 +19,12 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.actuators;
 
+import org.ros.internal.message.Message;
+
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 
-
 /**
- * Actuator
+ * AbstractActuatorAdapter
  */
 public abstract class AbstractActuatorAdapter extends AbstractRosAdapter
 {
@@ -31,4 +32,13 @@ public abstract class AbstractActuatorAdapter extends AbstractRosAdapter
      * @return the type of the sensor.
      */
     public abstract ActuatorType getType();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Message getValue()
+    {
+        throw new IllegalStateException();
+    }
 }

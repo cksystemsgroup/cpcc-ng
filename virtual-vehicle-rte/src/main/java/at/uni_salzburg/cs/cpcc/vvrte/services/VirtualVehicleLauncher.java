@@ -17,39 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.vvrte.services.js;
+package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.Scriptable;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 
 /**
- * SandboxNativeJavaObject
+ * VehicleLoader
  */
-public class SandboxNativeJavaObject extends NativeJavaObject
+public interface VirtualVehicleLauncher
 {
-    private static final long serialVersionUID = -839055571346169008L;
-
     /**
-     * @param scope the scope.
-     * @param javaObject the Java object.
-     * @param staticType the static type.
+     * @param vehicle the vehicle to launch.
+     * @throws VirtualVehicleLaunchException thrown in case of errors.
      */
-    public SandboxNativeJavaObject(Scriptable scope, Object javaObject, Class<?> staticType)
-    {
-        super(scope, javaObject, staticType);
-    }
+    void start(VirtualVehicle vehicle) throws VirtualVehicleLaunchException;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object get(String name, Scriptable start)
-    {
-        if ("getClass".equals(name))
-        {
-            return NOT_FOUND;
-        }
-
-        return super.get(name, start);
-    }
 }

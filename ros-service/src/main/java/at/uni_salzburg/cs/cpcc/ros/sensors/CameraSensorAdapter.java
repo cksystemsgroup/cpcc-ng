@@ -59,9 +59,9 @@ public class CameraSensorAdapter extends AbstractSensorAdapter implements ImageP
             }
         });
 
-        Subscriber<sensor_msgs.Image> imageSubscriber = 
+        Subscriber<sensor_msgs.Image> imageSubscriber =
             connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.Image._TYPE);
-               
+
         imageSubscriber.addMessageListener(new MessageListener<sensor_msgs.Image>()
         {
             @Override
@@ -70,10 +70,10 @@ public class CameraSensorAdapter extends AbstractSensorAdapter implements ImageP
                 image = message;
             }
         });
-        
+
         setStartCompleted();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -82,7 +82,7 @@ public class CameraSensorAdapter extends AbstractSensorAdapter implements ImageP
     {
         return SensorType.CAMERA;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -91,7 +91,7 @@ public class CameraSensorAdapter extends AbstractSensorAdapter implements ImageP
     {
         return image;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -99,7 +99,7 @@ public class CameraSensorAdapter extends AbstractSensorAdapter implements ImageP
     {
         return cameraInfo;
     }
-    
+
     /**
      * @return the info topic.
      */
@@ -116,5 +116,21 @@ public class CameraSensorAdapter extends AbstractSensorAdapter implements ImageP
         this.infoTopic = infoTopic;
     }
 
-    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public sensor_msgs.Image getValue()
+    {
+        return image;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setValue(Object object)
+    {
+        throw new IllegalStateException();
+    }
 }

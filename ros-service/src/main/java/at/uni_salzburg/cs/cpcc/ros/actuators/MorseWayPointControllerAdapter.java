@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.ros.internal.message.Message;
 import org.ros.node.ConnectedNode;
 import org.ros.node.Node;
 import org.ros.node.topic.Publisher;
@@ -42,19 +43,19 @@ import at.uni_salzburg.cs.cpcc.utilities.WGS84;
 public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(MorseWayPointControllerAdapter.class);
-    
+
     private static final String CFG_ORIGIN = "origin";
-    
+
     private Publisher<geometry_msgs.Pose> publisher;
 
     private geometry_msgs.Pose position;
-    
+
     private big_actor_msgs.LatLngAlt gpsPosition;
 
     private PolarCoordinate origin;
 
     private CartesianCoordinate originCart;
-    
+
     private static final GeodeticSystem GEODETIC_SYSTEM = new WGS84();
 
     /**
@@ -77,7 +78,7 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
             PolarCoordinate p = new PolarCoordinate(pos.getLatitude(), pos.getLongitude(), pos.getAltitude());
             CartesianCoordinate coord = GEODETIC_SYSTEM.polarToRectangularCoordinates(p);
             CartesianCoordinate distance = coord.subtract(originCart);
-            
+
             position.getPosition().setX(distance.getY());
             position.getPosition().setY(-distance.getX());
             position.getPosition().setZ(distance.getZ());
@@ -93,10 +94,10 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
     {
         super.onStart(connectedNode);
         LOG.debug("onStart()");
-        
+
         publisher = connectedNode.newPublisher(getTopic().getName(), geometry_msgs.Pose._TYPE);
-        position = (geometry_msgs.Pose)connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Pose._TYPE);
-        
+        position = (geometry_msgs.Pose) connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Pose._TYPE);
+
         origin = ConfigUtils.parsePolarCoordinate(getConfig(), CFG_ORIGIN, 0);
         originCart = GEODETIC_SYSTEM.polarToRectangularCoordinates(origin);
         setStartCompleted();
@@ -111,7 +112,7 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
         super.onShutdown(node);
         publisher = null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -136,5 +137,23 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
                 ));
         }
         return map;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Message getValue()
+    {
+        throw new IllegalStateException();
+    }
+
+    /**
+     * @param value the desired value.
+     */
+    @Override
+    public void setValue(Object value)
+    {
+        setPosition((big_actor_msgs.LatLngAlt) value);
     }
 }

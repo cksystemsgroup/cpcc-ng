@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.ros.internal.message.Message;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
@@ -181,9 +182,9 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     }
     
     /**
-     * @return the connectedToAutopilot
+     * @return true if the adapter is connected to the autopilot.
      */
-    public boolean getConnectedToAutopilot()
+    public boolean isConnectedToAutopilot()
     {
         return connectedToAutopilot;
     }
@@ -195,12 +196,22 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     {
         this.connectedToAutopilot = connectedToAutopilot;
     }
+    
+    /**
+     * @return the adapter value.
+     */
+    public abstract Message getValue();
 
+    /**
+     * @param object the object to set.
+     */
+    public abstract void setValue(Object object);
+    
     /**
      * @param values the double values.
      * @return the values as a list of strings.
      */
-    public List<String> doubleListAsString(double[] values)
+    public static List<String> doubleListAsString(double[] values)
     {
         StringBuilder b = new StringBuilder("[");
         boolean first = true;
@@ -224,7 +235,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
      * @param value the byte value.
      * @return the values as a list of strings.
      */
-    public List<String> byteAsString(byte value)
+    public static List<String> byteAsString(byte value)
     {
         return Arrays.asList(Integer.toString(0xFF & value));
     }
@@ -233,7 +244,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
      * @param value the short value.
      * @return the values as a list of strings.
      */
-    public List<String> shortAsString(short value)
+    public static List<String> shortAsString(short value)
     {
         return Arrays.asList(Short.toString(value));
     }
@@ -242,7 +253,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
      * @param value the float value.
      * @return the values as a list of strings.
      */
-    public List<String> floatAsString(float value)
+    public static List<String> floatAsString(float value)
     {
         return Arrays.asList(Float.toString(value));
     }

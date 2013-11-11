@@ -17,41 +17,29 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.rv.pages;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
-import static org.apache.tapestry5.EventConstants.ACTIVATE;
-
-import org.apache.tapestry5.annotations.OnEvent;
-
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 /**
- * Contact
+ * VirtualVehicleMappingDecision
  */
-public class Contact
+public class VirtualVehicleMappingDecision
 {
-    @Inject
-    private QueryManager qm;
+    private boolean migration;
     
-    @OnEvent(ACTIVATE)
-    void doSomeThing()
+    /**
+     * @return the migration
+     */
+    public boolean isMigration()
     {
-        List<SensorDefinition> x = qm.findAllActiveSensorDefinitions();
-        for (SensorDefinition sd : x)
-        {
-            System.out.println("found active sd: " +sd.getDescription());
-        }
-        
-        x = qm.findAllSensorDefinitions();
-        for (SensorDefinition sd : x)
-        {
-            System.out.println("found sd: " +sd.getDescription());
-        }
+        return migration;
+    }
+    
+    /**
+     * @param migration the migration to set
+     */
+    public void setMigration(boolean migration)
+    {
+        this.migration = migration;
     }
     
 }

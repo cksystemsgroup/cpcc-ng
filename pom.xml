@@ -238,6 +238,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>at.uni-salzburg.cs</groupId>
+				<artifactId>tapestry-ace-textarea</artifactId>
+				<version>0.0.1</version>
+			</dependency>
+
+			<dependency>
 				<groupId>ros.rosjava_core</groupId>
 				<artifactId>rosjava</artifactId>
 				<version>${rosjava-version}</version>

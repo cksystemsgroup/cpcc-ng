@@ -38,6 +38,9 @@ import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
 import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributesPK;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.persistence.entities.SensorVisibility;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
 
 /**
@@ -45,6 +48,13 @@ import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
  */
 public class QueryManagerImpl implements QueryManager
 {
+    private static final String DEVICE_ID = "deviceId";
+    private static final String SENSOR_DESCRIPTION = "description";
+    private static final String SENSOR_MESSAGETYPE = "messagetype";
+    private static final String DEVICE_NAME = "name";
+    private static final String TOPIC_ROOT = "topicRoot";
+    private static final String REAL_VEHICLE_NAME = "name";
+
     private static final Logger LOG = LoggerFactory.getLogger(QueryManagerImpl.class);
 
     private final Session session;
@@ -64,7 +74,7 @@ public class QueryManagerImpl implements QueryManager
     public Device findDeviceByTopicRoot(String topicRoot)
     {
         return (Device) session.createQuery("from Device where topicRoot = :topicRoot")
-            .setString("topicRoot", topicRoot).uniqueResult();
+            .setString(TOPIC_ROOT, topicRoot).uniqueResult();
     }
 
     /**
@@ -74,7 +84,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<Device> findAllDevices()
     {
-        return (List<Device>) session.createCriteria(Device.class).addOrder(Property.forName("topicRoot").asc()).list();
+        return (List<Device>) session.createCriteria(Device.class).addOrder(Property.forName(TOPIC_ROOT).asc()).list();
     }
 
     /**
@@ -83,7 +93,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public DeviceType findDeviceTypeByName(String name)
     {
-        return (DeviceType) session.createQuery("from DeviceType where name = :name").setString("name", name)
+        return (DeviceType) session.createQuery("from DeviceType where name = :name").setString(DEVICE_NAME, name)
             .uniqueResult();
     }
 
@@ -94,20 +104,105 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<DeviceType> findAllDeviceTypes()
     {
-        return (List<DeviceType>) session.createCriteria(DeviceType.class).addOrder(Property.forName("name").asc())
+        return (List<DeviceType>) session.createCriteria(DeviceType.class)
+            .addOrder(Property.forName(DEVICE_NAME).asc())
             .list();
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public Parameter findParameterByName(String name)
     {
-        return (Parameter) session.createQuery("from Parameter where name = :name").setString("name", name)
-            .uniqueResult();
+        return (Parameter) session.createQuery("from Parameter where name = :name")
+            .setString(DEVICE_NAME, name).uniqueResult();
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Parameter findParameterByName(String name, String defaultValue)
+    {
+        Parameter parameter = findParameterByName(name);
+
+        if (parameter == null)
+        {
+            parameter = new Parameter();
+            parameter.setName(name);
+            parameter.setValue(defaultValue);
+            parameter.setSort(0);
+        }
+
+        return parameter;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SensorDefinition> findSensorDefinitionsByMessageType(String messagetype)
+    {
+        List<SensorDefinition> x = (List<SensorDefinition>) session
+            .createQuery("from SensorDefinition where messagetype = :messagetype")
+            .setString(SENSOR_MESSAGETYPE, messagetype).list();
+        return x;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SensorDefinition findSensorDefinitionByDescription(String description)
+    {
+        SensorDefinition x = (SensorDefinition) session
+            .createQuery("from SensorDefinition where description = :description")
+            .setString(SENSOR_DESCRIPTION, description).uniqueResult();
+        return x;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RealVehicle findRealVehicleByName(String name)
+    {
+        return (RealVehicle) session.createQuery("from RealVehicle where name = :name")
+            .setString(REAL_VEHICLE_NAME, name).uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SensorDefinition> findAllSensorDefinitions()
+    {
+        return (List<SensorDefinition>) session
+            .createQuery("SELECT d "
+                + "FROM SensorDefinition d "
+                + "WHERE d.visibility != :visibility")
+            .setString("visibility", SensorVisibility.NO_VV.toString())
+            .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SensorDefinition> findAllActiveSensorDefinitions()
+    {
+        return (List<SensorDefinition>) session
+            .createQuery("SELECT d "
+                + "FROM SensorDefinition d, MappingAttributes m "
+                + "WHERE m.sensorDefinition = d.id AND m.vvVisible = true AND d.visibility != :visibility")
+            .setString("visibility", SensorVisibility.NO_VV.toString())
+            .list();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -115,10 +210,10 @@ public class QueryManagerImpl implements QueryManager
     public MappingAttributes findMappingAttribute(Device device, Topic topic)
     {
         return (MappingAttributes) session
-          .createQuery("from MappingAttributes where pk.device.id = :deviceId and pk.topic.id = :topicId")
-          .setInteger("deviceId", device.getId()).setInteger("topicId", topic.getId()).uniqueResult();
+            .createQuery("from MappingAttributes where pk.device.id = :deviceId and pk.topic.id = :topicId")
+            .setInteger(DEVICE_ID, device.getId()).setInteger("topicId", topic.getId()).uniqueResult();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -127,9 +222,9 @@ public class QueryManagerImpl implements QueryManager
     public Collection<MappingAttributes> findMappingAttributesByDevice(Device device)
     {
         return (List<MappingAttributes>) session.createQuery("from MappingAttributes where pk.device.id = :deviceId)")
-          .setParameter("deviceId", device.getId()).list();
+            .setParameter(DEVICE_ID, device.getId()).list();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -139,7 +234,17 @@ public class QueryManagerImpl implements QueryManager
     {
         return (List<MappingAttributes>) session.createCriteria(MappingAttributes.class).list();
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<MappingAttributes> findAllVvVisibleMappingAttributes()
+    {
+        return (List<MappingAttributes>) session.createQuery("from MappingAttributes where vvVisible = true").list();
+    }
+
     /**
      * @param attributes the mapping attributes
      * @return
@@ -185,7 +290,7 @@ public class QueryManagerImpl implements QueryManager
         }
         return null;
     }
-    
+
     /**
      * {@inheritDoc}
      */

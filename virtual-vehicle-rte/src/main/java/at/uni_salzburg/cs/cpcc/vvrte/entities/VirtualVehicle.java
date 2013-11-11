@@ -19,8 +19,7 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.entities;
 
-import java.sql.Clob;
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,11 +29,13 @@ import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Vehicle
  */
 @Entity
-public class Vehicle
+public class VirtualVehicle
 {
     @Id
     @GeneratedValue
@@ -44,13 +45,21 @@ public class Vehicle
     @Size(max = 36)
     private String uuid;
     
-    @Lob
-    private Clob code;
+    @Size(max = 36)
+    private String name;
     
+    @Column(nullable=false, columnDefinition = "INTEGER DEFAULT 1")
+    private Integer apiVersion;
+
+    @Lob
+    private String code;
+
     @NotNull
     @Enumerated(EnumType.STRING)
-    private VehicleState state;
-    
+    private VirtualVehicleState state;
+
+    @Lob
+    private byte[] continuation;
 
     /**
      * @return the id
@@ -67,7 +76,7 @@ public class Vehicle
     {
         this.id = id;
     }
-    
+
     /**
      * @return the universally unique identifier
      */
@@ -75,7 +84,7 @@ public class Vehicle
     {
         return uuid;
     }
-    
+
     /**
      * @param uuid the universally unique identifier to set
      */
@@ -83,36 +92,86 @@ public class Vehicle
     {
         this.uuid = uuid;
     }
+
+    /**
+     * @return the name
+     */
+    public String getName()
+    {
+        return name;
+    }
+    
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+    
+    /**
+     * @return the JavaScript API version
+     */
+    public Integer getApiVersion()
+    {
+        return apiVersion;
+    }
+    
+    /**
+     * @param apiVersion the JavaScript API version to set
+     */
+    public void setApiVersion(Integer apiVersion)
+    {
+        this.apiVersion = apiVersion;
+    }
     
     /**
      * @return the code
      */
-    public Clob getCode()
+    public String getCode()
     {
         return code;
     }
-    
+
     /**
      * @param code the code to set
      */
-    public void setCode(Clob code)
+    public void setCode(String code)
     {
         this.code = code;
     }
-    
+
     /**
      * @return the state
      */
-    public VehicleState getState()
+    public VirtualVehicleState getState()
     {
         return state;
     }
-    
+
     /**
      * @param state the state to set
      */
-    public void setState(VehicleState state)
+    public void setState(VirtualVehicleState state)
     {
         this.state = state;
+    }
+    
+    /**
+     * @return the continuation
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
+    public byte[] getContinuation()
+    {
+        return continuation;
+    }
+    
+    /**
+     * @param continuation the continuation to set
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
+    public void setContinuation(byte[] continuation)
+    {
+        this.continuation = continuation;
     }
 }

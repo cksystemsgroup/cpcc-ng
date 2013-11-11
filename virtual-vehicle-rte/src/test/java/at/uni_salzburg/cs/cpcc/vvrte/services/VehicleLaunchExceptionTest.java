@@ -32,7 +32,7 @@ public class VehicleLaunchExceptionTest
     @Test
     public void shouldConstructWithoutParameters()
     {
-        VehicleLaunchException ex = new VehicleLaunchException();
+        VirtualVehicleLaunchException ex = new VirtualVehicleLaunchException();
         assertThat(ex).isNotNull();
     }
 
@@ -40,7 +40,7 @@ public class VehicleLaunchExceptionTest
     public void shouldConstructWithMessageOnly()
     {
         String message = "buggerit!";
-        VehicleLaunchException ex = new VehicleLaunchException(message);
+        VirtualVehicleLaunchException ex = new VirtualVehicleLaunchException(message);
         assertThat(ex).isNotNull();
         assertThat(ex.getMessage()).isNotNull().isEqualTo(message);
     }
@@ -50,7 +50,7 @@ public class VehicleLaunchExceptionTest
     {
         Throwable cause = mock(Throwable.class);
 
-        VehicleLaunchException ex = new VehicleLaunchException(cause);
+        VirtualVehicleLaunchException ex = new VirtualVehicleLaunchException(cause);
         assertThat(ex).isNotNull();
         assertThat(ex.getCause()).isNotNull().isEqualTo(cause);
     }
@@ -61,7 +61,7 @@ public class VehicleLaunchExceptionTest
         String message = "buggerit II!";
         Throwable cause = mock(Throwable.class);
 
-        VehicleLaunchException ex = new VehicleLaunchException(message, cause);
+        VirtualVehicleLaunchException ex = new VirtualVehicleLaunchException(message, cause);
         assertThat(ex).isNotNull();
         assertThat(ex.getMessage()).isNotNull().isEqualTo(message);
         assertThat(ex.getCause()).isNotNull().isEqualTo(cause);

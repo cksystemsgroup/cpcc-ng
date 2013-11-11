@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -39,37 +40,45 @@ import org.mozilla.javascript.serialize.ScriptableOutputStream;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * JsWorker
+ * JavascriptWorker
  */
-public class JsWorker implements Runnable
+public class JavascriptWorker implements Runnable
 {
     private static final String VVRTE_API_FORMAT = "vvrte-api-%1$03d.js";
 
+    /**
+     * The worker state.
+     */
+    public enum State
+    {
+        INITIALIZED,
+        RUNNING,
+        DEFECTIVE,
+        INTERRUPTED,
+        FINISHED
+    };
+
+    private State state;
     private String script;
     private Set<String> allowedClasses;
     private String result = null;
-    private boolean initialized = true;
-    private boolean running = false;
-    private boolean defective = false;
-    private boolean interrupted = false;
     private byte[] snapshot = null;
-
     private int scriptStartLine;
+    private Set<JavascriptWorkerStateListener> stateListeners = new HashSet<JavascriptWorkerStateListener>();
 
     /**
      * @param scriptSource the script source code.
      * @param apiVersion the used API version.
      * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
+     * @throws IOException thrown in case of errors.
      */
-    public JsWorker(String scriptSource, int apiVersion, Set<String> allowedClasses)
+    public JavascriptWorker(String scriptSource, int apiVersion, Set<String> allowedClasses) throws IOException
     {
         this.allowedClasses = allowedClasses;
         String apiScript = loadApiScript(apiVersion);
         scriptStartLine = StringUtils.countMatches(apiScript, "\n") + 1;
-        if (apiScript != null)
-        {
-            script = "(function(){ " + apiScript + "\n" + scriptSource + "\n})();";
-        }
+        script = "(function(){ " + apiScript + "\n" + scriptSource + "\n})();";
+        state = State.INITIALIZED;
     }
 
     /**
@@ -77,10 +86,11 @@ public class JsWorker implements Runnable
      * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
      */
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public JsWorker(byte[] snapshot, Set<String> allowedClasses)
+    public JavascriptWorker(byte[] snapshot, Set<String> allowedClasses)
     {
         this.snapshot = snapshot;
         this.allowedClasses = allowedClasses;
+        state = State.INITIALIZED;
     }
 
     /**
@@ -89,13 +99,11 @@ public class JsWorker implements Runnable
     @Override
     public void run()
     {
-        running = true;
-        initialized = false;
+        changeState(State.RUNNING);
 
         if (snapshot == null && script == null)
         {
-            running = false;
-            defective = true;
+            changeState(State.DEFECTIVE);
             return;
         }
 
@@ -126,10 +134,11 @@ public class JsWorker implements Runnable
 
             System.out.println(Context.toString(resultObj));
             result = Context.toString(resultObj);
+            changeState(State.FINISHED);
         }
         catch (ContinuationPending cp)
         {
-            interrupted = true;
+            changeState(State.INTERRUPTED);
             Object applicationState = cp.getApplicationState();
             System.err.println("Application State " + applicationState);
             try
@@ -149,7 +158,7 @@ public class JsWorker implements Runnable
             {
                 e.printStackTrace();
                 result = e.getMessage();
-                defective = true;
+                changeState(State.DEFECTIVE);
                 snapshot = null;
             }
         }
@@ -157,46 +166,37 @@ public class JsWorker implements Runnable
         {
             result = e.getMessage() + ", line=" + (e.lineNumber() - scriptStartLine) + ":" + e.columnNumber()
                 + ", source='" + e.lineSource() + "'";
-            defective = true;
+            changeState(State.DEFECTIVE);
         }
         catch (ClassNotFoundException e)
         {
             result = e.getMessage();
-            defective = true;
+            changeState(State.DEFECTIVE);
         }
         catch (IOException e)
         {
             result = e.getMessage();
-            defective = true;
+            changeState(State.DEFECTIVE);
         }
         finally
         {
             Context.exit();
         }
-        running = false;
     }
 
     /**
      * @return the API script or null in case of errors.
+     * @throws IOException thrown in case of errors.
      */
-    private String loadApiScript(int apiVersion)
+    private String loadApiScript(int apiVersion) throws IOException
     {
         InputStream apiStream = this.getClass().getResourceAsStream(String.format(VVRTE_API_FORMAT, apiVersion));
         if (apiStream == null)
         {
-            result = "Can not handle API version " + apiVersion;
-            return null;
+            throw new IOException("Can not handle API version " + apiVersion);
         }
 
-        try
-        {
-            return IOUtils.toString(apiStream, "UTF-8");
-        }
-        catch (IOException e1)
-        {
-            result = e1.getMessage();
-        }
-        return null;
+        return IOUtils.toString(apiStream, "UTF-8");
     }
 
     /**
@@ -205,38 +205,6 @@ public class JsWorker implements Runnable
     public String getResult()
     {
         return result;
-    }
-
-    /**
-     * @return the initialized
-     */
-    public boolean isInitialized()
-    {
-        return initialized;
-    }
-
-    /**
-     * @return true if the worker is running, false otherwise.
-     */
-    public boolean isRunning()
-    {
-        return running;
-    }
-
-    /**
-     * @return the defective
-     */
-    public boolean isDefective()
-    {
-        return defective;
-    }
-
-    /**
-     * @return the interrupted
-     */
-    public boolean isInterrupted()
-    {
-        return interrupted;
     }
 
     /**
@@ -249,13 +217,52 @@ public class JsWorker implements Runnable
     }
 
     /**
-     * @throws InterruptedException in case of an interruption.
+     * @return the complete script source code
      */
-    public void awaitCopmletion() throws InterruptedException
+    public String getScript()
     {
-        while (isInitialized() || isRunning())
+        return script;
+    }
+
+    /**
+     * @return the script start line
+     */
+    public int getScriptStartLine()
+    {
+        return scriptStartLine;
+    }
+
+    /**
+     * @return the state
+     */
+    public State getState()
+    {
+        return state;
+    }
+
+    /**
+     * @param newState the new state.
+     */
+    private void changeState(State newState)
+    {
+        if (state != newState)
         {
-            Thread.sleep(100);
+            for (JavascriptWorkerStateListener listener : stateListeners)
+            {
+                listener.notify(this);
+            }
+            state = newState;
+        }
+    }
+
+    /**
+     * @param listener the listener to add.
+     */
+    public void addStateListener(JavascriptWorkerStateListener listener)
+    {
+        if (listener != null && !stateListeners.contains(listener))
+        {
+            stateListeners.add(listener);
         }
     }
 }

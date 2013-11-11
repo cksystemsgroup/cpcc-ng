@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
 import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
 import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
@@ -184,12 +185,18 @@ public class RosNodeServiceImpl implements RosNodeService
         for (Topic topic : topicList)
         {
             AbstractRosAdapter adapter = launchDeviceAdapter(device, topic);
-            if (adapter != null)
+            if (adapter == null)
             {
-                MappingAttributes attribute = qm.findMappingAttribute(device, topic);
-                adapter.setConnectedToAutopilot(attribute.getConnectedToAutopilot());
-                adapterList.add(adapter);
+                continue;
             }
+            MappingAttributes attribute = qm.findMappingAttribute(device, topic);
+            adapter.setConnectedToAutopilot(attribute.getConnectedToAutopilot());
+            SensorDefinition sd = attribute.getSensorDefinition();
+            if (sd != null && sd.getId() != null)
+            {
+                rns.getSensorDefinitionMap().put(sd.getId(), adapter);
+            }
+            adapterList.add(adapter);
         }
 
         rns.getAdapterNodes().put(device.getTopicRoot(), adapterList);
@@ -427,7 +434,7 @@ public class RosNodeServiceImpl implements RosNodeService
             launchAllDeviceAdapters(device);
             return;
         }
-        
+
         LOG.info("Starting ROS node group, topic=" + topicRoot);
 
         try
@@ -479,7 +486,7 @@ public class RosNodeServiceImpl implements RosNodeService
     {
         return rns.getDeviceNodes();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -507,7 +514,16 @@ public class RosNodeServiceImpl implements RosNodeService
         }
         return null;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractRosAdapter findAdapterNodeBySensorDefinitionId(Integer sensorDefinitionId)
+    {
+        return rns.getSensorDefinitionMap().get(sensorDefinitionId);
+    }
+
     /**
      * RosNodeSingleton
      */
@@ -523,12 +539,15 @@ public class RosNodeServiceImpl implements RosNodeService
         private Map<String, List<AbstractRosAdapter>> adapterNodes = Collections
             .synchronizedMap(new TreeMap<String, List<AbstractRosAdapter>>());
 
+        private Map<Integer, AbstractRosAdapter> sensorDefinitionMap = Collections
+            .synchronizedMap(new TreeMap<Integer, AbstractRosAdapter>());
+
         /**
          * Private constructor
          */
         private RosNodeSingleton()
         {
-            // TODO Auto-generated constructor stub
+            // intentionally empty.
         }
 
         /**
@@ -589,6 +608,14 @@ public class RosNodeServiceImpl implements RosNodeService
         public Map<String, List<AbstractRosAdapter>> getAdapterNodes()
         {
             return adapterNodes;
+        }
+
+        /**
+         * @return the sensor definition map
+         */
+        public Map<Integer, AbstractRosAdapter> getSensorDefinitionMap()
+        {
+            return sensorDefinitionMap;
         }
     }
 }

@@ -26,12 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Float32Adapter
+ * Float32ActuatorAdapter
  */
 public class Float32ActuatorAdapter extends AbstractActuatorAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(Float32ActuatorAdapter.class);
-    
+
     private Publisher<std_msgs.Float32> publisher;
 
     /**
@@ -41,17 +41,6 @@ public class Float32ActuatorAdapter extends AbstractActuatorAdapter
     public ActuatorType getType()
     {
         return ActuatorType.FLOAT_ADAPTER;
-    }
-
-    /**
-     * @param value the desired value.
-     */
-    public void setValue(std_msgs.Float32 value)
-    {
-        if (publisher != null)
-        {
-            publisher.publish(value);
-        }
     }
 
     /**
@@ -74,5 +63,17 @@ public class Float32ActuatorAdapter extends AbstractActuatorAdapter
     {
         super.onShutdown(node);
         publisher = null;
+    }
+
+    /**
+     * @param value the desired value.
+     */
+    @Override
+    public void setValue(Object value)
+    {
+        if (publisher != null)
+        {
+            publisher.publish((std_msgs.Float32) value);
+        }
     }
 }

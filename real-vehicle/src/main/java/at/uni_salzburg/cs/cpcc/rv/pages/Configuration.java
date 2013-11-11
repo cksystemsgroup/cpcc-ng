@@ -30,6 +30,8 @@ import java.util.TreeMap;
 
 import javax.inject.Inject;
 
+import org.apache.tapestry5.SelectModel;
+import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
@@ -37,9 +39,11 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
 import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
 import at.uni_salzburg.cs.cpcc.persistence.entities.TopicCategory;
 import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.persistence.services.SensorDefinitionSelectHelpers;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 
 /**
@@ -60,6 +64,9 @@ public class Configuration
     private Parameter masterServerURI;
 
     @Property
+    private Parameter realVehicleName;
+
+    @Property
     private Collection<Device> deviceList;
 
     @Property
@@ -76,6 +83,7 @@ public class Configuration
     {
         masterServerURI = qm.findParameterByName(Parameter.MASTER_SERVER_URI);
         internalRosCore = qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE);
+        realVehicleName = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME, "");
         deviceList = qm.findAllDevices();
         mappingList = orderByTopic(qm.findAllMappingAttributes());
     }
@@ -113,7 +121,7 @@ public class Configuration
         qm.deleteAll(mappings);
         qm.delete(device);
     }
-    
+
     @OnEvent("connectToAutoPilot")
     @CommitAfter
     void connectToAutoPilot(String topic)
@@ -123,9 +131,9 @@ public class Configuration
         {
             return;
         }
-        
+
         TopicCategory category = attributeMap.get(topic).getPk().getTopic().getCategory();
-        
+
         for (Entry<String, MappingAttributes> entry : attributeMap.entrySet())
         {
             MappingAttributes attributes = entry.getValue();
@@ -139,7 +147,7 @@ public class Configuration
             qm.saveOrUpdate(attributes);
         }
     }
-    
+
     @OnEvent("disconnectFromAutoPilot")
     @CommitAfter
     void disconnectFromAutoPilot(String topic)
@@ -177,6 +185,15 @@ public class Configuration
     }
 
     @CommitAfter
+    void onSuccessFromRealVehicleNameForm()
+    {
+        if (realVehicleName.getValue() != null)
+        {
+            qm.saveOrUpdate(realVehicleName);
+        }
+    }
+
+    @CommitAfter
     void onSuccessFromUriForm() throws URISyntaxException
     {
         qm.saveOrUpdate(masterServerURI);
@@ -195,5 +212,31 @@ public class Configuration
     {
         qm.saveOrUpdateAll(mappingList);
         nodeService.updateMappingAttributes(mappingList);
+    }
+
+    /**
+     * @return the sensor definition select model.
+     */
+    public SelectModel getSensorDefinitionNameSelectModel()
+    {
+        return SensorDefinitionSelectHelpers.selectModel(
+            qm.findSensorDefinitionsByMessageType(mappingConfig.getPk().getTopic().getMessageType())
+            );
+    }
+
+    /**
+     * @return the sensor definition name encoder.
+     */
+    public ValueEncoder<SensorDefinition> getSensorDefinitionNameEncoder()
+    {
+        return new SensorDefinitionSelectHelpers(qm).valueEncoder();
+    }
+    
+    /**
+     * @return true if sensor definitions are available, false otherwise.
+     */
+    public Boolean getSensorDefinitionsAvailable()
+    {
+        return qm.findSensorDefinitionsByMessageType(mappingConfig.getPk().getTopic().getMessageType()).size() > 0; 
     }
 }

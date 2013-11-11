@@ -17,39 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.vvrte.services.js;
-
-import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.Scriptable;
+package at.uni_salzburg.cs.cpcc.persistence.entities;
 
 /**
- * SandboxNativeJavaObject
+ * SensorVisibility
  */
-public class SandboxNativeJavaObject extends NativeJavaObject
+public enum SensorVisibility
 {
-    private static final long serialVersionUID = -839055571346169008L;
-
-    /**
-     * @param scope the scope.
-     * @param javaObject the Java object.
-     * @param staticType the static type.
-     */
-    public SandboxNativeJavaObject(Scriptable scope, Object javaObject, Class<?> staticType)
-    {
-        super(scope, javaObject, staticType);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Object get(String name, Scriptable start)
-    {
-        if ("getClass".equals(name))
-        {
-            return NOT_FOUND;
-        }
-
-        return super.get(name, start);
-    }
+    NO_VV,
+    PRIVILEGED_VV,
+    ALL_VV
 }

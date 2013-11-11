@@ -19,40 +19,13 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 
-import java.util.List;
-
-import org.mozilla.javascript.ScriptableObject;
-
 /**
- * BuiltInFunctions
+ * JavascriptWorkerStateListener
  */
-public interface BuiltInFunctions
+public interface JavascriptWorkerStateListener
 {
     /**
-     * @return the list of sensors available in the CPCC system.
+     * @param worker the worker that changed its state.
      */
-    List<ScriptableObject> listSensors();
-    
-    /**
-     * @return the list of active sensors of the current real vehicle.
-     */
-    List<ScriptableObject> listActiveSensors();
-    
-    /**
-     * @param name the sensor name.
-     * @return the sensor instance.
-     */
-    ScriptableObject getSensor(String name);
-    
-    /**
-     * @param sensor the sensor instance.
-     * @return the sensor value.
-     */
-    ScriptableObject getSensorValue(ScriptableObject sensor);
-    
-    /**
-     * @param managementParameters the management parameters.
-     * @param taskParameters the task parameters.
-     */
-    void executeTask(ScriptableObject managementParameters, ScriptableObject taskParameters);
+    void notify(JavascriptWorker worker);
 }

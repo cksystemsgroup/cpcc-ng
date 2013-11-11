@@ -79,4 +79,10 @@ public interface RosNodeService
      * @return the adapter node, or null if not found.
      */
     AbstractRosAdapter getAdapterNodeByTopic(String topic);
+    
+    /**
+     * @param sensorDefinitionId the sensor definition id.
+     * @return the abstract ROS adapter.
+     */
+    AbstractRosAdapter findAdapterNodeBySensorDefinitionId(Integer sensorDefinitionId);
 }

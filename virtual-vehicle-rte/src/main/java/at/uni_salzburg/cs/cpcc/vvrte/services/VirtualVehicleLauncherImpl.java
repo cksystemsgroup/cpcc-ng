@@ -17,39 +17,38 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.vvrte.services.js;
+package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.Scriptable;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 
 /**
- * SandboxNativeJavaObject
+ * VehicleLauncherImpl
  */
-public class SandboxNativeJavaObject extends NativeJavaObject
+public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 {
-    private static final long serialVersionUID = -839055571346169008L;
-
-    /**
-     * @param scope the scope.
-     * @param javaObject the Java object.
-     * @param staticType the static type.
-     */
-    public SandboxNativeJavaObject(Scriptable scope, Object javaObject, Class<?> staticType)
-    {
-        super(scope, javaObject, staticType);
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public Object get(String name, Scriptable start)
+    public void start(VirtualVehicle vehicle) throws VirtualVehicleLaunchException
     {
-        if ("getClass".equals(name))
+        // TODO Auto-generated method stub
+
+        VirtualVehicleState state = vehicle.getState();
+
+        if (state != VirtualVehicleState.INIT)
         {
-            return NOT_FOUND;
+            throw new VirtualVehicleLaunchException("Expected vehicle in state " + VirtualVehicleState.INIT
+                + ", but got " + state);
         }
 
-        return super.get(name, start);
+        if (!state.canTraverseTo(VirtualVehicleState.RUNNING))
+        {
+            throw new VirtualVehicleLaunchException("Can not switch vehicle to state " + VirtualVehicleState.RUNNING);
+        }
+
+        vehicle.setState(state.traverse(VirtualVehicleState.RUNNING));
+
     }
 }

@@ -19,6 +19,9 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.task;
 
+import java.util.List;
+
+import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
 /**
@@ -28,6 +31,7 @@ public class Task
 {
     private PolarCoordinate position;
     private long creationTime;
+    private List<SensorDefinition> sensors;
 
     /**
      * @return the task's position.
@@ -59,5 +63,21 @@ public class Task
     public void setCreationTime(long creationTime)
     {
         this.creationTime = creationTime;
+    }
+    
+    /**
+     * @return the sensors
+     */
+    public List<SensorDefinition> getSensors()
+    {
+        return sensors;
+    }
+    
+    /**
+     * @param sensors the sensors to set
+     */
+    public void setSensors(List<SensorDefinition> sensors)
+    {
+        this.sensors = sensors;
     }
 }

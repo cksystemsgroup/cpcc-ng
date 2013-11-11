@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.rv.services;
+package at.uni_salzburg.cs.cpcc.persistence.services;
 
 import java.util.Collection;
 
@@ -28,7 +28,6 @@ import org.apache.tapestry5.internal.OptionModelImpl;
 import org.apache.tapestry5.internal.SelectModelImpl;
 
 import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 
 /**
  * DeviceTypeSelectHelpers

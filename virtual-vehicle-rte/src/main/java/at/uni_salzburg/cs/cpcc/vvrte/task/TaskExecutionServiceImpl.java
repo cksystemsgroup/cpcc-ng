@@ -86,7 +86,7 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
             List<AbstractRosAdapter> adapterList = entry.getValue();
             for (AbstractRosAdapter adapter : adapterList)
             {
-                if (!adapter.getConnectedToAutopilot())
+                if (!adapter.isConnectedToAutopilot())
                 {
                     continue;
                 }

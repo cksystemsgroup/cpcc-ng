@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class ImageSensorAdapter extends AbstractSensorAdapter implements ImageProvider
 {
     private static final Logger LOG = LoggerFactory.getLogger(ImageSensorAdapter.class);
-    
+
     private sensor_msgs.Image image;
 
     /**
@@ -61,9 +61,9 @@ public class ImageSensorAdapter extends AbstractSensorAdapter implements ImagePr
         super.onStart(connectedNode);
         LOG.debug("onStart()");
 
-        Subscriber<sensor_msgs.Image> imageSubscriber = 
+        Subscriber<sensor_msgs.Image> imageSubscriber =
             connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.Image._TYPE);
-               
+
         imageSubscriber.addMessageListener(new MessageListener<sensor_msgs.Image>()
         {
             @Override
@@ -72,7 +72,25 @@ public class ImageSensorAdapter extends AbstractSensorAdapter implements ImagePr
                 image = message;
             }
         });
-        
+
         setStartCompleted();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public sensor_msgs.Image getValue()
+    {
+        return image;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setValue(Object object)
+    {
+        throw new IllegalStateException();
     }
 }

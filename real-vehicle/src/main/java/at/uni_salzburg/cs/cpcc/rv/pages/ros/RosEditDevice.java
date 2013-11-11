@@ -21,14 +21,10 @@ package at.uni_salzburg.cs.cpcc.rv.pages.ros;
 
 import static org.apache.tapestry5.EventConstants.PREPARE;
 
-import org.apache.tapestry5.SelectModel;
-import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.PageActivationContext;
 
 import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
-import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
-import at.uni_salzburg.cs.cpcc.rv.services.DeviceTypeSelectHelpers;
 
 /**
  * RosEditDevice
@@ -42,22 +38,6 @@ public class RosEditDevice extends AbstractRosModifyDevice
     void loadDevice()
     {
         device = qm.findDeviceByTopicRoot(deviceTopic);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public SelectModel getDeviceTypeNameSelectModel()
-    {
-        return DeviceTypeSelectHelpers.selectModel(qm.findAllDeviceTypes());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ValueEncoder<DeviceType> getDeviceTypeNameEncoder()
-    {
-        return new DeviceTypeSelectHelpers(qm).valueEncoder();
     }
 
     /**

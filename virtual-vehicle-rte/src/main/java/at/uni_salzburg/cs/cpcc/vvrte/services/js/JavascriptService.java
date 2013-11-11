@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 
+import java.io.IOException;
+
 /**
  * JavascriptService
  */
@@ -28,14 +30,15 @@ public interface JavascriptService
      * @param script the script.
      * @param apiVersion the VVRTE API version.
      * @return the executing worker.
+     * @throws IOException thrown in case of errors.
      */
-    JsWorker execute(String script, int apiVersion);
-    
+    JavascriptWorker createWorker(String script, int apiVersion) throws IOException;
+
     /**
      * @param snapshot the frozen program.
      * @return the executing worker.
      */
-    JsWorker execute(byte[] snapshot);
+    JavascriptWorker execute(byte[] snapshot);
 
     /**
      * @param functions the VV-RTE built-in functions implementation.
@@ -46,4 +49,12 @@ public interface JavascriptService
      * @param string the name of the class to permit access to.
      */
     void addAllowedClass(String string);
+
+    /**
+     * @param script the JavaScript code.
+     * @param apiVersion the API version.
+     * @return the verification result.
+     * @throws IOException thrown in case of errors.
+     */
+    Object[] codeVerification(String script, int apiVersion) throws IOException;
 }

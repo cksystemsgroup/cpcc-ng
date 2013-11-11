@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class CameraInfoSensorAdapter extends AbstractSensorAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(CameraInfoSensorAdapter.class);
-    
+
     private sensor_msgs.CameraInfo cameraInfo;
 
     /**
@@ -71,7 +71,25 @@ public class CameraInfoSensorAdapter extends AbstractSensorAdapter
                 cameraInfo = message;
             }
         });
-        
+
         setStartCompleted();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public sensor_msgs.CameraInfo getValue()
+    {
+        return cameraInfo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setValue(Object object)
+    {
+        throw new IllegalStateException();
     }
 }

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class Float32SensorAdapter extends AbstractSensorAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(Float32SensorAdapter.class);
-    
+
     private std_msgs.Float32 value;
 
     /**
@@ -44,14 +44,6 @@ public class Float32SensorAdapter extends AbstractSensorAdapter
     public SensorType getType()
     {
         return SensorType.FLOAT_SENSOR;
-    }
-
-    /**
-     * @return the current value
-     */
-    public std_msgs.Float32 getValue()
-    {
-        return value;
     }
 
     /**
@@ -74,10 +66,10 @@ public class Float32SensorAdapter extends AbstractSensorAdapter
                 value = message;
             }
         });
-        
+
         setStartCompleted();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -92,5 +84,23 @@ public class Float32SensorAdapter extends AbstractSensorAdapter
         }
 
         return map;
+    }
+
+    /**
+     * @return the current value
+     */
+    @Override
+    public std_msgs.Float32 getValue()
+    {
+        return value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setValue(Object object)
+    {
+        throw new IllegalStateException();
     }
 }

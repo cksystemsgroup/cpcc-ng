@@ -84,6 +84,14 @@ public class Token
     {
         return number;
     }
+    
+    /**
+     * @return the token value as number or string.
+     */
+    public Object getValue()
+    {
+        return symbol == Symbol.NUMBER ? number : itemString;
+    }
 
     /**
      * @param master the master token.

@@ -113,7 +113,7 @@ public class TaskExecutionServiceTest
 
         wpc = mock(SimpleWayPointControllerAdapter.class);
         when(wpc.getType()).thenReturn(ActuatorType.SIMPLE_WAYPOINT_CONTROLLER);
-        when(wpc.getConnectedToAutopilot()).thenReturn(true);
+        when(wpc.isConnectedToAutopilot()).thenReturn(true);
 
         doAnswer(new Answer<Object>()
         {
@@ -136,24 +136,24 @@ public class TaskExecutionServiceTest
         gps = mock(AbstractGpsSensorAdapter.class);
         when(gps.getPosition()).thenReturn(position);
         when(gps.getType()).thenReturn(SensorType.GPS_RECEIVER);
-        when(gps.getConnectedToAutopilot()).thenReturn(true);
+        when(gps.isConnectedToAutopilot()).thenReturn(true);
 
         altimeter = mock(AltimeterAdapter.class);
         when(altimeter.getType()).thenReturn(SensorType.ALTIMETER);
-        when(altimeter.getConnectedToAutopilot()).thenReturn(true);
+        when(altimeter.isConnectedToAutopilot()).thenReturn(true);
         when(altimeter.getValue()).thenReturn(float32altitude);
 
         unknownAdapterA = mock(AbstractSensorAdapter.class);
-        when(unknownAdapterA.getConnectedToAutopilot()).thenReturn(true);
+        when(unknownAdapterA.isConnectedToAutopilot()).thenReturn(true);
 
         unknownAdapterB = mock(AbstractActuatorAdapter.class);
-        when(unknownAdapterB.getConnectedToAutopilot()).thenReturn(true);
+        when(unknownAdapterB.isConnectedToAutopilot()).thenReturn(true);
 
         unknownAdapterC = mock(AbstractRosAdapter.class);
-        when(unknownAdapterC.getConnectedToAutopilot()).thenReturn(false);
+        when(unknownAdapterC.isConnectedToAutopilot()).thenReturn(false);
 
         unknownAdapterD = mock(AbstractRosAdapter.class);
-        when(unknownAdapterD.getConnectedToAutopilot()).thenReturn(true);
+        when(unknownAdapterD.isConnectedToAutopilot()).thenReturn(true);
 
         adapterNodes = new HashMap<String, List<AbstractRosAdapter>>();
         adapterNodes.put("/mav01",

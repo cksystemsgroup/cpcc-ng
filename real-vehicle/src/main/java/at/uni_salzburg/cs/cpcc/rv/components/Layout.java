@@ -19,6 +19,9 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.components;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.apache.tapestry5.BindingConstants;
 import org.apache.tapestry5.ComponentResources;
 import org.apache.tapestry5.SymbolConstants;
@@ -29,20 +32,19 @@ import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 
-import com.trsvax.bootstrap.annotations.Exclude;
+import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 
-import java.util.Arrays;
-import java.util.Collection;
+import com.trsvax.bootstrap.annotations.Exclude;
 
 /**
  * Layout component for pages of application real vehicle web application.
  */
 @Exclude(stylesheet = {"core"})
 @Import(stylesheet = {
-        "classpath:/com/trsvax/bootstrap/assets/bootstrap/css/bootstrap.css",
-        "classpath:/com/trsvax/bootstrap/assets/bootstrap/css/bootstrap-responsive.css",
-        "layout.css"
-    },
+    "classpath:/com/trsvax/bootstrap/assets/bootstrap/css/bootstrap.css",
+    "classpath:/com/trsvax/bootstrap/assets/bootstrap/css/bootstrap-responsive.css",
+    "layout.css"
+},
     library = {
         "classpath:/com/trsvax/bootstrap/assets/bootstrap/js/bootstrap.js"
     })
@@ -68,6 +70,9 @@ public class Layout
     @Symbol(SymbolConstants.APPLICATION_VERSION)
     private String appVersion;
 
+    @Inject
+    private QueryManager qm;
+
     String defaultTitle()
     {
         return messages.get("pagetitle." + resources.getPageName());
@@ -78,7 +83,7 @@ public class Layout
      */
     public String getClassForPageName()
     {
-        return resources.getPageName().equals(pageName) ? "active" : null;
+        return resources.getPageName().equalsIgnoreCase(pageName) ? "active" : null;
     }
 
     /**
@@ -97,4 +102,13 @@ public class Layout
         return messages.get("pagetitle." + pageName);
     }
 
+    /**
+     * @return the name of the real vehicle
+     */
+    public String getRealVehicleName()
+    {
+        at.uni_salzburg.cs.cpcc.persistence.entities.Parameter rvn =
+            qm.findParameterByName(at.uni_salzburg.cs.cpcc.persistence.entities.Parameter.REAL_VEHICLE_NAME, "");
+        return rvn != null && rvn.getValue() != null ? rvn.getValue() : "";
+    }
 }

@@ -17,42 +17,18 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.vvrte.services.js;
-
-import java.util.List;
+package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import org.mozilla.javascript.ScriptableObject;
 
 /**
- * BuiltInFunctions
+ * MessageConverter
  */
-public interface BuiltInFunctions
+public interface MessageConverter
 {
     /**
-     * @return the list of sensors available in the CPCC system.
+     * @param message the message.
+     * @return the message as a native JS object.
      */
-    List<ScriptableObject> listSensors();
-    
-    /**
-     * @return the list of active sensors of the current real vehicle.
-     */
-    List<ScriptableObject> listActiveSensors();
-    
-    /**
-     * @param name the sensor name.
-     * @return the sensor instance.
-     */
-    ScriptableObject getSensor(String name);
-    
-    /**
-     * @param sensor the sensor instance.
-     * @return the sensor value.
-     */
-    ScriptableObject getSensorValue(ScriptableObject sensor);
-    
-    /**
-     * @param managementParameters the management parameters.
-     * @param taskParameters the task parameters.
-     */
-    void executeTask(ScriptableObject managementParameters, ScriptableObject taskParameters);
+    ScriptableObject convertMessageToJS(org.ros.internal.message.Message message);
 }

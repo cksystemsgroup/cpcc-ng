@@ -95,4 +95,13 @@ public class SimpleWayPointControllerAdapter extends AbstractActuatorAdapter
         super.onShutdown(node);
         publisher = null;
     }
+
+    /**
+     * @param value the desired value.
+     */
+    @Override
+    public void setValue(Object value)
+    {
+        setPosition((PolarCoordinate) value);
+    }
 }

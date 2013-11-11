@@ -19,8 +19,11 @@
  */
 package at.uni_salzburg.cs.cpcc.persistence.entities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -37,6 +40,9 @@ public class MappingAttributes
 
     @NotNull
     private Boolean connectedToAutopilot;
+    
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private SensorDefinition sensorDefinition;
     
     /**
      * @return the primary key
@@ -86,4 +92,19 @@ public class MappingAttributes
         this.connectedToAutopilot = connectedToAutopilot;
     }
     
+    /**
+     * @return the sensor definition
+     */
+    public SensorDefinition getSensorDefinition()
+    {
+        return sensorDefinition;
+    }
+    
+    /**
+     * @param sensorDefinition the sensor definition to set
+     */
+    public void setSensorDefinition(SensorDefinition sensorDefinition)
+    {
+        this.sensorDefinition = sensorDefinition;
+    }
 }

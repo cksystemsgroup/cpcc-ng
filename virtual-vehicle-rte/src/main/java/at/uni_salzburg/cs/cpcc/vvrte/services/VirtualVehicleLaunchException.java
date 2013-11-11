@@ -22,7 +22,7 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 /**
  * VehicleLauncherException
  */
-public class VehicleLaunchException extends Exception
+public class VirtualVehicleLaunchException extends Exception
 {
     private static final long serialVersionUID = -7375122526778864222L;
 
@@ -30,7 +30,7 @@ public class VehicleLaunchException extends Exception
      * Constructs a new exception with null as its detail message. The cause is not initialized, and may subsequently be
      * initialized by a call to {@code initCause}.
      */
-    public VehicleLaunchException()
+    public VirtualVehicleLaunchException()
     {
         super();
     }
@@ -38,7 +38,7 @@ public class VehicleLaunchException extends Exception
     /**
      * @param message the detail message
      */
-    public VehicleLaunchException(String message)
+    public VirtualVehicleLaunchException(String message)
     {
         super(message);
     }
@@ -46,7 +46,7 @@ public class VehicleLaunchException extends Exception
     /**
      * @param cause the cause. A null value is permitted, and indicates that the cause is nonexistent or unknown.
      */
-    public VehicleLaunchException(Throwable cause)
+    public VirtualVehicleLaunchException(Throwable cause)
     {
         super(cause);
     }
@@ -55,7 +55,7 @@ public class VehicleLaunchException extends Exception
      * @param message the detail message
      * @param cause the cause. A null value is permitted, and indicates that the cause is nonexistent or unknown.
      */
-    public VehicleLaunchException(String message, Throwable cause)
+    public VirtualVehicleLaunchException(String message, Throwable cause)
     {
         super(message, cause);
     }
