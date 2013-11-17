@@ -61,7 +61,11 @@ public class JavascriptServiceImpl implements JavascriptService
      * {@inheritDoc}
      */
     @Override
+<<<<<<< HEAD
     public JavascriptWorker createWorker(String script, int apiVersion) throws IOException
+=======
+    public JsWorker execute(String script, int apiVersion) throws IOException
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
     {
         JavascriptWorker w = new JavascriptWorker(script, apiVersion, allowedClasses);
         new Thread(w).start();
@@ -103,7 +107,11 @@ public class JavascriptServiceImpl implements JavascriptService
     @Override
     public Object[] codeVerification(String script, int apiVersion) throws IOException
     {
+<<<<<<< HEAD
         JavascriptWorker w = new JavascriptWorker(script, apiVersion, allowedClasses);
+=======
+        JsWorker w = new JsWorker(script, apiVersion, allowedClasses);
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
         String completedScript = w.getScript();
 
         Context cx = Context.enter();

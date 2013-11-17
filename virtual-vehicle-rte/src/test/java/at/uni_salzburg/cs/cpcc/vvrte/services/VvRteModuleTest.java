@@ -20,7 +20,10 @@
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import static org.mockito.Mockito.mock;
+<<<<<<< HEAD
 import static org.mockito.Mockito.times;
+=======
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertFalse;
@@ -32,7 +35,10 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.ServiceBindingOptions;
 import org.testng.annotations.Test;
 
+<<<<<<< HEAD
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.BuiltInFunctions;
+=======
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceImpl;
 
@@ -56,16 +62,23 @@ public class VvRteModuleTest
         ServiceBindingOptions options = mock(ServiceBindingOptions.class);
         ServiceBinder binder = mock(ServiceBinder.class);
         when(binder.bind(JavascriptService.class, JavascriptServiceImpl.class)).thenReturn(options);
+<<<<<<< HEAD
         when(binder.bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class)).thenReturn(options);
         when(binder.bind(VvRteRepository.class, VvRteRepositoryImpl.class)).thenReturn(options);
         when(binder.bind(MessageConverter.class, MessageConverterImpl.class)).thenReturn(options);
+=======
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
 
         VvRteModule.bind(binder);
 
         verify(binder).bind(JavascriptService.class, JavascriptServiceImpl.class);
+<<<<<<< HEAD
         verify(binder).bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class);
         verify(binder).bind(VvRteRepository.class, VvRteRepositoryImpl.class);
         verify(options, times(3)).eagerLoad();
+=======
+        verify(options).eagerLoad();
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
     }
     
     @Test

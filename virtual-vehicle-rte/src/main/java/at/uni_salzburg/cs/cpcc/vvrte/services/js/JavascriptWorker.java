@@ -72,13 +72,20 @@ public class JavascriptWorker implements Runnable
      * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
      * @throws IOException thrown in case of errors.
      */
+<<<<<<< HEAD:virtual-vehicle-rte/src/main/java/at/uni_salzburg/cs/cpcc/vvrte/services/js/JavascriptWorker.java
     public JavascriptWorker(String scriptSource, int apiVersion, Set<String> allowedClasses) throws IOException
+=======
+    public JsWorker(String scriptSource, int apiVersion, Set<String> allowedClasses) throws IOException
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc:virtual-vehicle-rte/src/main/java/at/uni_salzburg/cs/cpcc/vvrte/services/js/JsWorker.java
     {
         this.allowedClasses = allowedClasses;
         String apiScript = loadApiScript(apiVersion);
         scriptStartLine = StringUtils.countMatches(apiScript, "\n") + 1;
         script = "(function(){ " + apiScript + "\n" + scriptSource + "\n})();";
+<<<<<<< HEAD:virtual-vehicle-rte/src/main/java/at/uni_salzburg/cs/cpcc/vvrte/services/js/JavascriptWorker.java
         state = State.INITIALIZED;
+=======
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc:virtual-vehicle-rte/src/main/java/at/uni_salzburg/cs/cpcc/vvrte/services/js/JsWorker.java
     }
 
     /**
@@ -258,11 +265,31 @@ public class JavascriptWorker implements Runnable
     /**
      * @param listener the listener to add.
      */
+<<<<<<< HEAD:virtual-vehicle-rte/src/main/java/at/uni_salzburg/cs/cpcc/vvrte/services/js/JavascriptWorker.java
     public void addStateListener(JavascriptWorkerStateListener listener)
+=======
+    public void awaitCompletion() throws InterruptedException
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc:virtual-vehicle-rte/src/main/java/at/uni_salzburg/cs/cpcc/vvrte/services/js/JsWorker.java
     {
         if (listener != null && !stateListeners.contains(listener))
         {
             stateListeners.add(listener);
         }
+    }
+    
+    /**
+     * @return the script
+     */
+    public String getScript()
+    {
+        return script;
+    }
+    
+    /**
+     * @return the scriptStartLine
+     */
+    public int getScriptStartLine()
+    {
+        return scriptStartLine;
     }
 }

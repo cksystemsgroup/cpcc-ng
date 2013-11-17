@@ -32,7 +32,11 @@ public interface JavascriptService
      * @return the executing worker.
      * @throws IOException thrown in case of errors.
      */
+<<<<<<< HEAD
     JavascriptWorker createWorker(String script, int apiVersion) throws IOException;
+=======
+    JsWorker execute(String script, int apiVersion) throws IOException;
+>>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
 
     /**
      * @param snapshot the frozen program.
