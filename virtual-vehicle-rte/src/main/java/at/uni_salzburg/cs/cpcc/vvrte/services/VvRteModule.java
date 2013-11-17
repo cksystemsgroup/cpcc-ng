@@ -22,10 +22,7 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 
-<<<<<<< HEAD
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.BuiltInFunctions;
-=======
->>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceImpl;
 
@@ -45,13 +42,9 @@ public final class VvRteModule
     public static void bind(ServiceBinder binder)
     {
         binder.bind(JavascriptService.class, JavascriptServiceImpl.class).eagerLoad();
-<<<<<<< HEAD
         binder.bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class).eagerLoad();
         binder.bind(VvRteRepository.class, VvRteRepositoryImpl.class);
         binder.bind(MessageConverter.class, MessageConverterImpl.class).eagerLoad();
-=======
-        binder.bind(VvRteRepository.class, VvRteRepositoryImpl.class);
->>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
     }
 
     /**

@@ -46,15 +46,10 @@ public class JavascriptServiceTest
     public void shouldExecuteSimpleJS() throws InterruptedException, IOException
     {
         JavascriptService jss = new JavascriptServiceImpl();
-<<<<<<< HEAD
         JavascriptWorker x = jss.createWorker("function f(x){return x+1} f(7)", 1);
         MyWorkerStateListener wl = new MyWorkerStateListener();
         x.addStateListener(wl);
         x.run();
-=======
-        JsWorker x = jss.execute("function f(x){return x+1} f(7)", 1);
-        x.awaitCompletion();
->>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
 
         assertThat(x.getResult()).isNotNull().isEqualTo("undefined");
         assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.FINISHED);
@@ -65,13 +60,8 @@ public class JavascriptServiceTest
     public void shouldNotExecuteNaughtyScript() throws InterruptedException, IOException
     {
         JavascriptService jss = new JavascriptServiceImpl();
-<<<<<<< HEAD
         JavascriptWorker x = jss.createWorker("java.lang.System.currentTimeMillis()", 1);
         x.run();
-=======
-        JsWorker x = jss.execute("java.lang.System.currentTimeMillis()", 1);
-        x.awaitCompletion();
->>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
 
         assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.DEFECTIVE);
         assertThat(x.getResult()).isNotNull().startsWith("TypeError: Cannot call property currentTimeMillis in object");
@@ -81,11 +71,7 @@ public class JavascriptServiceTest
     public void shouldDenyWrongApiVersion() throws InterruptedException, IOException
     {
         JavascriptService jss = new JavascriptServiceImpl();
-<<<<<<< HEAD
         catchException(jss).createWorker("function f(x){return x+1} f(7)", 1000);
-=======
-        catchException(jss).execute("function f(x){return x+1} f(7)", 1000);
->>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
 
         assertThat(caughtException()).isInstanceOf(IOException.class);
         assertThat(caughtException().getMessage()).isEqualTo("Can not handle API version 1000");
@@ -104,26 +90,17 @@ public class JavascriptServiceTest
         assertThat(script).isNotNull().isNotEmpty();
 
         functions.setMigrate(true);
-<<<<<<< HEAD
         JavascriptWorker x = jss.createWorker(script, 1);
         x.run();
-=======
-        JsWorker x = jss.execute(script, 1);
-        x.awaitCompletion();
->>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
+
         System.out.println("shouldHandleVvRte() result1: '" + x.getResult() + "'");
         assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.INTERRUPTED);
 
         functions.setMigrate(false);
         byte[] snapshot = x.getSnapshot();
         x = jss.execute(snapshot);
-<<<<<<< HEAD
         x.run();
         assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.FINISHED);
-=======
-        x.awaitCompletion();
-        assertThat(x.isInterrupted()).isFalse();
->>>>>>> ea54c8dbe8b8727cac1510b7eee552d4b7f5c8bc
 
         System.out.println("shouldHandleVvRte() result2: '" + x.getResult() + "'");
     }
@@ -202,86 +179,11 @@ public class JavascriptServiceTest
         assertThat(result).isNull();
     }
 
-    @DataProvider
-    public static Object[][] emptyScriptDataProvider()
-    {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"\n"},
-            new Object[]{"\n\n\n\n\r\n"},
-        };
-    }
-
-    @Test(dataProvider = "emptyScriptDataProvider")
-    public void shouldHandleEmptyScripts(String script) throws IOException, InterruptedException
-    {
-        JavascriptService jss = new JavascriptServiceImpl();
-        JsWorker x = jss.execute(script, 1);
-        x.awaitCompletion();
-        assertThat(x.isDefective()).isFalse();
-    }
-    
-    @Test(dataProvider = "emptyScriptDataProvider")
-    public void shouldCompileEmptyScript(String script) throws IOException
-    {
-        JavascriptService jss = new JavascriptServiceImpl();
-        Object[] result = jss.codeVerification(script, 1);
-        assertThat(result).isNull();
-    }
-    
-    @Test
-    public void shouldHandleNullContinuation() throws InterruptedException
-    {
-        JavascriptService jss = new JavascriptServiceImpl();
-        JsWorker x = jss.execute(null);
-        x.awaitCompletion();
-        assertThat(x.isDefective()).isTrue();
-    }
-    
-    @Test
-    public void shouldReturnScriptWithApiPrefix() throws IOException
-    {
-        String script = "function f(x){return x+1} f(7)";
-        JavascriptService jss = new JavascriptServiceImpl();
-        JsWorker x = jss.execute(script, 1);
-        assertThat(x.getScript()).isNotNull().endsWith(script + "\n})();");
-    }
-    
-    @Test
-    public void shouldNotCompileErroneousScript() throws IOException
-    {
-        String script = "var x = 0;\nx x x";
-        JavascriptService jss = new JavascriptServiceImpl();
-        Object[] result = jss.codeVerification(script, 1);
-        assertThat(result).isNotNull();
-        
-        Integer column = (Integer)result[0];
-        Integer line = (Integer)result[1];
-        String errorMessage = (String)result[2];
-        String sourceLine = (String)result[3];
-
-        assertThat(column).isNotNull().isEqualTo(4);
-        assertThat(line).isNotNull().isEqualTo(2);
-        assertThat(errorMessage).isNotNull().isEqualTo("missing ; before statement");
-        assertThat(sourceLine).isNotNull().isEqualTo("x x x");
-    }
-    
-    @Test
-    public void shouldCompileProperScript() throws IOException
-    {
-        String script = "function f(x){return x+1} f(7)";
-        JavascriptService jss = new JavascriptServiceImpl();
-        Object[] result = jss.codeVerification(script, 1);
-        assertThat(result).isNull();
-    }
-    
     /**
      * MyBuiltInFunctions
      */
     private static class MyBuiltInFunctions implements BuiltInFunctions
     {
-        private static final long serialVersionUID = 1611279004878357751L;
 
         private boolean migrate = false;
 
@@ -302,7 +204,7 @@ public class JavascriptServiceTest
             // TODO fix this.
             return listActiveSensors();
         }
-        
+
         /**
          * {@inheritDoc}
          */
