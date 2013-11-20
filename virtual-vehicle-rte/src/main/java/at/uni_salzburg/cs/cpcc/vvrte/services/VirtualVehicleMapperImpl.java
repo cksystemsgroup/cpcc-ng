@@ -34,6 +34,7 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
 {
     private PolygonZone areaOfOperation;
+    private RealVehicle realVehicle;
 
     /**
      * @param qm the query manager.
@@ -42,7 +43,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
     {
         Parameter rvNameParam = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME);
 
-        RealVehicle realVehicle = qm.findRealVehicleByName(rvNameParam.getValue());
+        realVehicle = qm.findRealVehicleByName(rvNameParam.getValue());
 
         String areaOfOperationString = realVehicle.getAreaOfOperation();
 
@@ -67,7 +68,16 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
     public VirtualVehicleMappingDecision findMappingDecision(Task task)
     {
         VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision();
-        decision.setMigration(!areaOfOperation.isInside(task.getPosition()));
+        decision.setTask(task);
+        
+        boolean migration = !areaOfOperation.isInside(task.getPosition());
+
+        if (!migration)
+        {
+            migration = !realVehicle.getSensors().containsAll(task.getSensors());
+        }
+        
+        decision.setMigration(migration);
         return decision;
     }
 

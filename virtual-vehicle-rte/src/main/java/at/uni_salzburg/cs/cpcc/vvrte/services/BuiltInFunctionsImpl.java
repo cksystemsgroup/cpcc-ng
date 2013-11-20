@@ -31,41 +31,44 @@ import at.uni_salzburg.cs.cpcc.utilities.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.utilities.opts.ParseException;
 import at.uni_salzburg.cs.cpcc.utilities.opts.Token;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.BuiltInFunctions;
+import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskAnalyzer;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionService;
 
 /**
- * VvRteFunctions
+ * BuiltInFunctionsImpl
  */
 public class BuiltInFunctionsImpl implements BuiltInFunctions
 {
     private static final Logger LOG = LoggerFactory.getLogger(BuiltInFunctionsImpl.class);
 
-    private boolean migrate = false;
-
     private QueryManager qm;
     private RosNodeService rns;
     private OptionsParserService opts;
     private MessageConverter conv;
-
-    /**
-     * @param migrate the migrate to set
-     */
-    public void setMigrate(boolean migrate)
-    {
-        this.migrate = migrate;
-    }
+    private VirtualVehicleMapper mapper;
+    private TaskExecutionService taskExecutor;
+    private TaskAnalyzer taskAnalyzer;
 
     /**
      * @param qm the query manager
      * @param rns the ROS node service.
      * @param opts the options parser service-
      * @param conv the message converter service.
+     * @param mapper the virtual vehicle mapper.
+     * @param taskExecutor the task executor.
+     * @param taskAnalyzer the task analyzer.
      */
-    public BuiltInFunctionsImpl(QueryManager qm, RosNodeService rns, OptionsParserService opts, MessageConverter conv)
+    public BuiltInFunctionsImpl(QueryManager qm, RosNodeService rns, OptionsParserService opts, MessageConverter conv,
+        VirtualVehicleMapper mapper, TaskExecutionService taskExecutor, TaskAnalyzer taskAnalyzer)
     {
         this.qm = qm;
         this.rns = rns;
         this.opts = opts;
         this.conv = conv;
+        this.mapper = mapper;
+        this.taskExecutor = taskExecutor;
+        this.taskAnalyzer = taskAnalyzer;
     }
 
     /**
@@ -74,18 +77,18 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public List<ScriptableObject> listSensors()
     {
-        System.out.println("listSensors start");
+        LOG.info("listSensors start");
         List<SensorDefinition> asd = qm.findAllSensorDefinitions();
         return converToScriptableObjectList(asd);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public List<ScriptableObject> listActiveSensors()
     {
-        System.out.println("listActiveSensors start");
+        LOG.info("listActiveSensors start");
         List<SensorDefinition> asd = qm.findAllActiveSensorDefinitions();
         return converToScriptableObjectList(asd);
     }
@@ -206,89 +209,58 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public void executeTask(ScriptableObject managementParameters, ScriptableObject taskParameters)
     {
-        // TODO a lot!
-        System.out.println("executeTask1");
-        if (!verifyTaskParameters(taskParameters))
-        {
-            managementParameters.put("repeat", managementParameters, Boolean.FALSE);
-            return;
-        }
+        LOG.info("executeTask1");
 
-        System.out.println("executeTask2");
+        managementParameters.put("repeat", managementParameters, Boolean.FALSE);
 
         Number sequence = (Number) managementParameters.get("sequence");
-        if (sequence.intValue() == 0)
+
+        Task task = taskAnalyzer.analyzeTaskParameters(taskParameters, sequence.intValue());
+        if (task == null)
         {
-            // TODO decide for migration or not.
-            // TODO migration: initiate migration by throwing CP-Exception.
-
-            if (migrate)
-            {
-                System.out.println("migration");
-                Context cx = Context.enter();
-                try
-                {
-                    ContinuationPending cp = cx.captureContinuation();
-                    cp.setApplicationState("migration");
-                    throw cp;
-                }
-                finally
-                {
-                    Context.exit();
-                }
-            }
-
-            System.out.println("no migration");
-
-            // TODO no migration: schedule task and wait for completion.
-
-            managementParameters.put("valid", managementParameters, Boolean.TRUE);
-            managementParameters.put("sequence", managementParameters, Integer.valueOf(sequence.intValue() + 1));
-
-            NativeArray sensors = (NativeArray) taskParameters.get("sensors");
-            NativeArray sensorValues = new NativeArray(sensors.getLength());
-
-            for (int k = 0; k < sensors.getLength(); ++k)
-            {
-                NativeObject s = (NativeObject) sensors.get(k);
-                sensorValues.put(k, sensorValues, getSensorValue(s));
-            }
-
-            managementParameters.put("sensorValues", managementParameters, sensorValues);
-            managementParameters.put("repeat", managementParameters, Boolean.TRUE);
             return;
         }
 
-        // String type = (String) taskParameters.get("type");
-        Number tolerance = (Number) taskParameters.get("tolerance");
-        tolerance.doubleValue();
+        VirtualVehicleMappingDecision decision = mapper.findMappingDecision(task);
 
-        // NativeArray sensors = (NativeArray) taskParameters.get("sensors");
+        if (decision.isMigration())
+        {
+            LOG.info("migration");
+            Context cx = Context.enter();
+            try
+            {
+                managementParameters.put("repeat", managementParameters, Boolean.TRUE);
+                ContinuationPending cp = cx.captureContinuation();
+                cp.setApplicationState("migration");
+                // handover the task! -> no, call execute again with same sequence number!
+                throw cp;
+            }
+            finally
+            {
+                Context.exit();
+            }
+        }
 
-        // TODO Auto-generated method stub
-        managementParameters.put("repeat", managementParameters, Boolean.FALSE);
+        LOG.info("no migration");
+
+        taskExecutor.addTask(task);
+        task.awaitCompletion();
+
+        managementParameters.put("valid", managementParameters, Boolean.TRUE);
+        managementParameters.put("sequence", managementParameters, Integer.valueOf(sequence.intValue() + 1));
+
+        NativeArray sensors = (NativeArray) taskParameters.get("sensors");
+        NativeArray sensorValues = new NativeArray(sensors.getLength());
+
+        for (int k = 0; k < sensors.getLength(); ++k)
+        {
+            NativeObject s = (NativeObject) sensors.get(k);
+            sensorValues.put(k, sensorValues, getSensorValue(s));
+        }
+
+        managementParameters.put("sensorValues", managementParameters, sensorValues);
+        managementParameters.put("repeat", managementParameters, Boolean.valueOf(!task.isLastInTaskGroup()));
         return;
     }
 
-    private boolean verifyTaskParameters(ScriptableObject taskParameters)
-    {
-        // TODO Auto-generated method stub
-        Object sensors = taskParameters.get("sensors");
-        Object type = taskParameters.get("type");
-
-        if (sensors == null || !(sensors instanceof NativeArray) || ((NativeArray) sensors).getLength() == 0)
-        {
-            return false;
-        }
-
-        if (type == null || !(type instanceof String) || !"point".equalsIgnoreCase((String) type))
-        {
-            return false;
-        }
-
-        // !('sensors' in taskParams) || !('length' in taskParams.sensors) 
-        // || taskParams.sensors.length == 0 || taskParams.type)
-
-        return true;
-    }
 }

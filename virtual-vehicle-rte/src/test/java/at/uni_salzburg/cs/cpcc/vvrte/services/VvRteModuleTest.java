@@ -35,6 +35,8 @@ import org.testng.annotations.Test;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.BuiltInFunctions;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceImpl;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskAnalyzer;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskAnalyzerImpl;
 
 /**
  * VvRteModuleTest
@@ -59,13 +61,15 @@ public class VvRteModuleTest
         when(binder.bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class)).thenReturn(options);
         when(binder.bind(VvRteRepository.class, VvRteRepositoryImpl.class)).thenReturn(options);
         when(binder.bind(MessageConverter.class, MessageConverterImpl.class)).thenReturn(options);
+        when(binder.bind(TaskAnalyzer.class, TaskAnalyzerImpl.class)).thenReturn(options);
 
         VvRteModule.bind(binder);
 
         verify(binder).bind(JavascriptService.class, JavascriptServiceImpl.class);
         verify(binder).bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class);
         verify(binder).bind(VvRteRepository.class, VvRteRepositoryImpl.class);
-        verify(options, times(3)).eagerLoad();
+        verify(binder).bind(TaskAnalyzer.class, TaskAnalyzerImpl.class);
+        verify(options, times(4)).eagerLoad();
     }
 
     @Test

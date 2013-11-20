@@ -91,21 +91,25 @@ public class TaskExecutionServiceTest
         taskA = mock(Task.class);
         when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1234, 13.7897, 8));
         when(taskA.getCreationTime()).thenReturn(1L);
+        when(taskA.getTolerance()).thenReturn(10.0);
         when(taskA.toString()).thenReturn("taskA (47.1234, 13.7897, 8), time=1");
 
         taskB = mock(Task.class);
         when(taskB.getPosition()).thenReturn(new PolarCoordinate(47.2345, 13.1234, 23));
         when(taskB.getCreationTime()).thenReturn(2L);
+        when(taskB.getTolerance()).thenReturn(10.0);
         when(taskB.toString()).thenReturn("taskB (47.2345, 13.1234, 23), time=2");
 
         taskC = mock(Task.class);
         when(taskC.getPosition()).thenReturn(new PolarCoordinate(47.3345, 13.5234, 13));
         when(taskC.getCreationTime()).thenReturn(3L);
+        when(taskC.getTolerance()).thenReturn(10.0);
         when(taskC.toString()).thenReturn("taskC (47.3345, 13.5234, 13), time=3");
 
         taskD = mock(Task.class);
         when(taskD.getPosition()).thenReturn(new PolarCoordinate(47.4345, 13.3234, 18));
         when(taskD.getCreationTime()).thenReturn(4L);
+        when(taskD.getTolerance()).thenReturn(10.0);
         when(taskD.toString()).thenReturn("taskD (47.4345, 13.3234, 18), time=4");
 
         float32altitude = NodeConfiguration.newPrivate().getTopicMessageFactory().newFromType(Float32._TYPE);

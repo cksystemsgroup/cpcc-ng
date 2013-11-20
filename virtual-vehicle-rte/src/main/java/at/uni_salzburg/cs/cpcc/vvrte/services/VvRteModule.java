@@ -25,6 +25,8 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.BuiltInFunctions;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceImpl;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskAnalyzer;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskAnalyzerImpl;
 
 /**
  * VvRteModule
@@ -45,6 +47,7 @@ public final class VvRteModule
         binder.bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class).eagerLoad();
         binder.bind(VvRteRepository.class, VvRteRepositoryImpl.class);
         binder.bind(MessageConverter.class, MessageConverterImpl.class).eagerLoad();
+        binder.bind(TaskAnalyzer.class, TaskAnalyzerImpl.class).eagerLoad();
     }
 
     /**

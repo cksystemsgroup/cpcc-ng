@@ -111,7 +111,7 @@ public class VirtualVehicleMapperTest
     public Object[][] tasksThatCauseMigrationDataProvider()
     {
         return new Object[][]{
-            new Object[]{47.9, -13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor, gpsReceiver)},
+            new Object[]{47.9, -13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)},
         };
     }
 
@@ -120,14 +120,15 @@ public class VirtualVehicleMapperTest
     {
         realVehicle = mock(RealVehicle.class);
         when(realVehicle.getAreaOfOperation()).thenReturn(AREA_OF_OPERATION);
+        when(realVehicle.getSensors()).thenReturn(Arrays.asList(altimeter, barometer, co2Sensor));
 
         Parameter rvName = new Parameter();
         rvName.setValue("rv001");
-        
+
         qm = mock(QueryManager.class);
         when(qm.findRealVehicleByName(anyString())).thenReturn(realVehicle);
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(rvName);
-        
+
         mapper = new VirtualVehicleMapperImpl(qm);
     }
 
@@ -140,7 +141,7 @@ public class VirtualVehicleMapperTest
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = mapper.findMappingDecision(task);
-        
+
         assertThat(decision).isNotNull();
         assertThat(decision.isMigration()).isTrue();
     }
@@ -149,7 +150,7 @@ public class VirtualVehicleMapperTest
     public Object[][] tasksThatNotCauseMigrationDataProvider()
     {
         return new Object[][]{
-            new Object[]{47.9, 13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor, gpsReceiver)},
+            new Object[]{47.9, 13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)},
         };
     }
 
@@ -162,8 +163,58 @@ public class VirtualVehicleMapperTest
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = mapper.findMappingDecision(task);
-        
+
         assertThat(decision).isNotNull();
         assertThat(decision.isMigration()).isFalse();
     }
+
+    @DataProvider
+    public Object[][] tasksThatCauseNoMigrationBecauseOfSensorsDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{47.9, 13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)},
+            new Object[]{47.9, 13.8, 10.0, Arrays.asList(altimeter, co2Sensor, barometer)},
+            new Object[]{47.9, 13.8, 10.0, Arrays.asList(barometer, co2Sensor, altimeter)},
+            new Object[]{47.9, 13.8, 10.0, Arrays.asList(barometer, altimeter, co2Sensor)},
+            new Object[]{47.9, 13.8, 10.0, Arrays.asList(co2Sensor, altimeter, barometer)},
+            new Object[]{47.9, 13.8, 10.0, Arrays.asList(co2Sensor, barometer, altimeter)}
+        };
+    }
+
+    @Test(dataProvider = "tasksThatCauseNoMigrationBecauseOfSensorsDataProvider")
+    public void shouldDecideForNoMigrationBecauseOfSensors(double latitude, double longitude, double altitude,
+        List<SensorDefinition> sensors)
+    {
+        Task task = mock(Task.class);
+        when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
+        when(task.getSensors()).thenReturn(sensors);
+
+        VirtualVehicleMappingDecision decision = mapper.findMappingDecision(task);
+
+        assertThat(decision).isNotNull();
+        assertThat(decision.isMigration()).isFalse();
+    }
+
+    @DataProvider
+    public Object[][] tasksThatCauseMigrationBecauseOfSensorsDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{47.9, 13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor, gpsReceiver)},
+        };
+    }
+
+    @Test(dataProvider = "tasksThatCauseMigrationBecauseOfSensorsDataProvider")
+    public void shouldDecideForMigrationBecauseOfSensors(double latitude, double longitude, double altitude,
+        List<SensorDefinition> sensors)
+    {
+        Task task = mock(Task.class);
+        when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
+        when(task.getSensors()).thenReturn(sensors);
+
+        VirtualVehicleMappingDecision decision = mapper.findMappingDecision(task);
+
+        assertThat(decision).isNotNull();
+        assertThat(decision.isMigration()).isTrue();
+    }
+
 }

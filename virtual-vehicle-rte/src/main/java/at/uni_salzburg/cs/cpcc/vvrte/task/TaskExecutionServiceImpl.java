@@ -55,7 +55,6 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
     private AbstractGpsSensorAdapter gpsReceiver;
     private AltimeterAdapter altimeter;
     private GeodeticSystem gs = new WGS84();
-    private double toleranceRadius;
 
     /**
      * @param scheduler the task scheduler.
@@ -76,9 +75,6 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
      */
     private void init()
     {
-        // TODO make toleranceRadius configurable.
-        toleranceRadius = 3;
-
         adapterNodes = rosNodeService.getAdapterNodes();
 
         for (Map.Entry<String, List<AbstractRosAdapter>> entry : adapterNodes.entrySet())
@@ -160,7 +156,7 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
 
         double distance = gs.calculateDistance(currentRunningTask.getPosition(), vehiclePosition);
 
-        if (distance < toleranceRadius)
+        if (distance < currentRunningTask.getTolerance())
         {
             currentRunningTask = null;
         }

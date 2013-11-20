@@ -19,13 +19,18 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
+import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
+
 /**
  * VirtualVehicleMappingDecision
  */
 public class VirtualVehicleMappingDecision
 {
     private boolean migration;
-    
+    private Task task;
+    private RealVehicle realVehicle;
+
     /**
      * @return the migration
      */
@@ -33,7 +38,7 @@ public class VirtualVehicleMappingDecision
     {
         return migration;
     }
-    
+
     /**
      * @param migration the migration to set
      */
@@ -41,5 +46,36 @@ public class VirtualVehicleMappingDecision
     {
         this.migration = migration;
     }
-    
+
+    /**
+     * @return the task
+     */
+    public Task getTask()
+    {
+        return task;
+    }
+
+    /**
+     * @param task the task to set
+     */
+    public void setTask(Task task)
+    {
+        this.task = task;
+    }
+
+    /**
+     * @return the real vehicle to migrate to.
+     */
+    public RealVehicle getRealVehicle()
+    {
+        return realVehicle;
+    }
+
+    /**
+     * @param realVehicle the desired real vehicle to migrate to.
+     */
+    public void setRealVehicle(RealVehicle realVehicle)
+    {
+        this.realVehicle = realVehicle;
+    }
 }

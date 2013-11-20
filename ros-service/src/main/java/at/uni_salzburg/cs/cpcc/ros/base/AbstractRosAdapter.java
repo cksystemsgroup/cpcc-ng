@@ -37,9 +37,9 @@ import org.ros.node.Node;
 public abstract class AbstractRosAdapter extends AbstractNodeMain
 {
     private GraphName defaultNodeName = GraphName.newAnonymous();
-    
+
     private GraphName name;
-    
+
     private RosTopic topic;
 
     private Map<String, List<String>> config;
@@ -57,7 +57,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
         super.onStart(connectedNode);
         state = RosNodeState.STARTED;
     }
-    
+
     /**
      * Set state to running.
      */
@@ -95,7 +95,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
         super.onError(node, throwable);
         state = RosNodeState.ERROR;
     }
-    
+
     /**
      * @return the state of this node.
      */
@@ -152,7 +152,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     {
         this.config = config;
     }
-    
+
     /**
      * @return the configuration.
      */
@@ -160,7 +160,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     {
         return config;
     }
-    
+
     /**
      * @return the current state of the ROS adapter.
      */
@@ -175,12 +175,12 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
                 map.put("config." + entry.getKey(), entry.getValue());
             }
         }
-        
+
         map.put("node.state", Arrays.asList(state.toString()));
-        
+
         return map;
     }
-    
+
     /**
      * @return true if the adapter is connected to the autopilot.
      */
@@ -188,7 +188,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     {
         return connectedToAutopilot;
     }
-    
+
     /**
      * @param connectedToAutopilot true if this adapter is connected to the autopilot.
      */
@@ -196,7 +196,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
     {
         this.connectedToAutopilot = connectedToAutopilot;
     }
-    
+
     /**
      * @return the adapter value.
      */
@@ -206,56 +206,5 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
      * @param object the object to set.
      */
     public abstract void setValue(Object object);
-    
-    /**
-     * @param values the double values.
-     * @return the values as a list of strings.
-     */
-    public static List<String> doubleListAsString(double[] values)
-    {
-        StringBuilder b = new StringBuilder("[");
-        boolean first = true;
-        for (double v : values)
-        {
-            if (first)
-            {
-                first = false;
-            }
-            else
-            {
-                b.append(", ");
-            }
-            b.append(v);
-        }
-        b.append("]");
-        return Arrays.asList(b.toString());
-    }
-    
-    /**
-     * @param value the byte value.
-     * @return the values as a list of strings.
-     */
-    public static List<String> byteAsString(byte value)
-    {
-        return Arrays.asList(Integer.toString(0xFF & value));
-    }
-    
-    /**
-     * @param value the short value.
-     * @return the values as a list of strings.
-     */
-    public static List<String> shortAsString(short value)
-    {
-        return Arrays.asList(Short.toString(value));
-    }
-    
-    /**
-     * @param value the float value.
-     * @return the values as a list of strings.
-     */
-    public static List<String> floatAsString(float value)
-    {
-        return Arrays.asList(Float.toString(value));
-    }
 
 }

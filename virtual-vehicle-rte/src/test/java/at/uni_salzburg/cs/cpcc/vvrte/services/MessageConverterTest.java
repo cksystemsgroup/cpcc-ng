@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -37,8 +36,6 @@ import org.mozilla.javascript.ScriptableObject;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 /**
  * MessageConverterTest
@@ -77,7 +74,7 @@ public class MessageConverterTest
         assertThat(obj).isNotNull();
         assertThat((Float) obj.get("value")).isNotNull().isEqualTo(value);
     }
-    
+
     @DataProvider
     public static Object[][] validNavSatFixDataProvicer()
     {
@@ -121,22 +118,25 @@ public class MessageConverterTest
             new Object[]{"PNG", 479, 639, 1279, new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 0},
         };
     }
-    
+
     @Test(dataProvider = "validImageDataProvider")
-    public void shouldConvertImage(String encoding, int height, int width, int step, final byte[] bufArray, int bufOffset)
+    public void shouldConvertImage(String encoding, int height, int width, int step, final byte[] bufArray,
+        int bufOffset)
     {
         byte[] data = Arrays.copyOfRange(bufArray, bufOffset, bufArray.length);
-        
+
         ChannelBuffer buf = mock(ChannelBuffer.class);
         when(buf.array()).thenReturn(bufArray);
         when(buf.arrayOffset()).thenReturn(bufOffset);
-        
-        doAnswer(new Answer<Object>() {
-            public Object answer(InvocationOnMock invocation) {
+
+        doAnswer(new Answer<Object>()
+        {
+            public Object answer(InvocationOnMock invocation)
+            {
                 Object[] args = invocation.getArguments();
-                int offset = (Integer)args[0];
-                byte[] buf = (byte[])args[1];
-                System.arraycopy(bufArray, offset, buf, 0, bufArray.length-offset);
+                int offset = (Integer) args[0];
+                byte[] buf = (byte[]) args[1];
+                System.arraycopy(bufArray, offset, buf, 0, bufArray.length - offset);
                 return null;
             }
         }).when(buf).getBytes(anyInt(), any(byte[].class));
@@ -158,14 +158,14 @@ public class MessageConverterTest
         assertThat((Integer) obj.get("step")).isNotNull().isEqualTo(step);
         assertThat((byte[]) obj.get("data")).isNotNull().isEqualTo(data);
     }
-    
+
     @Test
     public void shouldNotConvertUnknownMessageType()
     {
         std_msgs.Header msg = mock(std_msgs.Header.class);
-        
+
         ScriptableObject obj = conv.convertMessageToJS(msg);
-        
+
         assertThat(obj).isNull();
     }
 }

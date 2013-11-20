@@ -28,6 +28,8 @@ import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.uni_salzburg.cs.cpcc.utilities.ConvertUtils;
+
 /**
  * Float32SensorAdapter
  */
@@ -80,7 +82,7 @@ public class Float32SensorAdapter extends AbstractSensorAdapter
 
         if (value != null)
         {
-            map.put("sensor.float.value", floatAsString(value.getData()));
+            map.put("sensor.float.value", ConvertUtils.floatAsString(value.getData()));
         }
 
         return map;

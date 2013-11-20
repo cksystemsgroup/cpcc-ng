@@ -28,6 +28,7 @@ import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.uni_salzburg.cs.cpcc.utilities.ConvertUtils;
 import sensor_msgs.NavSatFix;
 import sensor_msgs.NavSatStatus;
 
@@ -74,10 +75,10 @@ public class GpsSensorAdapter extends AbstractGpsSensorAdapter
         {
             NavSatFix p = getPosition();
             NavSatStatus s = p.getStatus();
-            map.put("sensor.gps.position.covariance", doubleListAsString(p.getPositionCovariance()));
-            map.put("sensor.gps.position.covariance.type", byteAsString(p.getPositionCovarianceType()));
-            map.put("sensor.gps.status.status", byteAsString(s.getStatus()));
-            map.put("sensor.gps.status.service", shortAsString(s.getService()));
+            map.put("sensor.gps.position.covariance", ConvertUtils.doubleListAsString(p.getPositionCovariance()));
+            map.put("sensor.gps.position.covariance.type", ConvertUtils.byteAsString(p.getPositionCovarianceType()));
+            map.put("sensor.gps.status.status", ConvertUtils.byteAsString(s.getStatus()));
+            map.put("sensor.gps.status.service", ConvertUtils.shortAsString(s.getService()));
         }
 
         return map;

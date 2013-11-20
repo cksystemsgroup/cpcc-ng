@@ -17,40 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.sensors;
+package at.uni_salzburg.cs.cpcc.vvrte.task;
 
-import java.util.List;
-import java.util.Map;
-
-import at.uni_salzburg.cs.cpcc.utilities.ConvertUtils;
+import org.mozilla.javascript.ScriptableObject;
 
 /**
- * AltimeterAdapter
+ * TaskAnalyzer
  */
-public class AltimeterAdapter extends Float32SensorAdapter
+public interface TaskAnalyzer
 {
     /**
-     * {@inheritDoc}
+     * @param taskParameters the task parameters.
+     * @param sequenceNumber the sequence number of the current task.
+     * @return the current task, or null.
      */
-    @Override
-    public SensorType getType()
-    {
-        return SensorType.ALTIMETER;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Map<String, List<String>> getCurrentState()
-    {
-        Map<String, List<String>> map = super.getCurrentState();
-
-        if (getValue() != null)
-        {
-            map.put("sensor.altitude", ConvertUtils.floatAsString(getValue().getData()));
-        }
-
-        return map;
-    }
+    Task analyzeTaskParameters(ScriptableObject taskParameters, int sequenceNumber);
 }

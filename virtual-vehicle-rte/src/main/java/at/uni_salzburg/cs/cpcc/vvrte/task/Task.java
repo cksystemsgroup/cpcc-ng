@@ -21,6 +21,9 @@ package at.uni_salzburg.cs.cpcc.vvrte.task;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
@@ -29,9 +32,18 @@ import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
  */
 public class Task
 {
+    private static final double MIN_TOLERANCE_DISTANCE = 3.0;
+
+    private static final Logger LOG = LoggerFactory.getLogger(Task.class);
+
     private PolarCoordinate position;
-    private long creationTime;
+    private double tolerance = 5.0;
+    private long creationTime = System.currentTimeMillis();
+    private boolean lastInTaskGroup = true;
     private List<SensorDefinition> sensors;
+    private boolean completed = false;
+    private Thread waitingThread;
+    
 
     /**
      * @return the task's position.
@@ -47,6 +59,22 @@ public class Task
     public void setPosition(PolarCoordinate position)
     {
         this.position = position;
+    }
+
+    /**
+     * @return the tolerance distance
+     */
+    public double getTolerance()
+    {
+        return tolerance;
+    }
+
+    /**
+     * @param tolerance the tolerance distance to set
+     */
+    public void setTolerance(double tolerance)
+    {
+        this.tolerance = tolerance >= MIN_TOLERANCE_DISTANCE ? tolerance : MIN_TOLERANCE_DISTANCE;
     }
 
     /**
@@ -66,13 +94,29 @@ public class Task
     }
     
     /**
+     * @return true if the task is the last in a group.
+     */
+    public boolean isLastInTaskGroup()
+    {
+        return lastInTaskGroup;
+    }
+    
+    /**
+     * @param lastInTaskGroup the last task in the group to set.
+     */
+    public void setLastInTaskGroup(boolean lastInTaskGroup)
+    {
+        this.lastInTaskGroup = lastInTaskGroup;
+    }
+
+    /**
      * @return the sensors
      */
     public List<SensorDefinition> getSensors()
     {
         return sensors;
     }
-    
+
     /**
      * @param sensors the sensors to set
      */
@@ -80,4 +124,38 @@ public class Task
     {
         this.sensors = sensors;
     }
+
+    /**
+     * Set the task to completed.
+     */
+    public void setCompleted()
+    {
+        completed = true;
+
+        if (waitingThread != null)
+        {
+            waitingThread.interrupt();
+        }
+    }
+
+    /**
+     * Await the completion of the task.
+     */
+    public void awaitCompletion()
+    {
+        waitingThread = Thread.currentThread();
+
+        while (!completed)
+        {
+            try
+            {
+                Thread.sleep(60000);
+            }
+            catch (InterruptedException e)
+            {
+                LOG.debug("Task has been completet: " + completed);
+            }
+        }
+    }
+
 }

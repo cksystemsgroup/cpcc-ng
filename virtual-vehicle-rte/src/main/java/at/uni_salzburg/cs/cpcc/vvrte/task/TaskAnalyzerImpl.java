@@ -17,40 +17,46 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.ros.sensors;
+package at.uni_salzburg.cs.cpcc.vvrte.task;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
-import at.uni_salzburg.cs.cpcc.utilities.ConvertUtils;
+import org.mozilla.javascript.ScriptableObject;
+
+import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 
 /**
- * AltimeterAdapter
+ * TaskAnalyzerImpl
  */
-public class AltimeterAdapter extends Float32SensorAdapter
+public class TaskAnalyzerImpl implements TaskAnalyzer
 {
+    private Map<String, AbstractTaskAnalyzer> analyzermap = new HashMap<String, AbstractTaskAnalyzer>();
+
     /**
-     * {@inheritDoc}
+     * @param qm the query manager.
      */
-    @Override
-    public SensorType getType()
+    public TaskAnalyzerImpl(QueryManager qm)
     {
-        return SensorType.ALTIMETER;
+        analyzermap.put("point", new SimpleTaskAnalyzer(qm));
+        // analyzermap.put("patrol-line", new PatrolLineTaskAnalyzer(qm));
+        // analyzermap.put("patrol-area", new PatrolAreaTaskAnalyzer(qm));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Map<String, List<String>> getCurrentState()
+    public Task analyzeTaskParameters(ScriptableObject taskParameters, int sequenceNumber)
     {
-        Map<String, List<String>> map = super.getCurrentState();
+        String taskType = (String) taskParameters.get("type");
 
-        if (getValue() != null)
+        if (!analyzermap.containsKey(taskType))
         {
-            map.put("sensor.altitude", ConvertUtils.floatAsString(getValue().getData()));
+            return null;
         }
 
-        return map;
+        return analyzermap.get(taskType).analyzeTaskParameters(taskParameters, sequenceNumber);
     }
+
 }

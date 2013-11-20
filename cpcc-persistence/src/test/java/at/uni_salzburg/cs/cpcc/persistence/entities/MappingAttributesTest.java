@@ -113,4 +113,12 @@ public class MappingAttributesTest
         assertThat(attributes.getConnectedToAutopilot()).isEqualTo(value);
     }
 
+    @Test
+    public void shouldStoreSensorDefinition()
+    {
+        SensorDefinition def = mock(SensorDefinition.class);
+        attributes.setSensorDefinition(def);
+        assertThat(attributes.getSensorDefinition()).isNotNull().isEqualTo(def);
+    }
+
 }
