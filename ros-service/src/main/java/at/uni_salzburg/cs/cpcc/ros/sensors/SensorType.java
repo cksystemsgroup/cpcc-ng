@@ -24,5 +24,10 @@ package at.uni_salzburg.cs.cpcc.ros.sensors;
  */
 public enum SensorType
 {
-    CAMERA, GPS_RECEIVER, ALTIMETER, IMAGE, CAMERA_INFO, FLOAT_SENSOR
+    CAMERA,
+    GPS_RECEIVER,
+    ALTIMETER,
+    IMAGE,
+    CAMERA_INFO,
+    FLOAT_SENSOR
 }

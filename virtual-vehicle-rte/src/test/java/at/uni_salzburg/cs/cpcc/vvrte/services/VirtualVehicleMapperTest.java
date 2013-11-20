@@ -20,7 +20,6 @@
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +44,9 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
  */
 public class VirtualVehicleMapperTest
 {
+    private static final String REAL_VEHICLE_ONE_NAME = "rv001";
+    private static final String REAL_VEHICLE_TWO_NAME = "rv002";
+    
     private static final SensorDefinition altimeter = new SensorDefinition()
     {
         {
@@ -97,15 +99,49 @@ public class VirtualVehicleMapperTest
         }
     };
 
-    private static final String AREA_OF_OPERATION = "["
+    private static final String AREA_OF_OPERATION_RV1 = "["
         + "{lat: 47.0, lon: 13}, {lat: 47.0, lon: 14}, {lat: 48.0, lon: 14}, {lat: 48.0, lon: 13},{lat: 47.0, lon: 13}"
         + "]";
 
-    private RealVehicle realVehicle;
+    private static final String AREA_OF_OPERATION_RV2 = "["
+        + "{lat: 47.0, lon: 14}, {lat: 47.0, lon: 15}, {lat: 48.0, lon: 15}, {lat: 48.0, lon: 14},{lat: 47.0, lon: 14}"
+        + "]";
 
+    private Parameter rvName1;
+    private RealVehicle realVehicle1;
+    private Parameter rvName2;
+    private RealVehicle realVehicle2;
     private QueryManager qm;
-
     private VirtualVehicleMapperImpl mapper;
+
+    @BeforeMethod
+    public void setUp()
+    {
+        realVehicle1 = mock(RealVehicle.class);
+        when(realVehicle1.getAreaOfOperation()).thenReturn(AREA_OF_OPERATION_RV1);
+        when(realVehicle1.getSensors()).thenReturn(Arrays.asList(altimeter, barometer, co2Sensor));
+        when(realVehicle1.getName()).thenReturn(REAL_VEHICLE_ONE_NAME);
+        
+        realVehicle2 = mock(RealVehicle.class);
+        when(realVehicle2.getAreaOfOperation()).thenReturn(AREA_OF_OPERATION_RV2);
+        when(realVehicle2.getSensors()).thenReturn(Arrays.asList(altimeter, barometer, co2Sensor));
+        when(realVehicle2.getName()).thenReturn(REAL_VEHICLE_TWO_NAME);
+
+        rvName1 = new Parameter();
+        rvName1.setValue(REAL_VEHICLE_ONE_NAME);
+
+        rvName2 = new Parameter();
+        rvName2.setValue(REAL_VEHICLE_TWO_NAME);
+
+        qm = mock(QueryManager.class);
+
+        when(qm.findRealVehicleByName(REAL_VEHICLE_ONE_NAME)).thenReturn(realVehicle1);
+        when(qm.findRealVehicleByName(REAL_VEHICLE_TWO_NAME)).thenReturn(realVehicle2);
+        when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(rvName1);
+        when(qm.findAllRealVehicles()).thenReturn(Arrays.asList(realVehicle1, realVehicle2));
+
+        mapper = new VirtualVehicleMapperImpl(qm);
+    }
 
     @DataProvider
     public Object[][] tasksThatCauseMigrationDataProvider()
@@ -114,24 +150,7 @@ public class VirtualVehicleMapperTest
             new Object[]{47.9, -13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)},
         };
     }
-
-    @BeforeMethod
-    public void setUp()
-    {
-        realVehicle = mock(RealVehicle.class);
-        when(realVehicle.getAreaOfOperation()).thenReturn(AREA_OF_OPERATION);
-        when(realVehicle.getSensors()).thenReturn(Arrays.asList(altimeter, barometer, co2Sensor));
-
-        Parameter rvName = new Parameter();
-        rvName.setValue("rv001");
-
-        qm = mock(QueryManager.class);
-        when(qm.findRealVehicleByName(anyString())).thenReturn(realVehicle);
-        when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(rvName);
-
-        mapper = new VirtualVehicleMapperImpl(qm);
-    }
-
+    
     @Test(dataProvider = "tasksThatCauseMigrationDataProvider")
     public void shouldDecideForMigratingOfVirtualVehicles(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
@@ -144,6 +163,7 @@ public class VirtualVehicleMapperTest
 
         assertThat(decision).isNotNull();
         assertThat(decision.isMigration()).isTrue();
+        assertThat(decision.getRealVehicles()).isNotNull().isEmpty();
     }
 
     @DataProvider
@@ -215,6 +235,40 @@ public class VirtualVehicleMapperTest
 
         assertThat(decision).isNotNull();
         assertThat(decision.isMigration()).isTrue();
+        assertThat(decision.getRealVehicles()).isNotNull().isEmpty();
     }
 
+    
+    @DataProvider
+    public Object[][] tasksThatCauseMigrationBecauseOfPositionDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{47.9, 14.1, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)},
+            new Object[]{47.8, 14.2, 10.0, Arrays.asList(altimeter, co2Sensor, barometer)},
+            new Object[]{47.7, 14.3, 10.0, Arrays.asList(barometer, co2Sensor, altimeter)},
+            new Object[]{47.6, 14.4, 10.0, Arrays.asList(barometer, altimeter, co2Sensor)},
+            new Object[]{47.2, 14.5, 10.0, Arrays.asList(co2Sensor, altimeter, barometer)},
+            new Object[]{47.1, 14.6, 10.0, Arrays.asList(co2Sensor, barometer, altimeter)}
+        };
+    }
+
+    @Test(dataProvider = "tasksThatCauseMigrationBecauseOfPositionDataProvider")
+    public void shouldDecideForMigrationBecauseOfPosition(double latitude, double longitude, double altitude,
+        List<SensorDefinition> sensors)
+    {
+        Task task = mock(Task.class);
+        when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
+        when(task.getSensors()).thenReturn(sensors);
+
+        VirtualVehicleMappingDecision decision = mapper.findMappingDecision(task);
+
+        assertThat(decision).isNotNull();
+        assertThat(decision.isMigration()).isTrue();
+        assertThat(decision.getRealVehicles())
+            .overridingErrorMessage("Expected migration to real vehicle %s", rvName2.getValue())
+            .isNotNull()
+            .containsExactly(realVehicle2);
+        assertThat(decision.getRealVehicles().get(0).getName()).isNotNull().isEqualTo(rvName2.getValue());
+    }
+    
 }

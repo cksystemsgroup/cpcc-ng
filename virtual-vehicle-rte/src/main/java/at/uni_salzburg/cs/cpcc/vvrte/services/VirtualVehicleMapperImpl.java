@@ -19,6 +19,12 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
@@ -33,32 +39,53 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
  */
 public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
 {
-    private PolygonZone areaOfOperation;
-    private RealVehicle realVehicle;
+    private QueryManager qm;
+    private String rvName;
+    private Map<String, RealVehicle> realVehicleMap;
+    private Map<String, PolygonZone> areaOfOperationMap;
 
     /**
      * @param qm the query manager.
      */
     public VirtualVehicleMapperImpl(QueryManager qm)
     {
+        this.qm = qm;
+        init();
+    }
+
+    private void init()
+    {
         Parameter rvNameParam = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME);
+        rvName = rvNameParam.getValue();
 
-        realVehicle = qm.findRealVehicleByName(rvNameParam.getValue());
+        Map<String, RealVehicle> rvMap = new HashMap<String, RealVehicle>();
+        Map<String, PolygonZone> zoneMap = new HashMap<String, PolygonZone>();
 
-        String areaOfOperationString = realVehicle.getAreaOfOperation();
+        List<RealVehicle> realVehicleList = qm.findAllRealVehicles();
 
-        JSONArray polygon = new JSONArray(areaOfOperationString);
-
-        PolarCoordinate[] coordinates = new PolarCoordinate[polygon.length()];
-        for (int k = 0, l = polygon.length(); k < l; ++k)
+        for (RealVehicle realVehicle : realVehicleList)
         {
-            JSONObject point = (JSONObject) polygon.get(k);
-            double lat = point.getDouble("lat");
-            double lon = point.getDouble("lon");
-            coordinates[k] = new PolarCoordinate(lat, lon, 0.0);
+            String areaOfOperationString = realVehicle.getAreaOfOperation();
+
+            JSONArray polygon = new JSONArray(areaOfOperationString);
+
+            PolarCoordinate[] coordinates = new PolarCoordinate[polygon.length()];
+            for (int k = 0, l = polygon.length(); k < l; ++k)
+            {
+                JSONObject point = (JSONObject) polygon.get(k);
+                double lat = point.getDouble("lat");
+                double lon = point.getDouble("lon");
+                coordinates[k] = new PolarCoordinate(lat, lon, 0.0);
+            }
+
+            PolygonZone areaOfOperation = new PolygonZone(coordinates);
+
+            rvMap.put(realVehicle.getName(), realVehicle);
+            zoneMap.put(realVehicle.getName(), areaOfOperation);
         }
 
-        areaOfOperation = new PolygonZone(coordinates);
+        realVehicleMap = rvMap;
+        areaOfOperationMap = zoneMap;
     }
 
     /**
@@ -69,15 +96,39 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
     {
         VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision();
         decision.setTask(task);
-        
-        boolean migration = !areaOfOperation.isInside(task.getPosition());
+
+        boolean migration = !areaOfOperationMap.get(rvName).isInside(task.getPosition());
 
         if (!migration)
         {
+            RealVehicle realVehicle = realVehicleMap.get(rvName);
             migration = !realVehicle.getSensors().containsAll(task.getSensors());
         }
-        
+
         decision.setMigration(migration);
+
+        if (migration)
+        {
+            List<RealVehicle> destinationRealVehicles = new ArrayList<RealVehicle>();
+            for (Entry<String, RealVehicle> entry : realVehicleMap.entrySet())
+            {
+                PolygonZone areaOfOperation = areaOfOperationMap.get(entry.getKey());
+                if (!areaOfOperation.isInside(task.getPosition()))
+                {
+                    continue;
+                }
+
+                if (!entry.getValue().getSensors().containsAll(task.getSensors()))
+                {
+                    continue;
+                }
+
+                destinationRealVehicles.add(entry.getValue());
+            }
+
+            decision.setRealVehicles(destinationRealVehicles);
+        }
+
         return decision;
     }
 

@@ -166,6 +166,16 @@ public class QueryManagerImpl implements QueryManager
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<RealVehicle> findAllRealVehicles()
+    {
+        return (List<RealVehicle>) session.createCriteria(RealVehicle.class).list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RealVehicle findRealVehicleByName(String name)
     {

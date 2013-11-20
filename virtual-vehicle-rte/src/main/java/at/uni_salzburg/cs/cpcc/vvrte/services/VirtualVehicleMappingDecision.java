@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
+import java.util.List;
+
 import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 
@@ -29,7 +31,7 @@ public class VirtualVehicleMappingDecision
 {
     private boolean migration;
     private Task task;
-    private RealVehicle realVehicle;
+    private List<RealVehicle> realVehicles;
 
     /**
      * @return the migration
@@ -64,18 +66,18 @@ public class VirtualVehicleMappingDecision
     }
 
     /**
-     * @return the real vehicle to migrate to.
+     * @return the real vehicles to migrate to.
      */
-    public RealVehicle getRealVehicle()
+    public List<RealVehicle> getRealVehicles()
     {
-        return realVehicle;
+        return realVehicles;
     }
 
     /**
-     * @param realVehicle the desired real vehicle to migrate to.
+     * @param realVehicles the desired real vehicles to migrate to.
      */
-    public void setRealVehicle(RealVehicle realVehicle)
+    public void setRealVehicles(List<RealVehicle> realVehicles)
     {
-        this.realVehicle = realVehicle;
+        this.realVehicles = realVehicles;
     }
 }

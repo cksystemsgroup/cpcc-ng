@@ -22,6 +22,8 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.util.Arrays;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -46,22 +48,22 @@ public class VirtualVehicleMappingDecisionTest
     public Object[][] mappingDataProvider()
     {
         return new Object[][]{
-            new Object[]{false, mock(Task.class), mock(RealVehicle.class)},
-            new Object[]{false, mock(Task.class), mock(RealVehicle.class)},
-            new Object[]{true, mock(Task.class), mock(RealVehicle.class)},
-            new Object[]{true, mock(Task.class), mock(RealVehicle.class)},
+            new Object[]{false, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}},
+            new Object[]{false, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}},
+            new Object[]{true, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}},
+            new Object[]{true, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}},
         };
     }
 
     @Test(dataProvider = "mappingDataProvider")
-    public void shouldStoreData(boolean migration, Task task, RealVehicle realVehicle)
+    public void shouldStoreData(boolean migration, Task task, RealVehicle[] realVehicle)
     {
         decision.setMigration(migration);
         decision.setTask(task);
-        decision.setRealVehicle(realVehicle);
+        decision.setRealVehicles(Arrays.asList(realVehicle));
 
         assertThat(decision.isMigration()).isEqualTo(migration);
         assertThat(decision.getTask()).isNotNull().isEqualTo(task);
-        assertThat(decision.getRealVehicle()).isNotNull().isEqualTo(realVehicle);
+        assertThat(decision.getRealVehicles()).isNotNull().containsExactly(realVehicle);
     }
 }

@@ -131,13 +131,18 @@ public interface QueryManager
      * @return the sensor definition or null if not found.
      */
     SensorDefinition findSensorDefinitionByDescription(String description);
-    
+
+    /**
+     * @return the list of available real vehicles
+     */
+    List<RealVehicle> findAllRealVehicles();
+
     /**
      * @param name the real vehicle name.
      * @return the real vehicle or null if not found.
      */
     RealVehicle findRealVehicleByName(String name);
-    
+
     /**
      * @param list the database objects to be saved.
      */
