@@ -69,7 +69,7 @@ public class TaskAnalyzerTest
 
         position = new NativeObject();
         position.put("lat", position, Double.valueOf(47.2));
-        position.put("lon", position, Double.valueOf(13.8));
+        position.put("lng", position, Double.valueOf(13.8));
         position.put("alt", position, Double.valueOf(50.0));
 
         sensor = new NativeObject();
@@ -102,7 +102,7 @@ public class TaskAnalyzerTest
         assertThat(task.getPosition().getLatitude())
             .isEqualTo((Double) position.get("lat"));
         assertThat(task.getPosition().getLongitude())
-            .isEqualTo((Double) position.get("lon"));
+            .isEqualTo((Double) position.get("lng"));
         assertThat(task.getPosition().getAltitude())
             .isEqualTo((Double) position.get("alt"));
         assertThat(task.getSensors()).isNotNull().hasSize(1);

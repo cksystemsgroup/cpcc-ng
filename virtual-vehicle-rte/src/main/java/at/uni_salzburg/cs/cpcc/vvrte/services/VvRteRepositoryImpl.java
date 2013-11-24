@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<VirtualVehicle> findAllVehicles()
     {
-        return (List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class).list();
+        return (List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class).addOrder(Order.asc("id")).list();
     }
 
     /**

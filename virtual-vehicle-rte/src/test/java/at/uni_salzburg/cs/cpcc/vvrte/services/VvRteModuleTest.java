@@ -37,6 +37,12 @@ import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceImpl;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskAnalyzer;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskAnalyzerImpl;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionService;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionServiceImpl;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskSchedulerService;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TaskSchedulerServiceImpl;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TimerService;
+import at.uni_salzburg.cs.cpcc.vvrte.task.TimerServiceImpl;
 
 /**
  * VvRteModuleTest
@@ -57,19 +63,31 @@ public class VvRteModuleTest
     {
         ServiceBindingOptions options = mock(ServiceBindingOptions.class);
         ServiceBinder binder = mock(ServiceBinder.class);
-        when(binder.bind(JavascriptService.class, JavascriptServiceImpl.class)).thenReturn(options);
+        
         when(binder.bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class)).thenReturn(options);
-        when(binder.bind(VvRteRepository.class, VvRteRepositoryImpl.class)).thenReturn(options);
         when(binder.bind(MessageConverter.class, MessageConverterImpl.class)).thenReturn(options);
+        when(binder.bind(VirtualVehicleLauncher.class, VirtualVehicleLauncherImpl.class)).thenReturn(options);
+        when(binder.bind(VirtualVehicleMapper.class, VirtualVehicleMapperImpl.class)).thenReturn(options);
+        when(binder.bind(VvRteRepository.class, VvRteRepositoryImpl.class)).thenReturn(options);
+        when(binder.bind(JavascriptService.class, JavascriptServiceImpl.class)).thenReturn(options);
         when(binder.bind(TaskAnalyzer.class, TaskAnalyzerImpl.class)).thenReturn(options);
-
+        when(binder.bind(TaskExecutionService.class, TaskExecutionServiceImpl.class)).thenReturn(options);
+        when(binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class)).thenReturn(options);
+        when(binder.bind(TimerService.class, TimerServiceImpl.class)).thenReturn(options);
+        
         VvRteModule.bind(binder);
-
-        verify(binder).bind(JavascriptService.class, JavascriptServiceImpl.class);
+        
         verify(binder).bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class);
+        verify(binder).bind(MessageConverter.class, MessageConverterImpl.class);
+        verify(binder).bind(VirtualVehicleLauncher.class, VirtualVehicleLauncherImpl.class);
+        verify(binder).bind(VirtualVehicleMapper.class, VirtualVehicleMapperImpl.class);
         verify(binder).bind(VvRteRepository.class, VvRteRepositoryImpl.class);
+        verify(binder).bind(JavascriptService.class, JavascriptServiceImpl.class);
         verify(binder).bind(TaskAnalyzer.class, TaskAnalyzerImpl.class);
-        verify(options, times(4)).eagerLoad();
+        verify(binder).bind(TaskExecutionService.class, TaskExecutionServiceImpl.class);
+        verify(binder).bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class);
+        verify(binder).bind(TimerService.class, TimerServiceImpl.class);
+        verify(options, times(9)).eagerLoad();
     }
 
     @Test

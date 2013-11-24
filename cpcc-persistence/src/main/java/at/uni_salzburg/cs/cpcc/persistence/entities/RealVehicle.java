@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -31,6 +32,10 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.Type;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * RealVehicle
@@ -42,25 +47,25 @@ public class RealVehicle
     @Id
     @GeneratedValue
     private Integer id;
-    
+
     @NotNull
     @Size(max = 50)
     private String name;
-    
+
     @NotNull
     @Size(max = 255)
     private String url;
-    
+
     @NotNull
     private String areaOfOperation;
-    
-    @ManyToMany(cascade = CascadeType.ALL)
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<SensorDefinition> sensors = new ArrayList<SensorDefinition>();
 
     @NotNull
-    private Integer lastUpdate;
-    
-    
+    @Type(type = "timestamp")
+    private java.util.Date lastUpdate;
+
     /**
      * @return the id
      */
@@ -68,7 +73,7 @@ public class RealVehicle
     {
         return id;
     }
-    
+
     /**
      * @param id the id to set
      */
@@ -76,7 +81,7 @@ public class RealVehicle
     {
         this.id = id;
     }
-    
+
     /**
      * @return the name
      */
@@ -84,7 +89,7 @@ public class RealVehicle
     {
         return name;
     }
-    
+
     /**
      * @param name the name to set
      */
@@ -92,7 +97,7 @@ public class RealVehicle
     {
         this.name = name;
     }
-    
+
     /**
      * @return the URL
      */
@@ -100,7 +105,7 @@ public class RealVehicle
     {
         return url;
     }
-    
+
     /**
      * @param url the URL to set
      */
@@ -108,7 +113,7 @@ public class RealVehicle
     {
         this.url = url;
     }
-    
+
     /**
      * @return the area of operation as JSON string
      */
@@ -116,7 +121,7 @@ public class RealVehicle
     {
         return areaOfOperation;
     }
-    
+
     /**
      * @param areaOfOperation the area of operation to set as a JSON string
      */
@@ -124,7 +129,7 @@ public class RealVehicle
     {
         this.areaOfOperation = areaOfOperation;
     }
-    
+
     /**
      * @return the sensors
      */
@@ -132,7 +137,7 @@ public class RealVehicle
     {
         return sensors;
     }
-    
+
     /**
      * @param sensors the sensors to set
      */
@@ -140,19 +145,21 @@ public class RealVehicle
     {
         this.sensors = sensors;
     }
-    
+
     /**
      * @return the last update time stamp
      */
-    public Integer getLastUpdate()
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Exposed on purpose")
+    public java.util.Date getLastUpdate()
     {
         return lastUpdate;
     }
-    
+
     /**
      * @param lastUpdate the last update time stamp to set
      */
-    public void setLastUpdate(Integer lastUpdate)
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposed on purpose")
+    public void setLastUpdate(java.util.Date lastUpdate)
     {
         this.lastUpdate = lastUpdate;
     }

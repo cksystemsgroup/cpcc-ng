@@ -23,8 +23,10 @@ import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +39,8 @@ import org.mozilla.javascript.ScriptableObject;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker.WorkerState;
+
 /**
  * JavascriptServiceTest
  */
@@ -45,32 +49,33 @@ public class JavascriptServiceTest
     @Test
     public void shouldExecuteSimpleJS() throws InterruptedException, IOException
     {
-        JavascriptService jss = new JavascriptServiceImpl();
-        JavascriptWorker x = jss.createWorker("function f(x){return x+1} f(7)", 1);
-        MyWorkerStateListener wl = new MyWorkerStateListener();
-        x.addStateListener(wl);
-        x.run();
+        JavascriptService jss = new JavascriptServiceImpl(null);
+        JavascriptWorker worker = jss.createWorker("function f(x){return x+1} f(7)", 1);
+        MyWorkerStateListener workerListener = new MyWorkerStateListener();
+        worker.addStateListener(workerListener);
+        worker.run();
 
-        assertThat(x.getResult()).isNotNull().isEqualTo("undefined");
-        assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.FINISHED);
-        assertThat(wl.getWorker()).isNotNull().isEqualTo(x);
+        assertThat(worker.getResult()).isNotNull().isEqualTo("undefined");
+        assertThat(worker.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
+        assertThat(workerListener.getWorker()).isNotNull().isEqualTo(worker);
+        assertThat(workerListener.getState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
     }
 
     @Test
     public void shouldNotExecuteNaughtyScript() throws InterruptedException, IOException
     {
-        JavascriptService jss = new JavascriptServiceImpl();
+        JavascriptService jss = new JavascriptServiceImpl(null);
         JavascriptWorker x = jss.createWorker("java.lang.System.currentTimeMillis()", 1);
         x.run();
 
-        assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.DEFECTIVE);
+        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.DEFECTIVE);
         assertThat(x.getResult()).isNotNull().startsWith("TypeError: Cannot call property currentTimeMillis in object");
     }
 
     @Test
     public void shouldDenyWrongApiVersion() throws InterruptedException, IOException
     {
-        JavascriptService jss = new JavascriptServiceImpl();
+        JavascriptService jss = new JavascriptServiceImpl(null);
         catchException(jss).createWorker("function f(x){return x+1} f(7)", 1000);
 
         assertThat(caughtException()).isInstanceOf(IOException.class);
@@ -80,10 +85,13 @@ public class JavascriptServiceTest
     @Test
     public void shouldHandleVvRte() throws IOException, InterruptedException
     {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream stdOut = new PrintStream(out, true);
+        VvRteFunctions.setStdOut(stdOut);
+
         MyBuiltInFunctions functions = new MyBuiltInFunctions();
-        JavascriptService jss = new JavascriptServiceImpl();
-        jss.setVvRteFunctions(functions);
-        jss.addAllowedClass("org.apache.maven.surefire.report.ConsoleOutputCapture$ForwardingPrintStream");
+        JavascriptService jss = new JavascriptServiceImpl(functions);
+        jss.addAllowedClass("at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceTest$MyBuiltInFunctions");
 
         InputStream scriptStream = this.getClass().getResourceAsStream("simple-vv.js");
         String script = IOUtils.toString(scriptStream, "UTF-8");
@@ -94,13 +102,14 @@ public class JavascriptServiceTest
         x.run();
 
         System.out.println("shouldHandleVvRte() result1: '" + x.getResult() + "'");
-        assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.INTERRUPTED);
+        System.out.println("shouldHandleVvRte() output: '" + out.toString("UTF-8") + "'");
+        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.INTERRUPTED);
 
         functions.setMigrate(false);
         byte[] snapshot = x.getSnapshot();
-        x = jss.execute(snapshot);
+        x = jss.createWorker(snapshot);
         x.run();
-        assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.FINISHED);
+        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
 
         System.out.println("shouldHandleVvRte() result2: '" + x.getResult() + "'");
     }
@@ -119,16 +128,16 @@ public class JavascriptServiceTest
     @Test(dataProvider = "emptyScriptDataProvider")
     public void shouldHandleEmptyScript(String script) throws IOException, InterruptedException
     {
-        JavascriptService jss = new JavascriptServiceImpl();
+        JavascriptService jss = new JavascriptServiceImpl(null);
         JavascriptWorker x = jss.createWorker(script, 1);
         x.run();
-        assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.FINISHED);
+        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
     }
 
     @Test(dataProvider = "emptyScriptDataProvider")
     public void shouldCompileEmptyScript(String script) throws IOException
     {
-        JavascriptService jss = new JavascriptServiceImpl();
+        JavascriptService jss = new JavascriptServiceImpl(null);
         Object[] result = jss.codeVerification(script, 1);
         assertThat(result).isNull();
     }
@@ -136,17 +145,17 @@ public class JavascriptServiceTest
     @Test
     public void shouldHandleNullContinuation() throws InterruptedException
     {
-        JavascriptService jss = new JavascriptServiceImpl();
-        JavascriptWorker x = jss.execute(null);
+        JavascriptService jss = new JavascriptServiceImpl(null);
+        JavascriptWorker x = jss.createWorker(null);
         x.run();
-        assertThat(x.getState()).isNotNull().isEqualTo(JavascriptWorker.State.DEFECTIVE);
+        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.DEFECTIVE);
     }
 
     @Test
     public void shouldReturnScriptWithApiPrefix() throws IOException
     {
         String script = "function f(x){return x+1} f(7)";
-        JavascriptService jss = new JavascriptServiceImpl();
+        JavascriptService jss = new JavascriptServiceImpl(null);
         JavascriptWorker x = jss.createWorker(script, 1);
         assertThat(x.getScript()).isNotNull().endsWith(script + "\n})();");
     }
@@ -155,7 +164,7 @@ public class JavascriptServiceTest
     public void shouldNotCompileErroneousScript() throws IOException
     {
         String script = "var x = 0;\nx x x";
-        JavascriptService jss = new JavascriptServiceImpl();
+        JavascriptService jss = new JavascriptServiceImpl(null);
         Object[] result = jss.codeVerification(script, 1);
         assertThat(result).isNotNull();
 
@@ -174,7 +183,7 @@ public class JavascriptServiceTest
     public void shouldCompileProperScript() throws IOException
     {
         String script = "function f(x){return x+1} f(7)";
-        JavascriptService jss = new JavascriptServiceImpl();
+        JavascriptService jss = new JavascriptServiceImpl(null);
         Object[] result = jss.codeVerification(script, 1);
         assertThat(result).isNull();
     }
@@ -356,14 +365,16 @@ public class JavascriptServiceTest
     private static class MyWorkerStateListener implements JavascriptWorkerStateListener
     {
         private JavascriptWorker worker = null;
+        private WorkerState state = null;
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void notify(JavascriptWorker worker)
+        public void notify(JavascriptWorker worker, WorkerState state)
         {
             this.worker = worker;
+            this.state = state;
         }
 
         /**
@@ -372,6 +383,14 @@ public class JavascriptServiceTest
         public JavascriptWorker getWorker()
         {
             return worker;
+        }
+
+        /**
+         * @return the state
+         */
+        public WorkerState getState()
+        {
+            return state;
         }
     }
 }

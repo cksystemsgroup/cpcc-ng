@@ -36,7 +36,7 @@ public class SensorDefinition
     @Id
     @GeneratedValue
     private Integer id;
-    
+
     @NotNull
     @Size(max = 1024)
     private String description;
@@ -47,17 +47,17 @@ public class SensorDefinition
 
     @Size(max = 1024)
     private String parameters;
-    
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private SensorVisibility visibility;
-    
+
     @NotNull
     private Integer lastUpdate;
-    
+
     @Size(max = 50)
     private String messageType;
-    
+
     /**
      * @return the id
      */
@@ -65,7 +65,7 @@ public class SensorDefinition
     {
         return id;
     }
-    
+
     /**
      * @param id the id to set
      */
@@ -73,7 +73,7 @@ public class SensorDefinition
     {
         this.id = id;
     }
-    
+
     /**
      * @return the description
      */
@@ -81,7 +81,7 @@ public class SensorDefinition
     {
         return description;
     }
-    
+
     /**
      * @param description the description to set
      */
@@ -89,7 +89,7 @@ public class SensorDefinition
     {
         this.description = description;
     }
-    
+
     /**
      * @return the type
      */
@@ -97,7 +97,7 @@ public class SensorDefinition
     {
         return type;
     }
-    
+
     /**
      * @param type the type to set
      */
@@ -105,7 +105,7 @@ public class SensorDefinition
     {
         this.type = type;
     }
-    
+
     /**
      * @return the parameters
      */
@@ -113,7 +113,7 @@ public class SensorDefinition
     {
         return parameters;
     }
-    
+
     /**
      * @param parameters the parameters to set
      */
@@ -121,7 +121,7 @@ public class SensorDefinition
     {
         this.parameters = parameters;
     }
-    
+
     /**
      * @return the visibility
      */
@@ -137,7 +137,7 @@ public class SensorDefinition
     {
         this.visibility = visibility;
     }
-    
+
     /**
      * @return the last update time stamp
      */
@@ -145,7 +145,7 @@ public class SensorDefinition
     {
         return lastUpdate;
     }
-    
+
     /**
      * @param lastUpdate the last update time stamp to set
      */
@@ -153,7 +153,7 @@ public class SensorDefinition
     {
         this.lastUpdate = lastUpdate;
     }
-    
+
     /**
      * @return the ROS message type
      */
@@ -161,12 +161,73 @@ public class SensorDefinition
     {
         return messageType;
     }
-    
+
     /**
      * @param messageType the ROS message type to set
      */
     public void setMessageType(String messageType)
     {
         this.messageType = messageType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+        
+        if (!(obj instanceof SensorDefinition))
+        {
+            return false;
+        }
+
+        SensorDefinition other = (SensorDefinition) obj;
+
+        if (this == other)
+        {
+            return true;
+        }
+
+        if (!description.equals(other.description))
+        {
+            return false;
+        }
+
+        if (type != other.type)
+        {
+            return false;
+        }
+
+        if (!parameters.equals(other.parameters))
+        {
+            return false;
+        }
+
+        if (visibility != other.visibility)
+        {
+            return false;
+        }
+
+        if (!messageType.equals(other.messageType))
+        {
+            return false;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return (description != null ? description.hashCode() : 0) * 31
+            + (type != null ? type.hashCode() : 0) * 29
+            + (parameters != null ? parameters.hashCode() : 0) * 27
+            + (visibility != null ? visibility.hashCode() : 0) * 23
+            + (messageType != null ? messageType.hashCode() : 0) * 19;
     }
 }

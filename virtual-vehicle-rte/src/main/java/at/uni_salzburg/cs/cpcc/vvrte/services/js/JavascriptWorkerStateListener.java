@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 
+import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker.WorkerState;
+
 /**
  * JavascriptWorkerStateListener
  */
@@ -26,6 +28,7 @@ public interface JavascriptWorkerStateListener
 {
     /**
      * @param worker the worker that changed its state.
+     * @param state the worker state.
      */
-    void notify(JavascriptWorker worker);
+    void notify(JavascriptWorker worker, WorkerState state);
 }

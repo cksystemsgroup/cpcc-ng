@@ -21,6 +21,7 @@ package at.uni_salzburg.cs.cpcc.vvrte.entities;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.testng.annotations.Test;
@@ -41,6 +42,8 @@ public class VirtualVehicleTest
         byte[] blob = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         int apiVersion = 33;
         VirtualVehicleState state = VirtualVehicleState.MIGRATING;
+        Date startTime = new Date(1385063517000L);
+        Date endTime = new Date(1385069517000L);
 
         VirtualVehicle v = new VirtualVehicle();
         v.setId(id);
@@ -50,6 +53,9 @@ public class VirtualVehicleTest
         v.setContinuation(blob);
         v.setApiVersion(apiVersion);
         v.setState(state);
+        v.setStartTime(startTime);
+        v.setEndTime(endTime);
+        
 
         assertThat(v.getId()).isNotNull().isEqualTo(10);
         assertThat(v.getUuid()).isNotNull().isEqualTo(uuid.toString());
@@ -58,5 +64,7 @@ public class VirtualVehicleTest
         assertThat(v.getContinuation()).isNotNull().isEqualTo(blob);
         assertThat(v.getApiVersion()).isNotNull().isEqualTo(apiVersion);
         assertThat(v.getState()).isNotNull().isEqualTo(state);
+        assertThat(v.getStartTime()).isNotNull().isEqualTo(startTime);
+        assertThat(v.getEndTime()).isNotNull().isEqualTo(endTime);
     }
 }

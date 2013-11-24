@@ -39,11 +39,15 @@ public class JavascriptServiceImpl implements JavascriptService
 
     private Set<String> allowedClasses = new HashSet<String>();
 
+    private Set<String> allowedClassesRegex = new HashSet<String>();
+
     /**
-     * JavascriptServiceImpl
+     * @param functions the built-in functions to use.
      */
-    public JavascriptServiceImpl()
+    public JavascriptServiceImpl(BuiltInFunctions functions)
     {
+        VvRteFunctions.setVvRte(functions);
+
         try
         {
             if (!ContextFactory.hasExplicitGlobal())
@@ -63,29 +67,16 @@ public class JavascriptServiceImpl implements JavascriptService
     @Override
     public JavascriptWorker createWorker(String script, int apiVersion) throws IOException
     {
-        JavascriptWorker w = new JavascriptWorker(script, apiVersion, allowedClasses);
-        new Thread(w).start();
-        return w;
+        return new JavascriptWorker(script, apiVersion, allowedClasses, allowedClassesRegex);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public JavascriptWorker execute(byte[] continuation)
+    public JavascriptWorker createWorker(byte[] continuation)
     {
-        JavascriptWorker w = new JavascriptWorker(continuation, allowedClasses);
-        new Thread(w).start();
-        return w;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setVvRteFunctions(BuiltInFunctions functions)
-    {
-        VvRteFunctions.setVvRte(functions);
+        return new JavascriptWorker(continuation, allowedClasses, allowedClassesRegex);
     }
 
     /**
@@ -101,9 +92,18 @@ public class JavascriptServiceImpl implements JavascriptService
      * {@inheritDoc}
      */
     @Override
+    public void addAllowedClassRegex(String regex)
+    {
+        allowedClassesRegex.add(regex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object[] codeVerification(String script, int apiVersion) throws IOException
     {
-        JavascriptWorker w = new JavascriptWorker(script, apiVersion, allowedClasses);
+        JavascriptWorker w = new JavascriptWorker(script, apiVersion, allowedClasses, allowedClassesRegex);
         String completedScript = w.getScript();
 
         Context cx = Context.enter();

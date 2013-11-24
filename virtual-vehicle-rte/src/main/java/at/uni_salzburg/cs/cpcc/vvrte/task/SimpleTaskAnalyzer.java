@@ -51,6 +51,7 @@ public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
     @Override
     public Task analyzeTaskParameters(ScriptableObject taskParameters, int sequenceNumber)
     {
+        // TODO: Check parameters for null, etc.
         Task task = new Task();
 
         Number tolerance = (Number) taskParameters.get("tolerance");
@@ -58,7 +59,7 @@ public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
 
         NativeObject position = (NativeObject) taskParameters.get("position");
         double lat = (Double) position.get("lat");
-        double lon = (Double) position.get("lon");
+        double lon = (Double) position.get("lng");
         double alt = (Double) position.get("alt");
         PolarCoordinate pos = new PolarCoordinate(lat, lon, alt);
         task.setPosition(pos);

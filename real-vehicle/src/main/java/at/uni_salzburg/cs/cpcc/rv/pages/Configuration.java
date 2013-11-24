@@ -23,7 +23,10 @@ import static org.apache.tapestry5.EventConstants.PREPARE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -39,12 +42,14 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
 import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
 import at.uni_salzburg.cs.cpcc.persistence.entities.TopicCategory;
 import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.persistence.services.SensorDefinitionSelectHelpers;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
+import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleMapper;
 
 /**
  * Configuration
@@ -57,6 +62,9 @@ public class Configuration
     @Inject
     private RosNodeService nodeService;
 
+    @Inject
+    private VirtualVehicleMapper mapper;
+
     @Property
     private Parameter internalRosCore;
 
@@ -65,6 +73,9 @@ public class Configuration
 
     @Property
     private Parameter realVehicleName;
+
+    @Property
+    private RealVehicle realVehicle;
 
     @Property
     private Collection<Device> deviceList;
@@ -84,6 +95,7 @@ public class Configuration
         masterServerURI = qm.findParameterByName(Parameter.MASTER_SERVER_URI);
         internalRosCore = qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE);
         realVehicleName = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME, "");
+        realVehicle = qm.findRealVehicleByName(realVehicleName.getValue());
         deviceList = qm.findAllDevices();
         mappingList = orderByTopic(qm.findAllMappingAttributes());
     }
@@ -187,10 +199,20 @@ public class Configuration
     @CommitAfter
     void onSuccessFromRealVehicleNameForm()
     {
-        if (realVehicleName.getValue() != null)
+        if (realVehicleName.getValue() == null)
         {
-            qm.saveOrUpdate(realVehicleName);
+            return;
         }
+        qm.saveOrUpdate(realVehicleName);
+
+        if (realVehicle == null)
+        {
+            realVehicle = qm.findRealVehicleByName(realVehicleName.getValue());
+            return;
+        }
+        realVehicle.setName(realVehicleName.getValue());
+        qm.saveOrUpdate(realVehicle);
+        mapper.refresh();
     }
 
     @CommitAfter
@@ -211,6 +233,23 @@ public class Configuration
     void onSuccessFromMappingForm()
     {
         qm.saveOrUpdateAll(mappingList);
+
+        if (realVehicle != null)
+        {
+            List<SensorDefinition> sdList = new ArrayList<>();
+            for (MappingAttributes x : mappingList)
+            {
+                SensorDefinition sd = x.getSensorDefinition();
+                if (sd != null)
+                {
+                    sdList.add(sd);
+                }
+            }
+            realVehicle.setSensors(sdList);
+            realVehicle.setLastUpdate(new Date());
+            qm.saveOrUpdate(realVehicle);
+        }
+
         nodeService.updateMappingAttributes(mappingList);
     }
 
@@ -231,12 +270,12 @@ public class Configuration
     {
         return new SensorDefinitionSelectHelpers(qm).valueEncoder();
     }
-    
+
     /**
      * @return true if sensor definitions are available, false otherwise.
      */
     public Boolean getSensorDefinitionsAvailable()
     {
-        return qm.findSensorDefinitionsByMessageType(mappingConfig.getPk().getTopic().getMessageType()).size() > 0; 
+        return qm.findSensorDefinitionsByMessageType(mappingConfig.getPk().getTopic().getMessageType()).size() > 0;
     }
 }

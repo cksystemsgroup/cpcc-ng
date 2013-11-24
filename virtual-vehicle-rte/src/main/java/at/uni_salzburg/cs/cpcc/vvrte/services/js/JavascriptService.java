@@ -38,17 +38,17 @@ public interface JavascriptService
      * @param snapshot the frozen program.
      * @return the executing worker.
      */
-    JavascriptWorker execute(byte[] snapshot);
-
-    /**
-     * @param functions the VV-RTE built-in functions implementation.
-     */
-    void setVvRteFunctions(BuiltInFunctions functions);
+    JavascriptWorker createWorker(byte[] snapshot);
 
     /**
      * @param string the name of the class to permit access to.
      */
     void addAllowedClass(String string);
+    
+    /**
+     * @param string the regular expression of the name of the classes to permit access to.
+     */
+    void addAllowedClassRegex(String string);
 
     /**
      * @param script the JavaScript code.

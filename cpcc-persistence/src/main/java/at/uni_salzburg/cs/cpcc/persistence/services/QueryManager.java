@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Session;
+
 import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
 import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
 import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
@@ -162,5 +164,10 @@ public interface QueryManager
      * @param list the database objects to be deleted.
      */
     void deleteAll(Collection<?> list);
+
+    /**
+     * @return the session
+     */
+    Session getSession();
 
 }

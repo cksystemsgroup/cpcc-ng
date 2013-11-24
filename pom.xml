@@ -226,9 +226,27 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.apache.tapestry</groupId>
+				<artifactId>tapestry-hibernate-core</artifactId>
+				<version>${tapestry-release-version}</version>
+				<exclusions>
+				    <exclusion>
+				        <groupId>geronimo-spec</groupId>
+				        <artifactId>geronimo-spec-jta</artifactId>
+				    </exclusion>
+				</exclusions>
+			</dependency>
+			
+			<dependency>
 				<groupId>com.trsvax</groupId>
 				<artifactId>tapestry-bootstrap</artifactId>
 				<version>${tapestry-bootstrap-version}</version>
+				<exclusions>
+				    <exclusion>
+				        <groupId>org.apache.tapestry</groupId>
+				        <artifactId>tapestry-yuicompressor</artifactId>
+				    </exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>

@@ -421,5 +421,14 @@ public class QueryManagerImpl implements QueryManager
             delete(o);
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Session getSession()
+    {
+        return session;
+    }
 
 }

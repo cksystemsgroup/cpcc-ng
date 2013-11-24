@@ -36,20 +36,24 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.serialize.ScriptableInputStream;
 import org.mozilla.javascript.serialize.ScriptableOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * JavascriptWorker
  */
-public class JavascriptWorker implements Runnable
+public class JavascriptWorker extends Thread
 {
+    private static final Logger LOG = LoggerFactory.getLogger(JavascriptWorker.class);
+
     private static final String VVRTE_API_FORMAT = "vvrte-api-%1$03d.js";
 
     /**
      * The worker state.
      */
-    public enum State
+    public enum WorkerState
     {
         INITIALIZED,
         RUNNING,
@@ -58,39 +62,46 @@ public class JavascriptWorker implements Runnable
         FINISHED
     };
 
-    private State state;
+    private WorkerState workerState;
     private String script;
     private Set<String> allowedClasses;
+    private Set<String> allowedClassesRegex;
     private String result = null;
     private byte[] snapshot = null;
     private int scriptStartLine;
     private Set<JavascriptWorkerStateListener> stateListeners = new HashSet<JavascriptWorkerStateListener>();
+    private Object applicationState;
 
     /**
      * @param scriptSource the script source code.
      * @param apiVersion the used API version.
      * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
+     * @param allowedClassesRegex additionally allowed class names defined by regular expressions. 
      * @throws IOException thrown in case of errors.
      */
-    public JavascriptWorker(String scriptSource, int apiVersion, Set<String> allowedClasses) throws IOException
+    public JavascriptWorker(String scriptSource, int apiVersion, Set<String> allowedClasses,
+        Set<String> allowedClassesRegex) throws IOException
     {
         this.allowedClasses = allowedClasses;
+        this.allowedClassesRegex = allowedClassesRegex;
         String apiScript = loadApiScript(apiVersion);
         scriptStartLine = StringUtils.countMatches(apiScript, "\n") + 1;
         script = "(function(){ " + apiScript + "\n" + scriptSource + "\n})();";
-        state = State.INITIALIZED;
+        workerState = WorkerState.INITIALIZED;
     }
 
     /**
      * @param snapshot the frozen program.
      * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
+     * @param allowedClassesRegex additionally allowed class names defined by regular expressions.
      */
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public JavascriptWorker(byte[] snapshot, Set<String> allowedClasses)
+    public JavascriptWorker(byte[] snapshot, Set<String> allowedClasses, Set<String> allowedClassesRegex)
     {
         this.snapshot = snapshot;
         this.allowedClasses = allowedClasses;
-        state = State.INITIALIZED;
+        this.allowedClassesRegex = allowedClassesRegex;
+        workerState = WorkerState.INITIALIZED;
     }
 
     /**
@@ -99,11 +110,13 @@ public class JavascriptWorker implements Runnable
     @Override
     public void run()
     {
-        changeState(State.RUNNING);
+        applicationState = null;
+
+        changeState(WorkerState.RUNNING);
 
         if (snapshot == null && script == null)
         {
-            changeState(State.DEFECTIVE);
+            changeState(WorkerState.DEFECTIVE);
             return;
         }
 
@@ -112,7 +125,7 @@ public class JavascriptWorker implements Runnable
         ScriptableObject scope = cx.initStandardObjects();
         try
         {
-            cx.setClassShutter(new SandboxClassShutter(allowedClasses));
+            cx.setClassShutter(new SandboxClassShutter(allowedClasses, allowedClassesRegex));
             scope.defineFunctionProperties(VvRteFunctions.FUNCTIONS, VvRteFunctions.class, ScriptableObject.DONTENUM);
 
             Object resultObj;
@@ -132,15 +145,14 @@ public class JavascriptWorker implements Runnable
                 resultObj = cx.resumeContinuation(c, globalScope, Boolean.TRUE);
             }
 
-            System.out.println(Context.toString(resultObj));
+            LOG.info("Result obj: " + Context.toString(resultObj));
             result = Context.toString(resultObj);
-            changeState(State.FINISHED);
+            changeState(WorkerState.FINISHED);
         }
         catch (ContinuationPending cp)
         {
-            changeState(State.INTERRUPTED);
-            Object applicationState = cp.getApplicationState();
-            System.err.println("Application State " + applicationState);
+            applicationState = cp.getApplicationState();
+            LOG.info("Application State " + applicationState);
             try
             {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -152,31 +164,38 @@ public class JavascriptWorker implements Runnable
                 baos.close();
                 snapshot = baos.toByteArray();
 
-                System.err.println("snapshot is " + snapshot.length + " bytes long.");
+                changeState(WorkerState.INTERRUPTED);
+                LOG.info("snapshot is " + snapshot.length + " bytes long.");
             }
             catch (IOException e)
             {
                 e.printStackTrace();
                 result = e.getMessage();
-                changeState(State.DEFECTIVE);
                 snapshot = null;
+                changeState(WorkerState.DEFECTIVE);
             }
         }
         catch (RhinoException e)
         {
             result = e.getMessage() + ", line=" + (e.lineNumber() - scriptStartLine) + ":" + e.columnNumber()
                 + ", source='" + e.lineSource() + "'";
-            changeState(State.DEFECTIVE);
+            changeState(WorkerState.DEFECTIVE);
         }
         catch (ClassNotFoundException e)
         {
             result = e.getMessage();
-            changeState(State.DEFECTIVE);
+            changeState(WorkerState.DEFECTIVE);
         }
         catch (IOException e)
         {
             result = e.getMessage();
-            changeState(State.DEFECTIVE);
+            changeState(WorkerState.DEFECTIVE);
+        }
+        catch (NoSuchMethodError e)
+        {
+            e.printStackTrace(); // TODO remove
+            result = e.getMessage();
+            changeState(WorkerState.DEFECTIVE);
         }
         finally
         {
@@ -235,23 +254,31 @@ public class JavascriptWorker implements Runnable
     /**
      * @return the state
      */
-    public State getState()
+    public WorkerState getWorkerState()
     {
-        return state;
+        return workerState;
+    }
+
+    /**
+     * @return the application state
+     */
+    public Object getApplicationState()
+    {
+        return applicationState;
     }
 
     /**
      * @param newState the new state.
      */
-    private void changeState(State newState)
+    private void changeState(WorkerState newState)
     {
-        if (state != newState)
+        if (workerState != newState)
         {
             for (JavascriptWorkerStateListener listener : stateListeners)
             {
-                listener.notify(this);
+                listener.notify(this, newState);
             }
-            state = newState;
+            workerState = newState;
         }
     }
 

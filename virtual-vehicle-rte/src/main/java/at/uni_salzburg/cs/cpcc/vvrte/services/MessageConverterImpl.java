@@ -187,7 +187,7 @@ public class MessageConverterImpl implements MessageConverter
 
             NativeObject o = new NativeObject();
             o.put("lat", o, m.getLatitude());
-            o.put("lon", o, m.getLongitude());
+            o.put("lng", o, m.getLongitude());
             o.put("alt", o, m.getAltitude());
             o.put("covariance", o, new NativeArray(convertToDoubleArray(m.getPositionCovariance())));
             o.put("covarianceType", o, COVARIANCE_TYPE_MAP.get(m.getPositionCovarianceType()));

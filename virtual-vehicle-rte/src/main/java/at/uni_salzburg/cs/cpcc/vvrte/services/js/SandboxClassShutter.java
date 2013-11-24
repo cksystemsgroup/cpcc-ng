@@ -35,25 +35,29 @@ public class SandboxClassShutter implements ClassShutter
         {
             add(java.io.PrintStream.class.getName());
             add(at.uni_salzburg.cs.cpcc.vvrte.services.js.BuiltInFunctions.class.getName());
-            add("at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceTest$MyBuiltInFunctions");
             add(java.util.ArrayList.class.getName());
             add(java.util.List.class.getName());
             add(java.util.Map.class.getName());
             add(java.util.HashMap.class.getName());
             add(java.util.Set.class.getName());
             add(java.util.HashSet.class.getName());
+            add(at.uni_salzburg.cs.cpcc.utilities.NullPrintStream.class.getName());
         }
     };
 
     private Set<String> allowedClasses = new HashSet<String>();
 
+    private Set<String> regexDefinedClasses;
+
     /**
      * @param extraAllowedClasses the extra allowed class names.
+     * @param regexDefinedClasses the regular expression defined class names.
      */
-    public SandboxClassShutter(Set<String> extraAllowedClasses)
+    public SandboxClassShutter(Set<String> extraAllowedClasses, Set<String> regexDefinedClasses)
     {
         allowedClasses.addAll(extraAllowedClasses);
         allowedClasses.addAll(ALLOWED_CLASSES);
+        this.regexDefinedClasses = regexDefinedClasses;
     }
 
     /**
@@ -62,6 +66,29 @@ public class SandboxClassShutter implements ClassShutter
     @Override
     public boolean visibleToScripts(String fullClassName)
     {
-        return allowedClasses.contains(fullClassName);
+        boolean result = allowedClasses.contains(fullClassName);
+        if (!result)
+        {
+            result = checkIfRegexDefinedClassesMatch(fullClassName);
+        }
+        return result;
     }
+
+    /**
+     * @param fullClassName the fully qualified class name.
+     * @return true if any registered regular expression defined class name matches.
+     */
+    private boolean checkIfRegexDefinedClassesMatch(String fullClassName)
+    {
+        for (String classRegex : regexDefinedClasses)
+        {
+            if (fullClassName.matches(classRegex))
+            {
+                allowedClasses.add(fullClassName);
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

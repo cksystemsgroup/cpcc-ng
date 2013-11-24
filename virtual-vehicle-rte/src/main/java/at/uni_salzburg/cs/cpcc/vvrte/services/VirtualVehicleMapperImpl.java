@@ -50,13 +50,14 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
     public VirtualVehicleMapperImpl(QueryManager qm)
     {
         this.qm = qm;
-        init();
+        refresh();
     }
 
-    private void init()
+    @Override
+    public void refresh()
     {
         Parameter rvNameParam = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME);
-        rvName = rvNameParam.getValue();
+        rvName = rvNameParam != null ? rvNameParam.getValue() : null;
 
         Map<String, RealVehicle> rvMap = new HashMap<String, RealVehicle>();
         Map<String, PolygonZone> zoneMap = new HashMap<String, PolygonZone>();
@@ -74,8 +75,8 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
             {
                 JSONObject point = (JSONObject) polygon.get(k);
                 double lat = point.getDouble("lat");
-                double lon = point.getDouble("lon");
-                coordinates[k] = new PolarCoordinate(lat, lon, 0.0);
+                double lng = point.getDouble("lng");
+                coordinates[k] = new PolarCoordinate(lat, lng, 0.0);
             }
 
             PolygonZone areaOfOperation = new PolygonZone(coordinates);
@@ -97,9 +98,14 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision();
         decision.setTask(task);
 
-        boolean migration = !areaOfOperationMap.get(rvName).isInside(task.getPosition());
+        boolean migration = true;
 
-        if (!migration)
+        if (areaOfOperationMap.containsKey(rvName))
+        {
+            migration = !areaOfOperationMap.get(rvName).isInside(task.getPosition());
+        }
+
+        if (!migration && realVehicleMap.containsKey(rvName))
         {
             RealVehicle realVehicle = realVehicleMap.get(rvName);
             migration = !realVehicle.getSensors().containsAll(task.getSensors());

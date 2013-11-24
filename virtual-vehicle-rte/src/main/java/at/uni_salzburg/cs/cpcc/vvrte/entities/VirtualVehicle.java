@@ -29,6 +29,8 @@ import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Type;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -44,11 +46,11 @@ public class VirtualVehicle
     @NotNull
     @Size(max = 36)
     private String uuid;
-    
+
     @Size(max = 36)
     private String name;
-    
-    @Column(nullable=false, columnDefinition = "INTEGER DEFAULT 1")
+
+    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 1")
     private Integer apiVersion;
 
     @Lob
@@ -60,6 +62,12 @@ public class VirtualVehicle
 
     @Lob
     private byte[] continuation;
+
+    @Type(type = "timestamp")
+    private java.util.Date startTime;
+
+    @Type(type = "timestamp")
+    private java.util.Date endTime;
 
     /**
      * @return the id
@@ -100,7 +108,7 @@ public class VirtualVehicle
     {
         return name;
     }
-    
+
     /**
      * @param name the name to set
      */
@@ -108,7 +116,7 @@ public class VirtualVehicle
     {
         this.name = name;
     }
-    
+
     /**
      * @return the JavaScript API version
      */
@@ -116,7 +124,7 @@ public class VirtualVehicle
     {
         return apiVersion;
     }
-    
+
     /**
      * @param apiVersion the JavaScript API version to set
      */
@@ -124,7 +132,7 @@ public class VirtualVehicle
     {
         this.apiVersion = apiVersion;
     }
-    
+
     /**
      * @return the code
      */
@@ -156,22 +164,58 @@ public class VirtualVehicle
     {
         this.state = state;
     }
-    
+
     /**
      * @return the continuation
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP")
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is exposed on purpose")
     public byte[] getContinuation()
     {
         return continuation;
     }
-    
+
     /**
      * @param continuation the continuation to set
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP2")
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
     public void setContinuation(byte[] continuation)
     {
         this.continuation = continuation;
+    }
+
+    /**
+     * @return the start time
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is exposed on purpose")
+    public java.util.Date getStartTime()
+    {
+        return startTime;
+    }
+
+    /**
+     * @param startTime the start time to set
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
+    public void setStartTime(java.util.Date startTime)
+    {
+        this.startTime = startTime;
+    }
+
+    /**
+     * @return the end time
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is exposed on purpose")
+    public java.util.Date getEndTime()
+    {
+        return endTime;
+    }
+
+    /**
+     * @param endTime the end time to set
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
+    public void setEndTime(java.util.Date endTime)
+    {
+        this.endTime = endTime;
     }
 }

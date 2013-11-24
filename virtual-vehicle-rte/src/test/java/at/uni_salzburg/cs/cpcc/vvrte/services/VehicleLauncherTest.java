@@ -20,8 +20,14 @@
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,33 +36,91 @@ import java.sql.SQLException;
 import javax.sql.rowset.serial.SerialException;
 
 import org.apache.commons.io.IOUtils;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
+import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
+import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker;
+import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker.WorkerState;
+import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorkerStateListener;
 
 /**
  * VehicleLauncherTest
  */
 public class VehicleLauncherTest
 {
+    JavascriptWorkerStateListener jobListener = null;
+    private VirtualVehicle vehicle;
+    private VirtualVehicleLauncherImpl launcher;
+    private Transaction transaction;
+    private Session session;
 
-    @Test
-    public void shouldLaunchSimpleVirtualVehicle()
-        throws SerialException, SQLException, IOException, VirtualVehicleLaunchException
+    @BeforeMethod
+    public void setUp() throws IOException
     {
         String vvProgramFileName = "simple-vv.js";
         InputStream scriptStream = VehicleLauncherTest.class.getResourceAsStream(vvProgramFileName);
         String program = IOUtils.toString(scriptStream, "UTF-8");
 
-        VirtualVehicle v = spy(new VirtualVehicle());
-        v.setCode(program);
-        v.setState(VirtualVehicleState.INIT);
+        vehicle = spy(new VirtualVehicle());
+        vehicle.setApiVersion(1);
+        vehicle.setCode(program);
+        vehicle.setState(VirtualVehicleState.INIT);
+        vehicle.setName("rv001");
 
-        VirtualVehicleLauncher launcher = new VirtualVehicleLauncherImpl();
-        launcher.start(v);
+        final JavascriptWorker worker = mock(JavascriptWorker.class);
+        when(worker.getApplicationState()).thenReturn(null);
 
-        verify(v).setState(VirtualVehicleState.RUNNING);
-        assertThat(v.getState()).isNotNull().isEqualTo(VirtualVehicleState.RUNNING);
+        doAnswer(new Answer<Object>()
+        {
+            public Object answer(InvocationOnMock invocation)
+            {
+                Object[] args = invocation.getArguments();
+                jobListener = (JavascriptWorkerStateListener) args[0];
+                return null;
+            }
+        }).when(worker).addStateListener((JavascriptWorkerStateListener) anyObject());
+
+        doAnswer(new Answer<Object>()
+        {
+            public Object answer(InvocationOnMock invocation)
+            {
+                jobListener.notify(worker, WorkerState.RUNNING);
+                return null;
+            }
+        }).when(worker).start();
+
+        transaction = mock(Transaction.class);
+
+        session = mock(Session.class);
+        when(session.beginTransaction()).thenReturn(transaction);
+
+        QueryManager qm = mock(QueryManager.class);
+        when(qm.getSession()).thenReturn(session);
+
+        JavascriptService jss = mock(JavascriptService.class);
+        when(jss.createWorker(anyString(), anyInt())).thenReturn(worker);
+
+        launcher = new VirtualVehicleLauncherImpl(qm, jss);
+    }
+
+    @Test
+    public void shouldLaunchSimpleVirtualVehicle()
+        throws SerialException, SQLException, IOException, VirtualVehicleLaunchException
+    {
+        launcher.start(vehicle);
+
+        verify(vehicle).setState(VirtualVehicleState.RUNNING);
+        assertThat(vehicle.getState()).isNotNull().isEqualTo(VirtualVehicleState.RUNNING);
+
+        verify(session).beginTransaction();
+        verify(transaction).commit();
     }
 }

@@ -23,6 +23,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -83,8 +84,18 @@ public class RealVehicleTest
         assertThat(rv.getAreaOfOperation()).isNotNull().isEqualTo(areaOfOperation);
     }
 
-    @Test(dataProvider = "integerDataProvider")
-    public void shouldStoreLastUpdate(int lastUpdate)
+    @DataProvider
+    public Object[][] dateDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{new Date(System.currentTimeMillis()+10)},
+            new Object[]{new Date(System.currentTimeMillis()+100)},
+            new Object[]{new Date(System.currentTimeMillis()+1000)},
+        };
+    }
+
+    @Test(dataProvider = "dateDataProvider")
+    public void shouldStoreLastUpdate(Date lastUpdate)
     {
         rv.setLastUpdate(lastUpdate);
         assertThat(rv.getLastUpdate()).isNotNull().isEqualTo(lastUpdate);

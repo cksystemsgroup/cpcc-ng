@@ -7,7 +7,7 @@
 		<t:errors />
 
 		<div t:type="beaneditor" t:object="vehicle"
-			t:exclude="id,uuid,state,continuation" t:reorder="name,code">
+			t:exclude="id,uuid,state,continuation,startTime,endTime" t:reorder="name,code">
 
 			<p:name>
 				<t:label t:type="label" for="name" />

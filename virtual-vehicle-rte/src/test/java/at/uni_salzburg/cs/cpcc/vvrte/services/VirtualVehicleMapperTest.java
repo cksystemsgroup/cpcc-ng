@@ -100,11 +100,11 @@ public class VirtualVehicleMapperTest
     };
 
     private static final String AREA_OF_OPERATION_RV1 = "["
-        + "{lat: 47.0, lon: 13}, {lat: 47.0, lon: 14}, {lat: 48.0, lon: 14}, {lat: 48.0, lon: 13},{lat: 47.0, lon: 13}"
+        + "{lat: 47.0, lng: 13}, {lat: 47.0, lng: 14}, {lat: 48.0, lng: 14}, {lat: 48.0, lng: 13},{lat: 47.0, lng: 13}"
         + "]";
 
     private static final String AREA_OF_OPERATION_RV2 = "["
-        + "{lat: 47.0, lon: 14}, {lat: 47.0, lon: 15}, {lat: 48.0, lon: 15}, {lat: 48.0, lon: 14},{lat: 47.0, lon: 14}"
+        + "{lat: 47.0, lng: 14}, {lat: 47.0, lng: 15}, {lat: 48.0, lng: 15}, {lat: 48.0, lng: 14},{lat: 47.0, lng: 14}"
         + "]";
 
     private Parameter rvName1;

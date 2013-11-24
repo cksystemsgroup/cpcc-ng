@@ -105,7 +105,7 @@ public class MessageConverterTest
 
         assertThat(obj).isNotNull();
         assertThat((Double) obj.get("lat")).isNotNull().isEqualTo(lat, offset(1E-9));
-        assertThat((Double) obj.get("lon")).isNotNull().isEqualTo(lon, offset(1E-9));
+        assertThat((Double) obj.get("lng")).isNotNull().isEqualTo(lon, offset(1E-9));
         assertThat((Double) obj.get("alt")).isNotNull().isEqualTo(alt, offset(1E-9));
     }
 

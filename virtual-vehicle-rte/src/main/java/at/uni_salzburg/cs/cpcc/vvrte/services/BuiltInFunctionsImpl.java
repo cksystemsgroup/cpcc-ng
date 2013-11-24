@@ -231,7 +231,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             {
                 managementParameters.put("repeat", managementParameters, Boolean.TRUE);
                 ContinuationPending cp = cx.captureContinuation();
-                cp.setApplicationState("migration");
+                cp.setApplicationState(decision);
                 // handover the task! -> no, call execute again with same sequence number!
                 throw cp;
             }

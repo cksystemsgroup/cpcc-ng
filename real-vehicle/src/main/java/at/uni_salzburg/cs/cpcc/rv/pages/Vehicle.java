@@ -21,15 +21,25 @@ package at.uni_salzburg.cs.cpcc.rv.pages;
 
 import static org.apache.tapestry5.EventConstants.ACTIVATE;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
+import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleLaunchException;
+import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleLauncher;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
 
 /**
@@ -37,8 +47,51 @@ import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
  */
 public class Vehicle
 {
+    private static final Logger LOG = LoggerFactory.getLogger(Vehicle.class);
+
+    @SuppressWarnings("serial")
+    private static final Set<VirtualVehicleState> VV_STATES_FOR_DELETE = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(VirtualVehicleState.DEFECTIVE);
+            add(VirtualVehicleState.FINISHED);
+            add(VirtualVehicleState.INIT);
+            add(VirtualVehicleState.INTERRUPTED);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    private static final Set<VirtualVehicleState> VV_STATES_FOR_EDIT = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(VirtualVehicleState.DEFECTIVE);
+            add(VirtualVehicleState.FINISHED);
+            add(VirtualVehicleState.INIT);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    private static final Set<VirtualVehicleState> VV_STATES_FOR_START = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(VirtualVehicleState.INIT);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    private static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(VirtualVehicleState.DEFECTIVE);
+            add(VirtualVehicleState.FINISHED);
+        }
+    };
+
     @Inject
     private VvRteRepository repository;
+
+    @Inject
+    private VirtualVehicleLauncher launcher;
 
     @Property
     private Collection<VirtualVehicle> virtualVehicleList;
@@ -57,9 +110,17 @@ public class Vehicle
     void deleteDevice(Integer id)
     {
         System.out.println("deleteVehicle " + id);
-        
+
         VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
-        repository.delete(vehicle);
+
+        List<VirtualVehicleState> x =
+            Arrays.asList(VirtualVehicleState.DEFECTIVE, VirtualVehicleState.FINISHED, VirtualVehicleState.INIT,
+                VirtualVehicleState.INTERRUPTED);
+
+        if (x.contains(vehicle.getState()))
+        {
+            repository.delete(vehicle);
+        }
     }
 
     @OnEvent("startVehicle")
@@ -67,6 +128,20 @@ public class Vehicle
     void startVehicle(Integer id)
     {
         System.out.println("startVehicle " + id);
+        VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
+        if (!VV_STATES_FOR_START.contains(vehicle.getState()))
+        {
+            return;
+        }
+
+        try
+        {
+            launcher.start(vehicle);
+        }
+        catch (VirtualVehicleLaunchException | IOException e)
+        {
+            LOG.error("Can not start virtual vehicle " + id, e);
+        }
     }
 
     @OnEvent("pauseVehicle")
@@ -81,5 +156,75 @@ public class Vehicle
     void stopVehicle(Integer id)
     {
         System.out.println("stopVehicle " + id);
+    }
+
+    @OnEvent("restartVehicle")
+    @CommitAfter
+    void restartVehicle(Integer id)
+    {
+        System.out.println("restartVehicle " + id);
+        VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
+        if (!VV_STATES_FOR_RESTART.contains(vehicle.getState()))
+        {
+            return;
+        }
+
+        try
+        {
+            vehicle.setState(VirtualVehicleState.INIT);
+            launcher.start(vehicle);
+        }
+        catch (VirtualVehicleLaunchException | IOException e)
+        {
+            LOG.error("Can not restart virtual vehicle " + id, e);
+        }
+    }
+    
+    /**
+     * @return true if starting is allowed.
+     */
+    public boolean isStart()
+    {
+        return VV_STATES_FOR_START.contains(virtualVehicle.getState());
+    }
+
+    /**
+     * @return true if editing is allowed.
+     */
+    public boolean isEdit()
+    {
+        return VV_STATES_FOR_EDIT.contains(virtualVehicle.getState());
+    }
+
+    /**
+     * @return true if deletion is allowed.
+     */
+    public boolean isDelete()
+    {
+        return VV_STATES_FOR_DELETE.contains(virtualVehicle.getState());
+    }
+
+    /**
+     * @return true if pausing is allowed.
+     */
+    public boolean isPause()
+    {
+        return false;
+    }
+
+    /**
+     * @return true if stopping is allowed.
+     */
+    public boolean isStop()
+    {
+        return false;
+    }
+
+    /**
+     * @return true if restarting is allowed.
+     */
+    public boolean isRestart()
+    {
+        return VV_STATES_FOR_RESTART.contains(virtualVehicle.getState());
     }
 }

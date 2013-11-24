@@ -22,6 +22,8 @@ package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 import java.io.PrintStream;
 import java.io.Serializable;
 
+import at.uni_salzburg.cs.cpcc.utilities.NullPrintStream;
+
 /**
  * VvRteFunctions
  */
@@ -32,15 +34,16 @@ public final class VvRteFunctions implements Serializable
     static final String[] FUNCTIONS = {"getVvRte", "getStdOut"};
 
     private static BuiltInFunctions vvRte;
+    private static PrintStream stdOut = NullPrintStream.newInstance();
 
     /**
      * Private constructor.
      */
     private VvRteFunctions()
     {
-        // intentionally empty.
+        // intentionally empty
     }
-    
+
     /**
      * @return the vvRte
      */
@@ -50,18 +53,27 @@ public final class VvRteFunctions implements Serializable
     }
 
     /**
-     * @return the stdout print stream.
-     */
-    public static PrintStream getStdOut()
-    {
-        return System.out;
-    }
-
-    /**
      * @param vvRte the vvRte to set
      */
     public static void setVvRte(BuiltInFunctions vvRte)
     {
         VvRteFunctions.vvRte = vvRte;
     }
+
+    /**
+     * @return the standard output print stream.
+     */
+    public static PrintStream getStdOut()
+    {
+        return stdOut;
+    }
+
+    /**
+     * @param stdOut the standard output print stream to set
+     */
+    public static void setStdOut(PrintStream stdOut)
+    {
+        VvRteFunctions.stdOut = stdOut;
+    }
+
 }

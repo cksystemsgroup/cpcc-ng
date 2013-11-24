@@ -19,15 +19,20 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertFalse;
 
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
  * VvRteFunctionsTest
  */
+@Test(singleThreaded = true)
 public class VvRteFunctionsTest
 {
     @Test
@@ -38,4 +43,40 @@ public class VvRteFunctionsTest
         cnt.setAccessible(true);
         cnt.newInstance();
     }
+
+    @DataProvider
+    public Object[][] vvRteDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{mock(BuiltInFunctions.class)},
+            new Object[]{mock(BuiltInFunctions.class)},
+            new Object[]{mock(BuiltInFunctions.class)},
+        };
+    }
+
+    @Test(dataProvider = "vvRteDataProvider")
+    public void shouldStoreVvRte(BuiltInFunctions vvRte)
+    {
+        VvRteFunctions.setVvRte(vvRte);
+        assertThat(VvRteFunctions.getVvRte()).isNotNull().isEqualTo(vvRte);
+    }
+    
+    
+    @DataProvider
+    public Object[][] stdOutDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{mock(PrintStream.class)},
+            new Object[]{mock(PrintStream.class)},
+            new Object[]{mock(PrintStream.class)},
+        };
+    }
+
+    @Test(dataProvider = "stdOutDataProvider")
+    public void shouldStoreVvRte(PrintStream stdOut)
+    {
+        VvRteFunctions.setStdOut(stdOut);
+        assertThat(VvRteFunctions.getStdOut()).isNotNull().isEqualTo(stdOut);
+    }
+    
 }
