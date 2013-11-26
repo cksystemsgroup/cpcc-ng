@@ -14,7 +14,7 @@
 		<h3>${message:virtualVehicleList}</h3>
 		<t:form t:id="virtualVehicleForm">
 			<table t:type="grid" t:source="virtualVehicleList"
-				t:exclude="code,continuation" t:reorder="id,name,state,uuid,apiVersion,startTime,endTime"
+				t:exclude="code,continuation,apiVersion" t:reorder="id,name,state,uuid,startTime,endTime"
 				t:row="virtualVehicle"
 				t:add="vehicleActions"
 				class="table table-striped table-condensed topic-table">

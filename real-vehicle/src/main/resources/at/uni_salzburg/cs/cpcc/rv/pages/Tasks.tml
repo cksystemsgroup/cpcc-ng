@@ -1,0 +1,112 @@
+<html t:type="layout" title="${message:virtualVehicleOverview}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<br />
+
+<section id="currentRunningTask">
+	<h3>${message:currentRunningTask}</h3>
+	<t:zone t:id="zone1" t:mixins='jquery/zonerefresh' t:period='1'
+		t:update="show">
+		<table t:type="grid" t:source="getCurrentActiveTaskList()"
+			t:row="currentRunningTask"
+			t:exclude="completed,lastInTaskGroup"
+			t:reorder="creationTime,position,tolerance,sensors"
+			t:add="position,sensors"
+			class="table table-striped table-condensed topic-table">
+
+			<p:positionCell>
+				${currentRunningTask.getPosition().toString()}
+			</p:positionCell>
+			
+			<p:creationTimeCell>
+				${getTime(currentRunningTask.creationTime)}
+			</p:creationTimeCell>
+			
+			<p:lastInTaskGroupCell>
+				${currentRunningTask.lastInTaskGroup}
+			</p:lastInTaskGroupCell>
+
+			<p:sensorsCell>
+				<!-- <t:outputRaw value="getSortedSensorList(currentRunningTask)" /> -->
+				${getSortedSensorList(currentRunningTask)}
+			</p:sensorsCell>
+
+			<p:empty>
+				<p>${message:noCurrentRunningTaskFound}</p>
+			</p:empty>
+		</table>
+	</t:zone>
+</section>
+
+<section id="scheduledTaskList">
+	<t:zone t:id="zone2" t:mixins='jquery/zonerefresh' t:period='1'
+		t:update="show">
+		<h3>${message:scheduledTaskList}</h3>
+		<table t:type="grid" t:source="tes.getScheduledTasks()"
+			t:row="scheduledTask"
+			t:exclude="completed,lastInTaskGroup"
+			t:reorder="creationTime,position,tolerance,sensors"
+			t:add="position,sensors"
+			class="table table-striped table-condensed topic-table">
+			
+			<p:positionCell>
+				${scheduledTask.getPosition().toString()}
+			</p:positionCell>
+			
+			<p:creationTimeCell>
+				${getTime(scheduledTask.creationTime)}
+			</p:creationTimeCell>
+			
+			<p:lastInTaskGroupCell>
+				${scheduledTask.lastInTaskGroup}
+			</p:lastInTaskGroupCell>
+
+			<p:sensorsCell>
+				<!-- <t:outputRaw value="getSortedSensorList(scheduledTask)" /> -->
+				${getSortedSensorList(scheduledTask)}
+			</p:sensorsCell>
+			
+			<p:empty>
+				<p>${message:noScheduledTaskFound}</p>
+			</p:empty>
+		</table>
+	</t:zone>
+</section>
+
+<section id="pendingTaskList">
+	<t:zone t:id="zone3" t:mixins='jquery/zonerefresh' t:period='1'
+		t:update="show">
+		<h3>${message:pendingTaskList}</h3>
+		<table t:type="grid" t:source="tes.getPendingTasks()"
+			t:row="pendingTask"
+			t:exclude="completed,lastInTaskGroup"
+			t:reorder="creationTime,position,tolerance,sensors"
+			t:add="position,sensors"
+			class="table table-striped table-condensed topic-table">
+
+			<p:positionCell>
+				${pendingTask.getPosition().toString()}
+			</p:positionCell>
+			
+			<p:creationTimeCell>
+				${getTime(pendingTask.creationTime)}
+			</p:creationTimeCell>
+			
+			<p:lastInTaskGroupCell>
+				${pendingTask.lastInTaskGroup}
+			</p:lastInTaskGroupCell>
+
+			<p:sensorsCell>
+				<!--  <t:outputRaw value="getSortedSensorList(pendingTask)" /> -->
+				${getSortedSensorList(pendingTask)}
+			</p:sensorsCell>
+			
+			<p:empty>
+				<p>${message:noPendingTaskFound}</p>
+			</p:empty>
+		</table>
+	</t:zone>
+</section>
+
+</html>

@@ -27,9 +27,12 @@ import java.util.Map.Entry;
 
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
@@ -39,6 +42,8 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
  */
 public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
 {
+    private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleMapperImpl.class);
+    
     private QueryManager qm;
     private String rvName;
     private Map<String, RealVehicle> realVehicleMap;
@@ -53,6 +58,9 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         refresh();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void refresh()
     {
@@ -121,11 +129,24 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
                 PolygonZone areaOfOperation = areaOfOperationMap.get(entry.getKey());
                 if (!areaOfOperation.isInside(task.getPosition()))
                 {
+                    LOG.info("Migrate " +entry.getValue().getName() + " because of position " + task.getPosition());
                     continue;
                 }
 
                 if (!entry.getValue().getSensors().containsAll(task.getSensors()))
                 {
+                    
+                    StringBuilder b = new StringBuilder("required: ");
+                    for (SensorDefinition s : task.getSensors())
+                    {
+                        b.append(s.getDescription()).append(", ");
+                    }
+                    b.append("available: ");
+                    for (SensorDefinition s : entry.getValue().getSensors())
+                    {
+                        b.append(s.getDescription()).append(", ");
+                    }
+                    LOG.info("Migrate " +entry.getValue().getName() + " because of sensors " + b.toString());
                     continue;
                 }
 

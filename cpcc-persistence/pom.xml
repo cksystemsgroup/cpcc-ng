@@ -12,6 +12,12 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>at.uni-salzburg.cs.cpcc</groupId>
+			<artifactId>utilities</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.tapestry</groupId>
 			<artifactId>tapestry-hibernate</artifactId>
 		</dependency>

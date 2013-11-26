@@ -179,6 +179,7 @@ public class TaskTest
         task.awaitCompletion();
         long end = System.nanoTime();
 
+        assertThat(task.isCompleted()).isTrue();
         assertThat(end - start).isLessThanOrEqualTo(100000000);
     }
 

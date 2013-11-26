@@ -200,7 +200,7 @@ public class VirtualVehicleStateTest
     @Test(dataProvider = "allStatesDataprovider")
     public void shouldDetectInvalidTransitionsFromDefective(VirtualVehicleState state)
     {
-        boolean result = VirtualVehicleState.FINISHED.canTraverseTo(state);
+        boolean result = VirtualVehicleState.DEFECTIVE.canTraverseTo(state);
         assertThat(result).isFalse();
     }
 }

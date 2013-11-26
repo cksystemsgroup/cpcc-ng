@@ -19,39 +19,10 @@
  */
 package at.uni_salzburg.cs.cpcc.rv.pages;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
-import static org.apache.tapestry5.EventConstants.ACTIVATE;
-
-import org.apache.tapestry5.annotations.OnEvent;
-
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
-
 /**
  * Contact
  */
 public class Contact
 {
-    @Inject
-    private QueryManager qm;
-    
-    @OnEvent(ACTIVATE)
-    void doSomeThing()
-    {
-        List<SensorDefinition> x = qm.findAllActiveSensorDefinitions();
-        for (SensorDefinition sd : x)
-        {
-            System.out.println("found active sd: " +sd.getDescription());
-        }
-        
-        x = qm.findAllSensorDefinitions();
-        for (SensorDefinition sd : x)
-        {
-            System.out.println("found sd: " +sd.getDescription());
-        }
-    }
-    
+
 }

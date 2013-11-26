@@ -91,7 +91,7 @@ public class Layout
      */
     public Collection<String> getPageNames()
     {
-        return Arrays.asList("configuration", "contact", "ros/Overview", "vehicle");
+        return Arrays.asList("configuration", "contact", "ros/Overview", "vehicle", "tasks");
     }
 
     /**

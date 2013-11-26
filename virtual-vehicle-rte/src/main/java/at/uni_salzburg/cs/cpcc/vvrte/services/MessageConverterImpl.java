@@ -24,6 +24,7 @@ import static sensor_msgs.NavSatStatus.SERVICE_GALILEO;
 import static sensor_msgs.NavSatStatus.SERVICE_GLONASS;
 import static sensor_msgs.NavSatStatus.SERVICE_GPS;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,9 +82,7 @@ public class MessageConverterImpl implements MessageConverter
 
             int offset = m.getData().arrayOffset();
             int length = m.getData().array().length;
-            byte[] buf = new byte[length - offset];
-            m.getData().getBytes(offset, buf);
-
+            byte[] buf = Arrays.copyOfRange(m.getData().array(), offset, length);
             o.put("data", o, buf);
             return o;
         }
@@ -144,6 +143,8 @@ public class MessageConverterImpl implements MessageConverter
         private static final Map<Integer, String[]> SERVICE_MAP = new HashMap<Integer, String[]>()
         {
             {
+                put(Integer.valueOf(0),
+                    new String[]{});
                 put(Integer.valueOf(SERVICE_GPS),
                     new String[]{GPS});
                 put(Integer.valueOf(SERVICE_GLONASS),

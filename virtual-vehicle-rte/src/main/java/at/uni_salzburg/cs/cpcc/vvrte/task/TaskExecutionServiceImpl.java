@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sensor_msgs.NavSatFix;
 import at.uni_salzburg.cs.cpcc.ros.actuators.AbstractActuatorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.actuators.ActuatorType;
@@ -44,6 +47,8 @@ import at.uni_salzburg.cs.cpcc.utilities.WGS84;
  */
 public class TaskExecutionServiceImpl extends TimerTask implements TaskExecutionService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(TaskExecutionServiceImpl.class);
+    
     private List<Task> pendingTasks = Collections.synchronizedList(new ArrayList<Task>());
     private List<Task> scheduledTasks = Collections.synchronizedList(new ArrayList<Task>());
     private Task currentRunningTask = null;
@@ -133,17 +138,18 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
     @Override
     public void run()
     {
-        if (currentRunningTask == null && scheduledTasks.isEmpty())
-        {
-            return;
-        }
-        
         if (currentRunningTask == null)
         {
+            if (scheduledTasks.isEmpty())
+            {
+            return;
+            }
+        
             currentRunningTask = scheduledTasks.get(0);
-            wayPointController.setPosition(currentRunningTask.getPosition());
             scheduledTasks.remove(0);
         }
+        
+        wayPointController.setPosition(currentRunningTask.getPosition());
 
         NavSatFix pos = gpsReceiver.getPosition();
         if (pos == null)
@@ -158,10 +164,10 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
 
         if (distance < currentRunningTask.getTolerance())
         {
+            LOG.info("Task completed: " + currentRunningTask.getPosition() + " distance=" + distance);
+            currentRunningTask.setCompleted();
             currentRunningTask = null;
         }
-        
-        // TODO now the action points of the tasks are in the trajectory, but no "action" takes place yet. 
     }
 
     /**

@@ -126,6 +126,14 @@ public class Task
     }
 
     /**
+     * @return true if the task has been completed.
+     */
+    public boolean isCompleted()
+    {
+        return completed;
+    }
+    
+    /**
      * Set the task to completed.
      */
     public void setCompleted()
@@ -153,7 +161,7 @@ public class Task
             }
             catch (InterruptedException e)
             {
-                LOG.debug("Task has been completet: " + completed);
+                LOG.debug("Task has been completed: " + completed);
             }
         }
     }

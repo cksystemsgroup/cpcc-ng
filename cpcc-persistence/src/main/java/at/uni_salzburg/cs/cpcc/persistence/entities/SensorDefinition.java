@@ -27,6 +27,8 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import at.uni_salzburg.cs.cpcc.utilities.StringUtilities;
+
 /**
  * SensorDefinition
  */
@@ -193,32 +195,32 @@ public class SensorDefinition
             return true;
         }
 
-        if (!description.equals(other.description))
+        if (!getDescription().equals(other.getDescription()))
         {
             return false;
         }
 
-        if (type != other.type)
+        if (getType() != other.getType())
+        {
+            return false;
+        }
+        
+        if (!StringUtilities.equals(getParameters(), other.getParameters()))
         {
             return false;
         }
 
-        if (!parameters.equals(other.parameters))
+        if (getVisibility() != other.getVisibility())
         {
             return false;
         }
 
-        if (visibility != other.visibility)
+        if (!StringUtilities.equals(getMessageType(), other.getMessageType()))
         {
             return false;
         }
 
-        if (!messageType.equals(other.messageType))
-        {
-            return false;
-        }
-
-        return false;
+        return true;
     }
 
     @Override
@@ -229,5 +231,12 @@ public class SensorDefinition
             + (parameters != null ? parameters.hashCode() : 0) * 27
             + (visibility != null ? visibility.hashCode() : 0) * 23
             + (messageType != null ? messageType.hashCode() : 0) * 19;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "(description=" + description + ", type=" + type + ", parameters=" + parameters
+            + ", visibility=" + visibility + ", messageType" + messageType + ")";
     }
 }

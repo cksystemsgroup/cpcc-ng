@@ -24,11 +24,13 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import org.testng.annotations.Test;
 
 /**
- * @author clem
- *
+ * NullPrintStreamTest
  */
 public class NullPrintStreamTest
 {
+    /**
+     * shouldBehaveLikeAPrintStream
+     */
     @Test
     public void shouldBehaveLikeAPrintStream()
     {
