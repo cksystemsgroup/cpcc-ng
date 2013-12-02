@@ -47,7 +47,8 @@ public class JavascriptServiceImpl implements JavascriptService
     public JavascriptServiceImpl(BuiltInFunctions functions)
     {
         VvRteFunctions.setVvRte(functions);
-
+        // VvRteFunctions.setStdOut(System.out);
+        
         try
         {
             if (!ContextFactory.hasExplicitGlobal())

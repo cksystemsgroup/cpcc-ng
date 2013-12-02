@@ -11,8 +11,10 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Transaction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
@@ -30,6 +32,8 @@ import at.uni_salzburg.cs.cpcc.utilities.opts.Option;
 import at.uni_salzburg.cs.cpcc.utilities.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.utilities.opts.ParseException;
 import at.uni_salzburg.cs.cpcc.utilities.opts.Token;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.BuiltInFunctions;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskAnalyzer;
@@ -42,33 +46,36 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
 {
     private static final Logger LOG = LoggerFactory.getLogger(BuiltInFunctionsImpl.class);
 
-    private QueryManager qm;
     private RosNodeService rns;
     private OptionsParserService opts;
     private MessageConverter conv;
     private VirtualVehicleMapper mapper;
     private TaskExecutionService taskExecutor;
     private TaskAnalyzer taskAnalyzer;
-
+    private VvRteRepository vvRteRepo;
+    private QueryManager qm;
+    
     /**
-     * @param qm the query manager
      * @param rns the ROS node service.
      * @param opts the options parser service-
      * @param conv the message converter service.
      * @param mapper the virtual vehicle mapper.
      * @param taskExecutor the task executor.
      * @param taskAnalyzer the task analyzer.
+     * @param vvRteRepo the virtual vehicle repository.
      */
-    public BuiltInFunctionsImpl(QueryManager qm, RosNodeService rns, OptionsParserService opts, MessageConverter conv,
-        VirtualVehicleMapper mapper, TaskExecutionService taskExecutor, TaskAnalyzer taskAnalyzer)
+    public BuiltInFunctionsImpl(RosNodeService rns, OptionsParserService opts, MessageConverter conv,
+        VirtualVehicleMapper mapper, TaskExecutionService taskExecutor, TaskAnalyzer taskAnalyzer,
+        VvRteRepository vvRteRepo)
     {
-        this.qm = qm;
         this.rns = rns;
         this.opts = opts;
         this.conv = conv;
         this.mapper = mapper;
         this.taskExecutor = taskExecutor;
         this.taskAnalyzer = taskAnalyzer;
+        this.vvRteRepo = vvRteRepo;
+        this.qm = vvRteRepo.getQueryManager();
     }
 
     /**
@@ -261,6 +268,76 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         managementParameters.put("sensorValues", managementParameters, sensorValues);
         managementParameters.put("repeat", managementParameters, Boolean.valueOf(!task.isLastInTaskGroup()));
         return;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> listObjects(String pattern)
+    {
+        List<String> result = new ArrayList<String>();
+        List<String> itemNames = vvRteRepo.findAllStorageItemNames();
+        for (String name : itemNames)
+        {
+            if (name.matches(pattern))
+            {
+                result.add(name);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ScriptableObject loadObject(String name)
+    {
+        VirtualVehicleStorage item = vvRteRepo.findStorageItemByName(name);
+        return item.getContent();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void storeObject(String name, ScriptableObject obj)
+    {
+        VirtualVehicleStorage item = vvRteRepo.findStorageItemByName(name);
+        if (item == null)
+        {
+            item = new VirtualVehicleStorage();
+            item.setName(name);
+
+            String vvName = Thread.currentThread().getName().replace("VV-", "");
+            VirtualVehicle virtualVehicle = vvRteRepo.findVirtualVehicleByName(vvName);
+            item.setVirtualVehicle(virtualVehicle);
+        }
+
+        item.setModificationTime(new Date());
+        item.setContent(obj);
+
+        Transaction t = vvRteRepo.getSession().beginTransaction();
+        vvRteRepo.saveOrUpdate(item);
+        t.commit();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeObject(String name)
+    {
+        VirtualVehicleStorage item = vvRteRepo.findStorageItemByName(name);
+        if (item == null)
+        {
+            return;
+        }
+
+        Transaction t = vvRteRepo.getSession().beginTransaction();
+        vvRteRepo.delete(item);
+        t.commit();
     }
 
 }

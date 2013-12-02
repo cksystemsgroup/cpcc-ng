@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Session;
-
 import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
 import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
 import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
@@ -36,7 +34,7 @@ import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
 /**
  * QueryManager
  */
-public interface QueryManager
+public interface QueryManager extends Repository
 {
     /**
      * @param topicRoot the device name.
@@ -144,30 +142,5 @@ public interface QueryManager
      * @return the real vehicle or null if not found.
      */
     RealVehicle findRealVehicleByName(String name);
-
-    /**
-     * @param list the database objects to be saved.
-     */
-    void saveOrUpdateAll(Collection<?> list);
-
-    /**
-     * @param o the database object to be saved.
-     */
-    void saveOrUpdate(Object o);
-
-    /**
-     * @param o the database object to be deleted.
-     */
-    void delete(Object o);
-
-    /**
-     * @param list the database objects to be deleted.
-     */
-    void deleteAll(Collection<?> list);
-
-    /**
-     * @return the session
-     */
-    Session getSession();
 
 }

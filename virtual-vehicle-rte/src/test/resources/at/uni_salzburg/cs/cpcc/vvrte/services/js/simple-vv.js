@@ -1,5 +1,5 @@
 
-getStdOut().println("bugger 1.");
+getStdOut().println("simple-vv start");
 
 var sensors = VV.sensor.list();
 var barometer = VV.sensor.get('barometer');
@@ -28,3 +28,5 @@ var pos2 = new VV.types.LatLngAlt(37.87459, -122.25883, 50);
 getStdOut().println("pos=" + JSON.stringify(pos));
 
 getStdOut().println("pos2=" + JSON.stringify(pos2));
+
+getStdOut().println("simple-vv end.");

@@ -1,0 +1,2 @@
+simple-vv start
+pos={"lat":37.87459,"lng":-122.25883,"alt":50}

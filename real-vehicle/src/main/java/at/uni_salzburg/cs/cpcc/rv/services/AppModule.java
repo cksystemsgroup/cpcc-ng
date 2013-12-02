@@ -48,6 +48,7 @@ public final class AppModule
     public static void bind(ServiceBinder binder)
     {
         binder.bind(ImageTagService.class, ImageTagServiceImpl.class);
+        binder.bind(StorageContentTagService.class, StorageContentTagServiceImpl.class);
         binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
     }
 

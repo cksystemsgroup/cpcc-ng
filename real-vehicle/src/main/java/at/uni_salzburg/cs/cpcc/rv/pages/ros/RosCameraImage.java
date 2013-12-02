@@ -20,10 +20,7 @@
 package at.uni_salzburg.cs.cpcc.rv.pages.ros;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
 import org.apache.tapestry5.StreamResponse;
@@ -60,15 +57,15 @@ public class RosCameraImage
     public StreamResponse onActivate(String rootTopicParam)
     {
         String rootTopic = rootTopicParam.replaceAll("_", "/").replaceAll("image/raw", "image_raw");
-        
+
         if (LOG.isDebugEnabled())
         {
             LOG.debug("ctx=" + ctx + ", rootTopic=" + rootTopic);
             LOG.debug("Preparing image for root topic " + rootTopicParam);
         }
-        
+
         AbstractRosAdapter adapter = rns.getAdapterNodeByTopic(rootTopic);
-        
+
         sensor_msgs.Image image = null;
         if (adapter instanceof ImageProvider)
         {
@@ -83,37 +80,7 @@ public class RosCameraImage
 
         BufferedImage bufferedImage = imageConverter.messageToBufferedImage(image);
 
-        return convertImageToStreamResponse(rootTopicParam, bufferedImage);
-    }
-
-    /**
-     * @param rootTopic the root topic.
-     * @param image the buffered image object.
-     * @return the image as a <code>StreamResponse</code> object.
-     */
-    private StreamResponse convertImageToStreamResponse(String rootTopic, BufferedImage image)
-    {
-        if (image == null)
-        {
-            LOG.error("Image is NULL " + rootTopic);
-            return new PngImageStreamResponse();
-        }
-        
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try
-        {
-            ImageIO.write(image, "png", baos);
-            baos.flush();
-            byte[] imageInByte = baos.toByteArray();
-            baos.close();
-            return new PngImageStreamResponse(imageInByte);
-        }
-        catch (IOException e)
-        {
-            LOG.error("Can not convert ROS image to PNG " + rootTopic, e);
-        }
-
-        return new PngImageStreamResponse();
+        return PngImageStreamResponse.convertImageToStreamResponse(rootTopicParam, bufferedImage);
     }
 
 }

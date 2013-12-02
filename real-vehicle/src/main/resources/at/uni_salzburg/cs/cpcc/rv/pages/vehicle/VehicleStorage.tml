@@ -1,0 +1,42 @@
+<html t:type="layout" title="${message:storageItemsList}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<br />
+
+<t:jquery.dialog t:clientId="dialog">
+	<img id="dialogImage" src="" />
+</t:jquery.dialog>
+
+<!-- <script>var imageLinks = [];</script> -->
+      
+<section id="storageItemsList">
+	<t:zone t:id="zone" t:mixins='jquery/zonerefresh' t:period='10'
+		t:update="show" t:context="virtualVehicleId">
+		<t:form t:id="storageItemsForm">
+			<h3>
+				${message:storageItemsList}
+				<t:if test="virtualVehicle">&quot;${virtualVehicle.name}&quot; (${virtualVehicle.id})</t:if>
+			</h3>
+			<table t:type="grid" t:source="storageList" t:row="storageItem"
+				t:reorder="id,name,modificationTime" t:add="content"
+				class="table table-striped table-condensed topic-table">
+
+				<p:modificationTimeCell>
+					<t:output t:format="${message:dateFormat}"
+						t:value="storageItem.modificationTime" />
+				</p:modificationTimeCell>
+
+				<p:contentCell>
+					<t:outputRaw value="contentLink" />
+				</p:contentCell>
+
+				<p:empty>
+					<p>${message:noStorageItemFound}</p>
+				</p:empty>
+			</table>
+		</t:form>
+	</t:zone>
+</section>
+
+</html>

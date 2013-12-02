@@ -75,6 +75,7 @@ public class MessageConverterImpl implements MessageConverter
             sensor_msgs.Image m = (sensor_msgs.Image) message;
 
             NativeObject o = new NativeObject();
+            o.put("messageType", o, "sensor_msgs/Image");
             o.put("encoding", o, m.getEncoding());
             o.put("height", o, m.getHeight());
             o.put("width", o, m.getWidth());
@@ -101,6 +102,7 @@ public class MessageConverterImpl implements MessageConverter
         {
             std_msgs.Float32 m = (std_msgs.Float32) message;
             NativeObject o = new NativeObject();
+            o.put("messageType", o, "std_msgs/Float32");
             o.put("value", o, Float.valueOf(m.getData()));
             return o;
         }
@@ -187,6 +189,7 @@ public class MessageConverterImpl implements MessageConverter
             sensor_msgs.NavSatFix m = (sensor_msgs.NavSatFix) message;
 
             NativeObject o = new NativeObject();
+            o.put("messageType", o, "sensor_msgs/NavSatFix");
             o.put("lat", o, m.getLatitude());
             o.put("lng", o, m.getLongitude());
             o.put("alt", o, m.getAltitude());

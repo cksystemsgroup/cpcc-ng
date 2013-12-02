@@ -1,0 +1,7 @@
+simple-vv start
+pos={"lat":37.87459,"lng":-122.25883,"alt":50}
+valid
+callback called.[{"name":"barometer","value":"value"},{"name":"thermometer","value":"value"},{"name":"belly-mounted-camera","value":"value"}]
+pos={"lat":37.87459,"lng":-122.25883,"alt":50}
+pos2={"lat":37.87459,"lng":-122.25883,"alt":50}
+simple-vv end.

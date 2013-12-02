@@ -22,13 +22,21 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 import java.util.Collection;
 import java.util.List;
 
+import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.persistence.services.Repository;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 
 /**
  * VvRteRepository
  */
-public interface VvRteRepository
+public interface VvRteRepository extends Repository
 {
+    /**
+     * @return the query manager.
+     */
+    QueryManager getQueryManager();
+
     /**
      * @return the available virtual vehicles.
      */
@@ -38,7 +46,7 @@ public interface VvRteRepository
      * @param list the database objects to be saved.
      */
     void saveOrUpdateAll(Collection<?> list);
-    
+
     /**
      * @param o the database object to be saved.
      */
@@ -59,4 +67,33 @@ public interface VvRteRepository
      * @return the virtual vehicle or null, if not found.
      */
     VirtualVehicle findVirtualVehicleById(Integer id);
+
+    /**
+     * @param name the virtual vehicle name.
+     * @return the virtual vehicle or null, if not found.
+     */
+    VirtualVehicle findVirtualVehicleByName(String name);
+
+    /**
+     * @return all item names of items in the virtual vehicle storage.
+     */
+    List<String> findAllStorageItemNames();
+
+    /**
+     * @param name the item name.
+     * @return the requested storage item or null, if not found.
+     */
+    VirtualVehicleStorage findStorageItemByName(String name);
+
+    /**
+     * @param id the storage item identification.
+     * @return the requested storage item or null, if not found.
+     */
+    VirtualVehicleStorage findStorageItemById(Integer id);
+
+    /**
+     * @param id the virtual vehicle identification.
+     * @return the requested storage item or null, if not found.
+     */
+    List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id);
 }

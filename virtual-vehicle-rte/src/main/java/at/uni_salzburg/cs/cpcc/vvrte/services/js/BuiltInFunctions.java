@@ -32,27 +32,50 @@ public interface BuiltInFunctions
      * @return the list of sensors available in the CPCC system.
      */
     List<ScriptableObject> listSensors();
-    
+
     /**
      * @return the list of active sensors of the current real vehicle.
      */
     List<ScriptableObject> listActiveSensors();
-    
+
     /**
      * @param name the sensor name.
      * @return the sensor instance.
      */
     ScriptableObject getSensor(String name);
-    
+
     /**
      * @param sensor the sensor instance.
      * @return the sensor value.
      */
     ScriptableObject getSensorValue(ScriptableObject sensor);
-    
+
     /**
      * @param managementParameters the management parameters.
      * @param taskParameters the task parameters.
      */
     void executeTask(ScriptableObject managementParameters, ScriptableObject taskParameters);
+
+    /**
+     * @param name the object's name
+     * @return the requested object or null, if not found.
+     */
+    ScriptableObject loadObject(String name);
+
+    /**
+     * @param name the object's name.
+     * @param obj the object itself.
+     */
+    void storeObject(String name, ScriptableObject obj);
+
+    /**
+     * @param pattern the pattern to match the object names.
+     * @return the list of found objects.
+     */
+    List<String> listObjects(String pattern);
+    
+    /**
+     * @param name the object's name.
+     */
+    void removeObject(String name);
 }

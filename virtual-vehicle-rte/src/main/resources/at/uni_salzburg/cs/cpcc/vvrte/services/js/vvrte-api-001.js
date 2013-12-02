@@ -2,6 +2,7 @@ var VV = {
     sensor : {},
     task : {},
     types : {},
+    storage : {},
 };
 
 /**
@@ -73,12 +74,9 @@ VV.task.execute = function(taskParams, callback)
         sensorValues : [],
     };
 
-    getStdOut().println("execute started  helper=" + JSON.stringify(helper));
-
     while (helper.repeat)
     {
         getVvRte().executeTask(helper, taskParams);
-        getStdOut().println("execute running  helper=" + JSON.stringify(helper));
         if (helper.valid)
         {
             getStdOut().println("valid");
@@ -86,6 +84,27 @@ VV.task.execute = function(taskParams, callback)
             helper.valid = false;
         }
     }
-
-    getStdOut().println("execute finished helper=" + JSON.stringify(helper));
 };
+
+/**
+ * Storage API
+ */
+VV.storage.load = function(name)
+{
+    return getVvRte().loadObject(name);
+}
+
+VV.storage.store = function(name, obj)
+{
+    getVvRte().storeObject(name, obj);
+}
+
+VV.storage.list = function(pattern)
+{
+    return getVvRte().listObjects(pattern);
+}
+
+VV.storage.remove = function(name)
+{
+    return getVvRte().removeObject(name);
+}

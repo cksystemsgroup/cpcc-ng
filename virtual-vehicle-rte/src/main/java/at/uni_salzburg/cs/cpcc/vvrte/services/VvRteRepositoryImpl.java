@@ -19,32 +19,38 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.criterion.Order;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import at.uni_salzburg.cs.cpcc.persistence.services.AbstractRepository;
+import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 
 /**
  * VvRteRepositoryImpl
  */
-public class VvRteRepositoryImpl implements VvRteRepository
+public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepository
 {
-    private static final Logger LOG = LoggerFactory.getLogger(VvRteRepositoryImpl.class);
-
-    private Session session;
+    private QueryManager qm;
 
     /**
-     * @param session {@link Session}
+     * @param qm the query manager
      */
-    public VvRteRepositoryImpl(Session session)
+    public VvRteRepositoryImpl(QueryManager qm)
     {
-        this.session = session;
+        super(qm.getSession());
+        this.qm = qm;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public QueryManager getQueryManager()
+    {
+        return qm;
     }
 
     /**
@@ -54,7 +60,10 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<VirtualVehicle> findAllVehicles()
     {
-        return (List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class).addOrder(Order.asc("id")).list();
+        return (List<VirtualVehicle>) getSession()
+            .createCriteria(VirtualVehicle.class)
+            .addOrder(Order.asc("id"))
+            .list();
     }
 
     /**
@@ -63,66 +72,70 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public VirtualVehicle findVirtualVehicleById(Integer id)
     {
-        return (VirtualVehicle) session.createQuery("from VirtualVehicle where id = :id").setInteger("id", id)
+        return (VirtualVehicle) getSession()
+            .createQuery("from VirtualVehicle where id = :id")
+            .setInteger("id", id)
             .uniqueResult();
     }
 
     /**
      * {@inheritDoc}
      */
-    public void saveOrUpdateAll(Collection<?> list)
+    @Override
+    public VirtualVehicle findVirtualVehicleByName(String name)
     {
-        if (list == null)
-        {
-            return;
-        }
-        for (Object o : list)
-        {
-            session.saveOrUpdate(o);
-        }
+        return (VirtualVehicle) getSession()
+            .createQuery("from VirtualVehicle where name = :name")
+            .setString("name", name)
+            .uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<String> findAllStorageItemNames()
+    {
+        return (List<String>) getSession()
+            .createQuery("select name from VirtualVehicleStorage")
+            .list();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void saveOrUpdate(Object o)
+    public VirtualVehicleStorage findStorageItemByName(String name)
     {
-        if (o != null)
-        {
-            session.saveOrUpdate(o);
-        }
+        return (VirtualVehicleStorage) getSession()
+            .createQuery("from VirtualVehicleStorage where name = :name")
+            .setString("name", name)
+            .uniqueResult();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void delete(Object o)
+    public VirtualVehicleStorage findStorageItemById(Integer id)
     {
-        try
-        {
-            session.delete(o);
-        }
-        catch (HibernateException e)
-        {
-            LOG.error(e.getMessage());
-        }
+        return (VirtualVehicleStorage) getSession()
+            .createQuery("from VirtualVehicleStorage where id = :id")
+            .setInteger("id", id)
+            .uniqueResult();
     }
 
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public void deleteAll(Collection<?> list)
+    public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id)
     {
-        if (list == null)
-        {
-            return;
-        }
-        for (Object o : list)
-        {
-            delete(o);
-        }
+        return (List<VirtualVehicleStorage>) getSession()
+            .createQuery("from VirtualVehicleStorage where virtualVehicle.id = :id")
+            .setInteger("id", id)
+            .list();
     }
 }

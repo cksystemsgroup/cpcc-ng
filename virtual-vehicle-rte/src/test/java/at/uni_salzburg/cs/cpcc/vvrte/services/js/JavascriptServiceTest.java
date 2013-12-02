@@ -28,9 +28,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.hibernate.util.SerializationHelper;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
@@ -44,6 +47,7 @@ import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker.WorkerState;
 /**
  * JavascriptServiceTest
  */
+@Test(singleThreaded = true)
 public class JavascriptServiceTest
 {
     @Test
@@ -85,14 +89,14 @@ public class JavascriptServiceTest
     @Test
     public void shouldHandleVvRte() throws IOException, InterruptedException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintStream stdOut = new PrintStream(out, true);
-        VvRteFunctions.setStdOut(stdOut);
-
         MyBuiltInFunctions functions = new MyBuiltInFunctions();
         JavascriptService jss = new JavascriptServiceImpl(functions);
         jss.addAllowedClass("at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceTest$MyBuiltInFunctions");
 
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream stdOut = new PrintStream(out, true);
+        VvRteFunctions.setStdOut(stdOut);
+        
         InputStream scriptStream = this.getClass().getResourceAsStream("simple-vv.js");
         String script = IOUtils.toString(scriptStream, "UTF-8");
         assertThat(script).isNotNull().isNotEmpty();
@@ -102,18 +106,56 @@ public class JavascriptServiceTest
         x.run();
 
         System.out.println("shouldHandleVvRte() result1: '" + x.getResult() + "'");
-        System.out.println("shouldHandleVvRte() output: '" + out.toString("UTF-8") + "'");
+        System.out.println("shouldHandleVvRte() output1: '" + out.toString("UTF-8") + "'");
         assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.INTERRUPTED);
+        InputStream resultStream = this.getClass().getResourceAsStream("simple-vv-expected-result-1.txt");
+        String expectedResult = IOUtils.toString(resultStream, "UTF-8");
+        assertThat(out.toString("UTF-8")).isNotNull().isEqualTo(expectedResult);
 
         functions.setMigrate(false);
         byte[] snapshot = x.getSnapshot();
         x = jss.createWorker(snapshot);
         x.run();
+        stdOut.flush();
         assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
 
-        System.out.println("shouldHandleVvRte() result2: '" + x.getResult() + "'");
+        // System.out.println("shouldHandleVvRte() result2: '" + x.getResult() + "'");
+        // System.out.println("shouldHandleVvRte() output2: '" + out.toString("UTF-8") + "'");
+        resultStream = this.getClass().getResourceAsStream("simple-vv-expected-result-2.txt");
+        expectedResult = IOUtils.toString(resultStream, "UTF-8");
+        assertThat(out.toString("UTF-8")).isNotNull().isEqualTo(expectedResult);
     }
 
+    @Test
+    public void shouldHandleVvStorage() throws IOException
+    {
+        MyBuiltInFunctions functions = new MyBuiltInFunctions();
+        JavascriptService jss = new JavascriptServiceImpl(functions);
+        jss.addAllowedClass("at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceTest$MyBuiltInFunctions");
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream stdOut = new PrintStream(out, true);
+        VvRteFunctions.setStdOut(stdOut);
+
+        InputStream scriptStream = this.getClass().getResourceAsStream("storage-test.js");
+        String script = IOUtils.toString(scriptStream, "UTF-8");
+        assertThat(script).isNotNull().isNotEmpty();
+        
+        functions.setMigrate(false);
+        JavascriptWorker x = jss.createWorker(script, 1);
+        x.run();
+        stdOut.flush();
+        
+        // System.out.println("shouldHandleVvRte() result: '" + x.getResult() + "'");
+        // System.out.println("shouldHandleVvRte() output: '" + out.toString("UTF-8") + "'");
+        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
+        
+        InputStream resultStream = this.getClass().getResourceAsStream("storage-test-expected-result.txt");
+        String expectedResult = IOUtils.toString(resultStream, "UTF-8");
+        
+        assertThat(out.toString("UTF-8")).isNotNull().isEqualTo(expectedResult);
+    }
+    
     @DataProvider
     public static Object[][] emptyScriptDataProvider()
     {
@@ -195,6 +237,8 @@ public class JavascriptServiceTest
     {
 
         private boolean migrate = false;
+        
+        private Map<String, ScriptableObject> storageMap = new HashMap<String, ScriptableObject>();
 
         /**
          * @param migrate the migrate to set
@@ -356,6 +400,42 @@ public class JavascriptServiceTest
 
             // TODO Auto-generated method stub
             return true;
+        }
+        
+        @Override
+        public ScriptableObject loadObject(String name)
+        {
+            System.out.println("loadObject " + name);
+            return storageMap.get(name);
+        }
+        
+        @Override
+        public void storeObject(String name, ScriptableObject obj)
+        {
+            System.out.println("storeObject " + name);
+            storageMap.put(name, (ScriptableObject)SerializationHelper.clone(obj));
+        }
+        
+        @Override
+        public List<String> listObjects(String pattern)
+        {
+            System.out.println("listObjects " + pattern);
+            List<String> result = new ArrayList<String>();
+            for (String entry : storageMap.keySet())
+            {
+                if (entry.matches(pattern))
+                {
+                    result.add(entry);
+                }
+            }
+            return result;
+        }
+        
+        @Override
+        public void removeObject(String name)
+        {
+            System.out.println("removeObject " + name);
+            storageMap.remove(name);
         }
     }
 

@@ -27,11 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Property;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
 import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
@@ -46,7 +43,7 @@ import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
 /**
  * QueryManagerImpl
  */
-public class QueryManagerImpl implements QueryManager
+public class QueryManagerImpl extends AbstractRepository implements QueryManager
 {
     private static final String DEVICE_ID = "deviceId";
     private static final String SENSOR_DESCRIPTION = "description";
@@ -55,16 +52,12 @@ public class QueryManagerImpl implements QueryManager
     private static final String TOPIC_ROOT = "topicRoot";
     private static final String REAL_VEHICLE_NAME = "name";
 
-    private static final Logger LOG = LoggerFactory.getLogger(QueryManagerImpl.class);
-
-    private final Session session;
-
     /**
      * @param session {@link Session}
      */
     public QueryManagerImpl(Session session)
     {
-        this.session = session;
+        super(session);
     }
 
     /**
@@ -73,7 +66,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public Device findDeviceByTopicRoot(String topicRoot)
     {
-        return (Device) session.createQuery("from Device where topicRoot = :topicRoot")
+        return (Device) getSession().createQuery("from Device where topicRoot = :topicRoot")
             .setString(TOPIC_ROOT, topicRoot).uniqueResult();
     }
 
@@ -84,7 +77,8 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<Device> findAllDevices()
     {
-        return (List<Device>) session.createCriteria(Device.class).addOrder(Property.forName(TOPIC_ROOT).asc()).list();
+        return (List<Device>) getSession().createCriteria(Device.class).addOrder(Property.forName(TOPIC_ROOT).asc())
+            .list();
     }
 
     /**
@@ -93,7 +87,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public DeviceType findDeviceTypeByName(String name)
     {
-        return (DeviceType) session.createQuery("from DeviceType where name = :name").setString(DEVICE_NAME, name)
+        return (DeviceType) getSession().createQuery("from DeviceType where name = :name").setString(DEVICE_NAME, name)
             .uniqueResult();
     }
 
@@ -104,7 +98,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<DeviceType> findAllDeviceTypes()
     {
-        return (List<DeviceType>) session.createCriteria(DeviceType.class)
+        return (List<DeviceType>) getSession().createCriteria(DeviceType.class)
             .addOrder(Property.forName(DEVICE_NAME).asc())
             .list();
     }
@@ -115,7 +109,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public Parameter findParameterByName(String name)
     {
-        return (Parameter) session.createQuery("from Parameter where name = :name")
+        return (Parameter) getSession().createQuery("from Parameter where name = :name")
             .setString(DEVICE_NAME, name).uniqueResult();
     }
 
@@ -145,7 +139,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<SensorDefinition> findSensorDefinitionsByMessageType(String messagetype)
     {
-        List<SensorDefinition> x = (List<SensorDefinition>) session
+        List<SensorDefinition> x = (List<SensorDefinition>) getSession()
             .createQuery("from SensorDefinition where messagetype = :messagetype")
             .setString(SENSOR_MESSAGETYPE, messagetype).list();
         return x;
@@ -157,7 +151,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public SensorDefinition findSensorDefinitionByDescription(String description)
     {
-        SensorDefinition x = (SensorDefinition) session
+        SensorDefinition x = (SensorDefinition) getSession()
             .createQuery("from SensorDefinition where description = :description")
             .setString(SENSOR_DESCRIPTION, description).uniqueResult();
         return x;
@@ -170,7 +164,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<RealVehicle> findAllRealVehicles()
     {
-        return (List<RealVehicle>) session.createCriteria(RealVehicle.class).list();
+        return (List<RealVehicle>) getSession().createCriteria(RealVehicle.class).list();
     }
 
     /**
@@ -179,7 +173,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public RealVehicle findRealVehicleByName(String name)
     {
-        return (RealVehicle) session.createQuery("from RealVehicle where name = :name")
+        return (RealVehicle) getSession().createQuery("from RealVehicle where name = :name")
             .setString(REAL_VEHICLE_NAME, name).uniqueResult();
     }
 
@@ -190,7 +184,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<SensorDefinition> findAllSensorDefinitions()
     {
-        return (List<SensorDefinition>) session
+        return (List<SensorDefinition>) getSession()
             .createQuery("SELECT d "
                 + "FROM SensorDefinition d "
                 + "WHERE d.visibility != :visibility")
@@ -205,7 +199,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<SensorDefinition> findAllActiveSensorDefinitions()
     {
-        return (List<SensorDefinition>) session
+        return (List<SensorDefinition>) getSession()
             .createQuery("SELECT d "
                 + "FROM SensorDefinition d, MappingAttributes m "
                 + "WHERE m.sensorDefinition = d.id AND m.vvVisible = true AND d.visibility != :visibility")
@@ -219,7 +213,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public MappingAttributes findMappingAttribute(Device device, Topic topic)
     {
-        return (MappingAttributes) session
+        return (MappingAttributes) getSession()
             .createQuery("from MappingAttributes where pk.device.id = :deviceId and pk.topic.id = :topicId")
             .setInteger(DEVICE_ID, device.getId()).setInteger("topicId", topic.getId()).uniqueResult();
     }
@@ -231,7 +225,8 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public Collection<MappingAttributes> findMappingAttributesByDevice(Device device)
     {
-        return (List<MappingAttributes>) session.createQuery("from MappingAttributes where pk.device.id = :deviceId)")
+        return (List<MappingAttributes>) getSession()
+            .createQuery("from MappingAttributes where pk.device.id = :deviceId)")
             .setParameter(DEVICE_ID, device.getId()).list();
     }
 
@@ -242,7 +237,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<MappingAttributes> findAllMappingAttributes()
     {
-        return (List<MappingAttributes>) session.createCriteria(MappingAttributes.class).list();
+        return (List<MappingAttributes>) getSession().createCriteria(MappingAttributes.class).list();
     }
 
     /**
@@ -252,7 +247,8 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<MappingAttributes> findAllVvVisibleMappingAttributes()
     {
-        return (List<MappingAttributes>) session.createQuery("from MappingAttributes where vvVisible = true").list();
+        return (List<MappingAttributes>) getSession().createQuery("from MappingAttributes where vvVisible = true")
+            .list();
     }
 
     /**
@@ -361,74 +357,6 @@ public class QueryManagerImpl implements QueryManager
                 saveOrUpdate(newAttributes);
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void saveOrUpdateAll(Collection<?> list)
-    {
-        if (list == null)
-        {
-            return;
-        }
-        for (Object o : list)
-        {
-            session.saveOrUpdate(o);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void saveOrUpdate(Object o)
-    {
-        if (o != null)
-        {
-            session.saveOrUpdate(o);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void delete(Object o)
-    {
-        try
-        {
-            session.delete(o);
-        }
-        catch (HibernateException e)
-        {
-            LOG.error(e.getMessage());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void deleteAll(Collection<?> list)
-    {
-        if (list == null)
-        {
-            return;
-        }
-        for (Object o : list)
-        {
-            delete(o);
-        }
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Session getSession()
-    {
-        return session;
     }
 
 }

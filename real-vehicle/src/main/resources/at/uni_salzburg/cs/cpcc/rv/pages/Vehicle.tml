@@ -68,7 +68,16 @@
 							t:context="virtualVehicle.id" href="#"
 							title="${message:deleteVehicle}"> <i class="icon-remove"></i>
 						</a>
+						&nbsp;
 					</t:if>
+					<a t:type="pagelink" t:page="vehicle/storage"
+						t:context="virtualVehicle.id" href="#"
+						t:title="${message:showVehicleStorage}"> <i class="icon-folder-close"></i>
+						<!-- 
+						 <i class="icon-file"></i>
+						<i class="icon-folder-open"></i>
+						 -->
+					</a>
 				</p:vehicleActionsCell>
 	
 				<p:empty>

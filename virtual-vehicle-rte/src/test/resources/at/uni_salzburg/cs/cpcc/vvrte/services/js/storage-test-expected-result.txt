@@ -1,0 +1,9 @@
+storage test start
+pos={"lat":37.87459,"lng":-122.25883,"alt":50}
+valid
+callback called.[{"name":"barometer","value":"value"},{"name":"thermometer","value":"value"},{"name":"belly-mounted-camera","value":"value"}]
+storage=[y0, y1, y2]
+y0={"name":"barometer","value":"value"}
+y1={"name":"thermometer","value":"value"}
+y2={"name":"belly-mounted-camera","value":"value"}
+storage test end.
