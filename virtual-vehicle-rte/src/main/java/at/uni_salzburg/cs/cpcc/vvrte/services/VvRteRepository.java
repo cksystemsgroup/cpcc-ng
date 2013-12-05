@@ -96,4 +96,12 @@ public interface VvRteRepository extends Repository
      * @return the requested storage item or null, if not found.
      */
     List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id);
+
+    /**
+     * @param id the virtual vehicle identification.
+     * @param startName the storage name to start with. 
+     * @param maxEntries the maximum number of entries to return.
+     * @return the requested entries, or null if not found.
+     */
+    List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName, int maxEntries);
 }

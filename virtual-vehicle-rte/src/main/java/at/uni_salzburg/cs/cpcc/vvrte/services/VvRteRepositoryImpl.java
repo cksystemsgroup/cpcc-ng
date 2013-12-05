@@ -138,4 +138,20 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
             .setInteger("id", id)
             .list();
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName,
+        int maxEntries)
+    {
+        return (List<VirtualVehicleStorage>) getSession()
+            .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id AND name >= :name ORDER BY name")
+            .setInteger("id", id)
+            .setString("name", startName)
+            .setMaxResults(maxEntries)
+            .list();
+    }
 }
