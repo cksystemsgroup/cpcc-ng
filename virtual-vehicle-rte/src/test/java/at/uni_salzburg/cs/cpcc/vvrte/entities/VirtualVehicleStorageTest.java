@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Date;
 
+import org.hibernate.util.SerializationHelper;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
 import org.testng.annotations.BeforeMethod;
@@ -86,7 +87,7 @@ public class VirtualVehicleStorageTest
     public void shouldSetAndGetValues(Integer id, VirtualVehicle virtualVehicle, String name, ScriptableObject content)
     {
         Date modificationTime = new Date();
-        
+
         storage.setId(id);
         storage.setVirtualVehicle(virtualVehicle);
         storage.setName(name);
@@ -109,8 +110,21 @@ public class VirtualVehicleStorageTest
         {
             assertThat((Integer) actualSub.get("id")).isNotNull().isEqualTo((Integer) contentSub.get("id"));
         }
-        
+
         assertThat(storage.getModificationTime()).isNotNull();
         assertThat(storage.getModificationTime().getTime()).isNotNull().isEqualTo(modificationTime.getTime());
+    }
+
+    @Test(dataProvider = "valuesDataProvider")
+    public void shouldReturnContentAsByteArray(Integer id, VirtualVehicle virtualVehicle, String name,
+        ScriptableObject content)
+    {
+        byte[] required = SerializationHelper.serialize(content);
+
+        storage.setContent(content);
+
+        byte[] actual = storage.getContentAsByteArray();
+
+        assertThat(actual).isNotNull().isEqualTo(required);
     }
 }

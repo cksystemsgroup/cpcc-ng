@@ -294,7 +294,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public ScriptableObject loadObject(String name)
     {
-        VirtualVehicleStorage item = vvRteRepo.findStorageItemByName(name);
+        VirtualVehicle virtualVehicle = findVirtualVehicle();
+        VirtualVehicleStorage item = vvRteRepo.findStorageItemByVirtualVehicleAndName(virtualVehicle, name);
         return item.getContent();
     }
 
@@ -304,14 +305,12 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public void storeObject(String name, ScriptableObject obj)
     {
-        VirtualVehicleStorage item = vvRteRepo.findStorageItemByName(name);
+        VirtualVehicle virtualVehicle = findVirtualVehicle();
+        VirtualVehicleStorage item = vvRteRepo.findStorageItemByVirtualVehicleAndName(virtualVehicle, name);
         if (item == null)
         {
             item = new VirtualVehicleStorage();
             item.setName(name);
-
-            String vvName = Thread.currentThread().getName().replace("VV-", "");
-            VirtualVehicle virtualVehicle = vvRteRepo.findVirtualVehicleByName(vvName);
             item.setVirtualVehicle(virtualVehicle);
         }
 
@@ -329,7 +328,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public void removeObject(String name)
     {
-        VirtualVehicleStorage item = vvRteRepo.findStorageItemByName(name);
+        VirtualVehicle virtualVehicle = findVirtualVehicle();
+        VirtualVehicleStorage item = vvRteRepo.findStorageItemByVirtualVehicleAndName(virtualVehicle, name);
         if (item == null)
         {
             return;
@@ -338,6 +338,15 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         Transaction t = vvRteRepo.getSession().beginTransaction();
         vvRteRepo.delete(item);
         t.commit();
+    }
+
+    /**
+     * @return the virtual vehicle associated to the current thread.
+     */
+    private VirtualVehicle findVirtualVehicle()
+    {
+        String vvName = Thread.currentThread().getName().replace("VV-", "");
+        return vvRteRepo.findVirtualVehicleByName(vvName);
     }
 
 }

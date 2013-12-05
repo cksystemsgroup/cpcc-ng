@@ -46,7 +46,8 @@
 		<module>cpcc-persistence</module>
 	</modules>
 
-	<!-- <scm> <connection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</connection> <developerConnection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</developerConnection> 
+	<!-- <scm> <connection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</connection> 
+		<developerConnection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</developerConnection> 
 		</scm> -->
 	<scm>
 		<connection>scm:git:ssh://git@bitbucket.org/ckrainer/cpcc-ng.git</connection>
@@ -68,6 +69,11 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.8</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.6</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -230,22 +236,22 @@
 				<artifactId>tapestry-hibernate-core</artifactId>
 				<version>${tapestry-release-version}</version>
 				<exclusions>
-				    <exclusion>
-				        <groupId>geronimo-spec</groupId>
-				        <artifactId>geronimo-spec-jta</artifactId>
-				    </exclusion>
+					<exclusion>
+						<groupId>geronimo-spec</groupId>
+						<artifactId>geronimo-spec-jta</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.trsvax</groupId>
 				<artifactId>tapestry-bootstrap</artifactId>
 				<version>${tapestry-bootstrap-version}</version>
 				<exclusions>
-				    <exclusion>
-				        <groupId>org.apache.tapestry</groupId>
-				        <artifactId>tapestry-yuicompressor</artifactId>
-				    </exclusion>
+					<exclusion>
+						<groupId>org.apache.tapestry</groupId>
+						<artifactId>tapestry-yuicompressor</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 

@@ -93,6 +93,18 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     /**
      * {@inheritDoc}
      */
+    @Override
+    public VirtualVehicle findVirtualVehicleByUUID(String uuid)
+    {
+        return (VirtualVehicle) getSession()
+            .createQuery("from VirtualVehicle where uuid = :uuid")
+            .setString("uuid", uuid)
+            .uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<String> findAllStorageItemNames()
@@ -106,10 +118,11 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
      * {@inheritDoc}
      */
     @Override
-    public VirtualVehicleStorage findStorageItemByName(String name)
+    public VirtualVehicleStorage findStorageItemByVirtualVehicleAndName(VirtualVehicle vehicle, String name)
     {
         return (VirtualVehicleStorage) getSession()
-            .createQuery("from VirtualVehicleStorage where name = :name")
+            .createQuery("from VirtualVehicleStorage where virtualVehicle.id = :id AND name = :name")
+            .setInteger("id", vehicle.getId())
             .setString("name", name)
             .uniqueResult();
     }
@@ -136,6 +149,22 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
         return (List<VirtualVehicleStorage>) getSession()
             .createQuery("from VirtualVehicleStorage where virtualVehicle.id = :id")
             .setInteger("id", id)
+            .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName,
+        int maxEntries)
+    {
+        return (List<VirtualVehicleStorage>) getSession()
+            .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id AND name >= :name ORDER BY name")
+            .setInteger("id", id)
+            .setString("name", startName)
+            .setMaxResults(maxEntries)
             .list();
     }
 }

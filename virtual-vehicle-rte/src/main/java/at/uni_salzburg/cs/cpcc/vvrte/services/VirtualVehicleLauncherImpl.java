@@ -58,7 +58,6 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         this.qm = qm;
         this.jss = jss;
         
-        
         jss.addAllowedClassRegex("\\$BuiltInFunctions_.*");
     }
 

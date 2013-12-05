@@ -1,5 +1,6 @@
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>at.uni-salzburg.cs.cpcc</groupId>
@@ -10,11 +11,14 @@
 
 	<artifactId>real-vehicle</artifactId>
 	<packaging>war</packaging>
-	<name>real-vehicle Tapestry 5 Application</name>
+
+	<name>Real Vehicle Web Application Module</name>
+	<description>Cyber Physical Cloud Computing - Real Vehicle Web Application Module</description>
 
 	<dependencies>
-		<!-- Too set up an application with a database, change the artifactId below to tapestry-hibernate, and add a dependency 
-			on your JDBC driver. You'll also need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
+		<!-- Too set up an application with a database, change the artifactId below 
+			to tapestry-hibernate, and add a dependency on your JDBC driver. You'll also 
+			need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
 
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
@@ -188,8 +192,8 @@
 				<configuration>
 					<!-- <useProvidedScope>true</useProvidedScope> -->
 					<!-- <requestLog implementation="org.mortbay.jetty.NCSARequestLog"> -->
-					<!-- This doesn't do anything for Jetty, but is a workaround for a Maven bug that prevents the requestLog from being 
-						set. -->
+					<!-- This doesn't do anything for Jetty, but is a workaround for a Maven 
+						bug that prevents the requestLog from being set. -->
 					<!-- <append>true</append> -->
 					<!-- </requestLog> -->
 					<systemProperties>

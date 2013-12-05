@@ -137,4 +137,19 @@ public class VirtualVehicleStorage
     {
         this.content = SerializationHelper.serialize(content);
     }
+    
+    /**
+     * @return the content as an array of bytes.
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is exposed on purpose")
+    public byte[] getContentAsByteArray()
+    {
+        return content;
+    }
+    
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
+    public void setContentAsByteArray(byte[] newContent)
+    {
+        this.content = newContent;
+    }
 }

@@ -26,11 +26,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Type;
 
+import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -59,6 +61,9 @@ public class VirtualVehicle
     @NotNull
     @Enumerated(EnumType.STRING)
     private VirtualVehicleState state;
+    
+    @ManyToOne
+    private RealVehicle migrationDestination;
 
     @Lob
     private byte[] continuation;
@@ -163,6 +168,22 @@ public class VirtualVehicle
     public void setState(VirtualVehicleState state)
     {
         this.state = state;
+    }
+    
+    /**
+     * @return the real vehicle to migrate to or null.
+     */
+    public RealVehicle getMigrationDestination()
+    {
+        return migrationDestination;
+    }
+    
+    /**
+     * @param migrationDestination the real vehicle to migrate to.
+     */
+    public void setMigrationDestination(RealVehicle migrationDestination)
+    {
+        this.migrationDestination = migrationDestination;
     }
 
     /**

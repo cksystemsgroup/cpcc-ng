@@ -75,15 +75,22 @@ public interface VvRteRepository extends Repository
     VirtualVehicle findVirtualVehicleByName(String name);
 
     /**
+     * @param uuid the virtual vehicle UUID
+     * @return the virtual vehicle or null, if not found.
+     */
+    VirtualVehicle findVirtualVehicleByUUID(String uuid);
+
+    /**
      * @return all item names of items in the virtual vehicle storage.
      */
     List<String> findAllStorageItemNames();
 
     /**
+     * @param vehicle the associated virtual vehicle.
      * @param name the item name.
      * @return the requested storage item or null, if not found.
      */
-    VirtualVehicleStorage findStorageItemByName(String name);
+    VirtualVehicleStorage findStorageItemByVirtualVehicleAndName(VirtualVehicle vehicle, String name);
 
     /**
      * @param id the storage item identification.
@@ -96,4 +103,13 @@ public interface VvRteRepository extends Repository
      * @return the requested storage item or null, if not found.
      */
     List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id);
+
+    /**
+     * @param id the virtual vehicle identification.
+     * @param startName the storage name to start with.
+     * @param maxEntries the maximum number of entries to return.
+     * @return the requested entries, or null if not found.
+     */
+    List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName, int maxEntries);
+
 }

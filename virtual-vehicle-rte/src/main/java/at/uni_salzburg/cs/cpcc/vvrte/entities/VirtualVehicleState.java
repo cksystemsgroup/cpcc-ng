@@ -92,6 +92,26 @@ public enum VirtualVehicleState
         {
             switch (newState)
             {
+                case MIGRATION_INTERRUPTED:
+                    return MIGRATION_INTERRUPTED;
+                case WAITING:
+                    return WAITING;
+                default:
+                    return null;
+            }
+        }
+    },
+    
+    MIGRATION_INTERRUPTED
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
+        {
+            switch (newState)
+            {
                 case WAITING:
                     return WAITING;
                 default:

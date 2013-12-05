@@ -10,16 +10,22 @@
 	</parent>
 
 	<artifactId>ros-service</artifactId>
-	<name>ros-service</name>
+	<packaging>jar</packaging>
+
+	<name>ROS Service Module</name>
+	<description>Cyber Physical Cloud Computing - ROS Service Module</description>
 
 	<dependencies>
-		<!-- Too set up an application with a database, change the artifactId below to tapestry-hibernate, and add a dependency 
-			on your JDBC driver. You'll also need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
-		<!-- <dependency> <groupId>org.apache.tapestry</groupId> <artifactId>tapestry-core</artifactId> </dependency> <dependency> 
-			<groupId>org.apache.tapestry</groupId> <artifactId>tapestry-test</artifactId> <scope>test</scope> </dependency> <dependency> 
-			<groupId>org.apache.tapestry</groupId> <artifactId>tapestry-upload</artifactId> </dependency> <dependency> <groupId>org.apache.tapestry</groupId> 
-			<artifactId>tapestry-javadoc</artifactId> <scope>provided</scope> </dependency> <dependency> <groupId>com.trsvax</groupId> 
-			<artifactId>tapestry-bootstrap</artifactId> </dependency> <dependency> <groupId>javax.servlet</groupId> <artifactId>servlet-api</artifactId> 
+		<!-- Too set up an application with a database, change the artifactId below 
+			to tapestry-hibernate, and add a dependency on your JDBC driver. You'll also 
+			need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
+		<!-- <dependency> <groupId>org.apache.tapestry</groupId> <artifactId>tapestry-core</artifactId> 
+			</dependency> <dependency> <groupId>org.apache.tapestry</groupId> <artifactId>tapestry-test</artifactId> 
+			<scope>test</scope> </dependency> <dependency> <groupId>org.apache.tapestry</groupId> 
+			<artifactId>tapestry-upload</artifactId> </dependency> <dependency> <groupId>org.apache.tapestry</groupId> 
+			<artifactId>tapestry-javadoc</artifactId> <scope>provided</scope> </dependency> 
+			<dependency> <groupId>com.trsvax</groupId> <artifactId>tapestry-bootstrap</artifactId> 
+			</dependency> <dependency> <groupId>javax.servlet</groupId> <artifactId>servlet-api</artifactId> 
 			<scope>provided</scope> </dependency> -->
 
 
@@ -114,14 +120,14 @@
 			<artifactId>utilities</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
 			<artifactId>cpcc-persistence</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
