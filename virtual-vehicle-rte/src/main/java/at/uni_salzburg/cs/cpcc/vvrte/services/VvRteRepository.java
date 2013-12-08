@@ -111,5 +111,4 @@ public interface VvRteRepository extends Repository
      * @return the requested entries, or null if not found.
      */
     List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName, int maxEntries);
-
 }
