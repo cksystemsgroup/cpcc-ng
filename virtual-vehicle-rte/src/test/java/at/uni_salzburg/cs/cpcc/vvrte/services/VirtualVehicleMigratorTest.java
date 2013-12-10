@@ -69,16 +69,19 @@ public class VirtualVehicleMigratorTest
     private VirtualVehicleMigrator migrator;
     private QueryManager qm;
     private Parameter paramChunkSize;
-
+//    private RealVehicleChannel realVehicleChannel;
+    
     private Map<String, VirtualVehicle> virtualVehicleMap;
     private HashMap<String, VirtualVehicleStorage> virtualVehicleStorageMap;
     private VirtualVehicle vv1;
     private VirtualVehicle vv2;
+    
 
     @BeforeMethod
     public void setUp()
     {
         paramChunkSize = mock(Parameter.class);
+//        realVehicleChannel = mock(RealVehicleChannel.class);
 
         qm = mock(QueryManager.class);
         when(qm.findParameterByName(eq(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE), anyString()))
@@ -656,6 +659,19 @@ public class VirtualVehicleMigratorTest
         }
     }
 
+    private static void appendEntryToStream(String entryName, byte[] content, ArchiveOutputStream os) throws IOException
+    {
+        TarArchiveEntry entry = new TarArchiveEntry(entryName);
+        entry.setModTime(new Date());
+        entry.setSize(content.length);
+        entry.setIds(0, 0);
+        entry.setNames("vvrte", "cpcc");
+    
+        os.putArchiveEntry(entry);
+        os.write(content);
+        os.closeArchiveEntry();
+    }
+
     @DataProvider
     public Object[][] unknownEntryTypeDataProvider()
     {
@@ -863,17 +879,35 @@ public class VirtualVehicleMigratorTest
             migrator.storeChunk(new ByteArrayInputStream(chunk));
         }
     }
-
-    private void appendEntryToStream(String entryName, byte[] content, ArchiveOutputStream os) throws IOException
+    
+    @Test(dataProvider = "chunkDataProvider")
+    public void shouldMoveVirtualVehicleToRemoteRealVehicle(int vvId, int chunkSize, int numberOfChunks, Object[] params)
+        throws IOException, ArchiveException
     {
-        TarArchiveEntry entry = new TarArchiveEntry(entryName);
-        entry.setModTime(new Date());
-        entry.setSize(content.length);
-        entry.setIds(0, 0);
-        entry.setNames("vvrte", "cpcc");
+        when(paramChunkSize.getValue()).thenReturn(Integer.toString(chunkSize));
+//        when(realVehicleChannel.)
+        
+        
+        VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
+        assertThat(vv).isNotNull();
 
-        os.putArchiveEntry(entry);
-        os.write(content);
-        os.closeArchiveEntry();
+        ArchiveStreamFactory factory = new ArchiveStreamFactory();
+        factory.setEntryEncoding("UTF-8");
+
+        byte[] firstChunk = migrator.findFirstChunk(vv);
+        verifyChunk(params, factory, 0, firstChunk);
+//        result = realVehicleChannel.transfer(new RealVehicleRequest(RealVehicleRequest.MIGRATE, firstChunk));
+
+        for (int chunkNumber = 1; chunkNumber < numberOfChunks; ++chunkNumber)
+        {
+            String lastStorageName = (String) ((Object[]) ((Object[]) params[chunkNumber])[0])[6];
+            byte[] chunk = migrator.findChunk(vv, lastStorageName, chunkNumber);
+
+            verifyChunk(params, factory, chunkNumber, chunk);
+        }
+
+        
+        
+        
     }
 }

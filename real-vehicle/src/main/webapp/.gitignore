@@ -1,1 +1,17 @@
+/*.bz2
+/*.gz
+/*.log
+/*.tar
+/*.zip
 /.#webclasspath
+/.classpath
+/.project
+/.settings
+/.tomcatplugin
+/bin
+/logs
+/null
+/playground
+/target
+/test-output
+/work
