@@ -53,6 +53,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
@@ -67,21 +68,19 @@ public class VirtualVehicleMigratorTest
 
     private VvRteRepository repo;
     private VirtualVehicleMigrator migrator;
+    private CommunicationService com;
     private QueryManager qm;
     private Parameter paramChunkSize;
-//    private RealVehicleChannel realVehicleChannel;
-    
+
     private Map<String, VirtualVehicle> virtualVehicleMap;
     private HashMap<String, VirtualVehicleStorage> virtualVehicleStorageMap;
     private VirtualVehicle vv1;
     private VirtualVehicle vv2;
-    
 
     @BeforeMethod
     public void setUp()
     {
         paramChunkSize = mock(Parameter.class);
-//        realVehicleChannel = mock(RealVehicleChannel.class);
 
         qm = mock(QueryManager.class);
         when(qm.findParameterByName(eq(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE), anyString()))
@@ -95,7 +94,9 @@ public class VirtualVehicleMigratorTest
         setUpVv2();
         setUpDatabase();
 
-        migrator = new VirtualVehicleMigratorImpl(repo);
+        com = mock(CommunicationService.class);
+
+        migrator = new VirtualVehicleMigratorImpl(repo, com);
         assertThat(migrator).isNotNull();
     }
 
@@ -659,14 +660,15 @@ public class VirtualVehicleMigratorTest
         }
     }
 
-    private static void appendEntryToStream(String entryName, byte[] content, ArchiveOutputStream os) throws IOException
+    private static void appendEntryToStream(String entryName, byte[] content, ArchiveOutputStream os)
+        throws IOException
     {
         TarArchiveEntry entry = new TarArchiveEntry(entryName);
         entry.setModTime(new Date());
         entry.setSize(content.length);
         entry.setIds(0, 0);
         entry.setNames("vvrte", "cpcc");
-    
+
         os.putArchiveEntry(entry);
         os.write(content);
         os.closeArchiveEntry();
@@ -879,15 +881,14 @@ public class VirtualVehicleMigratorTest
             migrator.storeChunk(new ByteArrayInputStream(chunk));
         }
     }
-    
+
     @Test(dataProvider = "chunkDataProvider")
-    public void shouldMoveVirtualVehicleToRemoteRealVehicle(int vvId, int chunkSize, int numberOfChunks, Object[] params)
+    public void shouldMigrateVirtualVehicleToRemoteRealVehicle(int vvId, int chunkSize, int numberOfChunks,
+        Object[] params)
         throws IOException, ArchiveException
     {
         when(paramChunkSize.getValue()).thenReturn(Integer.toString(chunkSize));
-//        when(realVehicleChannel.)
-        
-        
+
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
         assertThat(vv).isNotNull();
 
@@ -896,7 +897,6 @@ public class VirtualVehicleMigratorTest
 
         byte[] firstChunk = migrator.findFirstChunk(vv);
         verifyChunk(params, factory, 0, firstChunk);
-//        result = realVehicleChannel.transfer(new RealVehicleRequest(RealVehicleRequest.MIGRATE, firstChunk));
 
         for (int chunkNumber = 1; chunkNumber < numberOfChunks; ++chunkNumber)
         {
@@ -906,8 +906,5 @@ public class VirtualVehicleMigratorTest
             verifyChunk(params, factory, chunkNumber, chunk);
         }
 
-        
-        
-        
     }
 }

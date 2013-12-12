@@ -76,7 +76,7 @@ public class JavascriptWorker extends Thread
      * @param scriptSource the script source code.
      * @param apiVersion the used API version.
      * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
-     * @param allowedClassesRegex additionally allowed class names defined by regular expressions. 
+     * @param allowedClassesRegex additionally allowed class names defined by regular expressions.
      * @throws IOException thrown in case of errors.
      */
     public JavascriptWorker(String scriptSource, int apiVersion, Set<String> allowedClasses,
@@ -229,7 +229,7 @@ public class JavascriptWorker extends Thread
     /**
      * @return the snapshot
      */
-    @SuppressFBWarnings("EI_EXPOSE_REP")
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is exposed on purpose.")
     public byte[] getSnapshot()
     {
         return snapshot;

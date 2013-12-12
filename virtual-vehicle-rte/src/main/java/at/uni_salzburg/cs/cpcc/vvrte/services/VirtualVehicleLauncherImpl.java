@@ -28,6 +28,7 @@ import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
@@ -42,22 +43,25 @@ import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorkerStateListener;
 public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, JavascriptWorkerStateListener
 {
     private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleLauncherImpl.class);
-    
+
     private QueryManager qm;
     private JavascriptService jss;
+    private VirtualVehicleMigrator migrator;
 
     private Map<Integer, JavascriptWorker> workerMap = new HashMap<Integer, JavascriptWorker>();
     private Map<JavascriptWorker, VirtualVehicle> vehicleMap = new HashMap<JavascriptWorker, VirtualVehicle>();
-    
+
     /**
      * @param qm the query manager.
      * @param jss the JavaScript service.
+     * @param migrator the migration service.
      */
-    public VirtualVehicleLauncherImpl(QueryManager qm, JavascriptService jss)
+    public VirtualVehicleLauncherImpl(QueryManager qm, JavascriptService jss, VirtualVehicleMigrator migrator)
     {
         this.qm = qm;
         this.jss = jss;
-        
+        this.migrator = migrator;
+
         jss.addAllowedClassRegex("\\$BuiltInFunctions_.*");
     }
 
@@ -80,22 +84,17 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
                 + ", but got " + state);
         }
 
-        if (!state.canTraverseTo(VirtualVehicleState.RUNNING))
-        {
-            throw new VirtualVehicleLaunchException("Can not switch vehicle to state " + VirtualVehicleState.RUNNING);
-        }
-
         vehicle.setStartTime(new Date());
         qm.saveOrUpdate(vehicle);
 
         JavascriptWorker worker = jss.createWorker(vehicle.getCode(), vehicle.getApiVersion());
         worker.addStateListener(this);
-        worker.setName("VV-"+vehicle.getName());
+        worker.setName("VV-" + vehicle.getName());
         workerMap.put(vehicle.getId(), worker);
         vehicleMap.put(worker, vehicle);
         worker.start();
     }
-    
+
     @SuppressWarnings("serial")
     private static final Map<WorkerState, VirtualVehicleState> STATE_MAP =
         new HashMap<WorkerState, VirtualVehicleState>()
@@ -119,41 +118,51 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         VirtualVehicleState vehicleState = STATE_MAP.get(state);
         if (vehicle != null && vehicleState != null)
         {
+            VirtualVehicleMappingDecision decision = null;
+            
             Transaction t = qm.getSession().beginTransaction();
             vehicle.setState(vehicleState);
+            
             switch (state)
             {
                 case INTERRUPTED:
                     vehicle.setContinuation(worker.getSnapshot());
+                    decision = (VirtualVehicleMappingDecision) worker.getApplicationState();
+
+                    if (decision.isMigration() && decision.getRealVehicles().size() > 0)
+                    {
+                        // TODO select the best suitable RV instead of taking just the first.
+                        RealVehicle migrationDestination = decision.getRealVehicles().get(0);
+                        vehicle.setMigrationDestination(migrationDestination);
+                        vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
+                    }
+                    else
+                    {
+                        decision = null;
+                        vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+                        vehicle.setMigrationDestination(null);
+                    }
                     break;
                 case FINISHED:
                     vehicle.setEndTime(new Date());
                     break;
                 case DEFECTIVE:
-                    LOG.error("buggerit: " + worker.getResult());
+                    LOG.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
                     break;
                 default:
                     break;
             }
+            
             qm.getSession().saveOrUpdate(vehicle);
             t.commit();
             qm.getSession().flush();
-        }
 
-        Object applicationState = worker.getApplicationState();
-        if (applicationState instanceof VirtualVehicleMappingDecision)
-        {
-            initiateMigration(vehicle, (VirtualVehicleMappingDecision) applicationState);
+            if (decision != null)
+            {
+                LOG.info("initiateMigration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
+                migrator.initiateMigration(vehicle, decision);
+            }
         }
-    }
-
-    /**
-     * @param vehicle the virtual vehicle.
-     * @param applicationState the application state.
-     */
-    private void initiateMigration(VirtualVehicle vehicle, VirtualVehicleMappingDecision applicationState)
-    {
-        LOG.error("initiateMigration not implemented!");
     }
 
 }

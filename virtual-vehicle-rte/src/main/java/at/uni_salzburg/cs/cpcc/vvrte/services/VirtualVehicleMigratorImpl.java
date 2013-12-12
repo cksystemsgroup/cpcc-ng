@@ -35,6 +35,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
 import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
@@ -48,16 +49,25 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleMigratorImpl.class);
 
     private VvRteRepository vvRepository;
+    private CommunicationService com;
 
     /**
      * @param vvRepository the virtual vehicle repository.
+     * @param com the communication service.
      */
-    public VirtualVehicleMigratorImpl(VvRteRepository vvRepository)
+    public VirtualVehicleMigratorImpl(VvRteRepository vvRepository, CommunicationService com)
     {
         this.vvRepository = vvRepository;
-
+        this.com = com;
     }
 
+    @Override
+    public void initiateMigration(VirtualVehicle vehicle, VirtualVehicleMappingDecision decision)
+    {
+        VvMigrationWorker worker = new VvMigrationWorker(vehicle, vvRepository, com, this);
+        worker.start();
+    }
+    
     /**
      * {@inheritDoc}
      */

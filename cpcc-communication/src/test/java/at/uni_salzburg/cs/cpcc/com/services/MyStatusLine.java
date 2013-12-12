@@ -19,52 +19,54 @@
  */
 package at.uni_salzburg.cs.cpcc.com.services;
 
+import org.apache.http.ProtocolVersion;
+import org.apache.http.StatusLine;
+
 /**
- * CommunicationResponse
+ * MyStatusLine
  */
-public class CommunicationResponse
+public class MyStatusLine implements StatusLine
 {
-    /**
-     * Status
-     */
-    public enum Status
-    {
-        NOT_OK,
-        OK        
-    }
-
-    private Status status;
-    private String content;
+    private ProtocolVersion protocolVersion;
+    private int statusCode;
+    private String reasonPhrase;
 
     /**
-     * @return the current status.
+     * @param protocolVersion the protocol version.
+     * @param statusCode the status code.
+     * @param reasonPhrase the reason phrase.
      */
-    public Status getStatus()
+    public MyStatusLine(ProtocolVersion protocolVersion, int statusCode, String reasonPhrase)
     {
-        return status;
+        this.protocolVersion = protocolVersion;
+        this.statusCode = statusCode;
+        this.reasonPhrase = reasonPhrase;
     }
 
     /**
-     * @param status the status to set.
+     * {@inheritDoc}
      */
-    public void setStatus(Status status)
+    @Override
+    public ProtocolVersion getProtocolVersion()
     {
-        this.status = status;
+        return protocolVersion;
     }
 
     /**
-     * @return the response content as a string.
+     * {@inheritDoc}
      */
-    public String getContent()
+    @Override
+    public int getStatusCode()
     {
-        return content;
+        return statusCode;
     }
 
     /**
-     * @param content the response content to set.
+     * {@inheritDoc}
      */
-    public void setContent(String content)
+    @Override
+    public String getReasonPhrase()
     {
-        this.content = content;
+        return reasonPhrase;
     }
 }

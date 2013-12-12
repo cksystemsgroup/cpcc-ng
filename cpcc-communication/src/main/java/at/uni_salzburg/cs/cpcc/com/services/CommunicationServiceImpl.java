@@ -25,9 +25,9 @@ import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
@@ -65,8 +65,7 @@ public class CommunicationServiceImpl implements CommunicationService
     {
         HttpPost request = new HttpPost(realVehicle.getUrl() + CONNECTOR_MAP.get(connector));
 
-        HttpEntity entity = MultipartEntityBuilder.create().addBinaryBody("data", data).build();
-
+        HttpEntity entity = EntityBuilder.create().setBinary(data).build();
         request.setEntity(entity);
 
         CloseableHttpClient httpclient = HttpClients.createDefault();

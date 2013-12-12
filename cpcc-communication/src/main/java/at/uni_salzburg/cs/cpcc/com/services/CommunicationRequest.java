@@ -27,7 +27,7 @@ public class CommunicationRequest
     /**
      * Connector
      */
-    enum Connector
+    public enum Connector
     {
         MIGRATE
     };

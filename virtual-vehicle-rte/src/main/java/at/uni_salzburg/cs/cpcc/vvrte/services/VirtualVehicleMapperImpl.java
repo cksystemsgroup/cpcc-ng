@@ -43,7 +43,7 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
 {
     private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleMapperImpl.class);
-    
+
     private QueryManager qm;
     private String rvName;
     private Map<String, RealVehicle> realVehicleMap;
@@ -129,13 +129,13 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
                 PolygonZone areaOfOperation = areaOfOperationMap.get(entry.getKey());
                 if (!areaOfOperation.isInside(task.getPosition()))
                 {
-                    LOG.info("Migrate " +entry.getValue().getName() + " because of position " + task.getPosition());
+                    LOG.info("Migrate " + entry.getValue().getName() + " because of position " + task.getPosition());
                     continue;
                 }
 
                 if (!entry.getValue().getSensors().containsAll(task.getSensors()))
                 {
-                    
+
                     StringBuilder b = new StringBuilder("required: ");
                     for (SensorDefinition s : task.getSensors())
                     {
@@ -146,7 +146,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
                     {
                         b.append(s.getDescription()).append(", ");
                     }
-                    LOG.info("Migrate " +entry.getValue().getName() + " because of sensors " + b.toString());
+                    LOG.info("Migrate " + entry.getValue().getName() + " because of sensors " + b.toString());
                     continue;
                 }
 

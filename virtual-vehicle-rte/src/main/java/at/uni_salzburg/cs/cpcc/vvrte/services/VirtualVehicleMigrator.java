@@ -32,6 +32,12 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 public interface VirtualVehicleMigrator
 {
     /**
+     * @param vehicle the virtual vehicle to be migrated.
+     * @param decision the decision of the virtual vehicle mapper.
+     */
+    void initiateMigration(VirtualVehicle vehicle, VirtualVehicleMappingDecision decision);
+
+    /**
      * @param virtualVehicle the virtual vehicle to be migrated.
      * @return the virtual vehicle chunk as byte array.
      * @throws IOException thrown in case of errors.

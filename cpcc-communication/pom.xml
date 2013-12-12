@@ -49,18 +49,6 @@
 			<artifactId>catch-exception</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.wink</groupId> -->
-		<!-- <artifactId>wink-component-test-support</artifactId> -->
-		<!-- <version>1.4</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.github.tomakehurst</groupId> -->
-		<!-- <artifactId>wiremock</artifactId> -->
-		<!-- <version>1.37</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>

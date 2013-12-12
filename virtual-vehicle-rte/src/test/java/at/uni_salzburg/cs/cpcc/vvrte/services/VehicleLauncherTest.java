@@ -108,7 +108,9 @@ public class VehicleLauncherTest
         JavascriptService jss = mock(JavascriptService.class);
         when(jss.createWorker(anyString(), anyInt())).thenReturn(worker);
 
-        launcher = new VirtualVehicleLauncherImpl(qm, jss);
+        VirtualVehicleMigrator migrator = mock(VirtualVehicleMigrator.class);
+        
+        launcher = new VirtualVehicleLauncherImpl(qm, jss, migrator);
     }
 
     @Test
@@ -122,5 +124,20 @@ public class VehicleLauncherTest
 
         verify(session).beginTransaction();
         verify(transaction).commit();
+    }
+
+    @Test(expectedExceptions = {VirtualVehicleLaunchException.class},
+        expectedExceptionsMessageRegExp = "Invalid virtual vehicle 'null'")
+    public void shouldThrowVLEIfVirtualVehicleIsNull() throws VirtualVehicleLaunchException, IOException
+    {
+        launcher.start(null);
+    }
+    
+    @Test(expectedExceptions = {VirtualVehicleLaunchException.class},
+        expectedExceptionsMessageRegExp = "Expected vehicle in state INIT, but got RUNNING")
+    public void shouldThrowVLEIfVirtualVehicleHasWrongState() throws VirtualVehicleLaunchException, IOException
+    {
+        vehicle.setState(VirtualVehicleState.RUNNING);
+        launcher.start(vehicle);
     }
 }

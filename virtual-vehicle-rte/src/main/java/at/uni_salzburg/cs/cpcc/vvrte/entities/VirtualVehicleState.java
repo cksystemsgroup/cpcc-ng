@@ -82,6 +82,24 @@ public enum VirtualVehicleState
         }
     },
 
+    MIGRATION_AWAITED
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
+        {
+            switch (newState)
+            {
+                case MIGRATING:
+                    return MIGRATING;
+                default:
+                    return null;
+            }
+        }
+    },
+
     MIGRATING
     {
         /**
@@ -101,7 +119,7 @@ public enum VirtualVehicleState
             }
         }
     },
-    
+
     MIGRATION_INTERRUPTED
     {
         /**
@@ -112,11 +130,25 @@ public enum VirtualVehicleState
         {
             switch (newState)
             {
+                case MIGRATION_AWAITED:
+                    return MIGRATION_AWAITED;
                 case WAITING:
                     return WAITING;
                 default:
                     return null;
             }
+        }
+    },
+
+    MIGRATION_COMPLETED
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
+        {
+            return null;
         }
     },
 
@@ -143,7 +175,7 @@ public enum VirtualVehicleState
             return newState;
         }
     },
-    
+
     DEFECTIVE
     {
         @Override
