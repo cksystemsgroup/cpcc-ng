@@ -22,10 +22,8 @@ package at.uni_salzburg.cs.cpcc.rv.pages;
 import static org.apache.tapestry5.EventConstants.ACTIVATE;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -40,6 +38,7 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleLaunchException;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleLauncher;
+import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleMapper;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
 
 /**
@@ -57,6 +56,8 @@ public class Vehicle
             add(VirtualVehicleState.FINISHED);
             add(VirtualVehicleState.INIT);
             add(VirtualVehicleState.INTERRUPTED);
+            add(VirtualVehicleState.MIGRATION_COMPLETED);
+            add(VirtualVehicleState.MIGRATION_INTERRUPTED);
         }
     };
 
@@ -84,15 +85,29 @@ public class Vehicle
         {
             add(VirtualVehicleState.DEFECTIVE);
             add(VirtualVehicleState.FINISHED);
+            add(VirtualVehicleState.MIGRATION_COMPLETED);
+            add(VirtualVehicleState.MIGRATION_INTERRUPTED);
         }
     };
-
+    
+    @SuppressWarnings("serial")
+    private static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(VirtualVehicleState.MIGRATION_AWAITED);
+            add(VirtualVehicleState.MIGRATION_INTERRUPTED);
+        }
+    };
+    
     @Inject
     private VvRteRepository repository;
 
     @Inject
     private VirtualVehicleLauncher launcher;
-
+    
+    @Inject
+    private VirtualVehicleMapper mapper;
+    
     @Property
     private Collection<VirtualVehicle> virtualVehicleList;
 
@@ -107,20 +122,11 @@ public class Vehicle
 
     @OnEvent("deleteVehicle")
     @CommitAfter
-    void deleteDevice(Integer id)
+    void deleteVehicle(Integer id)
     {
         System.out.println("deleteVehicle " + id);
-
         VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
-
-        List<VirtualVehicleState> x =
-            Arrays.asList(VirtualVehicleState.DEFECTIVE, VirtualVehicleState.FINISHED, VirtualVehicleState.INIT,
-                VirtualVehicleState.INTERRUPTED);
-
-        if (x.contains(vehicle.getState()))
-        {
-            repository.delete(vehicle);
-        }
+        repository.deleteVirtualVehicleById(vehicle);
     }
 
     @OnEvent("startVehicle")
@@ -141,6 +147,28 @@ public class Vehicle
         catch (VirtualVehicleLaunchException | IOException e)
         {
             LOG.error("Can not start virtual vehicle " + id, e);
+        }
+    }
+
+    @OnEvent("restartMigration")
+    // @CommitAfter
+    void restartMigration(Integer id)
+    {
+        System.out.println("restartMigration " + id);
+        VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
+        if (!VV_STATES_FOR_RESTART_MIGRATION.contains(vehicle.getState()))
+        {
+            return;
+        }
+        
+        try
+        {
+            mapper.refresh();
+            launcher.resume(vehicle);
+        }
+        catch (VirtualVehicleLaunchException | IOException e)
+        {
+            LOG.error("Can not restart migration of virtual vehicle " + id, e);
         }
     }
 
@@ -186,6 +214,14 @@ public class Vehicle
     public boolean isStart()
     {
         return VV_STATES_FOR_START.contains(virtualVehicle.getState());
+    }
+    
+    /**
+     * @return true if a migration restart is allowed.
+     */
+    public boolean isRestartMigration()
+    {
+        return VV_STATES_FOR_RESTART_MIGRATION.contains(virtualVehicle.getState());
     }
 
     /**

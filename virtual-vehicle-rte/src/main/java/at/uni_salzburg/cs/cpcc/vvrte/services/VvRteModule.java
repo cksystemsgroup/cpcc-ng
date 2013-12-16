@@ -53,12 +53,13 @@ public final class VvRteModule
         binder.bind(MessageConverter.class, MessageConverterImpl.class).eagerLoad();
         binder.bind(VirtualVehicleLauncher.class, VirtualVehicleLauncherImpl.class).eagerLoad();
         binder.bind(VirtualVehicleMapper.class, VirtualVehicleMapperImpl.class).eagerLoad();
-        binder.bind(VvRteRepository.class, VvRteRepositoryImpl.class);
+        binder.bind(VvRteRepository.class, VvRteRepositoryImpl.class).eagerLoad();
         binder.bind(JavascriptService.class, JavascriptServiceImpl.class).eagerLoad();
         binder.bind(TaskAnalyzer.class, TaskAnalyzerImpl.class).eagerLoad();
         binder.bind(TaskExecutionService.class, TaskExecutionServiceImpl.class).eagerLoad();
         binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class).eagerLoad();
         binder.bind(TimerService.class, TimerServiceImpl.class).eagerLoad();
+        binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class).eagerLoad();
     }
 
     /**

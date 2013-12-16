@@ -129,7 +129,8 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
                 PolygonZone areaOfOperation = areaOfOperationMap.get(entry.getKey());
                 if (!areaOfOperation.isInside(task.getPosition()))
                 {
-                    LOG.info("Migrate " + entry.getValue().getName() + " because of position " + task.getPosition());
+                    LOG.info("Migrate not to " + entry.getValue().getName()
+                        + " because of position " + task.getPosition());
                     continue;
                 }
 
@@ -146,7 +147,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
                     {
                         b.append(s.getDescription()).append(", ");
                     }
-                    LOG.info("Migrate " + entry.getValue().getName() + " because of sensors " + b.toString());
+                    LOG.info("Migrate not to " + entry.getValue().getName() + " because of sensors " + b.toString());
                     continue;
                 }
 

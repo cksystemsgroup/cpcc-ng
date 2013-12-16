@@ -61,9 +61,12 @@ public class VirtualVehicle
     @NotNull
     @Enumerated(EnumType.STRING)
     private VirtualVehicleState state;
-    
+
     @ManyToOne
     private RealVehicle migrationDestination;
+
+    @Type(type = "timestamp")
+    private java.util.Date migrationStartTime;
 
     @Lob
     private byte[] continuation;
@@ -169,7 +172,7 @@ public class VirtualVehicle
     {
         this.state = state;
     }
-    
+
     /**
      * @return the real vehicle to migrate to or null.
      */
@@ -177,13 +180,31 @@ public class VirtualVehicle
     {
         return migrationDestination;
     }
-    
+
     /**
      * @param migrationDestination the real vehicle to migrate to.
      */
     public void setMigrationDestination(RealVehicle migrationDestination)
     {
         this.migrationDestination = migrationDestination;
+    }
+
+    /**
+     * @return the start time of the current migration.
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is exposed on purpose")
+    public java.util.Date getMigrationStartTime()
+    {
+        return migrationStartTime;
+    }
+
+    /**
+     * @param migrationStartTime set the start time of the current migration.
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
+    public void setMigrationStartTime(java.util.Date migrationStartTime)
+    {
+        this.migrationStartTime = migrationStartTime;
     }
 
     /**

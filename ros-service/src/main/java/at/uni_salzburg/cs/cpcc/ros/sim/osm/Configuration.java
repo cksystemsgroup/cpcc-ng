@@ -103,8 +103,9 @@ public class Configuration
     public Configuration(NodeConfiguration nodeConfiguration, Map<String, List<String>> config)
     {
         topicRoot = config.get(CFG_TOPIC_ROOT).get(0);
-        gpsTopic = config.get(CFG_GPS_TOPIC).get(0);
-
+        // gpsTopic = config.get(CFG_GPS_TOPIC).get(0);
+        gpsTopic = ConfigUtils.parseString(config, CFG_GPS_TOPIC, 0, "/unknown");
+        
         geodeticSystem = new WGS84();
 
         if (config.containsKey(CFG_ORIGIN))

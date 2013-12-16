@@ -80,6 +80,7 @@ public class VvMigrationWorkerTest
         virtualVehicle = mock(VirtualVehicle.class);
         when(virtualVehicle.getName()).thenReturn("vv01");
         when(virtualVehicle.getMigrationDestination()).thenReturn(realVehicle);
+        when(virtualVehicle.getState()).thenReturn(VirtualVehicleState.MIGRATION_AWAITED);
 
         transaction = mock(Transaction.class);
 
@@ -158,9 +159,43 @@ public class VvMigrationWorkerTest
                 .isNotNull().isEqualTo(chunks[k]);
         }
 
-        verify(virtualVehicle, times(1)).setState(VirtualVehicleState.MIGRATION_COMPLETED);
-        verify(session).beginTransaction();
-        verify(transaction).commit();
+        verify(virtualVehicle, times(1)).setState(VirtualVehicleState.MIGRATING);
+        verify(session, times(2)).beginTransaction();
+        verify(transaction, times(2)).commit();
+        verify(transaction, never()).rollback();
+    }
+    
+    @Test
+    public void shouldContinueInterruptedMigration() throws ClientProtocolException, IOException, InterruptedException
+    {
+        reset(virtualVehicle);
+        when(virtualVehicle.getName()).thenReturn("vv01");
+        when(virtualVehicle.getMigrationDestination()).thenReturn(realVehicle);
+        when(virtualVehicle.getState()).thenReturn(VirtualVehicleState.MIGRATION_INTERRUPTED);
+        
+        worker.start();
+        worker.join();
+        assertThat(worker.getName()).isEqualTo(
+            "MIG-" + virtualVehicle.getName() + "-" + virtualVehicle.getMigrationDestination().getName());
+
+        verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+        verify(com, times(4)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+
+        assertThat(transferredChunks.size())
+            .overridingErrorMessage("The number of transferred chunks must be %d but is %d",
+                chunks.length, transferredChunks.size())
+            .isEqualTo(chunks.length);
+
+        for (int k = 0; k < chunks.length; ++k)
+        {
+            assertThat(transferredChunks.get(k))
+                .overridingErrorMessage("Verifying transferred chunk number %d", k)
+                .isNotNull().isEqualTo(chunks[k]);
+        }
+
+        verify(virtualVehicle, times(1)).setState(VirtualVehicleState.MIGRATING);
+        verify(session, times(2)).beginTransaction();
+        verify(transaction, times(2)).commit();
         verify(transaction, never()).rollback();
     }
 
@@ -185,10 +220,11 @@ public class VvMigrationWorkerTest
                 .overridingErrorMessage("Verifying transferred chunk number %d", k)
                 .isNotNull().isEqualTo(chunks[k]);
         }
-        
-        verify(virtualVehicle, times(1)).setState(VirtualVehicleState.MIGRATION_COMPLETED);
-        verify(session).beginTransaction();
-        verify(transaction).commit();
+
+        verify(virtualVehicle).setState(VirtualVehicleState.MIGRATING);
+        //TODO verify(virtualVehicle).setState(VirtualVehicleState.MIGRATION_COMPLETED);
+        verify(session, times(2)).beginTransaction();
+        verify(transaction, times(2)).commit();
         verify(transaction, never()).rollback();
     }
 
@@ -204,8 +240,8 @@ public class VvMigrationWorkerTest
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, never()).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
-        verify(session).beginTransaction();
-        verify(transaction, never()).commit();
+        verify(session, times(2)).beginTransaction();
+        verify(transaction).commit();
         verify(transaction).rollback();
     }
 
@@ -215,24 +251,33 @@ public class VvMigrationWorkerTest
     {
         reset(migrator);
         when(migrator.findFirstChunk(virtualVehicle)).thenReturn(chunks[0]);
-        when(migrator.findChunk(any(VirtualVehicle.class), any(String.class), anyInt())).thenAnswer(
-            new Answer<byte[]>()
-            {
-                @Override
-                public byte[] answer(InvocationOnMock invocation) throws Throwable
-                {
-                    return null;
-                }
-            });
+        when(migrator.findChunk(any(VirtualVehicle.class), any(String.class), anyInt())).thenReturn(null);
 
         worker.start();
         worker.awaitCompetion();
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, times(1)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
-        verify(session).beginTransaction();
-        verify(transaction, never()).commit();
+        verify(session, times(2)).beginTransaction();
+        verify(transaction).commit();
         verify(transaction).rollback();
+    }
+
+    @Test
+    public void shouldAbortMigrationOnMissingMigrationDestination()
+        throws ClientProtocolException, IOException, InterruptedException, ArchiveException
+    {
+        reset(virtualVehicle);
+        when(virtualVehicle.getName()).thenReturn("vv01");
+        when(virtualVehicle.getState()).thenReturn(VirtualVehicleState.MIGRATION_AWAITED);
+
+        worker.run();
+
+        verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+        verify(com, never()).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(session, never()).beginTransaction();
+        verify(transaction, never()).commit();
+        verify(transaction, never()).rollback();
     }
 
     @Test
@@ -250,8 +295,26 @@ public class VvMigrationWorkerTest
 
         verify(virtualVehicle, times(1)).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, times(1)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
-        verify(session).beginTransaction();
-        verify(transaction).commit();
+        verify(session, times(2)).beginTransaction();
+        verify(transaction, times(2)).commit();
+        verify(transaction, never()).rollback();
+    }
+    
+    @Test
+    public void shouldAbortMigrationOnWrongVirtualVehicleState()
+        throws ClientProtocolException, IOException, InterruptedException, ArchiveException
+    {
+        reset(virtualVehicle);
+        when(virtualVehicle.getName()).thenReturn("vv01");
+        when(virtualVehicle.getMigrationDestination()).thenReturn(realVehicle);
+        when(virtualVehicle.getState()).thenReturn(VirtualVehicleState.INIT);
+
+        worker.run();
+
+        verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+        verify(com, never()).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(session, never()).beginTransaction();
+        verify(transaction, never()).commit();
         verify(transaction, never()).rollback();
     }
 }

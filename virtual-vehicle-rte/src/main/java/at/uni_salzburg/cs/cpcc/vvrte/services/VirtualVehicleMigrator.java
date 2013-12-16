@@ -33,9 +33,8 @@ public interface VirtualVehicleMigrator
 {
     /**
      * @param vehicle the virtual vehicle to be migrated.
-     * @param decision the decision of the virtual vehicle mapper.
      */
-    void initiateMigration(VirtualVehicle vehicle, VirtualVehicleMappingDecision decision);
+    void initiateMigration(VirtualVehicle vehicle);
 
     /**
      * @param virtualVehicle the virtual vehicle to be migrated.
@@ -58,8 +57,14 @@ public interface VirtualVehicleMigrator
 
     /**
      * @param inStream the input stream containing the virtual vehicle chunk to be stored in the database.
+     * @return the last stored chunk name.
      * @throws ArchiveException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    void storeChunk(InputStream inStream) throws ArchiveException, IOException;
+    String storeChunk(InputStream inStream) throws ArchiveException, IOException;
+
+    /**
+     * @param listener the virtual vehicle listener.
+     */
+    void addListener(VirtualVehicleListener listener);
 }

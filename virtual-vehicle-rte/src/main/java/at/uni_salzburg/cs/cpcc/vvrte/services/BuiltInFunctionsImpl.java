@@ -345,8 +345,10 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      */
     private VirtualVehicle findVirtualVehicle()
     {
-        String vvName = Thread.currentThread().getName().replace("VV-", "");
-        return vvRteRepo.findVirtualVehicleByName(vvName);
+        // String vvName = Thread.currentThread().getName().replace("VV-", "");
+        // return vvRteRepo.findVirtualVehicleByName(vvName);
+        String[] vv = Thread.currentThread().getName().split("-");
+        return vvRteRepo.findVirtualVehicleById(Integer.parseInt(vv[1]));
     }
 
 }

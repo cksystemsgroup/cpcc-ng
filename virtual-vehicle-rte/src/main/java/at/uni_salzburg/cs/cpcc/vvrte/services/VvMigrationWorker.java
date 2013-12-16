@@ -20,6 +20,7 @@
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.hibernate.Transaction;
@@ -68,9 +69,20 @@ public class VvMigrationWorker extends Thread
     @Override
     public void run()
     {
+        if (!verifyVehicleStatus())
+        {
+            return;
+        }
+
         setName("MIG-" + vehicle.getName() + "-" + vehicle.getMigrationDestination().getName());
 
         Transaction transaction = vvRepository.getSession().beginTransaction();
+        vehicle.setState(VirtualVehicleState.MIGRATING);
+        vehicle.setMigrationStartTime(new Date());
+        vvRepository.saveOrUpdate(vehicle);
+        transaction.commit();
+
+        transaction = vvRepository.getSession().beginTransaction();
 
         try
         {
@@ -88,28 +100,33 @@ public class VvMigrationWorker extends Thread
                 chunk = migrator.findChunk(vehicle, response.getContent(), chunkNumber);
                 if (chunk == null)
                 {
-                    if (chunkNumber > 1)
+                    if (chunkNumber == 1)
                     {
-                        break;
+                        throw new IOException("Second chunk is empty, which is not allowed.");
                     }
-                    else
-                    {
-                        throw new IOException("Can not find data chunks of virtual vehicle");
-                    }
+                    break;
                 }
                 response = com.transfer(vehicle.getMigrationDestination(), Connector.MIGRATE, chunk);
                 ++chunkNumber;
             }
 
-            vehicle.setState(
-                response.getStatus() == Status.OK
-                    ? VirtualVehicleState.MIGRATION_COMPLETED
-                    : VirtualVehicleState.MIGRATION_INTERRUPTED);
+            if (response.getStatus() == Status.OK)
+            {
+                // vehicle.setState(VirtualVehicleState.MIGRATION_COMPLETED);
+                // vehicle.setMigrationStartTime(null);
+                vvRepository.deleteVirtualVehicleById(vehicle);
+            }
+            else
+            {
+                vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+                vvRepository.saveOrUpdate(vehicle);
+            }
+
             transaction.commit();
         }
         catch (IOException | ArchiveException e)
         {
-            LOG.error("Migration aborted of virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")", e);
+            LOG.error("Migration aborted! Virtual vehicle: " + vehicle.getName() + " (" + vehicle.getUuid() + ")", e);
             transaction.rollback();
         }
 
@@ -119,6 +136,28 @@ public class VvMigrationWorker extends Thread
         {
             waiter.interrupt();
         }
+    }
+
+    /**
+     * @return true if a migration may take place, false otherwise.
+     */
+    private boolean verifyVehicleStatus()
+    {
+        if (vehicle.getMigrationDestination() == null)
+        {
+            LOG.error("Can not migrate vehicle " + vehicle.getName()
+                + " (" + vehicle.getUuid() + ") because of missing destination.");
+            return false;
+        }
+
+        if (vehicle.getState() != VirtualVehicleState.MIGRATION_AWAITED
+            && vehicle.getState() != VirtualVehicleState.MIGRATION_INTERRUPTED)
+        {
+            LOG.error("Can not migrate vehicle " + vehicle.getName() + " because of wrong state " + vehicle.getState());
+            return false;
+        }
+
+        return true;
     }
 
     /**

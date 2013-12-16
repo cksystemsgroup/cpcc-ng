@@ -106,7 +106,7 @@ public class RosNodeServiceImpl implements RosNodeService
         }
 
         Parameter internal = qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE);
-        if ("true".equalsIgnoreCase(internal.getValue()))
+        if (internal != null && "true".equalsIgnoreCase(internal.getValue()))
         {
             startRosCore();
         }
@@ -322,6 +322,11 @@ public class RosNodeServiceImpl implements RosNodeService
      */
     private void startRosCore()
     {
+        if (rns.getMasterServerUri() == null)
+        {
+            return;
+        }
+        
         String host = rns.getMasterServerUri().getHost();
         int port = rns.getMasterServerUri().getPort();
 

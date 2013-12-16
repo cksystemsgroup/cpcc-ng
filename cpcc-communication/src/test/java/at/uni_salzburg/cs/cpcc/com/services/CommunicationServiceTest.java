@@ -30,11 +30,15 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.ContentEncodingHttpClient;
 import org.apache.http.localserver.LocalTestServer;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.protocol.HttpContext;
@@ -90,10 +94,16 @@ public class CommunicationServiceTest
                 }
 
                 final int statusCode = response.getStatusLine().getStatusCode();
-                final String reasonPhrase = REASON_PHRASE;
+                final String reasonPhrase = response.getStatusLine().getReasonPhrase();
                 final ProtocolVersion protocolVersion = response.getProtocolVersion();
 
                 response.setStatusLine(new MyStatusLine(protocolVersion, statusCode, reasonPhrase));
+                HttpEntity entity = EntityBuilder.create()
+                    .setContentType(ContentType.TEXT_PLAIN)
+                    .setText(REASON_PHRASE)
+                    .build();
+                
+                response.setEntity(entity );
                 return null;
             }
         }).when(handler).handle(any(HttpRequest.class), any(HttpResponse.class), any(HttpContext.class));
@@ -152,6 +162,6 @@ public class CommunicationServiceTest
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isNotNull().isEqualTo(Status.NOT_OK);
-        assertThat(response.getContent()).isNotNull().isEqualTo("Internal Server Error");
+        assertThat(response.getContent()).isNotNull().isEqualTo("HttpException thrown on purpose!");
     }
 }

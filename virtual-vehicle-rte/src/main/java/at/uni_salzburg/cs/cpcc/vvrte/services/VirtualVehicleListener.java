@@ -19,33 +19,15 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import java.io.IOException;
-
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 
 /**
- * VirtualVehicleLauncher
+ * VirtualVehicleListener
  */
-public interface VirtualVehicleLauncher
+public interface VirtualVehicleListener
 {
     /**
-     * @param vehicle the vehicle to launch.
-     * @throws VirtualVehicleLaunchException thrown in case of errors.
-     * @throws IOException thrown in case of errors.
+     * @param vehicle the virtual vehicle.
      */
-    void start(VirtualVehicle vehicle) throws VirtualVehicleLaunchException, IOException;
-    
-    /**
-     * @param vehicle the vehicle to launch.
-     * @throws VirtualVehicleLaunchException thrown in case of errors.
-     * @throws IOException thrown in case of errors.
-     */
-    void resume(VirtualVehicle vehicle) throws VirtualVehicleLaunchException, IOException;
-
-    /**
-     * @param id the virtual vehicle ID
-     * @return the associated worker, or null.
-     */
-//    JavascriptWorker findWorkerByVirtualVehicleId(Integer id);
-
+    void notify(VirtualVehicle vehicle);
 }

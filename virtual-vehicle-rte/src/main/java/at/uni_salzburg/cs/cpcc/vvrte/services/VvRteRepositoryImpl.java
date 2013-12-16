@@ -19,13 +19,18 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.hibernate.criterion.Order;
+import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.persistence.services.AbstractRepository;
 import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 
 /**
@@ -33,6 +38,8 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
  */
 public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepository
 {
+    private static final Logger LOG = LoggerFactory.getLogger(VvRteRepositoryImpl.class);
+
     private QueryManager qm;
 
     /**
@@ -42,6 +49,18 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     {
         super(qm.getSession());
         this.qm = qm;
+
+        resetVirtualVehicleStates();
+    }
+
+    private void resetVirtualVehicleStates()
+    {
+        Transaction t = getSession().beginTransaction();
+        getSession().createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
+            .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED)
+            .setParameter("oldState", VirtualVehicleState.MIGRATING)
+            .executeUpdate();
+        t.commit();
     }
 
     /**
@@ -60,10 +79,11 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public List<VirtualVehicle> findAllVehicles()
     {
-        return (List<VirtualVehicle>) getSession()
-            .createCriteria(VirtualVehicle.class)
-            .addOrder(Order.asc("id"))
-            .list();
+        //        return (List<VirtualVehicle>) getSession()
+        //            .createCriteria(VirtualVehicle.class)
+        //            .addOrder(Order.asc("id"))
+        //            .list();
+        return (List<VirtualVehicle>) getSession().createQuery("FROM VirtualVehicle v ORDER BY v.id").list();
     }
 
     /**
@@ -100,6 +120,43 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
             .createQuery("from VirtualVehicle where uuid = :uuid")
             .setString("uuid", uuid)
             .uniqueResult();
+    }
+
+    @SuppressWarnings("serial")
+    private static final Set<VirtualVehicleState> ALLOWED_STATES_FOR_VV_DELETION = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(VirtualVehicleState.DEFECTIVE);
+            add(VirtualVehicleState.FINISHED);
+            add(VirtualVehicleState.INIT);
+            add(VirtualVehicleState.INTERRUPTED);
+            add(VirtualVehicleState.MIGRATION_COMPLETED);
+            add(VirtualVehicleState.MIGRATION_INTERRUPTED);
+        }
+    };
+
+    @Override
+    public void deleteVirtualVehicleById(VirtualVehicle vehicle)
+    {
+        if (vehicle == null)
+        {
+            return;
+        }
+
+        if (!ALLOWED_STATES_FOR_VV_DELETION.contains(vehicle.getState()))
+        {
+            LOG.warn("Not deleting virtual vehicle " + vehicle.getName()
+                + " (" + vehicle.getUuid() + ") because of state " + vehicle.getState());
+            return;
+        }
+
+        LOG.info("Deleting virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")");
+
+        getSession().createQuery("DELETE FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id")
+            .setParameter("id", vehicle.getId())
+            .executeUpdate();
+
+        delete(vehicle);
     }
 
     /**
@@ -161,7 +218,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
         int maxEntries)
     {
         return (List<VirtualVehicleStorage>) getSession()
-            .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id AND name >= :name ORDER BY name")
+            .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id AND name > :name ORDER BY name")
             .setInteger("id", id)
             .setString("name", startName)
             .setMaxResults(maxEntries)

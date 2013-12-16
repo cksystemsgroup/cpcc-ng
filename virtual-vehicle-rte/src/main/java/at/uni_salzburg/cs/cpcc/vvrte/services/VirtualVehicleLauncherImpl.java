@@ -40,15 +40,14 @@ import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorkerStateListener;
 /**
  * VehicleLauncherImpl
  */
-public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, JavascriptWorkerStateListener
+public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, JavascriptWorkerStateListener,
+    VirtualVehicleListener
 {
     private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleLauncherImpl.class);
 
     private QueryManager qm;
     private JavascriptService jss;
     private VirtualVehicleMigrator migrator;
-
-    private Map<Integer, JavascriptWorker> workerMap = new HashMap<Integer, JavascriptWorker>();
     private Map<JavascriptWorker, VirtualVehicle> vehicleMap = new HashMap<JavascriptWorker, VirtualVehicle>();
 
     /**
@@ -62,6 +61,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         this.jss = jss;
         this.migrator = migrator;
 
+        migrator.addListener(this);
         jss.addAllowedClassRegex("\\$BuiltInFunctions_.*");
     }
 
@@ -87,10 +87,50 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         vehicle.setStartTime(new Date());
         qm.saveOrUpdate(vehicle);
 
-        JavascriptWorker worker = jss.createWorker(vehicle.getCode(), vehicle.getApiVersion());
+        startVehicle(vehicle, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void resume(VirtualVehicle vehicle) throws VirtualVehicleLaunchException, IOException
+    {
+        if (vehicle == null)
+        {
+            throw new VirtualVehicleLaunchException("Invalid virtual vehicle 'null'");
+        }
+
+        VirtualVehicleState state = vehicle.getState();
+
+        if (state != VirtualVehicleState.MIGRATION_AWAITED
+            && state != VirtualVehicleState.MIGRATION_INTERRUPTED
+            && state != VirtualVehicleState.MIGRATION_COMPLETED)
+        {
+            throw new VirtualVehicleLaunchException("Expected vehicle in state "
+                + VirtualVehicleState.MIGRATION_AWAITED + ", "
+                + VirtualVehicleState.MIGRATION_INTERRUPTED + ", or "
+                + VirtualVehicleState.MIGRATION_COMPLETED + ", but got " + state);
+        }
+
+        startVehicle(vehicle, true);
+    }
+
+    /**
+     * @param vehicle the virtual vehicle to start
+     * @param useContinuation use the continuation data if true
+     * @throws VirtualVehicleLaunchException thrown in case of errors.
+     * @throws IOException thrown in case of errors.
+     */
+    private void startVehicle(VirtualVehicle vehicle, boolean useContinuation)
+        throws VirtualVehicleLaunchException, IOException
+    {
+        JavascriptWorker worker = useContinuation
+            ? jss.createWorker(vehicle.getContinuation())
+            : jss.createWorker(vehicle.getCode(), vehicle.getApiVersion());
+
         worker.addStateListener(this);
-        worker.setName("VV-" + vehicle.getName());
-        workerMap.put(vehicle.getId(), worker);
+        worker.setName("VV-" + vehicle.getId() + "-" + vehicle.getName());
         vehicleMap.put(worker, vehicle);
         worker.start();
     }
@@ -119,10 +159,10 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         if (vehicle != null && vehicleState != null)
         {
             VirtualVehicleMappingDecision decision = null;
-            
+
             Transaction t = qm.getSession().beginTransaction();
             vehicle.setState(vehicleState);
-            
+
             switch (state)
             {
                 case INTERRUPTED:
@@ -152,7 +192,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
                 default:
                     break;
             }
-            
+
             qm.getSession().saveOrUpdate(vehicle);
             t.commit();
             qm.getSession().flush();
@@ -160,9 +200,24 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
             if (decision != null)
             {
                 LOG.info("initiateMigration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
-                migrator.initiateMigration(vehicle, decision);
+                migrator.initiateMigration(vehicle);
             }
         }
     }
 
+    @Override
+    public void notify(VirtualVehicle vehicle)
+    {
+        if (vehicle.getState() == VirtualVehicleState.MIGRATION_COMPLETED)
+        {
+            try
+            {
+                startVehicle(vehicle, true);
+            }
+            catch (VirtualVehicleLaunchException | IOException e)
+            {
+                LOG.error("Can not start virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")", e);
+            }
+        }
+    }
 }

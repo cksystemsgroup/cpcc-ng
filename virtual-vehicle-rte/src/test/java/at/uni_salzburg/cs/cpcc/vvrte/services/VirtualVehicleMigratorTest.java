@@ -180,6 +180,8 @@ public class VirtualVehicleMigratorTest
         when(repo.findVirtualVehicleById(vv1.getId())).thenReturn(vv1);
         when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq((String) null), eq(1)))
             .thenReturn(Arrays.asList(storage1));
+        when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq(""), eq(1)))
+            .thenReturn(Arrays.asList(storage1));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq("storage1"), eq(1)))
             .thenReturn(Arrays.asList(storage2));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq("storage2"), eq(1)))
@@ -189,15 +191,21 @@ public class VirtualVehicleMigratorTest
 
         when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq((String) null), eq(2)))
             .thenReturn(Arrays.asList(storage1, storage2));
+        when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq(""), eq(2)))
+            .thenReturn(Arrays.asList(storage1, storage2));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq("storage2"), eq(2)))
             .thenReturn(Arrays.asList(storage3, storage4));
 
         when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq((String) null), eq(3)))
             .thenReturn(Arrays.asList(storage1, storage2, storage3));
+        when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq(""), eq(3)))
+            .thenReturn(Arrays.asList(storage1, storage2, storage3));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq("storage3"), eq(3)))
             .thenReturn(Arrays.asList(storage4));
 
         when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq((String) null), eq(4)))
+            .thenReturn(Arrays.asList(storage1, storage2, storage3, storage4));
+        when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq(""), eq(4)))
             .thenReturn(Arrays.asList(storage1, storage2, storage3, storage4));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv1.getId()), eq("storage4"), eq(4)))
             .thenReturn(new ArrayList<VirtualVehicleStorage>());
@@ -283,6 +291,8 @@ public class VirtualVehicleMigratorTest
         when(repo.findVirtualVehicleById(vv2.getId())).thenReturn(vv2);
         when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq((String) null), eq(1)))
             .thenReturn(Arrays.asList(storage1));
+        when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq(""), eq(1)))
+            .thenReturn(Arrays.asList(storage1));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq("storage1"), eq(1)))
             .thenReturn(Arrays.asList(storage2));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq("storage2"), eq(1)))
@@ -292,15 +302,21 @@ public class VirtualVehicleMigratorTest
 
         when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq((String) null), eq(2)))
             .thenReturn(Arrays.asList(storage1, storage2));
+        when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq(""), eq(2)))
+            .thenReturn(Arrays.asList(storage1, storage2));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq("storage2"), eq(2)))
             .thenReturn(Arrays.asList(storage3, storage4));
 
         when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq((String) null), eq(3)))
             .thenReturn(Arrays.asList(storage1, storage2, storage3));
+        when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq(""), eq(3)))
+            .thenReturn(Arrays.asList(storage1, storage2, storage3));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq("storage3"), eq(3)))
             .thenReturn(Arrays.asList(storage4));
 
         when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq((String) null), eq(4)))
+            .thenReturn(Arrays.asList(storage1, storage2, storage3, storage4));
+        when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq(""), eq(4)))
             .thenReturn(Arrays.asList(storage1, storage2, storage3, storage4));
         when(repo.findStorageItemsByVirtualVehicle(eq(vv2.getId()), eq("storage4"), eq(4)))
             .thenReturn(new ArrayList<VirtualVehicleStorage>());
@@ -393,15 +409,15 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"storage/storage1", 727, 1789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 172, 0, 2, "vvrte", "cpcc", "storage1"},
+                        new Object[]{"vv/vv.properties", 172, 0, 2, "vvrte", "cpcc", "storage/storage1"},
                         new Object[]{"storage/storage2", 897, 2789, 2, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 172, 0, 3, "vvrte", "cpcc", "storage2"},
+                        new Object[]{"vv/vv.properties", 172, 0, 3, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 574, 3789, 3, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 172, 0, 4, "vvrte", "cpcc", "storage3"},
+                        new Object[]{"vv/vv.properties", 172, 0, 4, "vvrte", "cpcc", "storage/storage3"},
                         new Object[]{"storage/storage4", 5, 4789, 4, "vvrte", "cpcc"},
                     }
                 }
@@ -419,7 +435,7 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"storage/storage2", 897, 2789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 172, 0, 2, "vvrte", "cpcc", "storage2"},
+                        new Object[]{"vv/vv.properties", 172, 0, 2, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 574, 3789, 2, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
                     }
@@ -439,7 +455,7 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"storage/storage3", 574, 3789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 172, 0, 2, "vvrte", "cpcc", "storage3"},
+                        new Object[]{"vv/vv.properties", 188, 0, 2, "vvrte", "cpcc", "storage/storage3"},
                         new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
                     }
                 }
@@ -472,15 +488,15 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"storage/storage1", 726, 1789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 124, 0, 2, "vvrte", "cpcc", "storage1"},
+                        new Object[]{"vv/vv.properties", 124, 0, 2, "vvrte", "cpcc", "storage/storage1"},
                         new Object[]{"storage/storage2", 854, 2789, 2, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 124, 0, 3, "vvrte", "cpcc", "storage2"},
+                        new Object[]{"vv/vv.properties", 124, 0, 3, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 655, 3789, 3, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 124, 0, 4, "vvrte", "cpcc", "storage3"},
+                        new Object[]{"vv/vv.properties", 124, 0, 4, "vvrte", "cpcc", "storage/storage3"},
                         new Object[]{"storage/storage4", 5, 4789, 4, "vvrte", "cpcc"},
                     }
                 }
@@ -497,7 +513,7 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"storage/storage2", 854, 2789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 124, 0, 2, "vvrte", "cpcc", "storage2"},
+                        new Object[]{"vv/vv.properties", 124, 0, 2, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 655, 3789, 2, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
                     }
@@ -516,7 +532,7 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"storage/storage3", 655, 3789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 124, 0, 2, "vvrte", "cpcc", "storage3"},
+                        new Object[]{"vv/vv.properties", 140, 0, 2, "vvrte", "cpcc", "storage/storage3"},
                         new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
                     }
                 }
@@ -558,6 +574,10 @@ public class VirtualVehicleMigratorTest
         {
             String lastStorageName = (String) ((Object[]) ((Object[]) params[chunkNumber])[0])[6];
             byte[] chunk = migrator.findChunk(vv, lastStorageName, chunkNumber);
+            if (chunkNumber == numberOfChunks - 1)
+            {
+                assertThat(vv.getState() == VirtualVehicleState.MIGRATION_COMPLETED);
+            }
 
             verifyChunk(params, factory, chunkNumber, chunk);
         }
@@ -585,8 +605,12 @@ public class VirtualVehicleMigratorTest
             String userName = (String) entryParams[4];
             String groupName = (String) entryParams[5];
 
-            assertThat(entry.getName()).isNotNull().isEqualTo(name);
-            assertThat(entry.getSize()).isNotNull().isEqualTo(length);
+            assertThat(entry.getName())
+                .overridingErrorMessage("Expected %s but was %s in chunk %d", name, entry.getName(), chunkNumber)
+                .isNotNull().isEqualTo(name);
+            assertThat(entry.getSize())
+                .overridingErrorMessage("Expected %d but was %d in chunk %d", length, entry.getSize(), chunkNumber)
+                .isNotNull().isEqualTo(length);
             assertThat(entry.getUserId()).isNotNull().isEqualTo(storageId);
             assertThat(entry.getGroupId()).isNotNull().isEqualTo(chunkId);
             assertThat(entry.getUserName()).isNotNull().isEqualTo(userName);
@@ -656,7 +680,11 @@ public class VirtualVehicleMigratorTest
                 }
             }
 
-            assertThat(virtualVehicleStorageMap.entrySet().size()).isEqualTo(storageEntries);
+            int actualEntries = virtualVehicleStorageMap.entrySet().size();
+            assertThat(virtualVehicleStorageMap.entrySet().size())
+                .overridingErrorMessage("Expected %d but was %d in chunk %d",
+                    storageEntries, actualEntries, chunkNumber)
+                .isEqualTo(storageEntries);
         }
     }
 
@@ -823,7 +851,7 @@ public class VirtualVehicleMigratorTest
     }
 
     @Test(dataProvider = "chunkDataProvider", expectedExceptions = {IOException.class},
-        expectedExceptionsMessageRegExp = "Virtual vehicle \\S+ (\\S+) has not state MIGRATING")
+        expectedExceptionsMessageRegExp = "Virtual vehicle \\S+ (\\S+) has not state MIGRATING but FINISHED")
     public void shouldThrowIOEOnWrongVirtualVehicleState(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
@@ -905,6 +933,5 @@ public class VirtualVehicleMigratorTest
 
             verifyChunk(params, factory, chunkNumber, chunk);
         }
-
     }
 }

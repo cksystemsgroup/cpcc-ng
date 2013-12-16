@@ -19,10 +19,13 @@
  */
 package at.uni_salzburg.cs.cpcc.com.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.EntityBuilder;
@@ -44,7 +47,7 @@ public class CommunicationServiceImpl implements CommunicationService
     private static final Map<Connector, String> CONNECTOR_MAP = new HashMap<Connector, String>()
     {
         {
-            put(Connector.MIGRATE, "/migrate");
+            put(Connector.MIGRATE, "/vehicle/migration");
         }
     };
 
@@ -71,7 +74,11 @@ public class CommunicationServiceImpl implements CommunicationService
         CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpResponse response = httpclient.execute(request);
 
-        String content = response.getStatusLine().getReasonPhrase();
+        HttpEntity responseEntity = response.getEntity();
+        InputStream ins = responseEntity.getContent();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        IOUtils.copy(ins, baos);
+        String content = baos.toString("UTF-8");
 
         boolean ok = response.getStatusLine().getStatusCode() == 200;
 

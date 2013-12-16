@@ -81,6 +81,11 @@ public interface VvRteRepository extends Repository
     VirtualVehicle findVirtualVehicleByUUID(String uuid);
 
     /**
+     * @param vehicle the virtual vehicle to be deleted.
+     */
+    void deleteVirtualVehicleById(VirtualVehicle vehicle);
+    
+    /**
      * @return all item names of items in the virtual vehicle storage.
      */
     List<String> findAllStorageItemNames();
@@ -111,4 +116,5 @@ public interface VvRteRepository extends Repository
      * @return the requested entries, or null if not found.
      */
     List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName, int maxEntries);
+
 }

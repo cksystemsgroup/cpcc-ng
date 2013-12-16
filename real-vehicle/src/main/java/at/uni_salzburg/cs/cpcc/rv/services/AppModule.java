@@ -78,6 +78,7 @@ public final class AppModule
     {
         configuration.add(SymbolConstants.SUPPORTED_LOCALES, "en,de");
         configuration.add(SymbolConstants.MINIFICATION_ENABLED, "false");
+        configuration.add(SymbolConstants.HMAC_PASSPHRASE, "Eith6Du9reeSa7aiaiweaM7oaCh6quae");
     }
 
     /**

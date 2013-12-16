@@ -23,8 +23,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -50,6 +52,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
     private VvRteRepository vvRepository;
     private CommunicationService com;
+    private Set<VirtualVehicleListener> listenerSet = new HashSet<VirtualVehicleListener>();
 
     /**
      * @param vvRepository the virtual vehicle repository.
@@ -62,12 +65,12 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     }
 
     @Override
-    public void initiateMigration(VirtualVehicle vehicle, VirtualVehicleMappingDecision decision)
+    public void initiateMigration(VirtualVehicle vehicle)
     {
         VvMigrationWorker worker = new VvMigrationWorker(vehicle, vvRepository, com, this);
         worker.start();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -80,11 +83,11 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         factory.setEntryEncoding("UTF-8");
 
         ArchiveOutputStream outStream = factory.createArchiveOutputStream("tar", baos);
-        writeVirtualVehicleProperties(virtualVehicle, outStream, 0);
+
+        writeVirtualVehicleProperties(virtualVehicle, outStream, 0, false);
+
         outStream.close();
-
         baos.close();
-
         return baos.toByteArray();
     }
 
@@ -95,30 +98,47 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     public byte[] findChunk(VirtualVehicle virtualVehicle, String lastStorageName, int chunkNumber)
         throws IOException, ArchiveException
     {
+        Parameter paramChunkSize = vvRepository.getQueryManager()
+            .findParameterByName(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE, "10");
+
+        int chunkSize = Integer.parseInt(paramChunkSize.getValue());
+
+        String name = lastStorageName != null && lastStorageName.startsWith("storage/")
+            ? lastStorageName.substring(8) : "";
+
+        List<VirtualVehicleStorage> storageChunk =
+            vvRepository.findStorageItemsByVirtualVehicle(virtualVehicle.getId(), name, chunkSize);
+
+        if (storageChunk.size() == 0 && chunkNumber > 1)
+        {
+            virtualVehicle.setState(VirtualVehicleState.MIGRATION_COMPLETED);
+            return null;
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ArchiveStreamFactory factory = new ArchiveStreamFactory();
         factory.setEntryEncoding("UTF-8");
 
+        boolean lastChunk = storageChunk.size() == 0 || storageChunk.size() < chunkSize;
+
         ArchiveOutputStream outStream = factory.createArchiveOutputStream("tar", baos);
-        writeVirtualVehicleProperties(virtualVehicle, outStream, chunkNumber);
+
+        writeVirtualVehicleProperties(virtualVehicle, outStream, chunkNumber, lastChunk);
         if (chunkNumber == 1)
         {
             writeVirtualVehicleSourceCode(virtualVehicle, outStream, chunkNumber);
             writeVirtualVehicleContinuation(virtualVehicle, outStream, chunkNumber);
         }
 
-        Parameter paramChunkSize = vvRepository.getQueryManager()
-            .findParameterByName(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE, "10");
-
-        int chunkSize = Integer.parseInt(paramChunkSize.getValue());
-
-        List<VirtualVehicleStorage> storageChunk =
-            vvRepository.findStorageItemsByVirtualVehicle(virtualVehicle.getId(), lastStorageName, chunkSize);
         writeVirtualVehicleStorageChunk(virtualVehicle, outStream, chunkNumber, storageChunk);
 
         outStream.close();
-
         baos.close();
+
+        if (lastChunk)
+        {
+            virtualVehicle.setState(VirtualVehicleState.MIGRATION_COMPLETED);
+        }
 
         return baos.toByteArray();
     }
@@ -129,11 +149,11 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * @param chunkNumber the chunk number.
      * @throws IOException thrown in case of errors.
      */
-    private void writeVirtualVehicleProperties(VirtualVehicle virtualVehicle, ArchiveOutputStream os, int chunkNumber)
-        throws IOException
+    private void writeVirtualVehicleProperties(VirtualVehicle virtualVehicle, ArchiveOutputStream os, int chunkNumber,
+        boolean lastChunk) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Properties virtualVehicleProps = fillVirtualVehicleProps(virtualVehicle);
+        Properties virtualVehicleProps = fillVirtualVehicleProps(virtualVehicle, lastChunk);
         virtualVehicleProps.store(baos, "Virtual Vehicle Properties");
         baos.close();
 
@@ -226,9 +246,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
     /**
      * @param virtualVehicle the virtual vehicle.
+     * @param lastChunk true if this property object is going to be transferred in the last data chunk.
      * @return the virtual vehicle properties.
      */
-    private static Properties fillVirtualVehicleProps(VirtualVehicle virtualVehicle)
+    private static Properties fillVirtualVehicleProps(VirtualVehicle virtualVehicle, boolean lastChunk)
     {
         Properties props = new Properties();
         props.setProperty("name", virtualVehicle.getName());
@@ -242,6 +263,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         {
             props.setProperty("end.time", Long.toString(virtualVehicle.getEndTime().getTime()));
         }
+        if (lastChunk)
+        {
+            props.setProperty("last.chunk", Boolean.TRUE.toString());
+        }
         return props;
     }
 
@@ -249,8 +274,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * {@inheritDoc}
      */
     @Override
-    public void storeChunk(InputStream inStream) throws ArchiveException, IOException
+    public String storeChunk(InputStream inStream) throws ArchiveException, IOException
     {
+        boolean lastChunk = false;
+        String chunkName = null;
         ArchiveStreamFactory f = new ArchiveStreamFactory();
         ArchiveInputStream ais = f.createArchiveInputStream("tar", inStream);
         VirtualVehicleHolder virtualVehicleHolder = new VirtualVehicleHolder();
@@ -258,19 +285,35 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         for (TarArchiveEntry entry = (TarArchiveEntry) ais.getNextEntry(); entry != null; entry =
             (TarArchiveEntry) ais.getNextEntry())
         {
-            if (entry.getName().startsWith("vv/"))
+            chunkName = entry.getName();
+
+            if (chunkName.startsWith("vv/"))
             {
-                storeVirtualVehicleEntry(ais, entry, virtualVehicleHolder);
+                lastChunk |= storeVirtualVehicleEntry(ais, entry, virtualVehicleHolder);
+                String name = virtualVehicleHolder.getVirtualVehicle() != null
+                    ? " name=" + virtualVehicleHolder.getVirtualVehicle().getName() : "";
+                LOG.info("Migration of " + chunkName + name);
             }
-            else if (entry.getName().startsWith("storage/"))
+            else if (chunkName.startsWith("storage/"))
             {
                 storeStorageEntry(ais, entry, virtualVehicleHolder.getVirtualVehicle());
+                String name = virtualVehicleHolder.getVirtualVehicle() != null
+                    ? " name=" + virtualVehicleHolder.getVirtualVehicle().getName() : "";
+                LOG.info("Migration of " + chunkName + name);
             }
+            // TODO message queue
             else
             {
-                throw new IOException("Can not store unknown type of entry " + entry.getName());
+                throw new IOException("Can not store unknown type of entry " + chunkName);
             }
         }
+
+        if (lastChunk)
+        {
+            notifyListeners(virtualVehicleHolder.getVirtualVehicle());
+        }
+
+        return chunkName;
     }
 
     /**
@@ -279,64 +322,105 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * @param virtualVehicleHolder the holder object for the virtual vehicle read.
      * @throws IOException thrown in case of errors.
      */
-    private void storeVirtualVehicleEntry(InputStream inStream, TarArchiveEntry entry,
+    private boolean storeVirtualVehicleEntry(InputStream inStream, TarArchiveEntry entry,
         VirtualVehicleHolder virtualVehicleHolder) throws IOException
     {
+        boolean lastChunk = false;
+
         if ("vv/vv.properties".equals(entry.getName()))
         {
             Properties props = new Properties();
             props.load(inStream);
 
+            lastChunk |= Boolean.parseBoolean(props.getProperty("last.chunk", "false"));
+
             VirtualVehicle vv = vvRepository.findVirtualVehicleByUUID(props.getProperty("uuid"));
             if (vv == null)
             {
-                vv = new VirtualVehicle();
-                vv.setName(props.getProperty("name"));
-                vv.setUuid(props.getProperty("uuid"));
-                vv.setApiVersion(Integer.parseInt(props.getProperty("api.version")));
-                vv.setState(VirtualVehicleState.MIGRATING);
-                String startTime = props.getProperty("start.time");
-                if (startTime != null)
-                {
-                    vv.setStartTime(new Date(Long.parseLong(startTime)));
-                }
-                String endTime = props.getProperty("end.time");
-                if (endTime != null)
-                {
-                    vv.setEndTime(new Date(Long.parseLong(endTime)));
-                }
-                vv.setMigrationDestination(null);
-                vvRepository.saveOrUpdate(vv);
+                vv = createVirtualVehicle(lastChunk, props);
             }
             else
             {
-                if (vv.getState() != VirtualVehicleState.MIGRATING)
-                {
-                    throw new IOException("Virtual vehicle " + vv.getName() + " (" + vv.getUuid() + ") has not state "
-                        + VirtualVehicleState.MIGRATING);
-                }
-                if (vv.getMigrationDestination() != null)
-                {
-                    throw new IOException("Virtual vehicle " + vv.getName() + " (" + vv.getUuid()
-                        + ") is being migrated and can not be a migration target.");
-                }
+                updateVirtualVehicle(lastChunk, vv);
             }
+
             virtualVehicleHolder.setVirtualVehicle(vv);
         }
         else if ("vv/vv-continuation.js".equals(entry.getName()))
         {
             byte[] continuation = IOUtils.toByteArray(inStream);
             virtualVehicleHolder.getVirtualVehicle().setContinuation(continuation);
+            vvRepository.saveOrUpdate(virtualVehicleHolder.getVirtualVehicle());
         }
         else if ("vv/vv-source.js".equals(entry.getName()))
         {
             byte[] source = IOUtils.toByteArray(inStream);
             virtualVehicleHolder.getVirtualVehicle().setCode(new String(source, "UTF-8"));
+            vvRepository.saveOrUpdate(virtualVehicleHolder.getVirtualVehicle());
         }
         else
         {
             throw new IOException("Can not store unknown virtual vehicle entry " + entry.getName());
         }
+
+        return lastChunk;
+    }
+
+    /**
+     * @param lastChunk true if this is the last migration chunk.
+     * @param vv the virtual vehicle
+     * @throws IOException thrown in case of errors.
+     */
+    private void updateVirtualVehicle(boolean lastChunk, VirtualVehicle vv) throws IOException
+    {
+        if (vv.getState() != VirtualVehicleState.MIGRATING
+            && vv.getState() != VirtualVehicleState.MIGRATION_INTERRUPTED)
+        {
+            throw new IOException("Virtual vehicle " + vv.getName() + " (" + vv.getUuid() + ") "
+                + "has not state " + VirtualVehicleState.MIGRATING + " but " + vv.getState());
+        }
+
+        if (vv.getMigrationDestination() != null)
+        {
+            throw new IOException("Virtual vehicle " + vv.getName() + " (" + vv.getUuid() + ") "
+                + "is being migrated and can not be a migration target.");
+        }
+
+        vv.setState(lastChunk ? VirtualVehicleState.MIGRATION_COMPLETED : VirtualVehicleState.MIGRATING);
+        vvRepository.saveOrUpdate(vv);
+
+        LOG.info("migration: " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last=" + lastChunk);
+    }
+
+    /**
+     * @param lastChunk true if this is the last migration chunk.
+     * @param props the virtual vehicle properties.
+     * @return the created virtual vehicle
+     */
+    private VirtualVehicle createVirtualVehicle(boolean lastChunk, Properties props)
+    {
+        VirtualVehicle vv;
+        vv = new VirtualVehicle();
+        vv.setName(props.getProperty("name"));
+        vv.setUuid(props.getProperty("uuid"));
+        vv.setApiVersion(Integer.parseInt(props.getProperty("api.version")));
+        vv.setState(lastChunk ? VirtualVehicleState.MIGRATION_COMPLETED : VirtualVehicleState.MIGRATING);
+
+        String startTime = props.getProperty("start.time");
+        if (startTime != null)
+        {
+            vv.setStartTime(new Date(Long.parseLong(startTime)));
+        }
+
+        String endTime = props.getProperty("end.time");
+        if (endTime != null)
+        {
+            vv.setEndTime(new Date(Long.parseLong(endTime)));
+        }
+
+        vv.setMigrationDestination(null);
+        vvRepository.saveOrUpdate(vv);
+        return vv;
     }
 
     /**
@@ -362,6 +446,20 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         item.setContentAsByteArray(IOUtils.toByteArray(inStream));
 
         vvRepository.saveOrUpdate(item);
+    }
+
+    @Override
+    public void addListener(VirtualVehicleListener listener)
+    {
+        listenerSet.add(listener);
+    }
+
+    private void notifyListeners(VirtualVehicle vehicle)
+    {
+        for (VirtualVehicleListener listener : listenerSet)
+        {
+            listener.notify(vehicle);
+        }
     }
 
     /**

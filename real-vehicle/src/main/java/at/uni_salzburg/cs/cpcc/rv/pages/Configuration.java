@@ -92,8 +92,8 @@ public class Configuration
     @OnEvent(PREPARE)
     void loadParameters()
     {
-        masterServerURI = qm.findParameterByName(Parameter.MASTER_SERVER_URI);
-        internalRosCore = qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE);
+        masterServerURI = qm.findParameterByName(Parameter.MASTER_SERVER_URI, "");
+        internalRosCore = qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE, "");
         realVehicleName = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME, "");
         realVehicle = qm.findRealVehicleByName(realVehicleName.getValue());
         deviceList = qm.findAllDevices();
