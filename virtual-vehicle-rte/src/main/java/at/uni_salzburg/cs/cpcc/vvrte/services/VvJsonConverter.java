@@ -17,35 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.persistence.services;
+package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import org.apache.tapestry5.ioc.Configuration;
-import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.json.JSONArray;
+
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 
 /**
- * PersistenceModule
+ * VvJsonConverter
  */
-public final class PersistenceModule
+public interface VvJsonConverter
 {
-    private PersistenceModule()
-    {
-        // intentionally empty.
-    }
-
     /**
-     * @param binder the service binder
+     * @param vehicles a list of virtual vehicles.
+     * @return the requested JSON array.
      */
-    public static void bind(ServiceBinder binder)
-    {
-        binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
-        binder.bind(PersistenceJsonConverter.class, PersistenceJsonConverter.class);
-    }
-    
-    /**
-     * @param configuration the IoC configuration.
-     */
-    public static void contributeHibernateEntityPackageManager(Configuration<String> configuration)
-    {
-        configuration.add("at.uni_salzburg.cs.cpcc.persistence.entities");
-    }
+    JSONArray toJsonArray(VirtualVehicle... vehicles);
 }

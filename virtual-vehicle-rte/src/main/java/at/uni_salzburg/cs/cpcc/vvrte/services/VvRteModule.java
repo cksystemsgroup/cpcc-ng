@@ -60,6 +60,7 @@ public final class VvRteModule
         binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class).eagerLoad();
         binder.bind(TimerService.class, TimerServiceImpl.class).eagerLoad();
         binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class).eagerLoad();
+        binder.bind(VvJsonConverter.class,VvJsonConverterImpl.class);
     }
 
     /**

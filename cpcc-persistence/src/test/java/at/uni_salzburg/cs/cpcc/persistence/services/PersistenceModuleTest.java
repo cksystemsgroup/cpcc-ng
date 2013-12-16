@@ -21,6 +21,7 @@ package at.uni_salzburg.cs.cpcc.persistence.services;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,13 +52,15 @@ public class PersistenceModuleTest
         ServiceBindingOptions options = mock(ServiceBindingOptions.class);
         ServiceBinder binder = mock(ServiceBinder.class);
         when(binder.bind(QueryManager.class, QueryManagerImpl.class)).thenReturn(options);
-        
+        when(binder.bind(PersistenceJsonConverter.class, PersistenceJsonConverter.class)).thenReturn(options);
+
         PersistenceModule.bind(binder);
-        
+
         verify(binder).bind(QueryManager.class, QueryManagerImpl.class);
-        verify(options).eagerLoad();
+        verify(binder).bind(PersistenceJsonConverter.class, PersistenceJsonConverter.class);
+        verify(options, times(1)).eagerLoad();
     }
-    
+
     @Test
     public void shouldContributeToHibernateEntityPackageManager()
     {

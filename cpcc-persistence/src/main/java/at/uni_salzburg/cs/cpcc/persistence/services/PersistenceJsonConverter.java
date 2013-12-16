@@ -19,33 +19,26 @@
  */
 package at.uni_salzburg.cs.cpcc.persistence.services;
 
-import org.apache.tapestry5.ioc.Configuration;
-import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.json.JSONArray;
+
+import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
 
 /**
- * PersistenceModule
+ * PersistenceJsonConverter
  */
-public final class PersistenceModule
+public interface PersistenceJsonConverter
 {
-    private PersistenceModule()
-    {
-        // intentionally empty.
-    }
-
     /**
-     * @param binder the service binder
+     * @param vehicles a list of real vehicles.
+     * @return the requested JSON array.
      */
-    public static void bind(ServiceBinder binder)
-    {
-        binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
-        binder.bind(PersistenceJsonConverter.class, PersistenceJsonConverter.class);
-    }
+    JSONArray toJsonArray(RealVehicle... vehicles);
     
     /**
-     * @param configuration the IoC configuration.
+     * @param sensors a list of sensor definitions.
+     * @return the requested JSON array.
      */
-    public static void contributeHibernateEntityPackageManager(Configuration<String> configuration)
-    {
-        configuration.add("at.uni_salzburg.cs.cpcc.persistence.entities");
-    }
+    JSONArray toJsonArray(SensorDefinition... sensors);
+
 }

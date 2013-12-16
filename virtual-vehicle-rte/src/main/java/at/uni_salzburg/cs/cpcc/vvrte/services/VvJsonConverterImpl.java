@@ -17,35 +17,34 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.persistence.services;
+package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import org.apache.tapestry5.ioc.Configuration;
-import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
+
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 
 /**
- * PersistenceModule
+ * VvJsonConverterImpl
  */
-public final class PersistenceModule
+public class VvJsonConverterImpl implements VvJsonConverter
 {
-    private PersistenceModule()
-    {
-        // intentionally empty.
-    }
-
     /**
-     * @param binder the service binder
+     * {@inheritDoc}
      */
-    public static void bind(ServiceBinder binder)
+    @Override
+    public JSONArray toJsonArray(VirtualVehicle... vehicleList)
     {
-        binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
-        binder.bind(PersistenceJsonConverter.class, PersistenceJsonConverter.class);
-    }
-    
-    /**
-     * @param configuration the IoC configuration.
-     */
-    public static void contributeHibernateEntityPackageManager(Configuration<String> configuration)
-    {
-        configuration.add("at.uni_salzburg.cs.cpcc.persistence.entities");
+        JSONArray a = new JSONArray();
+        for (VirtualVehicle vehicle : vehicleList)
+        {
+            JSONObject o = new JSONObject(
+                "uuid", vehicle.getUuid(),
+                "name", vehicle.getName(),
+                "state", vehicle.getState().toString()
+                );
+            a.put(o);
+        }
+        return a;
     }
 }

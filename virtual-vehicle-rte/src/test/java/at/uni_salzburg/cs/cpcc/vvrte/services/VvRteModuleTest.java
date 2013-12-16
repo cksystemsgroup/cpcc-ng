@@ -75,6 +75,7 @@ public class VvRteModuleTest
         when(binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class)).thenReturn(options);
         when(binder.bind(TimerService.class, TimerServiceImpl.class)).thenReturn(options);
         when(binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class)).thenReturn(options);
+        when(binder.bind(VvJsonConverter.class,VvJsonConverterImpl.class)).thenReturn(options);
         
         VvRteModule.bind(binder);
         
@@ -89,6 +90,7 @@ public class VvRteModuleTest
         verify(binder).bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class);
         verify(binder).bind(TimerService.class, TimerServiceImpl.class);
         verify(binder).bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class);
+        verify(binder).bind(VvJsonConverter.class,VvJsonConverterImpl.class);
         verify(options, times(11)).eagerLoad();
     }
 
