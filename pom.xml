@@ -38,13 +38,14 @@
 	</developers>
 
 	<modules>
-		<module>utilities</module>
-		<!-- <module>javascript-vm</module> -->
-		<module>virtual-vehicle-rte</module>
+		<module>cpcc-communication</module>
+		<module>cpcc-persistence</module>
+		<module>ground-station</module>
 		<module>real-vehicle</module>
 		<module>ros-service</module>
-		<module>cpcc-persistence</module>
-		<module>cpcc-communication</module>
+		<module>utilities</module>
+		<module>virtual-vehicle-rte</module>
+		<module>commons-ui</module>
 	</modules>
 
 	<!-- <scm> <connection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</connection> 

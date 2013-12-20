@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 
 import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -99,7 +100,76 @@ public class PersistenceJsonConverterTest
     }
 
     @DataProvider
-    public Object[][] vehiclesDataProvider()
+    public Object[][] singleVehicleDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{rv1,
+                "{\"sensors\":["
+                    + "{\"visibility\":\"ALL_VV\",\"description\":\"Altimeter\","
+                    + "\"parameters\":\"random=10:35\","
+                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\""
+                    + "},"
+                    + "{\"visibility\":\"NO_VV\",\"description\":\"Barometer\","
+                    + "\"parameters\":\"random=1050:1080\","
+                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"BAROMETER\""
+                    + "},"
+                    + "{\"visibility\":\"ALL_VV\",\"description\":\"Belly Mounted Camera 640x480\","
+                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
+                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\""
+                    + "}"
+                    + "],"
+                    + "\"name\":\"rv1\",\"url\":\"http://localhost/rv01\"}"
+            },
+            new Object[]{rv2,
+                "{\"sensors\":["
+                    + "{\"visibility\":\"NO_VV\",\"description\":\"Barometer\","
+                    + "\"parameters\":\"random=1050:1080\","
+                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"BAROMETER\""
+                    + "},"
+                    + "{\"visibility\":\"ALL_VV\",\"description\":\"Belly Mounted Camera 640x480\","
+                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
+                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\""
+                    + "},"
+                    + "{\"visibility\":\"PRIVILEGED_VV\",\"description\":\"GPS\","
+                    + "\"parameters\":\"\","
+                    + "\"messageType\":\"sensor_msgs/NavSatFix\",\"type\":\"GPS\""
+                    + "}"
+                    + "],"
+                    + "\"name\":\"rv2\","
+                    + "\"url\":\"http://localhost/rv02\"}"
+            },
+            new Object[]{rv3,
+                "{\"sensors\":["
+                    + "{\"visibility\":\"ALL_VV\",\"description\":\"Belly Mounted Camera 640x480\","
+                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
+                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\""
+                    + "},"
+                    + "{\"visibility\":\"PRIVILEGED_VV\",\"description\":\"GPS\","
+                    + "\"parameters\":\"\","
+                    + "\"messageType\":\"sensor_msgs/NavSatFix\",\"type\":\"GPS\""
+                    + "},"
+                    + "{\"visibility\":\"ALL_VV\",\"description\":\"Altimeter\","
+                    + "\"parameters\":\"random=10:35\","
+                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\""
+                    + "}"
+                    + "],"
+                    + "\"name\":\"rv3\","
+                    + "\"url\":\"http://localhost/rv03\"}"
+            },
+
+        };
+    }
+
+    @Test(dataProvider = "singleVehicleDataProvider")
+    public void shouldConvertRealVehicles(RealVehicle vehicle, String expectedJsonString)
+    {
+        JSONObject result = converter.toJson(vehicle);
+
+        assertThat(result.toString(true)).isNotNull().isEqualTo(expectedJsonString);
+    }
+
+    @DataProvider
+    public Object[][] multiVehicleDataProvider()
     {
         return new Object[][]{
             new Object[]{
@@ -218,8 +288,8 @@ public class PersistenceJsonConverterTest
         };
     }
 
-    @Test(dataProvider = "vehiclesDataProvider")
-    public void should(RealVehicle[] vehicles, String expectedJsonString)
+    @Test(dataProvider = "multiVehicleDataProvider")
+    public void shouldConvertRealVehicleArrays(RealVehicle[] vehicles, String expectedJsonString)
     {
         JSONArray result = converter.toJsonArray(vehicles);
 

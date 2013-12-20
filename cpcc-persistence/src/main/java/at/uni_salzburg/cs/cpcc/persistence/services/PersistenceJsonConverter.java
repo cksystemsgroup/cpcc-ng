@@ -20,9 +20,11 @@
 package at.uni_salzburg.cs.cpcc.persistence.services;
 
 import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
 
 import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
 /**
  * PersistenceJsonConverter
@@ -30,15 +32,33 @@ import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
 public interface PersistenceJsonConverter
 {
     /**
+     * @param vehicle a real vehicle object.
+     * @return the requested JSON object.
+     */
+    JSONObject toJson(RealVehicle vehicle);
+
+    /**
      * @param vehicles a list of real vehicles.
      * @return the requested JSON array.
      */
     JSONArray toJsonArray(RealVehicle... vehicles);
-    
+
+    /**
+     * @param sensor a sensor definition.
+     * @return the requested JSON object.
+     */
+    JSONObject toJson(SensorDefinition sensor);
+
     /**
      * @param sensors a list of sensor definitions.
      * @return the requested JSON array.
      */
     JSONArray toJsonArray(SensorDefinition... sensors);
+
+    /**
+     * @param coordinate a polar coordinate.
+     * @return the requested JSON object.
+     */
+    JSONObject toJson(PolarCoordinate coordinate);
 
 }

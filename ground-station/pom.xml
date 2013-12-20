@@ -9,17 +9,13 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>real-vehicle</artifactId>
+	<artifactId>ground-station</artifactId>
 	<packaging>war</packaging>
 
-	<name>Real Vehicle Web Application Module</name>
-	<description>Cyber Physical Cloud Computing - Real Vehicle Web Application Module</description>
+	<name>Ground Station Web Application Module</name>
+	<description>Cyber Physical Cloud Computing - Ground Station Web Application Module</description>
 
 	<dependencies>
-		<!-- Too set up an application with a database, change the artifactId below 
-			to tapestry-hibernate, and add a dependency on your JDBC driver. You'll also 
-			need to add Hibernate configuration files, such as hibernate.cfg.xml. -->
-
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
 			<artifactId>tapestry-core</artifactId>

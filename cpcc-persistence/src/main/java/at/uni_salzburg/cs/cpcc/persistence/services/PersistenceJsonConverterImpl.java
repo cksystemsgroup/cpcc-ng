@@ -19,17 +19,38 @@
  */
 package at.uni_salzburg.cs.cpcc.persistence.services;
 
+import java.util.Locale;
+
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
 import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
 /**
  * PersistenceJsonConverterImpl
  */
 public class PersistenceJsonConverterImpl implements PersistenceJsonConverter
 {
+    /**
+     * PersistenceJsonConverterImpl
+     */
+    public PersistenceJsonConverterImpl()
+    {
+        // intentionally empty.
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONObject toJson(RealVehicle vehicle)
+    {
+        JSONObject o = new JSONObject("name", vehicle.getName(), "url", vehicle.getUrl());
+        o.put("sensors", toJsonArray(vehicle.getSensors().toArray(new SensorDefinition[0])));
+        return o;
+    }
 
     /**
      * {@inheritDoc}
@@ -40,14 +61,23 @@ public class PersistenceJsonConverterImpl implements PersistenceJsonConverter
         JSONArray a = new JSONArray();
         for (RealVehicle vehicle : vehicleList)
         {
-            JSONObject o = new JSONObject(
-                "name", vehicle.getName(),
-                "url", vehicle.getUrl()
-                );
-            o.put("sensors", toJsonArray(vehicle.getSensors().toArray(new SensorDefinition[0])));
-            a.put(o);
+            a.put(toJson(vehicle));
         }
         return a;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONObject toJson(SensorDefinition sensor)
+    {
+        return new JSONObject(
+            "description", sensor.getDescription(),
+            "type", sensor.getType().toString(),
+            "messageType", sensor.getMessageType(),
+            "visibility", sensor.getVisibility().toString(),
+            "parameters", sensor.getParameters());
     }
 
     /**
@@ -59,15 +89,20 @@ public class PersistenceJsonConverterImpl implements PersistenceJsonConverter
         JSONArray a = new JSONArray();
         for (SensorDefinition sensor : sensorList)
         {
-            JSONObject o = new JSONObject(
-                "description", sensor.getDescription(),
-                "type", sensor.getType().toString(),
-                "messageType", sensor.getMessageType(),
-                "visibility", sensor.getVisibility().toString(),
-                "parameters", sensor.getParameters()
-                );
-            a.put(o);
+            a.put(toJson(sensor));
         }
         return a;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONObject toJson(PolarCoordinate coordinate)
+    {
+        return new JSONObject(
+            "lat", String.format(Locale.US, "%.8f", coordinate.getLatitude()),
+            "lon", String.format(Locale.US, "%.8f", coordinate.getLongitude()),
+            "alt", String.format(Locale.US, "%.3f", coordinate.getAltitude()));
     }
 }
