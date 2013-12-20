@@ -40,17 +40,17 @@ import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
-import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
-import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.entities.Device;
+import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
+import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.core.entities.Topic;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.core.services.opts.ParseException;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.base.RosTopic;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
-import at.uni_salzburg.cs.cpcc.utilities.opts.OptionsParserService;
-import at.uni_salzburg.cs.cpcc.utilities.opts.ParseException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

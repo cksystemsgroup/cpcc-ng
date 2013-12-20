@@ -27,18 +27,18 @@ import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.json.JSONObject;
 
 import sensor_msgs.NavSatFix;
-import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
-import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorType;
-import at.uni_salzburg.cs.cpcc.persistence.services.JsonStreamResponse;
-import at.uni_salzburg.cs.cpcc.persistence.services.PersistenceJsonConverter;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
+import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
+import at.uni_salzburg.cs.cpcc.core.services.JsonStreamResponse;
+import at.uni_salzburg.cs.cpcc.core.services.CoreJsonConverter;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractGpsSensorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvJsonConverter;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
@@ -58,7 +58,7 @@ public class Status
     private RosNodeService rns;
 
     @Inject
-    private PersistenceJsonConverter pjc;
+    private CoreJsonConverter pjc;
 
     @Inject
     private VvJsonConverter vjc;

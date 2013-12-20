@@ -32,7 +32,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Type;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

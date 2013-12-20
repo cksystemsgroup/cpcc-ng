@@ -30,7 +30,7 @@ import java.util.Map;
 import org.ros.node.NodeConfiguration;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.utilities.GeodeticSystem;
+import at.uni_salzburg.cs.cpcc.core.utils.GeodeticSystem;
 
 /**
  * ConfigurationTest

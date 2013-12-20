@@ -22,7 +22,7 @@ package at.uni_salzburg.cs.cpcc.ros.sensors;
 import java.util.List;
 import java.util.Map;
 
-import at.uni_salzburg.cs.cpcc.utilities.ConvertUtils;
+import at.uni_salzburg.cs.cpcc.core.utils.ConvertUtils;
 
 /**
  * AltimeterAdapter

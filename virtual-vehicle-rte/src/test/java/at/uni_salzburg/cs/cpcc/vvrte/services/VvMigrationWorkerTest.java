@@ -46,7 +46,7 @@ import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse.Status;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
-import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 

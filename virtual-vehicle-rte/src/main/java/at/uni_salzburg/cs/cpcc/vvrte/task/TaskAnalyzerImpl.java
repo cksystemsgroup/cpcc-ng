@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.mozilla.javascript.ScriptableObject;
 
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 
 /**
  * TaskAnalyzerImpl

@@ -19,7 +19,7 @@
 
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>utilities</artifactId>
+			<artifactId>core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 

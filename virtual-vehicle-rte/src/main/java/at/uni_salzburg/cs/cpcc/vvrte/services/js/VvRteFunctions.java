@@ -22,7 +22,7 @@ package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 import java.io.PrintStream;
 import java.io.Serializable;
 
-import at.uni_salzburg.cs.cpcc.utilities.NullPrintStream;
+import at.uni_salzburg.cs.cpcc.core.utils.NullPrintStream;
 
 /**
  * VvRteFunctions

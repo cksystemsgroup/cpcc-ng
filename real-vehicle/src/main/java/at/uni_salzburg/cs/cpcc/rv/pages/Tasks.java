@@ -33,7 +33,7 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.Messages;
 
-import at.uni_salzburg.cs.cpcc.utilities.StringUtilities;
+import at.uni_salzburg.cs.cpcc.core.utils.StringUtilities;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionService;
 

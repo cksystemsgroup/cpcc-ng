@@ -36,7 +36,7 @@ import org.apache.http.impl.client.HttpClients;
 
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse.Status;
-import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
 /**
  * CommunicationServiceImpl

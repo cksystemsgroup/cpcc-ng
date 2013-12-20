@@ -30,10 +30,10 @@ import org.mozilla.javascript.NativeObject;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorType;
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorVisibility;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorVisibility;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 
 /**
  * TaskAnalyzerTest

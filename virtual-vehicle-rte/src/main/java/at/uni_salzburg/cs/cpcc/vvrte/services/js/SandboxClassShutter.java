@@ -41,7 +41,7 @@ public class SandboxClassShutter implements ClassShutter
             add(java.util.HashMap.class.getName());
             add(java.util.Set.class.getName());
             add(java.util.HashSet.class.getName());
-            add(at.uni_salzburg.cs.cpcc.utilities.NullPrintStream.class.getName());
+            add(at.uni_salzburg.cs.cpcc.core.utils.NullPrintStream.class.getName());
         }
     };
 

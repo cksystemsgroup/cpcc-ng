@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sensor_msgs.NavSatFix;
-import at.uni_salzburg.cs.cpcc.utilities.ConfigUtils;
+import at.uni_salzburg.cs.cpcc.core.utils.ConfigUtils;
 
 /**
  * SonarEmulator

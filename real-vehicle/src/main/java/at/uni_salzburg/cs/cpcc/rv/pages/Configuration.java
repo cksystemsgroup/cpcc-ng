@@ -39,15 +39,15 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
-import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
-import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
-import at.uni_salzburg.cs.cpcc.persistence.entities.TopicCategory;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.persistence.services.SensorDefinitionSelectHelpers;
+import at.uni_salzburg.cs.cpcc.core.entities.Device;
+import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
+import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.core.entities.Topic;
+import at.uni_salzburg.cs.cpcc.core.entities.TopicCategory;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.services.SensorDefinitionSelectHelpers;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleMapper;
 

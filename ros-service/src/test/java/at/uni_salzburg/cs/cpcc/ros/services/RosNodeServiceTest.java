@@ -42,17 +42,17 @@ import org.ros.namespace.GraphName;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
-import at.uni_salzburg.cs.cpcc.persistence.entities.DeviceType;
-import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
-import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.persistence.entities.RosNodeType;
-import at.uni_salzburg.cs.cpcc.persistence.entities.Topic;
-import at.uni_salzburg.cs.cpcc.persistence.entities.TopicCategory;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.entities.Device;
+import at.uni_salzburg.cs.cpcc.core.entities.DeviceType;
+import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
+import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.core.entities.RosNodeType;
+import at.uni_salzburg.cs.cpcc.core.entities.Topic;
+import at.uni_salzburg.cs.cpcc.core.entities.TopicCategory;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.core.services.opts.ParseException;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
-import at.uni_salzburg.cs.cpcc.utilities.opts.OptionsParserService;
-import at.uni_salzburg.cs.cpcc.utilities.opts.ParseException;
 
 public class RosNodeServiceTest
 {

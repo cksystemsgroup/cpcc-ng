@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 
 
 /**

@@ -13,12 +13,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>utilities</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>cpcc-persistence</artifactId>
+			<artifactId>core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>

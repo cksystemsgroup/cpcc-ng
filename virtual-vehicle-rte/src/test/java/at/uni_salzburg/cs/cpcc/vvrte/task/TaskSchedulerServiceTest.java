@@ -30,7 +30,7 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskSchedulerServiceImpl;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskSchedulingAlgorithm;

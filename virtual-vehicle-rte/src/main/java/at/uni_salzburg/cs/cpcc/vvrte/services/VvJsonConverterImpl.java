@@ -22,8 +22,8 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.persistence.services.PersistenceJsonConverter;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.core.services.CoreJsonConverter;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 
@@ -32,12 +32,12 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
  */
 public class VvJsonConverterImpl implements VvJsonConverter
 {
-    private PersistenceJsonConverter pjc;
+    private CoreJsonConverter pjc;
 
     /**
      * @param pjc the JSON converter of the common module.
      */
-    public VvJsonConverterImpl(PersistenceJsonConverter pjc)
+    public VvJsonConverterImpl(CoreJsonConverter pjc)
     {
         this.pjc = pjc;
     }

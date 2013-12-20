@@ -26,7 +26,7 @@ import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.persistence.services.JsonStreamResponse;
+import at.uni_salzburg.cs.cpcc.core.services.JsonStreamResponse;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 
 /**

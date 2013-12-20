@@ -52,7 +52,7 @@ import org.testng.annotations.Test;
 
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse.Status;
-import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
 public class CommunicationServiceTest
 {

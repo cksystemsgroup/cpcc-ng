@@ -26,11 +26,11 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
 
+import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserServiceImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagService;
 import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagServiceImpl;
 import at.uni_salzburg.cs.cpcc.rv.services.ros.GraphNameTranslator;
-import at.uni_salzburg.cs.cpcc.utilities.opts.OptionsParserService;
-import at.uni_salzburg.cs.cpcc.utilities.opts.OptionsParserServiceImpl;
 
 import com.trsvax.bootstrap.environment.TableEnvironment;
 import com.trsvax.bootstrap.environment.TableValues;

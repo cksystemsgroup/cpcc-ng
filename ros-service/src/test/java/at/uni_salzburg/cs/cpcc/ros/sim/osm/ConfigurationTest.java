@@ -33,7 +33,7 @@ import org.ros.node.NodeConfiguration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.utilities.GeodeticSystem;
+import at.uni_salzburg.cs.cpcc.core.utils.GeodeticSystem;
 
 /**
  * ConfigurationTest

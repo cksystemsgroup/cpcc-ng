@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import sensor_msgs.NavSatFix;
 import std_msgs.Float32;
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import big_actor_msgs.LatLngAlt;
 
 /**

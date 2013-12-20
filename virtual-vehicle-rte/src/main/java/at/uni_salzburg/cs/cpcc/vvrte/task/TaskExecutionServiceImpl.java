@@ -29,6 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sensor_msgs.NavSatFix;
+import at.uni_salzburg.cs.cpcc.core.utils.GeodeticSystem;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.WGS84;
 import at.uni_salzburg.cs.cpcc.ros.actuators.AbstractActuatorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.actuators.ActuatorType;
 import at.uni_salzburg.cs.cpcc.ros.actuators.SimpleWayPointControllerAdapter;
@@ -38,9 +41,6 @@ import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractSensorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.AltimeterAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.SensorType;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
-import at.uni_salzburg.cs.cpcc.utilities.GeodeticSystem;
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
-import at.uni_salzburg.cs.cpcc.utilities.WGS84;
 
 /**
  * TaskExecutionServiceImpl

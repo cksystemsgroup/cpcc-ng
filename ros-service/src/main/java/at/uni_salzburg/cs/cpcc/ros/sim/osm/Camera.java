@@ -29,7 +29,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 
 /**
  * An OpenStreetMap camera.

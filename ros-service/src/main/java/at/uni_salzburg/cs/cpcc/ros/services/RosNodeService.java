@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
-import at.uni_salzburg.cs.cpcc.persistence.entities.MappingAttributes;
+import at.uni_salzburg.cs.cpcc.core.entities.Device;
+import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sim.RosNodeGroup;
 

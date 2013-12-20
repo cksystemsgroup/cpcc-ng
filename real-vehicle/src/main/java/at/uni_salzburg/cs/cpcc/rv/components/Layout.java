@@ -32,7 +32,7 @@ import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 
 import com.trsvax.bootstrap.annotations.Exclude;
 
@@ -107,8 +107,8 @@ public class Layout
      */
     public String getRealVehicleName()
     {
-        at.uni_salzburg.cs.cpcc.persistence.entities.Parameter rvn =
-            qm.findParameterByName(at.uni_salzburg.cs.cpcc.persistence.entities.Parameter.REAL_VEHICLE_NAME, "");
+        at.uni_salzburg.cs.cpcc.core.entities.Parameter rvn =
+            qm.findParameterByName(at.uni_salzburg.cs.cpcc.core.entities.Parameter.REAL_VEHICLE_NAME, "");
         return rvn != null && rvn.getValue() != null ? rvn.getValue() : "";
     }
 }

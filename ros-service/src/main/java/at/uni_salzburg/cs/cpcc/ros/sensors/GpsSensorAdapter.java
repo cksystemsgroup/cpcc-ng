@@ -28,7 +28,7 @@ import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.utilities.ConvertUtils;
+import at.uni_salzburg.cs.cpcc.core.utils.ConvertUtils;
 import sensor_msgs.NavSatFix;
 import sensor_msgs.NavSatStatus;
 

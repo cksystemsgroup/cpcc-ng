@@ -21,7 +21,7 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import java.util.List;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 
 /**

@@ -54,9 +54,9 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
-import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;

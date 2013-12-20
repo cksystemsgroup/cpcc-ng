@@ -30,12 +30,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorType;
-import at.uni_salzburg.cs.cpcc.persistence.entities.SensorVisibility;
-import at.uni_salzburg.cs.cpcc.persistence.services.PersistenceJsonConverter;
-import at.uni_salzburg.cs.cpcc.persistence.services.PersistenceJsonConverterImpl;
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
+import at.uni_salzburg.cs.cpcc.core.entities.SensorVisibility;
+import at.uni_salzburg.cs.cpcc.core.services.CoreJsonConverter;
+import at.uni_salzburg.cs.cpcc.core.services.CoreJsonConverterImpl;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
@@ -62,7 +62,7 @@ public class VvJsonConverterTest
     public void setUp()
     {
 
-        PersistenceJsonConverter pjc = new PersistenceJsonConverterImpl();
+        CoreJsonConverter pjc = new CoreJsonConverterImpl();
         converter = new VvJsonConverterImpl(pjc);
 
         when(vv1.getName()).thenReturn("vv1");

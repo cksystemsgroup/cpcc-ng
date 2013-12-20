@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
-import at.uni_salzburg.cs.cpcc.persistence.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;

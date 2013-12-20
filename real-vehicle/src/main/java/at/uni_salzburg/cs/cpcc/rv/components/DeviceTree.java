@@ -34,9 +34,9 @@ import org.apache.tapestry5.tree.TreeExpansionModel;
 import org.apache.tapestry5.tree.TreeModel;
 import org.apache.tapestry5.tree.TreeNode;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
-import at.uni_salzburg.cs.cpcc.persistence.entities.ITreeNode;
-import at.uni_salzburg.cs.cpcc.persistence.entities.TreeNodeAdapter;
+import at.uni_salzburg.cs.cpcc.core.entities.Device;
+import at.uni_salzburg.cs.cpcc.core.entities.ITreeNode;
+import at.uni_salzburg.cs.cpcc.core.entities.TreeNodeAdapter;
 
 /**
  * DeviceTree

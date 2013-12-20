@@ -29,8 +29,8 @@ import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.ros.sim.AnonymousNodeMain;
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
 
 /**
  * ImagePublisherNode

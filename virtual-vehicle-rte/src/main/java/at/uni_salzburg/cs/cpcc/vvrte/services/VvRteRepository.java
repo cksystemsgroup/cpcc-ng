@@ -22,8 +22,8 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 import java.util.Collection;
 import java.util.List;
 
-import at.uni_salzburg.cs.cpcc.persistence.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.persistence.services.Repository;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.services.Repository;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 

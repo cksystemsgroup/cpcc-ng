@@ -31,11 +31,11 @@ import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.utilities.CartesianCoordinate;
-import at.uni_salzburg.cs.cpcc.utilities.ConfigUtils;
-import at.uni_salzburg.cs.cpcc.utilities.GeodeticSystem;
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
-import at.uni_salzburg.cs.cpcc.utilities.WGS84;
+import at.uni_salzburg.cs.cpcc.core.utils.CartesianCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.ConfigUtils;
+import at.uni_salzburg.cs.cpcc.core.utils.GeodeticSystem;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.WGS84;
 
 /**
  * SimpleWayPointController

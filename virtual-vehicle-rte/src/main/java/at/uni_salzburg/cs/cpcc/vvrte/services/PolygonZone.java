@@ -23,7 +23,7 @@ import java.math.BigDecimal;
 import java.util.Locale;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 
 /**
  * PolygonZone

@@ -23,7 +23,7 @@ import static org.apache.tapestry5.EventConstants.PREPARE;
 
 import org.apache.tapestry5.annotations.OnEvent;
 
-import at.uni_salzburg.cs.cpcc.persistence.entities.Device;
+import at.uni_salzburg.cs.cpcc.core.entities.Device;
 
 /**
  * RosNewDevice

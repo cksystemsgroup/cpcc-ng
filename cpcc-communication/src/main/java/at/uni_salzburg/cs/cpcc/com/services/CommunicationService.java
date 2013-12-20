@@ -24,7 +24,7 @@ import java.io.IOException;
 import org.apache.http.client.ClientProtocolException;
 
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
-import at.uni_salzburg.cs.cpcc.persistence.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
 /**
  * CommunicationService

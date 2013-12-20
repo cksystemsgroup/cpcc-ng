@@ -22,9 +22,9 @@ package at.uni_salzburg.cs.cpcc.ros.sim.quadrotor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.utilities.CartesianCoordinate;
-import at.uni_salzburg.cs.cpcc.utilities.GeodeticSystem;
-import at.uni_salzburg.cs.cpcc.utilities.PolarCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.CartesianCoordinate;
+import at.uni_salzburg.cs.cpcc.core.utils.GeodeticSystem;
+import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 
 /**
  * PlantStateEstimator
