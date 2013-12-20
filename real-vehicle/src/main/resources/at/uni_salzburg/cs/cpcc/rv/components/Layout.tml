@@ -12,8 +12,8 @@
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
 				<div class="container">
-					<a t:type="pagelink" page="index" class="brand">${message:pagetitle.Index} [${realVehicleName}]</a>
 					<ul class="nav">
+						<li><a t:type="pagelink" page="index" class="brand">${message:pagetitle.Index} [${realVehicleName}]</a></li>
 						<li t:type="loop" source="pageNames" value="pageName"
 							class="prop:classForPageName"><a t:type="pagelink"
 							page="prop:pageName">${pageLabel}</a></li>
