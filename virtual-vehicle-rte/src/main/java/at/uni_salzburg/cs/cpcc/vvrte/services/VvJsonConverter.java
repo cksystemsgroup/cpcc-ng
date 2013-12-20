@@ -20,8 +20,10 @@
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import org.apache.tapestry5.json.JSONArray;
+import org.apache.tapestry5.json.JSONObject;
 
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 
 /**
  * VvJsonConverter
@@ -29,8 +31,26 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 public interface VvJsonConverter
 {
     /**
+     * @param vehicle a virtual vehicle object.
+     * @return the requested JSON object.
+     */
+    JSONObject toJson(VirtualVehicle vehicle);
+
+    /**
      * @param vehicles a list of virtual vehicles.
      * @return the requested JSON array.
      */
     JSONArray toJsonArray(VirtualVehicle... vehicles);
+
+    /**
+     * @param task a task object.
+     * @return the requested JSON object.
+     */
+    JSONObject toJson(Task task);
+
+    /**
+     * @param tasks a list of tasks
+     * @return the requested JSON array.
+     */
+    JSONArray toJsonArray(Task... tasks);
 }

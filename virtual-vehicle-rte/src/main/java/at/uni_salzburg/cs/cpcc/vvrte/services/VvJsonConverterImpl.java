@@ -22,13 +22,38 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
+import at.uni_salzburg.cs.cpcc.persistence.entities.SensorDefinition;
+import at.uni_salzburg.cs.cpcc.persistence.services.PersistenceJsonConverter;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 
 /**
  * VvJsonConverterImpl
  */
 public class VvJsonConverterImpl implements VvJsonConverter
 {
+    private PersistenceJsonConverter pjc;
+
+    /**
+     * @param pjc the JSON converter of the common module.
+     */
+    public VvJsonConverterImpl(PersistenceJsonConverter pjc)
+    {
+        this.pjc = pjc;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONObject toJson(VirtualVehicle vehicle)
+    {
+        return new JSONObject(
+            "uuid", vehicle.getUuid(),
+            "name", vehicle.getName(),
+            "state", vehicle.getState().toString());
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -38,12 +63,33 @@ public class VvJsonConverterImpl implements VvJsonConverter
         JSONArray a = new JSONArray();
         for (VirtualVehicle vehicle : vehicleList)
         {
-            JSONObject o = new JSONObject(
-                "uuid", vehicle.getUuid(),
-                "name", vehicle.getName(),
-                "state", vehicle.getState().toString()
-                );
-            a.put(o);
+            a.put(toJson(vehicle));
+        }
+        return a;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONObject toJson(Task task)
+    {
+        JSONObject o = new JSONObject("tolerance", Double.toString(task.getTolerance()));
+        o.put("position", pjc.toJson(task.getPosition()));
+        o.put("sensors", pjc.toJsonArray(task.getSensors().toArray(new SensorDefinition[0])));
+        return o;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JSONArray toJsonArray(Task... taskList)
+    {
+        JSONArray a = new JSONArray();
+        for (Task task : taskList)
+        {
+            a.put(toJson(task));
         }
         return a;
     }
