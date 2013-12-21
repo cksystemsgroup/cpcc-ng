@@ -26,11 +26,12 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
 
-import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
-import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserServiceImpl;
-import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagService;
-import at.uni_salzburg.cs.cpcc.rv.services.image.ImageTagServiceImpl;
-import at.uni_salzburg.cs.cpcc.rv.services.ros.GraphNameTranslator;
+import at.uni_salzburg.cs.cpcc.commons.services.StorageContentTagService;
+import at.uni_salzburg.cs.cpcc.commons.services.StorageContentTagServiceImpl;
+import at.uni_salzburg.cs.cpcc.commons.services.UriTranslator;
+import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagService;
+import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagServiceImpl;
+import at.uni_salzburg.cs.cpcc.commons.services.ros.GraphNameTranslator;
 
 import com.trsvax.bootstrap.environment.TableEnvironment;
 import com.trsvax.bootstrap.environment.TableValues;
@@ -54,7 +55,6 @@ public final class AppModule
     {
         binder.bind(ImageTagService.class, ImageTagServiceImpl.class);
         binder.bind(StorageContentTagService.class, StorageContentTagServiceImpl.class);
-        binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
     }
 
     /**

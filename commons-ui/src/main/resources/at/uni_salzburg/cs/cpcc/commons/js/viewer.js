@@ -180,13 +180,14 @@ function viewerInit() {
 	L.Icon.Default.imagePath = 'images';
 	
 	var tileServerUrl1 = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-	var tileServerUrl2 = 'http://khm1.google.com/kh/v=128&src=app&x={x}&y={y}&z={z}&s=Galileo'
+	// var tileServerUrl2 = 'http://khm1.google.com/kh/v=128&src=app&x={x}&y={y}&z={z}&s=Galileo';
+	var tileServerUrl2 = 'https://khms0.google.at/kh/v=143&src=app&x={x}&y={y}&z={z}&s=Gal';
 	var attribution1 = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
 	var attribution2 = '&copy; <a href="http://www.google.com">Google</a>';
 	
 	var emptyLayer = L.layerGroup();
-	var tileLayer1 = L.tileLayer(tileServerUrl1, {attribution : attribution1});
-	var tileLayer2 = L.tileLayer(tileServerUrl2, {attribution : attribution2});
+	var tileLayer1 = L.tileLayer(tileServerUrl1, {attribution : attribution1, maxZoom : 20});
+	var tileLayer2 = L.tileLayer(tileServerUrl2, {attribution : attribution2, maxZoom : 20});
 	locationLayer = L.layerGroup();
 	vehicleLayer = L.layerGroup();
 	

@@ -1,0 +1,188 @@
+<html t:type="layout" title="Real Vehicle Configuration"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<br />
+<t:form t:id="realVehicleNameForm">
+	<div class="row">
+		<t:errors />
+		<div class="span2">${message:realVehicleName}</div>
+		<div class="span4">
+		<input t:type="TextField" t:id="realVehicleName"
+			value="realVehicleName.value" t:validate="maxlength=100" size="30"
+			onchange="this.form.submit();" />
+		</div>
+	</div>
+</t:form>
+
+<t:form t:id="uriForm">
+	<div class="row">
+		<t:errors />
+		<fieldset>
+			<div class="span2">
+				<label>${message:masterURI}</label>
+			</div>
+			<div class="span4">
+				<input t:type="TextField" t:id="masterServerUri"
+					value="masterServerURI.value" t:validate="maxlength=100" size="30"
+					onchange="this.form.submit();" />
+			</div>
+		</fieldset>
+	</div>
+</t:form>
+
+<t:form t:id="coreForm">
+	<div class="row">
+		<t:errors />
+		<div class="span2">${message:useInternalRosCore}</div>
+		<div class="span4">
+			<t:checkbox t:id="internalRosCore" value="internalRosCore.value"
+				onclick="this.form.submit();" />
+		</div>
+	</div>
+</t:form>
+
+<section id="buttons">
+	<a t:type="pagelink" t:page="commons/ros/newDevice" href="#"
+		class="btn btn-primary">${message:createNewDevice}</a>
+</section>
+
+<section id="deviceList">
+	<h3>${message:deviceList}</h3>
+	<table t:type="grid" t:source="deviceList" t:exclude="builtin,id,label,parentLabel,uniqueId,leaf"
+		t:add="typeName,affiliation,editDeviceActions"
+		t:reorder="topicRoot,affiliation,typeName,configuration,editDeviceActions"
+		t:row="deviceConfig"
+		class="table table-striped table-condensed topic-table">
+
+		<p:affiliationCell>
+			<t:if test="deviceConfig.type.className">
+				${message:internalMapping}
+				<p:else>
+					${message:externalMapping}
+				</p:else>
+			</t:if>
+		</p:affiliationCell>
+
+		<p:typeNameCell>${deviceConfig.Type.Name}</p:typeNameCell>
+
+		<p:editDeviceActionsCell>
+			<a t:type="pagelink" t:page="commons/ros/editDevice"
+				t:context="deviceConfig.topicRoot" href="#"
+				t:title="${message:editDevice}"> <i class="icon-pencil"></i>
+			</a>
+			&nbsp;
+			<a t:type="eventlink" t:event="deleteDevice"
+				t:context="deviceConfig.topicRoot" href="#"
+				title="${message:deleteDevice}"> <i class="icon-remove"></i>
+			</a>
+		</p:editDeviceActionsCell>
+
+		<p:empty>
+			<p>${message:noDeviceFound}</p>
+		</p:empty>
+	</table>
+</section>
+
+<section id="mappingList">
+	<h3>${message:mappingList}</h3>
+	<t:form t:id="mappingForm">
+		<table t:type="grid" t:source="mappingList"
+			t:exclude="device,topic,vvVisible,primaryCategory,connectedToAutopilot"
+			t:add="topicPath,vvVisibleCb,typeName,category,autoPilotCb,sensorDefinition"
+			t:reorder="topicPath,vvVisibleCb,typeName,category,autoPilotCb,sensorDefinition" t:row="mappingConfig"
+			class="table table-striped table-condensed topic-table">
+
+<!-- 
+			<p:vvVisibleCbCell>
+				<t:if test="mappingConfig.vvVisible">
+					<t:if test="mappingConfig.pk.topic.subpath">
+						<a t:type="eventlink" t:event="setInvisibleInVirtualVehicle"
+							t:context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
+							title="${message:connectedToAutoPilot}"><t:checkbox t:id="vvVisibleOn1" value="true" /></a>
+						<p:else>
+							<a t:type="eventlink" t:event="setInvisibleInVirtualVehicle"
+								t:context="${mappingConfig.pk.device.topicRoot}" href="#"
+								title="${message:connectedToAutoPilot}"><t:checkbox t:id="vvVisibleOn2" value="true" /></a>				
+						</p:else>
+					</t:if>
+					<p:else>
+						<t:if test="mappingConfig.pk.topic.subpath">
+							<a t:type="eventlink" t:event="setVisibleInVirtualVehicle"
+								t:context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
+								title="${message:connectedToAutoPilot}"><t:checkbox t:id="vvVisibleOff1" value="false" /></a>
+							<p:else>
+							<a t:type="eventlink" t:event="setVisibleInVirtualVehicle"
+								t:context="${mappingConfig.pk.device.topicRoot}" href="#"
+								title="${message:connectedToAutoPilot}"><t:checkbox t:id="vvVisibleOff2" value="false" /></a>
+							</p:else>
+						</t:if>
+					</p:else>
+				</t:if>
+			</p:vvVisibleCbCell>
+			
+			<p:autoPilotCbCell>
+				<t:if test="mappingConfig.connectedToAutopilot">
+					<t:if test="mappingConfig.pk.topic.subpath">
+						<a t:type="eventlink" t:event="disconnectFromAutoPilot"
+							t:context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
+							title="${message:connectedToAutoPilot}"> <i class="icon-plane"></i></a>
+						<p:else>
+							<a t:type="eventlink" t:event="disconnectFromAutoPilot"
+								t:context="${mappingConfig.pk.device.topicRoot}" href="#"
+								title="${message:connectedToAutoPilot}"> <i class="icon-plane"></i></a>						
+						</p:else>
+					</t:if>
+					<p:else>
+						<t:if test="mappingConfig.pk.topic.subpath">
+							<a t:type="eventlink" t:event="connectToAutoPilot"
+								t:context="${mappingConfig.pk.device.topicRoot}/${mappingConfig.pk.topic.subpath}" href="#"
+								title="${message:connectToAutoPilot}"><t:checkbox t:id="autoPilotCB1" value="false" /></a>
+							<p:else>
+								<a t:type="eventlink" t:event="connectToAutoPilot"
+									t:context="${mappingConfig.pk.device.topicRoot}" href="#"
+									title="${message:connectToAutoPilot}"><t:checkbox t:id="autoPilotCB2" value="false" /></a>						
+							</p:else>
+						</t:if>
+					</p:else>
+				</t:if>
+			</p:autoPilotCbCell>
+ -->
+			 <p:vvVisibleCbCell>
+			 	<t:checkbox t:id="vvVisible" value="mappingConfig.vvVisible" onchange="this.form.submit();" />
+			 </p:vvVisibleCbCell>
+			 
+			 <p:autoPilotCbCell>
+			 	<t:checkbox t:id="connectedToAutopilot" value="mappingConfig.connectedToAutopilot" onchange="this.form.submit();" />
+			 </p:autoPilotCbCell>
+ 
+			<p:sensorDefinitionCell>
+				<t:if test="sensorDefinitionsAvailable">
+					<t:select t:type="select" t:id="sensorDefinitionName"
+						t:model="sensorDefinitionNameSelectModel"
+						t:encoder="sensorDefinitionNameEncoder" t:value="mappingConfig.sensorDefinition"
+						onchange="this.form.submit();" />
+				</t:if>
+			</p:sensorDefinitionCell>
+
+			<p:topicPathCell>
+				${mappingConfig.pk.device.topicRoot}<t:if
+					test="mappingConfig.pk.topic.subpath">/${mappingConfig.pk.topic.subpath}</t:if>
+			</p:topicPathCell>
+
+			<p:typeNameCell>
+				${mappingConfig.pk.topic.messageType}
+			</p:typeNameCell>
+
+			<p:categoryCell>
+				${mappingConfig.pk.topic.category}
+			</p:categoryCell>
+		
+			<p:empty>
+				<p>${message:noMappingFound}</p>
+			</p:empty>
+		</table>
+	</t:form>
+</section>
+
+</html>

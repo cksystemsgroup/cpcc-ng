@@ -1,0 +1,109 @@
+<html t:type="layout" title="${message:virtualVehicleOverview}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<br />
+
+<section id="buttons">
+	<a t:type="pagelink" t:page="commons/vehicle/new" href="#"
+		class="btn btn-primary">${message:createNewVehicle}</a>
+</section>
+
+<section id="virtualVehicleList">
+	<t:zone t:id="zone" t:mixins='jquery/zonerefresh' t:period='5' t:update="show">
+		<h3>${message:virtualVehicleList}</h3>
+		<t:form t:id="virtualVehicleForm">
+			<table t:type="grid" t:source="virtualVehicleList"
+				t:exclude="code,continuation,apiVersion"
+				t:reorder="id,name,state,uuid,startTime,endTime,migrationStartTime,migrationDestination"
+				t:row="virtualVehicle"
+				t:add="migrationDestination,vehicleActions"
+				class="table table-striped table-condensed topic-table">
+				
+				<p:startTimeCell>
+					<t:output t:format="${message:dateFormat}" t:value="virtualVehicle.startTime"/>
+				</p:startTimeCell>
+	
+				<p:endTimeCell>
+					<t:output t:format="${message:dateFormat}" t:value="virtualVehicle.endTime"/>
+				</p:endTimeCell>
+				
+				<p:migrationStartTimeCell>
+					<t:output t:format="${message:dateFormat}" t:value="virtualVehicle.migrationStartTime"/>
+				</p:migrationStartTimeCell>
+				
+				<p:migrationDestinationCell>
+					<t:if test="virtualVehicle.migrationDestination">
+						${virtualVehicle.migrationDestination.name}
+					</t:if>
+				</p:migrationDestinationCell>
+				
+				<p:vehicleActionsCell>
+					<t:if test="isRestartMigration()">
+						<a t:type="eventlink" t:event="restartMigration"
+							t:context="virtualVehicle.id" href="#"
+							t:title="${message:restartMigration}"> <i class="icon-share-alt"></i>
+						</a>
+						&nbsp;
+					</t:if>
+					<t:if test="isEdit()">
+						<a t:type="pagelink" t:page="commons/vehicle/edit"
+							t:context="virtualVehicle.id" href="#"
+							t:title="${message:editVehicle}"> <i class="icon-pencil"></i>
+						</a>
+						&nbsp;
+					</t:if>
+					<t:if test="isStart()">
+						<a t:type="eventlink" t:event="startVehicle"
+							t:context="virtualVehicle.id" href="#"
+							title="${message:startVehicle}"> <i class="icon-play"></i>
+						</a>
+						&nbsp;
+					</t:if>
+					<t:if test="isRestart()">
+						<a t:type="eventlink" t:event="restartVehicle"
+							t:context="virtualVehicle.id" href="#"
+							title="${message:restartVehicle}"> <i class="icon-repeat"></i>
+						</a>
+						&nbsp;
+					</t:if>
+					<t:if test="isPause()">
+						<a t:type="eventlink" t:event="pauseVehicle"
+							t:context="virtualVehicle.id" href="#"
+							title="${message:pauseVehicle}"> <i class="icon-pause"></i>
+						</a>
+						&nbsp;
+					</t:if>
+					<t:if test="isStop()">
+						<a t:type="eventlink" t:event="stopVehicle"
+							t:context="virtualVehicle.id" href="#"
+							title="${message:stopVehicle}"> <i class="icon-stop"></i>
+						</a>
+						&nbsp;
+					</t:if>
+					<t:if test="isDelete()">
+						<a t:type="eventlink" t:event="deleteVehicle"
+							t:context="virtualVehicle.id" href="#"
+							title="${message:deleteVehicle}"> <i class="icon-remove"></i>
+						</a>
+						&nbsp;
+					</t:if>
+					<a t:type="pagelink" t:page="commons/vehicle/storage"
+						t:context="virtualVehicle.id" href="#"
+						t:title="${message:showVehicleStorage}"> <i class="icon-folder-close"></i>
+						<!-- 
+						 <i class="icon-file"></i>
+						<i class="icon-folder-open"></i>
+						 -->
+					</a>
+				</p:vehicleActionsCell>
+	
+				<p:empty>
+					<p>${message:noVirtualVehicleFound}</p>
+				</p:empty>
+			</table>
+		</t:form>
+	</t:zone>
+</section>
+
+</html>

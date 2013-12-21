@@ -22,6 +22,9 @@ package at.uni_salzburg.cs.cpcc.core.services;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 
+import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserServiceImpl;
+
 /**
  * PersistenceModule
  */
@@ -39,6 +42,7 @@ public final class CoreModule
     {
         binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
         binder.bind(CoreJsonConverter.class, CoreJsonConverterImpl.class);
+        binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
     }
     
     /**

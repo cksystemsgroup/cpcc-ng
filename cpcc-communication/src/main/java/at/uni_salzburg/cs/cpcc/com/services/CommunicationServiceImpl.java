@@ -47,7 +47,7 @@ public class CommunicationServiceImpl implements CommunicationService
     private static final Map<Connector, String> CONNECTOR_MAP = new HashMap<Connector, String>()
     {
         {
-            put(Connector.MIGRATE, "/vehicle/migration");
+            put(Connector.MIGRATE, "/commons/vehicle/migration");
         }
     };
 

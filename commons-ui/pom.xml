@@ -5,9 +5,14 @@
 		<groupId>at.uni-salzburg.cs.cpcc</groupId>
 		<artifactId>cpcc-ng-project</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
+
 	<artifactId>commons-ui</artifactId>
+	<packaging>jar</packaging>
+
 	<name>User Interface Common Components</name>
+	<description>User Interface Common Components</description>
 
 	<dependencies>
 
@@ -66,6 +71,12 @@
 			<groupId>com.googlecode.catch-exception</groupId>
 			<artifactId>catch-exception</artifactId>
 			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

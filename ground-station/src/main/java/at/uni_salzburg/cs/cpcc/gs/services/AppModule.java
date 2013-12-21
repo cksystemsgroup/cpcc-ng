@@ -22,12 +22,8 @@ package at.uni_salzburg.cs.cpcc.gs.services;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.Translator;
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
-
-import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
-import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserServiceImpl;
 
 import com.trsvax.bootstrap.environment.TableEnvironment;
 import com.trsvax.bootstrap.environment.TableValues;
@@ -47,10 +43,10 @@ public final class AppModule
     /**
      * @param binder the service binder
      */
-    public static void bind(ServiceBinder binder)
-    {
-        binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
-    }
+//    public static void bind(ServiceBinder binder)
+//    {
+//        binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
+//    }
 
     /**
      * @param configuration the application configuration.
