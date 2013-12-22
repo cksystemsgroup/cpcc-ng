@@ -91,9 +91,9 @@ public class RealVehicleTest
     public Object[][] dateDataProvider()
     {
         return new Object[][]{
-            new Object[]{new Date(System.currentTimeMillis()+10)},
-            new Object[]{new Date(System.currentTimeMillis()+100)},
-            new Object[]{new Date(System.currentTimeMillis()+1000)},
+            new Object[]{new Date(System.currentTimeMillis() + 10)},
+            new Object[]{new Date(System.currentTimeMillis() + 100)},
+            new Object[]{new Date(System.currentTimeMillis() + 1000)},
         };
     }
 
@@ -109,6 +109,25 @@ public class RealVehicleTest
     {
         rv.setName(name);
         assertThat(rv.getName()).isNotNull().isEqualTo(name);
+    }
+
+    @DataProvider
+    public Object[][] typeDataProvider()
+    {
+        RealVehicleType[] types = RealVehicleType.values();
+        Object[][] data = new Object[types.length][];
+        for (int k = 0; k < types.length; ++k)
+        {
+            data[k] = new Object[]{types[k]};
+        }
+        return data;
+    }
+
+    @Test(dataProvider = "typeDataProvider")
+    public void shouldStoreType(RealVehicleType type)
+    {
+        rv.setType(type);
+        assertThat(rv.getType()).isNotNull().isEqualTo(type);
     }
 
     @Test(dataProvider = "stringDataProvider")

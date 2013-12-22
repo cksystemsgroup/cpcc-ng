@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -51,6 +54,10 @@ public class RealVehicle
     @NotNull
     @Size(max = 50)
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(30) default 'UNKNOWN'")
+    private RealVehicleType type;
 
     @NotNull
     @Size(max = 255)
@@ -88,6 +95,22 @@ public class RealVehicle
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * @return the real vehicle type.
+     */
+    public RealVehicleType getType()
+    {
+        return type;
+    }
+
+    /**
+     * @param type the real vehicle type to set.
+     */
+    public void setType(RealVehicleType type)
+    {
+        this.type = type;
     }
 
     /**
