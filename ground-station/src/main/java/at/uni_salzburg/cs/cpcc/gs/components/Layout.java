@@ -91,7 +91,8 @@ public class Layout
      */
     public Collection<String> getPageNames()
     {
-        return Arrays.asList("configuration", "contact", "commons/viewer");
+        return Arrays.asList("commons/configuration", "commons/contact", "commons/viewer", "commons/sensor/list",
+            "commons/rv/list");
     }
 
     /**
@@ -101,5 +102,14 @@ public class Layout
     {
         return messages.get("pagetitle." + pageName);
     }
-
+    
+    /**
+     * @return the name of the real vehicle
+     */
+    public String getGroundStationName()
+    {
+        at.uni_salzburg.cs.cpcc.core.entities.Parameter rvn =
+            qm.findParameterByName(at.uni_salzburg.cs.cpcc.core.entities.Parameter.REAL_VEHICLE_NAME, "");
+        return rvn != null && rvn.getValue() != null ? rvn.getValue() : "";
+    }
 }

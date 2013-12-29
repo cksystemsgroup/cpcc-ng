@@ -1,0 +1,40 @@
+<html t:type="layout" title="${message:realVehicleOverview}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<br />
+<section id="buttons">
+	<a t:type="pagelink" t:page="commons/rv/new" href="#"
+		class="btn btn-primary">${message:createNewRealVehicle}</a>
+</section>
+
+<section id="realVehicleOverview">
+	<h3>${message:realVehicleOverview}</h3>
+	<table t:type="grid" t:source="realVehicleList"
+		t:row="realVehicle"
+		t:add="actions"
+		class="table table-striped table-condensed topic-table">
+
+		<p:lastUpdateCell>
+			<t:output t:format="${message:dateFormat}" t:value="realVehicle.lastUpdate"/>
+		</p:lastUpdateCell>
+
+		<p:actionsCell>
+			<a t:type="pagelink" t:page="commons/rv/edit"
+				t:context="realVehicle.id" href="#"
+				t:title="${message:editRealVehicle}"> <i class="icon-pencil"></i>
+			</a>
+			&nbsp;
+			<a t:type="eventlink" t:event="deleteRealVehicle"
+				t:context="realVehicle.id" href="#"
+				title="${message:deleteRealVehicle}"> <i class="icon-remove"></i>
+			</a>
+		</p:actionsCell>
+
+		<p:empty>
+			<p>${message:noRealVehicleFound}</p>
+		</p:empty>
+	</table>
+</section>
+
+</html>

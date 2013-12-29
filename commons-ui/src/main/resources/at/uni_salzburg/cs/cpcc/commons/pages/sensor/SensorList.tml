@@ -1,0 +1,40 @@
+<html t:type="layout" title="${message:sensorDefinitionOverview}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<br />
+<section id="buttons">
+	<a t:type="pagelink" t:page="commons/sensor/new" href="#"
+		class="btn btn-primary">${message:createNewSensor}</a>
+</section>
+
+<section id="sensorDefinitions">
+	<h3>${message:sensorDefinitions}</h3>
+	<table t:type="grid" t:source="sensorList"
+		t:row="sensor"
+		t:add="actions"
+		class="table table-striped table-condensed topic-table">
+
+		<p:lastUpdateCell>
+			<t:output t:format="${message:dateFormat}" t:value="sensor.lastUpdate"/>
+		</p:lastUpdateCell>
+
+		<p:actionsCell>
+			<a t:type="pagelink" t:page="commons/sensor/edit"
+				t:context="sensor.id" href="#"
+				t:title="${message:editSensor}"> <i class="icon-pencil"></i>
+			</a>
+			&nbsp;
+			<a t:type="eventlink" t:event="deleteSensor"
+				t:context="sensor.id" href="#"
+				title="${message:deleteSensor}"> <i class="icon-remove"></i>
+			</a>
+		</p:actionsCell>
+
+		<p:empty>
+			<p>${message:noSensorDefinitionFound}</p>
+		</p:empty>
+	</table>
+</section>
+
+</html>

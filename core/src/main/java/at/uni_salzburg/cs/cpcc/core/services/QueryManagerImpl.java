@@ -51,6 +51,7 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     private static final String DEVICE_NAME = "name";
     private static final String TOPIC_ROOT = "topicRoot";
     private static final String REAL_VEHICLE_NAME = "name";
+    private static final String REAL_VEHICLE_URL = "url";
 
     /**
      * @param session {@link Session}
@@ -135,6 +136,18 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     /**
      * {@inheritDoc}
      */
+    @Override
+    public SensorDefinition findSensorDefinitionById(Integer id)
+    {
+        SensorDefinition x = (SensorDefinition) getSession()
+            .createQuery("FROM SensorDefinition WHERE id = :id")
+            .setInteger("id", id).uniqueResult();
+        return x;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<SensorDefinition> findSensorDefinitionsByMessageType(String messagetype)
@@ -160,11 +173,24 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     /**
      * {@inheritDoc}
      */
+    @Override
+    public void deleteSensorDefinitionById(Integer id)
+    {
+        //        getSession().createQuery("DELETE FROM realvehicle_sensordefinition WHERE sensors_id = :id")
+        //            .setInteger("id", id);
+        getSession().createQuery("DELETE FROM SensorDefinition WHERE id = :id")
+            .setInteger("id", id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<RealVehicle> findAllRealVehicles()
     {
-        return (List<RealVehicle>) getSession().createCriteria(RealVehicle.class).list();
+//        return (List<RealVehicle>) getSession().createCriteria(RealVehicle.class).list();
+        return (List<RealVehicle>) getSession().createQuery("FROM RealVehicle").list();
     }
 
     /**
@@ -173,8 +199,27 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public RealVehicle findRealVehicleByName(String name)
     {
-        return (RealVehicle) getSession().createQuery("from RealVehicle where name = :name")
+        return (RealVehicle) getSession().createQuery("FROM RealVehicle WHERE name = :name")
             .setString(REAL_VEHICLE_NAME, name).uniqueResult();
+    }
+
+    @Override
+    public RealVehicle findRealVehicleByUrl(String url)
+    {
+        return (RealVehicle) getSession().createQuery("FROM RealVehicle WHERE url = :url")
+            .setString(REAL_VEHICLE_URL, url).uniqueResult();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RealVehicle findRealVehicleById(Integer id)
+    {
+        RealVehicle x = (RealVehicle) getSession()
+            .createQuery("FROM RealVehicle WHERE id = :id")
+            .setInteger("id", id).uniqueResult();
+        return x;
     }
 
     /**
@@ -183,6 +228,19 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @SuppressWarnings("unchecked")
     @Override
     public List<SensorDefinition> findAllSensorDefinitions()
+    {
+        return (List<SensorDefinition>) getSession()
+            .createCriteria(SensorDefinition.class)
+            .addOrder(Property.forName("id").asc())
+            .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SensorDefinition> findAllVisibleSensorDefinitions()
     {
         return (List<SensorDefinition>) getSession()
             .createQuery("SELECT d "

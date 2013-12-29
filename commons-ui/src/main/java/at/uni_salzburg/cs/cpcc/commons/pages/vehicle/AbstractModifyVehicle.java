@@ -37,7 +37,8 @@ public class AbstractModifyVehicle
     public static final String ERROR_AT_COMPILATION = "error.at.compilation";
     private static final String ERROR_NAME_REQUIRED = "error.name.required";
     private static final String ERROR_CODE_REQUIRED = "error.code.required";
-
+    private static final String ERROR_API_VERSION_REQUIRED = "error.api.version.required";
+    
     @Inject
     protected VvRteRepository repository;
 
@@ -92,6 +93,11 @@ public class AbstractModifyVehicle
         catch (IOException e)
         {
             form.recordError(e.getMessage());
+        }
+        
+        if (vehicle.getApiVersion() == null)
+        {
+            form.recordError(messages.format(ERROR_API_VERSION_REQUIRED));
         }
     }
 }

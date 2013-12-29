@@ -17,12 +17,30 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.gs.pages;
+package at.uni_salzburg.cs.cpcc.commons.pages.sensor;
+
+import static org.apache.tapestry5.EventConstants.PREPARE;
+
+import org.apache.tapestry5.annotations.OnEvent;
+
+import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 
 /**
- * Configuration
+ * SensorNew
  */
-public class Configuration
+public class SensorNew extends AbstractModifySensor
 {
+    @OnEvent(PREPARE)
+    void createSensor()
+    {
+        sensor = new SensorDefinition();
+    }
 
+    /**
+     * Callback function for validating form data.
+     */
+    void onValidateFromForm()
+    {
+        checkParameters();
+    }
 }

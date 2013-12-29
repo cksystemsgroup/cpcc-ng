@@ -1,0 +1,47 @@
+<html t:type="layout" title="${message:sensorEdit}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<section id="sensorEdit">
+	<form t:type="form" t:validate="sensor" t:id="form">
+		<t:errors />
+
+		<div t:type="beaneditor" t:object="sensor" t:exclude="id,lastUpdate"
+			t:reorder="description,type,visibility,messageType,parameters">
+			
+			<p:description>
+				<t:label t:type="label" for="description" />
+				<input t:type="TextField" t:id="description" t:class="span4"
+					value="sensor.description" t:validate="maxlength=100" size="30" />
+			</p:description>
+			
+			<p:type>
+				<t:label t:type="label" for="type" />
+				<t:select t:type="select" t:id="type" t:class="span4" t:value="sensor.type" />
+			</p:type>
+			
+			<p:visibility>
+				<t:label t:type="label" for="visibility" />
+				<t:select t:type="select" t:id="visibility" t:class="span4" t:value="sensor.visibility" />
+			</p:visibility>
+			
+			<p:messageType>
+				<t:label t:type="label" for="messageType" />
+				<input t:type="TextField" t:id="messageType" t:class="span4"
+					value="sensor.messageType" t:validate="maxlength=50" size="30" />
+			</p:messageType>
+			
+			<p:parameters>
+				<t:label for="parameters" />
+				<t:textarea t:id="parameters" rows="5" t:class="span4" value="sensor.parameters" />
+			</p:parameters>
+		</div>
+
+		<div class="form-actions">
+			<input type="submit" t:type="submit" t:value="${message:btn.commit}" t:class="btn btn-primary" />
+			<a t:type="pagelink" t:page="commons/sensor/list" t:class="btn">${message:btn.cancel}</a>
+		</div>
+	</form>
+</section>
+
+</html>

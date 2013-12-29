@@ -21,13 +21,11 @@ package at.uni_salzburg.cs.cpcc.core.entities;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.util.Date;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorVisibility;
 
 /**
  * SensorDefinitionTest
@@ -87,8 +85,8 @@ public class SensorDefinitionTest
     @Test(dataProvider = "integerDataProvider")
     public void shouldStoreLastUpdate(int lastUpdate)
     {
-        sd.setLastUpdate(lastUpdate);
-        assertThat(sd.getLastUpdate()).isNotNull().isEqualTo(lastUpdate);
+        sd.setLastUpdate(new Date(lastUpdate));
+        assertThat(sd.getLastUpdate()).isNotNull().isEqualTo(new Date(lastUpdate));
     }
 
     @Test(dataProvider = "stringDataProvider")

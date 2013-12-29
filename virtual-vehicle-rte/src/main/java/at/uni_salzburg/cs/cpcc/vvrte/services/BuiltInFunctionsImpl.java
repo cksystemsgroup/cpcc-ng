@@ -85,7 +85,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     public List<ScriptableObject> listSensors()
     {
         LOG.info("listSensors start");
-        List<SensorDefinition> asd = qm.findAllSensorDefinitions();
+        List<SensorDefinition> asd = qm.findAllVisibleSensorDefinitions();
         return converToScriptableObjectList(asd);
     }
 

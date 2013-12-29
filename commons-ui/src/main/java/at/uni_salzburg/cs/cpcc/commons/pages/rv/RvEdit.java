@@ -17,12 +17,32 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.gs.pages;
+package at.uni_salzburg.cs.cpcc.commons.pages.rv;
+
+import static org.apache.tapestry5.EventConstants.PREPARE;
+
+import org.apache.tapestry5.annotations.OnEvent;
+import org.apache.tapestry5.annotations.PageActivationContext;
 
 /**
- * Contact
+ * Edit real vehicle.
  */
-public class Contact
+public class RvEdit extends AbstractModifyRealVehicle
 {
+    @PageActivationContext
+    private Integer vehicleId;
 
+    @OnEvent(PREPARE)
+    void loadSensor()
+    {
+        realVehicle = qm.findRealVehicleById(vehicleId);
+    }
+
+    /**
+     * Callback function for validating form data.
+     */
+    void onValidateFromForm()
+    {
+        checkAreaOfOperation();
+    }
 }

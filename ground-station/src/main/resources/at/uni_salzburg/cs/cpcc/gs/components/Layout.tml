@@ -13,7 +13,7 @@
 			<div class="navbar-inner">
 				<div class="container">
 					<ul class="nav">
-						<li><a t:type="pagelink" page="index" class="brand">${message:pagetitle.Index}</a></li>
+						<li><a t:type="pagelink" page="index" class="brand">${message:pagetitle.Index} [${groundStationName}]</a></li>
 						<li t:type="loop" source="pageNames" value="pageName"
 							class="prop:classForPageName"><a t:type="pagelink"
 							page="prop:pageName">${pageLabel}</a></li>

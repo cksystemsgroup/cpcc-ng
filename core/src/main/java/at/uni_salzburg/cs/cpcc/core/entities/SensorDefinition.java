@@ -27,6 +27,9 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Type;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import at.uni_salzburg.cs.cpcc.core.utils.StringUtilities;
 
 /**
@@ -55,7 +58,8 @@ public class SensorDefinition
     private SensorVisibility visibility;
 
     @NotNull
-    private Integer lastUpdate;
+    @Type(type = "timestamp")
+    private java.util.Date lastUpdate;
 
     @Size(max = 50)
     private String messageType;
@@ -143,7 +147,8 @@ public class SensorDefinition
     /**
      * @return the last update time stamp
      */
-    public Integer getLastUpdate()
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Exposed on purpose")
+    public java.util.Date getLastUpdate()
     {
         return lastUpdate;
     }
@@ -151,7 +156,8 @@ public class SensorDefinition
     /**
      * @param lastUpdate the last update time stamp to set
      */
-    public void setLastUpdate(Integer lastUpdate)
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposed on purpose")
+    public void setLastUpdate(java.util.Date lastUpdate)
     {
         this.lastUpdate = lastUpdate;
     }
@@ -182,7 +188,7 @@ public class SensorDefinition
         {
             return false;
         }
-        
+
         if (!(obj instanceof SensorDefinition))
         {
             return false;
@@ -204,7 +210,7 @@ public class SensorDefinition
         {
             return false;
         }
-        
+
         if (!StringUtilities.equals(getParameters(), other.getParameters()))
         {
             return false;

@@ -1,4 +1,4 @@
-<html t:type="layout" title="ROS Overview"
+<html t:type="layout" title="${message:titleRosOverview}"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
 	xmlns:p="tapestry:parameter">
 
