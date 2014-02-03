@@ -104,7 +104,7 @@ public class VvMigrationWorkerTest
                     transferredChunks.add(data);
 
                     CommunicationResponse response = new CommunicationResponse();
-                    response.setContent("storage" + data[0]);
+                    response.setContent(("storage" + data[0]).getBytes());
                     response.setStatus(Status.OK);
                     return response;
                 }

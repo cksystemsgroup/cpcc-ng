@@ -48,6 +48,8 @@ public class CommunicationServiceImpl implements CommunicationService
     {
         {
             put(Connector.MIGRATE, "/commons/vehicle/migration");
+            put(Connector.CONFIGURATION_UPDATE, "/commons/configuration/update");
+            put(Connector.REAL_VEHICLE_STATUS, "/commons/status");
         }
     };
 
@@ -78,14 +80,13 @@ public class CommunicationServiceImpl implements CommunicationService
         InputStream ins = responseEntity.getContent();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         IOUtils.copy(ins, baos);
-        String content = baos.toString("UTF-8");
+        byte[] content = baos.toByteArray();
 
         boolean ok = response.getStatusLine().getStatusCode() == 200;
 
         CommunicationResponse r = new CommunicationResponse();
         r.setStatus(ok ? Status.OK : Status.NOT_OK);
         r.setContent(content);
-
         return r;
     }
 

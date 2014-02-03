@@ -21,6 +21,7 @@ package at.uni_salzburg.cs.cpcc.commons.pages;
 
 import static org.apache.tapestry5.EventConstants.PREPARE;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -38,6 +39,9 @@ import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
 import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
@@ -197,7 +201,7 @@ public class Configuration
     }
 
     @CommitAfter
-    void onSuccessFromRealVehicleNameForm()
+    void onSuccessFromRealVehicleNameForm() throws JsonParseException, JsonMappingException, IOException
     {
         if (realVehicleName.getValue() == null)
         {

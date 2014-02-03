@@ -91,7 +91,7 @@ public class Layout
      */
     public Collection<String> getPageNames()
     {
-        return Arrays.asList("commons/configuration", "commons/contact", "commons/viewer", "commons/sensor/list",
+        return Arrays.asList("commons/configuration", "commons/contact", "gsviewer", "commons/sensor/list",
             "commons/rv/list");
     }
 

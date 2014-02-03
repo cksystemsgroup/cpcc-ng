@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.com.services;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * CommunicationResponse
  */
@@ -30,11 +32,11 @@ public class CommunicationResponse
     public enum Status
     {
         NOT_OK,
-        OK        
+        OK
     }
 
     private Status status;
-    private String content;
+    private byte[] content;
 
     /**
      * @return the current status.
@@ -55,7 +57,8 @@ public class CommunicationResponse
     /**
      * @return the response content as a string.
      */
-    public String getContent()
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Exposed on purpose")
+    public byte[] getContent()
     {
         return content;
     }
@@ -63,7 +66,8 @@ public class CommunicationResponse
     /**
      * @param content the response content to set.
      */
-    public void setContent(String content)
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposed on purpose")
+    public void setContent(byte[] content)
     {
         this.content = content;
     }

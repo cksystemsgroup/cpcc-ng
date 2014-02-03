@@ -203,7 +203,7 @@
 						</systemProperty>
 					</systemProperties>
 					<webApp>
-						<contextPath>/real-vehicle</contextPath>
+						<contextPath>/</contextPath>
 					</webApp>
 					<!-- <contextHandlers> -->
 					<!-- <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext"> -->

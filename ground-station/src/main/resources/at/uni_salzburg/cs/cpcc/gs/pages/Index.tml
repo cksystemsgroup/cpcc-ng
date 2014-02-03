@@ -4,4 +4,26 @@
 	xmlns:p="tapestry:parameter">
 
 
+<section id="rvStateList">
+	<t:zone t:id="zone3" t:mixins='jquery/zonerefresh' t:period='5' t:update="show">
+		<h3>${message:rvStateList}</h3>
+		<table t:type="grid" t:source="getStateList()" t:add="rvName"
+			t:row="stateString"
+			t:reorder="rvName,connected,statusUpdateRunning,lastUpdate,statusString"
+			class="table table-striped table-condensed topic-table">
+
+			<p:rvNameCell>${stateString.RealVehicle.Name}</p:rvNameCell>
+
+			<p:lastUpdateCell>
+				<t:output t:format="${message:dateFormat}" t:value="stateString.LastUpdate" />
+			</p:lastUpdateCell>
+
+			<p:empty>
+				<p>${message:noRealVehicleConnected}</p>
+			</p:empty>
+		</table>
+	</t:zone>
+</section>
+
+
 </html>

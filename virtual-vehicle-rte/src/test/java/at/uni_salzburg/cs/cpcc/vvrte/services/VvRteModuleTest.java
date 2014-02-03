@@ -41,8 +41,6 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionService;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionServiceImpl;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskSchedulerService;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskSchedulerServiceImpl;
-import at.uni_salzburg.cs.cpcc.vvrte.task.TimerService;
-import at.uni_salzburg.cs.cpcc.vvrte.task.TimerServiceImpl;
 
 /**
  * VvRteModuleTest
@@ -73,7 +71,6 @@ public class VvRteModuleTest
         when(binder.bind(TaskAnalyzer.class, TaskAnalyzerImpl.class)).thenReturn(options);
         when(binder.bind(TaskExecutionService.class, TaskExecutionServiceImpl.class)).thenReturn(options);
         when(binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class)).thenReturn(options);
-        when(binder.bind(TimerService.class, TimerServiceImpl.class)).thenReturn(options);
         when(binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class)).thenReturn(options);
         when(binder.bind(VvJsonConverter.class,VvJsonConverterImpl.class)).thenReturn(options);
         
@@ -88,10 +85,9 @@ public class VvRteModuleTest
         verify(binder).bind(TaskAnalyzer.class, TaskAnalyzerImpl.class);
         verify(binder).bind(TaskExecutionService.class, TaskExecutionServiceImpl.class);
         verify(binder).bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class);
-        verify(binder).bind(TimerService.class, TimerServiceImpl.class);
         verify(binder).bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class);
         verify(binder).bind(VvJsonConverter.class,VvJsonConverterImpl.class);
-        verify(options, times(11)).eagerLoad();
+        verify(options, times(10)).eagerLoad();
     }
 
     @Test

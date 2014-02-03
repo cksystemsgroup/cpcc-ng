@@ -32,11 +32,8 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.ServiceBindingOptions;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.core.services.CoreJsonConverter;
-import at.uni_salzburg.cs.cpcc.core.services.CoreJsonConverterImpl;
-import at.uni_salzburg.cs.cpcc.core.services.CoreModule;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManagerImpl;
+import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
+import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserServiceImpl;
 
 /**
  * PersistenceModuleTest
@@ -59,11 +56,17 @@ public class CoreModuleTest
         ServiceBinder binder = mock(ServiceBinder.class);
         when(binder.bind(QueryManager.class, QueryManagerImpl.class)).thenReturn(options);
         when(binder.bind(CoreJsonConverter.class, CoreJsonConverterImpl.class)).thenReturn(options);
+        when(binder.bind(CoreGeoJsonConverter.class, CoreGeoJsonConverterImpl.class)).thenReturn(options);
+        when(binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class)).thenReturn(options);
+        when(binder.bind(TimerService.class, TimerServiceImpl.class)).thenReturn(options);
 
         CoreModule.bind(binder);
 
         verify(binder).bind(QueryManager.class, QueryManagerImpl.class);
         verify(binder).bind(CoreJsonConverter.class, CoreJsonConverterImpl.class);
+        verify(binder).bind(CoreGeoJsonConverter.class, CoreGeoJsonConverterImpl.class);
+        verify(binder).bind(OptionsParserService.class, OptionsParserServiceImpl.class);
+        verify(binder).bind(TimerService.class, TimerServiceImpl.class);
         verify(options, times(1)).eagerLoad();
     }
 

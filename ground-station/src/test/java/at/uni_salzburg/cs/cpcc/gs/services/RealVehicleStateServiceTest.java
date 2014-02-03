@@ -17,23 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.vvrte.task;
-
-import java.util.TimerTask;
+package at.uni_salzburg.cs.cpcc.gs.services;
 
 /**
- * TimerService
+ * RealVehicleStateServiceTest
  */
-public interface TimerService
+public class RealVehicleStateServiceTest
 {
-    /**
-     * @param timerTask the task to be executed periodically.
-     * @param cycleTime the invocation cycle time.
-     */
-    void periodicSchedule(TimerTask timerTask, long cycleTime);
 
-    /**
-     * @param timerTask the periodic task to be canceled.
-     */
-    void cancelSchedule(TimerTask timerTask);
+    
+    
 }

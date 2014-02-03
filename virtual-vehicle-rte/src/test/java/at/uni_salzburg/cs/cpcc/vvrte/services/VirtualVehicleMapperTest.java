@@ -23,6 +23,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,9 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
@@ -100,13 +104,23 @@ public class VirtualVehicleMapperTest
         }
     };
 
-    private static final String AREA_OF_OPERATION_RV1 = "["
-        + "{lat: 47.0, lng: 13}, {lat: 47.0, lng: 14}, {lat: 48.0, lng: 14}, {lat: 48.0, lng: 13},{lat: 47.0, lng: 13}"
-        + "]";
-
-    private static final String AREA_OF_OPERATION_RV2 = "["
-        + "{lat: 47.0, lng: 14}, {lat: 47.0, lng: 15}, {lat: 48.0, lng: 15}, {lat: 48.0, lng: 14},{lat: 47.0, lng: 14}"
-        + "]";
+    private static final String AREA_OF_OPERATION_RV1 =
+        "{\"type\":\"FeatureCollection\",\"features\":["
+        + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},"
+        + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[47.5,13.5]}},"
+        + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
+        + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[13,47],[14,47],[14,48],[13,48],[13,48]]]}}]}";
+        
+// "[{lat: 47.0, lng: 13}, {lat: 47.0, lng: 14}, {lat: 48.0, lng: 14}, {lat: 48.0, lng: 13},{lat: 47.0, lng: 13}]"
+    
+    private static final String AREA_OF_OPERATION_RV2 =
+        "{\"type\":\"FeatureCollection\",\"features\":["
+            + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},"
+            + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[47.5,14.5]}},"
+            + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
+            + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[14,47],[15,47],[15,48],[14,48],[14,47]]]}}]}";
+    
+// "[{lat: 47.0, lng: 14}, {lat: 47.0, lng: 15}, {lat: 48.0, lng: 15}, {lat: 48.0, lng: 14},{lat: 47.0, lng: 14}]"
 
     private Parameter rvName1;
     private RealVehicle realVehicle1;
@@ -116,7 +130,7 @@ public class VirtualVehicleMapperTest
     private VirtualVehicleMapperImpl mapper;
 
     @BeforeMethod
-    public void setUp()
+    public void setUp() throws JsonParseException, JsonMappingException, IOException
     {
         realVehicle1 = mock(RealVehicle.class);
         when(realVehicle1.getAreaOfOperation()).thenReturn(AREA_OF_OPERATION_RV1);

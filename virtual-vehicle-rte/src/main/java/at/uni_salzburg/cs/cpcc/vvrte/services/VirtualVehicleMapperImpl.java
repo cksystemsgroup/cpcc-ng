@@ -19,14 +19,18 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.tapestry5.json.JSONArray;
-import org.apache.tapestry5.json.JSONObject;
+import org.geojson.Feature;
+import org.geojson.FeatureCollection;
+import org.geojson.GeoJsonObject;
+import org.geojson.LngLatAlt;
+import org.geojson.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +38,11 @@ import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * VirtualVehicleMapperImpl
@@ -51,8 +58,11 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
 
     /**
      * @param qm the query manager.
+     * @throws JsonParseException thrown in case of errors.
+     * @throws JsonMappingException thrown in case of errors.
+     * @throws IOException thrown in case of errors.
      */
-    public VirtualVehicleMapperImpl(QueryManager qm)
+    public VirtualVehicleMapperImpl(QueryManager qm) throws JsonParseException, JsonMappingException, IOException
     {
         this.qm = qm;
         refresh();
@@ -76,21 +86,44 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         {
             String areaOfOperationString = realVehicle.getAreaOfOperation();
 
-            JSONArray polygon = new JSONArray(areaOfOperationString);
+            // TODO use GeoJSON !
+            //            JSONArray polygon = new JSONArray(areaOfOperationString);
+            //
+            //            PolarCoordinate[] coordinates = new PolarCoordinate[polygon.length()];
+            //            for (int k = 0, l = polygon.length(); k < l; ++k)
+            //            {
+            //                JSONObject point = (JSONObject) polygon.get(k);
+            //                double lat = point.getDouble("lat");
+            //                double lng = point.getDouble("lng");
+            //                coordinates[k] = new PolarCoordinate(lat, lng, 0.0);
+            //            }
 
-            PolarCoordinate[] coordinates = new PolarCoordinate[polygon.length()];
-            for (int k = 0, l = polygon.length(); k < l; ++k)
+            try
             {
-                JSONObject point = (JSONObject) polygon.get(k);
-                double lat = point.getDouble("lat");
-                double lng = point.getDouble("lng");
-                coordinates[k] = new PolarCoordinate(lat, lng, 0.0);
+                FeatureCollection fc = new ObjectMapper().readValue(areaOfOperationString, FeatureCollection.class);
+
+                for (Feature feature : fc.getFeatures())
+                {
+                    // String fType = feature.getProperty("type");  // TODO check for aoo ?
+
+                    GeoJsonObject geom = feature.getGeometry();
+                    if (geom instanceof Polygon)
+                    {
+                        Polygon poly = (Polygon) geom;
+                        List<LngLatAlt> coordinates = poly.getCoordinates().get(0);
+                        PolygonZone areaOfOperation = new PolygonZone(coordinates);
+                        zoneMap.put(realVehicle.getName(), areaOfOperation);
+                        break;
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                LOG.error("Can not parse Area Of Operations of RV " + realVehicle.getName()
+                    + "(" + realVehicle.getId() + ")", e);
             }
 
-            PolygonZone areaOfOperation = new PolygonZone(coordinates);
-
             rvMap.put(realVehicle.getName(), realVehicle);
-            zoneMap.put(realVehicle.getName(), areaOfOperation);
         }
 
         realVehicleMap = rvMap;

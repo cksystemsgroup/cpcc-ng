@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import org.apache.tapestry5.json.JSONArray;
 import org.testng.annotations.BeforeMethod;
@@ -81,30 +82,38 @@ public class VvJsonConverterTest
         when(vv4.getUuid()).thenReturn("235a7d38-669a-11e3-8672-5be62c412e2e");
         when(vv4.getState()).thenReturn(VirtualVehicleState.MIGRATING);
 
+        when(s1.getId()).thenReturn(1);
         when(s1.getDescription()).thenReturn("Altimeter");
         when(s1.getType()).thenReturn(SensorType.ALTIMETER);
         when(s1.getMessageType()).thenReturn("std_msgs/Float32");
         when(s1.getVisibility()).thenReturn(SensorVisibility.ALL_VV);
         when(s1.getParameters()).thenReturn("random=10:35");
+        when(s1.getLastUpdate()).thenReturn(new Date(1000001));
 
+        when(s2.getId()).thenReturn(2);
         when(s2.getDescription()).thenReturn("Barometer");
         when(s2.getType()).thenReturn(SensorType.BAROMETER);
         when(s2.getMessageType()).thenReturn("std_msgs/Float32");
         when(s2.getVisibility()).thenReturn(SensorVisibility.NO_VV);
         when(s2.getParameters()).thenReturn("random=1050:1080");
-
+        when(s2.getLastUpdate()).thenReturn(new Date(2000002));
+        
+        when(s3.getId()).thenReturn(3);
         when(s3.getDescription()).thenReturn("Belly Mounted Camera 640x480");
         when(s3.getType()).thenReturn(SensorType.CAMERA);
         when(s3.getMessageType()).thenReturn("sensor_msgs/Image");
         when(s3.getVisibility()).thenReturn(SensorVisibility.ALL_VV);
         when(s3.getParameters()).thenReturn("width=640 height=480 yaw=0 down=1.571 alignment=north");
-
+        when(s3.getLastUpdate()).thenReturn(new Date(3000003));
+        
+        when(s4.getId()).thenReturn(4);
         when(s4.getDescription()).thenReturn("GPS");
         when(s4.getType()).thenReturn(SensorType.GPS);
         when(s4.getMessageType()).thenReturn("sensor_msgs/NavSatFix");
         when(s4.getVisibility()).thenReturn(SensorVisibility.PRIVILEGED_VV);
         when(s4.getParameters()).thenReturn("");
-
+        when(s4.getLastUpdate()).thenReturn(new Date(4000004));
+        
         when(task1.getPosition()).thenReturn(new PolarCoordinate(47.1234, 13.4321, 10));
         when(task1.getTolerance()).thenReturn(10.1);
         when(task1.getSensors()).thenReturn(Arrays.asList(s1));
@@ -176,7 +185,9 @@ public class VvJsonConverterTest
             new Object[]{
                 new Task[]{task1}, "["
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\"}],"
@@ -187,12 +198,16 @@ public class VvJsonConverterTest
             new Object[]{
                 new Task[]{task2, task3}, "["
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"NO_VV\","
+                    + "{\"id\":\"2\","
+                    + "\"visibility\":\"NO_VV\","
+                    + "\"lastUpdate\":\"2000002\","
                     + "\"description\":\"Barometer\","
                     + "\"parameters\":\"random=1050:1080\","
                     + "\"messageType\":\"std_msgs/Float32\","
                     + "\"type\":\"BAROMETER\"},"
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\","
@@ -201,16 +216,23 @@ public class VvJsonConverterTest
                     + "\"tolerance\":\"3.7\"},"
 
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"3\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"3000003\","
                     + "\"description\":\"Belly Mounted Camera 640x480\","
                     + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
                     + "\"messageType\":\"sensor_msgs/Image\","
                     + "\"type\":\"CAMERA\"},"
-                    + "{\"visibility\":\"NO_VV\",\"description\":\"Barometer\","
+                    + "{\"id\":\"2\","
+                    + "\"visibility\":\"NO_VV\","
+                    + "\"lastUpdate\":\"2000002\","
+                    + "\"description\":\"Barometer\","
                     + "\"parameters\":\"random=1050:1080\","
                     + "\"messageType\":\"std_msgs/Float32\","
                     + "\"type\":\"BAROMETER\"},"
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\","
@@ -223,17 +245,23 @@ public class VvJsonConverterTest
             new Object[]{
                 new Task[]{task3, task4, task1}, "["
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"3\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"3000003\","
                     + "\"description\":\"Belly Mounted Camera 640x480\","
                     + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
                     + "\"messageType\":\"sensor_msgs/Image\","
                     + "\"type\":\"CAMERA\"},"
-                    + "{\"visibility\":\"NO_VV\","
+                    + "{\"id\":\"2\","
+                    + "\"visibility\":\"NO_VV\","
+                    + "\"lastUpdate\":\"2000002\","
                     + "\"description\":\"Barometer\","
                     + "\"parameters\":\"random=1050:1080\","
                     + "\"messageType\":\"std_msgs/Float32\","
                     + "\"type\":\"BAROMETER\"},"
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\","
@@ -242,22 +270,30 @@ public class VvJsonConverterTest
                     + "\"tolerance\":\"7.9\"},"
 
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"PRIVILEGED_VV\","
+                    + "{\"id\":\"4\","
+                    + "\"visibility\":\"PRIVILEGED_VV\","
+                    + "\"lastUpdate\":\"4000004\","
                     + "\"description\":\"GPS\","
                     + "\"parameters\":\"\","
                     + "\"messageType\":\"sensor_msgs/NavSatFix\","
                     + "\"type\":\"GPS\"},"
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"3\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"3000003\","
                     + "\"description\":\"Belly Mounted Camera 640x480\","
                     + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
                     + "\"messageType\":\"sensor_msgs/Image\","
                     + "\"type\":\"CAMERA\"},"
-                    + "{\"visibility\":\"NO_VV\","
+                    + "{\"id\":\"2\","
+                    + "\"visibility\":\"NO_VV\","
+                    + "\"lastUpdate\":\"2000002\","
                     + "\"description\":\"Barometer\","
                     + "\"parameters\":\"random=1050:1080\","
                     + "\"messageType\":\"std_msgs/Float32\""
                     + ",\"type\":\"BAROMETER\"},"
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\","
@@ -266,7 +302,9 @@ public class VvJsonConverterTest
                     + "\"tolerance\":\"1.6\"},"
 
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\","
@@ -280,22 +318,30 @@ public class VvJsonConverterTest
                 new Task[]{task4, task1, task2, task3}, "["
 
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"PRIVILEGED_VV\","
+                    + "{\"id\":\"4\","
+                    + "\"visibility\":\"PRIVILEGED_VV\","
+                    + "\"lastUpdate\":\"4000004\","
                     + "\"description\":\"GPS\","
                     + "\"parameters\":\"\","
                     + "\"messageType\":\"sensor_msgs/NavSatFix\","
                     + "\"type\":\"GPS\"},"
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"3\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"3000003\","
                     + "\"description\":\"Belly Mounted Camera 640x480\","
                     + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
                     + "\"messageType\":\"sensor_msgs/Image\","
                     + "\"type\":\"CAMERA\"},"
-                    + "{\"visibility\":\"NO_VV\","
+                    + "{\"id\":\"2\","
+                    + "\"visibility\":\"NO_VV\","
+                    + "\"lastUpdate\":\"2000002\","
                     + "\"description\":\"Barometer\","
                     + "\"parameters\":\"random=1050:1080\","
                     + "\"messageType\":\"std_msgs/Float32\""
                     + ",\"type\":\"BAROMETER\"},"
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\","
@@ -304,7 +350,9 @@ public class VvJsonConverterTest
                     + "\"tolerance\":\"1.6\"},"
 
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\","
@@ -313,12 +361,16 @@ public class VvJsonConverterTest
                     + "\"tolerance\":\"10.1\"},"
 
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"NO_VV\","
+                    + "{\"id\":\"2\","
+                    + "\"visibility\":\"NO_VV\","
+                    + "\"lastUpdate\":\"2000002\","
                     + "\"description\":\"Barometer\","
                     + "\"parameters\":\"random=1050:1080\","
                     + "\"messageType\":\"std_msgs/Float32\","
                     + "\"type\":\"BAROMETER\"},"
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\","
@@ -327,16 +379,23 @@ public class VvJsonConverterTest
                     + "\"tolerance\":\"3.7\"},"
 
                     + "{\"sensors\":["
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"3\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"3000003\","
                     + "\"description\":\"Belly Mounted Camera 640x480\","
                     + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
                     + "\"messageType\":\"sensor_msgs/Image\","
                     + "\"type\":\"CAMERA\"},"
-                    + "{\"visibility\":\"NO_VV\",\"description\":\"Barometer\","
+                    + "{\"id\":\"2\","
+                    + "\"visibility\":\"NO_VV\","
+                    + "\"lastUpdate\":\"2000002\","
+                    + "\"description\":\"Barometer\","
                     + "\"parameters\":\"random=1050:1080\","
                     + "\"messageType\":\"std_msgs/Float32\","
                     + "\"type\":\"BAROMETER\"},"
-                    + "{\"visibility\":\"ALL_VV\","
+                    + "{\"id\":\"1\","
+                    + "\"visibility\":\"ALL_VV\","
+                    + "\"lastUpdate\":\"1000001\","
                     + "\"description\":\"Altimeter\","
                     + "\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\","

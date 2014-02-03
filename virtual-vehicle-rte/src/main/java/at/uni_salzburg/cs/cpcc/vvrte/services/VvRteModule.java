@@ -31,8 +31,6 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionService;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionServiceImpl;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskSchedulerService;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskSchedulerServiceImpl;
-import at.uni_salzburg.cs.cpcc.vvrte.task.TimerService;
-import at.uni_salzburg.cs.cpcc.vvrte.task.TimerServiceImpl;
 
 /**
  * VvRteModule
@@ -58,9 +56,9 @@ public final class VvRteModule
         binder.bind(TaskAnalyzer.class, TaskAnalyzerImpl.class).eagerLoad();
         binder.bind(TaskExecutionService.class, TaskExecutionServiceImpl.class).eagerLoad();
         binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class).eagerLoad();
-        binder.bind(TimerService.class, TimerServiceImpl.class).eagerLoad();
         binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class).eagerLoad();
         binder.bind(VvJsonConverter.class, VvJsonConverterImpl.class);
+        binder.bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class);
     }
 
     /**

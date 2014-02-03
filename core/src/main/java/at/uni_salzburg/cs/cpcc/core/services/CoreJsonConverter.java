@@ -19,6 +19,8 @@
  */
 package at.uni_salzburg.cs.cpcc.core.services;
 
+import java.util.List;
+
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
@@ -32,16 +34,18 @@ import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 public interface CoreJsonConverter
 {
     /**
+     * @param sensorIdsOnly if true the JSON objects contains the identifications of the sensors only.
      * @param vehicle a real vehicle object.
      * @return the requested JSON object.
      */
-    JSONObject toJson(RealVehicle vehicle);
+    JSONObject toJson(boolean sensorIdsOnly, RealVehicle vehicle);
 
     /**
+     * @param sensorIdsOnly if true the JSON objects contains the identifications of the sensors only.
      * @param vehicles a list of real vehicles.
      * @return the requested JSON array.
      */
-    JSONArray toJsonArray(RealVehicle... vehicles);
+    JSONArray toJsonArray(boolean sensorIdsOnly, RealVehicle... vehicles);
 
     /**
      * @param sensor a sensor definition.
@@ -54,11 +58,50 @@ public interface CoreJsonConverter
      * @return the requested JSON array.
      */
     JSONArray toJsonArray(SensorDefinition... sensors);
-
+    
     /**
      * @param coordinate a polar coordinate.
      * @return the requested JSON object.
      */
     JSONObject toJson(PolarCoordinate coordinate);
 
+    /**
+     * @param numbers a list of integer numbers.
+     * @return the requested JSON object.
+     */
+    JSONArray toJsonArray(Integer... numbers);
+    
+    /**
+     * @param numbers a list of double numbers.
+     * @return the requested JSON object.
+     */
+    JSONArray toJsonArray(Double... numbers);
+    
+    /**
+     * @param vehicleList the list of real vehicles as JSON array.
+     * @return the converted list.
+     */
+    List<RealVehicle> toRealVehicleList(JSONArray vehicleList);
+    
+    /**
+     * Convert a real vehicle JSON object to a real vehicle object. This method assumes that sensor definitions are 
+     * handed over as an array of sensor definition IDs. Sensor definition IDs referenced by the JSON object must have
+     * corresponding counterparts in the database to have this method working properly.
+     * 
+     * @param vehicle the vehicle as a JSON object.
+     * @return the converted vehicle.
+     */
+    RealVehicle toRealVehicle(JSONObject vehicle);
+    
+    /**
+     * @param sensorList the list of sensor definitions as JSON array.
+     * @return the converted list.
+     */
+    List<SensorDefinition> toSensorDefinitionList(JSONArray sensorList);
+    
+    /**
+     * @param sensor the sensor definition as a JSON object.
+     * @return the converted sensor definition.
+     */
+    SensorDefinition toSensorDefinition(JSONObject sensor);
 }

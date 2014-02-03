@@ -144,7 +144,7 @@ public class CommunicationServiceTest
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isNotNull().isEqualTo(Status.OK);
-        assertThat(response.getContent()).isNotNull().isEqualTo(REASON_PHRASE);
+        assertThat(response.getContent()).isNotNull().isEqualTo(REASON_PHRASE.getBytes());
 
         assertThat(request).isNotNull();
         assertThat(request.getEntity().getContentLength()).isEqualTo(data.length);
@@ -162,6 +162,6 @@ public class CommunicationServiceTest
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isNotNull().isEqualTo(Status.NOT_OK);
-        assertThat(response.getContent()).isNotNull().isEqualTo("HttpException thrown on purpose!");
+        assertThat(response.getContent()).isNotNull().isEqualTo("HttpException thrown on purpose!".getBytes());
     }
 }

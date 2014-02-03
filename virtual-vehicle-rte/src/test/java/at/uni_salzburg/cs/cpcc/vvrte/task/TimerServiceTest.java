@@ -33,8 +33,8 @@ import java.util.TimerTask;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.vvrte.task.TimerService;
-import at.uni_salzburg.cs.cpcc.vvrte.task.TimerServiceImpl;
+import at.uni_salzburg.cs.cpcc.core.services.TimerService;
+import at.uni_salzburg.cs.cpcc.core.services.TimerServiceImpl;
 
 /**
  * TimerServiceTest
@@ -53,7 +53,7 @@ public class TimerServiceTest
             @Override
             public void run()
             {
-                System.out.println("Executed timer task A!");
+                System.out.print("A");
             }
         });
 
@@ -62,7 +62,7 @@ public class TimerServiceTest
             @Override
             public void run()
             {
-                System.out.println("Executed timer task B!");
+                System.out.print("B");
             }
         });
 
@@ -72,7 +72,7 @@ public class TimerServiceTest
     @Test
     public void shouldScheduleOneTask() throws InterruptedException
     {
-        timerService.periodicSchedule(timerTaskA, 1000);
+        timerService.periodicSchedule(timerTaskA, 0, 1000);
         Thread.sleep(100);
         verify(timerTaskA).run();
     }
@@ -80,7 +80,7 @@ public class TimerServiceTest
     @Test
     public void shouldScheduleOneTaskPeriodically() throws InterruptedException
     {
-        timerService.periodicSchedule(timerTaskA, 200);
+        timerService.periodicSchedule(timerTaskA, 0, 200);
         Thread.sleep(300);
         verify(timerTaskA, times(2)).run();
     }
@@ -88,8 +88,8 @@ public class TimerServiceTest
     @Test
     public void shouldScheduleMultipleTasks() throws InterruptedException
     {
-        timerService.periodicSchedule(timerTaskA, 1000);
-        timerService.periodicSchedule(timerTaskB, 1000);
+        timerService.periodicSchedule(timerTaskA, 0, 1000);
+        timerService.periodicSchedule(timerTaskB, 0, 1000);
         Thread.sleep(100);
         verify(timerTaskA).run();
         verify(timerTaskB).run();
@@ -98,8 +98,8 @@ public class TimerServiceTest
     @Test
     public void shouldScheduleMultipleTasksPeriodically() throws InterruptedException
     {
-        timerService.periodicSchedule(timerTaskA, 200);
-        timerService.periodicSchedule(timerTaskB, 200);
+        timerService.periodicSchedule(timerTaskA, 0, 200);
+        timerService.periodicSchedule(timerTaskB, 0, 200);
         Thread.sleep(300);
         verify(timerTaskA, times(2)).run();
         verify(timerTaskB, times(2)).run();
@@ -108,7 +108,7 @@ public class TimerServiceTest
     @Test
     public void shouldCancelOneTask() throws InterruptedException
     {
-        timerService.periodicSchedule(timerTaskA, 200);
+        timerService.periodicSchedule(timerTaskA, 0, 200);
         Thread.sleep(100);
         verify(timerTaskA).run();
 
@@ -121,8 +121,8 @@ public class TimerServiceTest
     @Test
     public void shouldCancelMultipleTasks() throws InterruptedException
     {
-        timerService.periodicSchedule(timerTaskA, 200);
-        timerService.periodicSchedule(timerTaskB, 200);
+        timerService.periodicSchedule(timerTaskA, 0, 200);
+        timerService.periodicSchedule(timerTaskB, 0, 200);
         Thread.sleep(100);
         verify(timerTaskA).run();
         verify(timerTaskB).run();
@@ -138,8 +138,8 @@ public class TimerServiceTest
     @Test
     public void shouldTerminateAllTimerTasksAtGarbageCollection() throws Exception
     {
-        timerService.periodicSchedule(timerTaskA, 200);
-        timerService.periodicSchedule(timerTaskB, 200);
+        timerService.periodicSchedule(timerTaskA, 0, 200);
+        timerService.periodicSchedule(timerTaskB, 0, 200);
         Thread.sleep(100);
         verify(timerTaskA).run();
         verify(timerTaskB).run();
@@ -156,8 +156,8 @@ public class TimerServiceTest
     @Test
     public void shouldScheduleOneTaskOnlyOnce() throws InterruptedException
     {
-        timerService.periodicSchedule(timerTaskA, 200);
-        catchException(timerService).periodicSchedule(timerTaskA, 1000);
+        timerService.periodicSchedule(timerTaskA, 0, 200);
+        catchException(timerService).periodicSchedule(timerTaskA, 0, 1000);
 
         assertThat(caughtException())
             .isInstanceOf(IllegalArgumentException.class)

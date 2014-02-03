@@ -29,7 +29,9 @@ public class CommunicationRequest
      */
     public enum Connector
     {
-        MIGRATE
+        MIGRATE,
+        CONFIGURATION_UPDATE,
+        REAL_VEHICLE_STATUS
     };
 
 }

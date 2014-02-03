@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.vvrte.task;
+package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,13 +36,13 @@ public class TimerServiceImpl implements TimerService
      * {@inheritDoc}
      */
     @Override
-    public void periodicSchedule(TimerTask timerTask, long cycleTime)
+    public void periodicSchedule(TimerTask timerTask, long delay, long cycleTime)
     {
         if (schedules.contains(timerTask))
         {
             throw new IllegalArgumentException("TimerTask already has a schedule.");
         }
-        timer.schedule(timerTask, 0, cycleTime);
+        timer.schedule(timerTask, delay, cycleTime);
         schedules.add(timerTask);
     }
     

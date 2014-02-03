@@ -20,17 +20,19 @@
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.geojson.LngLatAlt;
+
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * PolygonZone
  */
 public class PolygonZone
 {
-
     private static final double EPSILON = 1E-9;
 
     private TwoTuple[] vertices;
@@ -50,6 +52,23 @@ public class PolygonZone
         {
             double x = v[k].getLatitude();
             double y = v[k].getLongitude();
+            vertices[k] = new TwoTuple(x, y);
+        }
+
+        findBoundingBox();
+    }
+
+    /**
+     * @param v the vertices of the polygon as polar coordinates.
+     */
+    public PolygonZone(List<LngLatAlt> v)
+    {
+        vertices = new TwoTuple[v.size()];
+
+        for (int k = 0, l = v.size(); k < l; ++k)
+        {
+            double x = v.get(k).getLatitude();
+            double y = v.get(k).getLongitude();
             vertices[k] = new TwoTuple(x, y);
         }
 
@@ -183,7 +202,7 @@ public class PolygonZone
 
         return left % 2 != 0;
     }
-    
+
     /**
      * @param ax the X-coordinate of the polygon segment begin
      * @param bx the X-coordinate of the polygon segment end
@@ -194,7 +213,7 @@ public class PolygonZone
     {
         return cx >= ax && cx >= bx;
     }
-    
+
     /**
      * @param ax the X-coordinate of the polygon segment begin
      * @param bx the X-coordinate of the polygon segment end
@@ -205,7 +224,7 @@ public class PolygonZone
     {
         return cx <= ax && cx <= bx;
     }
-    
+
     /**
      * @param ax the X-coordinate of the polygon vertice
      * @param cx the Y-coordinate of the test point

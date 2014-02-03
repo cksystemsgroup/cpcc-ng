@@ -19,12 +19,15 @@
  */
 package at.uni_salzburg.cs.cpcc.commons.pages;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.tapestry5.StreamResponse;
-import org.apache.tapestry5.json.JSONObject;
+import org.geojson.Feature;
+import org.geojson.FeatureCollection;
+import org.geojson.Point;
 
 import sensor_msgs.NavSatFix;
 import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
@@ -32,15 +35,15 @@ import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
-import at.uni_salzburg.cs.cpcc.core.services.JsonStreamResponse;
-import at.uni_salzburg.cs.cpcc.core.services.CoreJsonConverter;
+import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
+import at.uni_salzburg.cs.cpcc.core.services.GeoJsonStreamResponse;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractGpsSensorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
-import at.uni_salzburg.cs.cpcc.vvrte.services.VvJsonConverter;
+import at.uni_salzburg.cs.cpcc.vvrte.services.VvGeoJsonConverter;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
 
 /**
@@ -58,40 +61,80 @@ public class Status
     private RosNodeService rns;
 
     @Inject
-    private CoreJsonConverter pjc;
+    private CoreGeoJsonConverter pjc;
 
     @Inject
-    private VvJsonConverter vjc;
+    private VvGeoJsonConverter vjc;
 
     /**
-     * @return the current status as a JSON object.
+     * @return the current status as a GeoJSON object.
+     * @throws IOException thrown in case of errors.
      */
-    public StreamResponse onActivate()
+    public StreamResponse onActivate() throws IOException
     {
-        JSONObject response = new JSONObject();
+        return onActivate(null);
+    }
 
-        RealVehicle realVehicle = findRealVehicle();
+    /**
+     * @param what the data subset to be transferred or null for all data.
+     * @return the current status as a GeoJSON object.
+     * @throws IOException thrown in case of errors.
+     */
+    public StreamResponse onActivate(String what) throws IOException
+    {
+        //        JSONObject response = new JSONObject();
+        //
+        //        RealVehicle realVehicle = findRealVehicle();
+        //
+        //        if (realVehicle != null)
+        //        {
+        //            JSONObject jsonRealVehicle = pjc.toJson(false, realVehicle);
+        //
+        //            PolarCoordinate position = findRealVehiclePosition();
+        //            if (position != null)
+        //            {
+        //                jsonRealVehicle.put("position", pjc.toJson(position));
+        //            }
+        //
+        //            response.put("rv", jsonRealVehicle);
+        //        }
+        //
+        //        List<VirtualVehicle> vvs = vvRepo.findAllVehicles();
+        //        if (vvs != null && vvs.size() > 0)
+        //        {
+        //            response.put("vvs", vjc.toJsonArray(vvs.toArray(new VirtualVehicle[0])));
+        //        }
+        //
+        //        return new JsonStreamResponse(response);
 
-        if (realVehicle != null)
+        FeatureCollection fc = new FeatureCollection();
+
+        if (what == null || "rvs".equals(what))
         {
-            JSONObject jsonRealVehicle = pjc.toJson(realVehicle);
+            fc.add(pjc.toFeature(findRealVehicle()));
+        }
 
-            PolarCoordinate position = findRealVehiclePosition();
-            if (position != null)
+        PolarCoordinate position = findRealVehiclePosition();
+
+        if (position != null && (what == null || "pos".equals(what)))
+        {
+            Point point = pjc.toPoint(position);
+            Feature pointFeature = new Feature();
+            pointFeature.setGeometry(point);
+            pointFeature.setProperty("type", "rvPosition");
+            fc.add(pointFeature);
+        }
+
+        if (what == null || "vvs".equals(what))
+        {
+            List<VirtualVehicle> vvs = vvRepo.findAllVehicles();
+            if (vvs != null && vvs.size() > 0)
             {
-                jsonRealVehicle.put("position", pjc.toJson(position));
+                fc.addAll(vjc.toFeatureList(vvs));
             }
-
-            response.put("rv", jsonRealVehicle);
         }
 
-        List<VirtualVehicle> vvs = vvRepo.findAllVehicles();
-        if (vvs != null && vvs.size() > 0)
-        {
-            response.put("vvs", vjc.toJsonArray(vvs.toArray(new VirtualVehicle[0])));
-        }
-
-        return new JsonStreamResponse(response);
+        return new GeoJsonStreamResponse(fc);
     }
 
     /**
@@ -116,7 +159,7 @@ public class Status
             }
 
             SensorDefinition sd = attr.getSensorDefinition();
-            if (sd.getType() != SensorType.GPS)
+            if (sd == null || sd.getType() != SensorType.GPS)
             {
                 continue;
             }

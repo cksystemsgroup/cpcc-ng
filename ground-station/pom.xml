@@ -186,6 +186,7 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>9.1.0.RC1</version>
 				<configuration>
+				    <jvmArgs>-Xmx1024m -Xss128k</jvmArgs>
 					<!-- <useProvidedScope>true</useProvidedScope> -->
 					<!-- <requestLog implementation="org.mortbay.jetty.NCSARequestLog"> -->
 					<!-- This doesn't do anything for Jetty, but is a workaround for a Maven 
@@ -199,7 +200,7 @@
 						</systemProperty>
 					</systemProperties>
 					<webApp>
-						<contextPath>/real-vehicle</contextPath>
+						<contextPath>/</contextPath>
 					</webApp>
 					<!-- <contextHandlers> -->
 					<!-- <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext"> -->

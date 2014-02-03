@@ -47,7 +47,7 @@ public class MapStack implements JavaScriptStack
             new StylesheetLink[]
             {
                 TapestryInternalUtils.assetToStylesheetLink.map(assetSource
-                    .getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/css/leaflet-0.5.1.css")),
+                    .getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/css/leaflet-0.7.2.css")),
                 TapestryInternalUtils.assetToStylesheetLink.map(assetSource
                     .getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/css/Vehicle.css")),
             };
@@ -56,7 +56,7 @@ public class MapStack implements JavaScriptStack
             new Asset[]
             {
                 // assetSource.getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/js/kinetic-v4.4.3.min.js"),
-                assetSource.getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/js/leaflet-0.5.1.min.js"),
+                assetSource.getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/js/leaflet-0.7.2.min.js"),
                 assetSource.getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/js/underscore-1.4.4.min.js"),
                 // assetSource.getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/js/backbone-1.0.0.min.js"),
                 assetSource.getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/js/Location.js"),

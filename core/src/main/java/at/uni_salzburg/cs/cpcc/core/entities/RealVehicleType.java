@@ -25,6 +25,7 @@ package at.uni_salzburg.cs.cpcc.core.entities;
 public enum RealVehicleType
 {
     UNKNOWN,
+    GROUND_STATION,
     UNMANNED_AERIAL_VEHICLE,
     QUADROCOPTER,
     FIXED_WING_AIRCRAFT,

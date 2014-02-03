@@ -60,7 +60,7 @@ public class RealVehicle
     private RealVehicleType type;
 
     @NotNull
-    @Size(max = 255)
+    @Size(max = 1024)
     private String url;
 
     @NotNull
@@ -185,5 +185,150 @@ public class RealVehicle
     public void setLastUpdate(java.util.Date lastUpdate)
     {
         this.lastUpdate = lastUpdate;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+
+        if (!(obj instanceof RealVehicle))
+        {
+            return false;
+        }
+
+        RealVehicle other = (RealVehicle) obj;
+
+        if (this == other)
+        {
+            return true;
+        }
+
+        return equalsHelper1(other);
+    }
+
+    /**
+     * @param obj the other object
+     * @return true on equality, false otherwise.
+     */
+    private boolean equalsHelper1(RealVehicle other)
+    {
+        if (getId().intValue() != other.getId().intValue())
+        {
+            return false;
+        }
+
+        if (getType() != other.getType())
+        {
+            return false;
+        }
+
+        if (getLastUpdate().getTime() != other.getLastUpdate().getTime())
+        {
+            return false;
+        }
+
+        if (getSensors() == null && other.getSensors() != null)
+        {
+            return false;
+        }
+
+        if (getSensors() != null && other.getSensors() == null)
+        {
+            return false;
+        }
+
+        return equalsHelper2(other);
+    }
+
+    /**
+     * @param other the other
+     * @return true on equality, false otherwise.
+     */
+    private boolean equalsHelper2(RealVehicle other)
+    {
+        if (getSensors() != null && other.getSensors() != null && getSensors().size() != other.getSensors().size())
+        {
+            return false;
+        }
+
+        if (!getName().equals(other.getName()))
+        {
+            return false;
+        }
+
+        if (!getUrl().equals(other.getUrl()))
+        {
+            return false;
+        }
+
+        if (!getAreaOfOperation().equals(other.getAreaOfOperation()))
+        {
+            return false;
+        }
+
+        if (!getSensors().containsAll(other.getSensors()))
+        {
+            return false;
+        }
+
+        if (!other.getSensors().containsAll(getSensors()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hc = (id != null ? id.hashCode() : 0) * 41
+            + (name != null ? name.hashCode() : 0) * 37
+            + (type != null ? type.hashCode() : 0) * 31
+            + (url != null ? url.hashCode() : 0) * 29
+            + (areaOfOperation != null ? areaOfOperation.hashCode() : 0) * 23
+            + (lastUpdate != null ? lastUpdate.hashCode() : 0) * 19;
+
+        if (getSensors() != null)
+        {
+            for (SensorDefinition sd : getSensors())
+            {
+                hc = hc * 59 + sd.getId();
+            }
+        }
+
+        return hc;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder b = new StringBuilder();
+        b.append("(id=").append(id)
+            .append(", name=").append(name)
+            .append(", type=").append(type)
+            .append(", url=").append(url)
+            .append(", areaOfOperation=").append(areaOfOperation)
+            .append(", lastUpdate=").append(lastUpdate.getTime())
+            .append(", sensors=[");
+
+        for (int k = 0, l = getSensors().size(); k < l; ++k)
+        {
+            if (k > 0)
+            {
+                b.append(", ");
+            }
+            b.append(getSensors().get(k).getId());
+        }
+
+        b.append("]");
+        return b.toString();
     }
 }

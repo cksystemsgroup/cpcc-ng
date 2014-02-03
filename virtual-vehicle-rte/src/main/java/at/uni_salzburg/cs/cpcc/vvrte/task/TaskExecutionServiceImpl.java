@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sensor_msgs.NavSatFix;
+import at.uni_salzburg.cs.cpcc.core.services.TimerService;
 import at.uni_salzburg.cs.cpcc.core.utils.GeodeticSystem;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.core.utils.WGS84;
@@ -72,7 +73,7 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
         this.scheduler = scheduler;
         this.rosNodeService = rosNodeService;
         init();
-        timerService.periodicSchedule(this, 1000);
+        timerService.periodicSchedule(this, 0, 1000);
     }
 
     /**

@@ -39,6 +39,9 @@ import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.core.services.opts.ParseException;
 
+/**
+ * AbstractModifySensor
+ */
 public class AbstractModifySensor
 {
     protected static final String ERROR_PARSING = "error.parsing";

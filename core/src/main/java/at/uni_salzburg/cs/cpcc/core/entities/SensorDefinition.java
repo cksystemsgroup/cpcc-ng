@@ -29,8 +29,8 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Type;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import at.uni_salzburg.cs.cpcc.core.utils.StringUtilities;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * SensorDefinition
@@ -206,6 +206,11 @@ public class SensorDefinition
             return false;
         }
 
+        if (getId().intValue() != other.getId().intValue())
+        {
+            return false;
+        }
+
         if (getType() != other.getType())
         {
             return false;
@@ -232,9 +237,10 @@ public class SensorDefinition
     @Override
     public int hashCode()
     {
-        return (description != null ? description.hashCode() : 0) * 31
-            + (type != null ? type.hashCode() : 0) * 29
-            + (parameters != null ? parameters.hashCode() : 0) * 27
+        return (id != null ? id.hashCode() : 0) * 41
+            + (description != null ? description.hashCode() : 0) * 37
+            + (type != null ? type.hashCode() : 0) * 31
+            + (parameters != null ? parameters.hashCode() : 0) * 29
             + (visibility != null ? visibility.hashCode() : 0) * 23
             + (messageType != null ? messageType.hashCode() : 0) * 19;
     }
@@ -242,7 +248,7 @@ public class SensorDefinition
     @Override
     public String toString()
     {
-        return "(description=" + description + ", type=" + type + ", parameters=" + parameters
+        return "(id=" + id + ", description=" + description + ", type=" + type + ", parameters=" + parameters
             + ", visibility=" + visibility + ", messageType" + messageType + ")";
     }
 }

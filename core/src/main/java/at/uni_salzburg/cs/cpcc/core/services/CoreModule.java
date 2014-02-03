@@ -42,7 +42,9 @@ public final class CoreModule
     {
         binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
         binder.bind(CoreJsonConverter.class, CoreJsonConverterImpl.class);
+        binder.bind(CoreGeoJsonConverter.class, CoreGeoJsonConverterImpl.class);
         binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
+        binder.bind(TimerService.class, TimerServiceImpl.class);
     }
     
     /**

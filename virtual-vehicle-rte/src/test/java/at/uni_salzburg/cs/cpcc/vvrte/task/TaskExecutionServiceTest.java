@@ -45,6 +45,7 @@ import org.testng.annotations.Test;
 
 import sensor_msgs.NavSatFix;
 import std_msgs.Float32;
+import at.uni_salzburg.cs.cpcc.core.services.TimerService;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.ros.actuators.AbstractActuatorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.actuators.ActuatorType;
@@ -264,7 +265,7 @@ public class TaskExecutionServiceTest
     @Test
     public void shouldExecuteASingleTask()
     {
-        verify(timerService).periodicSchedule((TimerTask) anyObject(), anyLong());
+        verify(timerService).periodicSchedule((TimerTask) anyObject(), anyLong(), anyLong());
 
         executor.addTask(taskA);
 
@@ -314,7 +315,7 @@ public class TaskExecutionServiceTest
     @Test
     public void shouldExecuteMultipleTask()
     {
-        verify(timerService).periodicSchedule((TimerTask) anyObject(), anyLong());
+        verify(timerService).periodicSchedule((TimerTask) anyObject(), anyLong(), anyLong());
 
         executor.addTask(taskA);
         executor.addTask(taskB);

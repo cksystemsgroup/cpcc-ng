@@ -97,7 +97,7 @@ public class VvMigrationWorker extends Thread
             int chunkNumber = 1;
             while (response.getStatus() == Status.OK)
             {
-                chunk = migrator.findChunk(vehicle, response.getContent(), chunkNumber);
+                chunk = migrator.findChunk(vehicle, new String(response.getContent(),"UTF-8"), chunkNumber);
                 if (chunk == null)
                 {
                     if (chunkNumber == 1)
