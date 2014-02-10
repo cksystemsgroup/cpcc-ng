@@ -161,11 +161,7 @@ public class RvEditAreaOfOperations extends Viewer
 
         for (RealVehicle rv : qm.findAllRealVehicles())
         {
-<<<<<<< HEAD
             if (rv.getId().intValue() == realVehicle.getId().intValue())
-=======
-            if (rv.getId() == realVehicle.getId())
->>>>>>> branch 'master' of https://github.com/cksystemsgroup/cpcc-ng.git
             {
                 continue;
             }
