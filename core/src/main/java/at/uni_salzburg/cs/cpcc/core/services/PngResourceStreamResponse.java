@@ -34,7 +34,11 @@ public class PngResourceStreamResponse implements StreamResponse
     private String pngResourcePath;
 
     /**
+<<<<<<< HEAD
      * @param pngResourcePath the resource path to the PNG image.
+=======
+     * @param jsonObject the JSON object to be streamed.
+>>>>>>> branch 'master' of https://github.com/cksystemsgroup/cpcc-ng.git
      */
     public PngResourceStreamResponse(String pngResourcePath)
     {
