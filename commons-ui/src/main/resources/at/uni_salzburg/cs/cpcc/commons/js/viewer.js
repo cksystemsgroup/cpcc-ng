@@ -192,7 +192,8 @@ function viewerInit() {
 	vehicleLayer = L.layerGroup();
 	
 	map = L.map('map', {
-		center: [47.82210, 13.04077],
+		// center: [47.82210, 13.04077],
+		center: [37.8085,-122.4265],
 		zoom: 10,
 		layers: [emptyLayer, locationLayer, vehicleLayer]
 	});
@@ -210,11 +211,11 @@ function viewerInit() {
 	
 	L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-	$.getJSON("state/locations", updateLocations);
-	$.getJSON("state/vehicles", updateVehicles);
-
-	setInterval('$.getJSON( "state/locations", updateLocations)', 5000);
-	setInterval('$.getJSON( "state/vehicles", updateVehicles)', 1000);
+//	$.getJSON("state/locations", updateLocations);
+//	$.getJSON("state/vehicles", updateVehicles);
+//
+//	setInterval('$.getJSON( "state/locations", updateLocations)', 5000);
+//	setInterval('$.getJSON( "state/vehicles", updateVehicles)', 1000);
 
 	$(window).resize(_.debounce(adjustMapSize, 500));
 }

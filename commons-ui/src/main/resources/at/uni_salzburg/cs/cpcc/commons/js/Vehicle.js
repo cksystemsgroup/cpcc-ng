@@ -25,9 +25,9 @@ L.VehicleIcon = L.Icon.extend({
 
 	options : {
 		shadowUrl : null,
-		iconSize : new L.Point(32, 32),
-		iconAnchor : new L.Point(16, 16),
-		popupAnchor : new L.Point(1, -16),
+		iconSize : [32, 32],
+		iconAnchor : [16, 16],
+		popupAnchor : [1, -16],
 		className : 'vehicle-icon'
 	},
 

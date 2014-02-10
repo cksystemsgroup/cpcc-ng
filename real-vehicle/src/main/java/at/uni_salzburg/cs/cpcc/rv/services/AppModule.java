@@ -20,18 +20,8 @@
 package at.uni_salzburg.cs.cpcc.rv.services;
 
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.Translator;
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Contribute;
-import org.apache.tapestry5.ioc.services.ThreadLocale;
-
-import at.uni_salzburg.cs.cpcc.commons.services.StorageContentTagService;
-import at.uni_salzburg.cs.cpcc.commons.services.StorageContentTagServiceImpl;
-import at.uni_salzburg.cs.cpcc.commons.services.UriTranslator;
-import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagService;
-import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagServiceImpl;
-import at.uni_salzburg.cs.cpcc.commons.services.ros.GraphNameTranslator;
 
 import com.trsvax.bootstrap.environment.TableEnvironment;
 import com.trsvax.bootstrap.environment.TableValues;
@@ -51,11 +41,9 @@ public final class AppModule
     /**
      * @param binder the service binder
      */
-    public static void bind(ServiceBinder binder)
-    {
-        binder.bind(ImageTagService.class, ImageTagServiceImpl.class);
-        binder.bind(StorageContentTagService.class, StorageContentTagServiceImpl.class);
-    }
+    //    public static void bind(ServiceBinder binder)
+    //    {
+    //    }
 
     /**
      * @param configuration the application configuration.
@@ -81,17 +69,17 @@ public final class AppModule
         configuration.add(SymbolConstants.HMAC_PASSPHRASE, "Eith6Du9reeSa7aiaiweaM7oaCh6quae");
     }
 
-    /**
-     * @param configuration the configuration
-     * @param threadLocale the locale
-     */
-    @SuppressWarnings("rawtypes")
-    public static void contributeTranslatorAlternatesSource(MappedConfiguration<String, Translator> configuration,
-        ThreadLocale threadLocale)
-    {
-        configuration.add("graphName", new GraphNameTranslator("graphName"));
-        configuration.add("uri", new UriTranslator("uri"));
-    }
+    //    /**
+    //     * @param configuration the configuration
+    //     * @param threadLocale the locale
+    //     */
+    //    @SuppressWarnings("rawtypes")
+    //    public static void contributeTranslatorAlternatesSource(MappedConfiguration<String, Translator> configuration,
+    //        ThreadLocale threadLocale)
+    //    {
+    //        configuration.add("graphName", new GraphNameTranslator("graphName"));
+    //        configuration.add("uri", new UriTranslator("uri"));
+    //    }
 
     /**
      * @param configuration the application configuration.

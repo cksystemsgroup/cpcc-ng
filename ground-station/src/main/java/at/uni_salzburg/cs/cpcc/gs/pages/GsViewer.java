@@ -19,6 +19,11 @@
  */
 package at.uni_salzburg.cs.cpcc.gs.pages;
 
+import javax.inject.Inject;
+
+import org.apache.tapestry5.annotations.SetupRender;
+import org.apache.tapestry5.services.javascript.JavaScriptSupport;
+
 import at.uni_salzburg.cs.cpcc.commons.pages.Viewer;
 
 /**
@@ -26,5 +31,17 @@ import at.uni_salzburg.cs.cpcc.commons.pages.Viewer;
  */
 public class GsViewer extends Viewer
 {
-    
+    @Inject
+    private JavaScriptSupport js;
+
+    /**
+     * import the Map JavaScript stack.
+     */
+    @SetupRender
+    public void importStack()
+    {
+        super.importStack();
+        js.importStack("RealVehicle");
+        js.addScript("realVehicleInit();");
+    }
 }

@@ -1,0 +1,44 @@
+<html t:type="layout"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:p="tapestry:parameter">
+
+<t:jquery.dialog t:clientId="dialog">
+	<form t:type="form" t:id="jsForm">
+		<t:errors />
+
+		<div class="control-group">
+			<label class="control-label" for="minAltitude">${message:minAltitude}</label>
+			<div class="controls">
+				<t:textfield t:size="6" t:id="minAltitude" />
+			</div>
+		</div>
+
+		<div class="control-group">
+			<label class="control-label" for="maxAltitude">${message:maxAltitude}</label>
+			<div class="controls">
+				<t:textfield t:size="6" t:id="maxAltitude" />
+			</div>
+		</div>
+
+		<div class="control-group">
+			<a href="javascript:dialogOk()" class="btn btn-primary">${message:btn.commit}</a>
+			<a href="javascript:dialogCancel()" class="btn">${message:btn.cancel}</a>
+		</div>
+
+	</form>
+</t:jquery.dialog>
+
+<t:zone t:id="rvZone">
+	<form t:type="form" t:id="rvForm" t:zone="^">
+		<t:errors />
+		<t:textfield t:id="realVehicleZones" t:value="realVehicleZones" style="display:none" />
+	</form>
+</t:zone>
+
+<form t:type="form" t:id="invisibleForm">
+	<t:textfield t:id="otherRealVehicleZones" t:value="otherRealVehicleZones" style="display:none" />
+</form>
+
+<div id="map" class="map"></div>
+
+</html>
