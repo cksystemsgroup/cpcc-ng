@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.apache.tapestry5.StreamResponse;
+import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 
 import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
@@ -31,8 +32,7 @@ import at.uni_salzburg.cs.cpcc.core.services.GeoJsonStreamResponse;
 import at.uni_salzburg.cs.cpcc.gs.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.gs.services.RealVehicleStatus;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * JsonState
@@ -48,10 +48,8 @@ public class JsonState
     /**
      * @return the GeoJSON stream response.
      * @throws IOException thrown in case of errors.
-     * @throws JsonMappingException thrown in case of errors.
-     * @throws JsonParseException thrown in case of errors.
      */
-    public Object onActivate() throws JsonParseException, JsonMappingException, IOException
+    public Object onActivate() throws IOException
     {
         return onActivate(null);
     }
@@ -60,22 +58,42 @@ public class JsonState
      * @param what the subset of the MSE to be emitted.
      * @return the GeoJSON stream response.
      * @throws IOException thrown in case of errors.
-     * @throws JsonMappingException thrown in case of errors.
-     * @throws JsonParseException thrown in case of errors.
      */
-    public StreamResponse onActivate(final String what) throws JsonParseException, JsonMappingException, IOException
+    public StreamResponse onActivate(final String what) throws IOException
     {
         if ("rvZones".equals(what))
         {
             return new GeoJsonStreamResponse(conf.toFeatureCollection(rvs.getRealVehicles()));
         }
 
-        for (RealVehicleStatus status : rvs.getRealVehicleStatus())
+        if ("rvPositions".equals(what))
         {
-            status.getStatus();
+            FeatureCollection rvPositions = new FeatureCollection();
+            for (RealVehicleStatus status : rvs.getRealVehicleStatus())
+            {
+                byte[] s = status.getStatus();
+                if (s.length == 0)
+                {
+                    continue;
+                }
+                
+                FeatureCollection rvFeatures = new ObjectMapper().readValue(s, 0, s.length, FeatureCollection.class);
+
+                for (Feature feature : rvFeatures.getFeatures())
+                {
+                    String type = feature.getProperty("type");
+                    if (type != null && "rvPosition".equals(type))
+                    {
+                        feature.setProperty("rvId", status.getRealVehicle().getId());
+                        feature.setProperty("rvName", status.getRealVehicle().getName());
+                        rvPositions.add(feature);
+                    }
+                }
+            }
+            return new GeoJsonStreamResponse(rvPositions);
         }
 
-        FeatureCollection jsonObject = new FeatureCollection();
-        return new GeoJsonStreamResponse(jsonObject );
+        FeatureCollection emptyCollection = new FeatureCollection();
+        return new GeoJsonStreamResponse(emptyCollection);
     }
 }

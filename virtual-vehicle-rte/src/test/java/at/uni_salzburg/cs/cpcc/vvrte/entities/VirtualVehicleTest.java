@@ -39,6 +39,7 @@ public class VirtualVehicleTest
         UUID uuid = UUID.randomUUID();
         String vehicleName = "veh01";
         String clob = "bugger that!";
+        Date migStart = new Date(12345678);
         byte[] blob = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         int apiVersion = 33;
         VirtualVehicleState state = VirtualVehicleState.MIGRATING;
@@ -50,6 +51,7 @@ public class VirtualVehicleTest
         v.setUuid(uuid.toString());
         v.setName(vehicleName);
         v.setCode(clob);
+        v.setMigrationStartTime(migStart);
         v.setContinuation(blob);
         v.setApiVersion(apiVersion);
         v.setState(state);
@@ -61,6 +63,7 @@ public class VirtualVehicleTest
         assertThat(v.getUuid()).isNotNull().isEqualTo(uuid.toString());
         assertThat(v.getName()).isNotNull().isEqualTo(vehicleName);
         assertThat(v.getCode()).isNotNull().isEqualTo(clob);
+        assertThat(v.getMigrationStartTime()).isNotNull().isEqualTo(migStart);
         assertThat(v.getContinuation()).isNotNull().isEqualTo(blob);
         assertThat(v.getApiVersion()).isNotNull().isEqualTo(apiVersion);
         assertThat(v.getState()).isNotNull().isEqualTo(state);

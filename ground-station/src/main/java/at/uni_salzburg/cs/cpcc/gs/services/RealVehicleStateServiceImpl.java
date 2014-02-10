@@ -100,7 +100,7 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
     }
 
     /**
-     * MyCallable
+     * RvStatusCallable
      */
     public static class RvStatusCallable implements Callable<CommunicationResponse>
     {

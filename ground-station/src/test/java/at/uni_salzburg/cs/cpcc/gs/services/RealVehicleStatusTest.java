@@ -22,6 +22,9 @@ package at.uni_salzburg.cs.cpcc.gs.services;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -47,21 +50,27 @@ public class RealVehicleStatusTest
     public Object[][] statusDataProvider()
     {
         return new Object[][]{
-            new Object[]{rv1, null, false},
-            new Object[]{rv2, "", true},
-            new Object[]{rv3, "xxXxx", false},
+            new Object[]{rv1, null, false, false, new Date(12345)},
+            new Object[]{rv2, "", true, true, new Date(234567)},
+            new Object[]{rv3, "xxXxx", false, false, new Date(98765432)},
         };
     }
 
     @Test(dataProvider = "statusDataProvider")
-    public void shouldStoreProperties(RealVehicle realVehicle, String statusString, boolean statusUpdateRunning)
+    public void shouldStoreProperties(RealVehicle realVehicle, String statusString, boolean statusUpdateRunning, boolean connected, Date lastUpdate)
+        throws UnsupportedEncodingException
     {
         RealVehicleStatus status = new RealVehicleStatus(realVehicle);
         status.setStatus(statusString == null ? null :statusString.getBytes());
         status.setStatusUpdateRunning(statusUpdateRunning);
+        status.setConnected(connected);
+        status.setLastUpdate(lastUpdate);
 
         assertThat(status.getRealVehicle()).isNotNull().isEqualTo(realVehicle);
         assertThat(status.getStatus()).isEqualTo(statusString == null ? null : statusString.getBytes());
+        assertThat(status.getStatusString()).isEqualTo(statusString);
         assertThat(status.isStatusUpdateRunning()).isEqualTo(statusUpdateRunning);
+        assertThat(status.isConnected()).isEqualTo(connected);
+        assertThat(status.getLastUpdate()).isEqualTo(lastUpdate);
     }
 }

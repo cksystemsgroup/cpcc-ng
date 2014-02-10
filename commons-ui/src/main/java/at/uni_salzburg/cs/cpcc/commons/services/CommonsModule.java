@@ -19,10 +19,17 @@
  */
 package at.uni_salzburg.cs.cpcc.commons.services;
 
+import org.apache.tapestry5.Translator;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.services.ThreadLocale;
 import org.apache.tapestry5.services.LibraryMapping;
 import org.apache.tapestry5.services.javascript.JavaScriptStack;
+
+import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagService;
+import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagServiceImpl;
+import at.uni_salzburg.cs.cpcc.commons.services.ros.GraphNameTranslator;
 
 /**
  * CommonsModule
@@ -37,11 +44,12 @@ public final class CommonsModule
     /**
      * @param binder the service binder
      */
-//    public static void bind(ServiceBinder binder)
-//    {
-//        binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
-//    }
-    
+    public static void bind(ServiceBinder binder)
+    {
+        binder.bind(ImageTagService.class, ImageTagServiceImpl.class);
+        binder.bind(StorageContentTagService.class, StorageContentTagServiceImpl.class);
+    }
+
     /**
      * @param configuration the IoC configuration.
      */
@@ -49,28 +57,42 @@ public final class CommonsModule
     {
         configuration.add(new LibraryMapping("commons", "at.uni_salzburg.cs.cpcc.commons"));
     }
-    
+
     /**
      * @param configuration the IoC configuration.
      */
-//    public static void contributeRegexAuthorizer(Configuration<String> configuration)
-//    {
-//        configuration.add("^at.uni_salzburg.cs.cpcc.persistence/.*\\.jpg$");
-//    }
-    
+    //    public static void contributeRegexAuthorizer(Configuration<String> configuration)
+    //    {
+    //        configuration.add("^at.uni_salzburg.cs.cpcc.persistence/.*\\.jpg$");
+    //    }
+
     /**
      * @param configuration the IoC configuration.
      */
-//    public static void contributeHibernateEntityPackageManager(Configuration<String> configuration)
-//    {
-//        configuration.add("at.uni_salzburg.cs.cpcc.commons.entities");
-//    }
-    
+    //    public static void contributeHibernateEntityPackageManager(Configuration<String> configuration)
+    //    {
+    //        configuration.add("at.uni_salzburg.cs.cpcc.commons.entities");
+    //    }
+
+    /**
+     * @param configuration the configuration
+     * @param threadLocale the locale
+     */
+    @SuppressWarnings("rawtypes")
+    public static void contributeTranslatorAlternatesSource(MappedConfiguration<String, Translator> configuration,
+        ThreadLocale threadLocale)
+    {
+        configuration.add("graphName", new GraphNameTranslator("graphName"));
+        configuration.add("uri", new UriTranslator("uri"));
+    }
+
     /**
      * @param configuration the mapped configuration
      */
     public static void contributeJavaScriptStackSource(MappedConfiguration<String, JavaScriptStack> configuration)
     {
         configuration.addInstance("map", MapStack.class);
+        configuration.addInstance("draw", DrawStack.class);
     }
+
 }

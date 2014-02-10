@@ -23,8 +23,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.Property;
 
+import at.uni_salzburg.cs.cpcc.commons.components.DeviceTree;
+import at.uni_salzburg.cs.cpcc.core.entities.Device;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.gs.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.gs.services.RealVehicleStatus;
 
@@ -33,6 +37,20 @@ import at.uni_salzburg.cs.cpcc.gs.services.RealVehicleStatus;
  */
 public class Index
 {
+    @Inject
+    private QueryManager qm;
+
+    @Component(parameters = {"devices=deviceList"})
+    private DeviceTree deviceTree;
+
+    /**
+     * @return the list of devices.
+     */
+    public List<Device> getDeviceList()
+    {
+        return qm.findAllDevices();
+    }
+    
     @Property
     @Inject
     private RealVehicleStateService state;

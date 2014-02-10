@@ -25,6 +25,7 @@ import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
+import org.apache.tapestry5.services.javascript.JavaScriptStack;
 
 import com.trsvax.bootstrap.environment.TableEnvironment;
 import com.trsvax.bootstrap.environment.TableValues;
@@ -76,10 +77,10 @@ public final class AppModule
     /**
      * @param configuration the mapped configuration
      */
-//    public static void contributeJavaScriptStackSource(MappedConfiguration<String, JavaScriptStack> configuration)
-//    {
-//        configuration.addInstance("map", MapStack.class);
-//    }
+    public static void contributeJavaScriptStackSource(MappedConfiguration<String, JavaScriptStack> configuration)
+    {
+        configuration.addInstance("RealVehicle", RealVehicleStack.class);
+    }
     
     /**
      * @param configuration the configuration

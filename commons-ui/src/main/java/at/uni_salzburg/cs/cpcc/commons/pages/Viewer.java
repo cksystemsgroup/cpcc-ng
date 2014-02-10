@@ -38,7 +38,6 @@ public class Viewer
     public void importStack()
     {
         js.importStack("map");
-        //      js.addScript("alert('bugger-98'); viewerInit(); alert('bugger-99');");
         js.addScript("viewerInit();");
     }
 }

@@ -17,31 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.gs.pages;
+package at.uni_salzburg.cs.cpcc.com.services;
 
-import javax.inject.Inject;
+import static org.fest.assertions.api.Assertions.assertThat;
 
-import org.apache.tapestry5.annotations.SetupRender;
-import org.apache.tapestry5.services.javascript.JavaScriptSupport;
-
-import at.uni_salzburg.cs.cpcc.commons.pages.Viewer;
+import org.testng.annotations.Test;
 
 /**
- * GsViewer
+ * CommunicationRequestTest
  */
-public class GsViewer extends Viewer
+public class CommunicationRequestTest
 {
-    @Inject
-    private JavaScriptSupport js;
-
-    /**
-     * import the Map JavaScript stack.
-     */
-    @SetupRender
-    public void importStack()
+    @Test
+    public void shouldConstructACommunicationRequerst()
     {
-        super.importStack();
-        js.importStack("RealVehicle");
-        js.addScript("realVehicleInit();");
+        CommunicationRequest request = new CommunicationRequest();
+        assertThat(request).isNotNull();
     }
 }

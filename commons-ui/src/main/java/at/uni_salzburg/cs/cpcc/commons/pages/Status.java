@@ -82,31 +82,6 @@ public class Status
      */
     public StreamResponse onActivate(String what) throws IOException
     {
-        //        JSONObject response = new JSONObject();
-        //
-        //        RealVehicle realVehicle = findRealVehicle();
-        //
-        //        if (realVehicle != null)
-        //        {
-        //            JSONObject jsonRealVehicle = pjc.toJson(false, realVehicle);
-        //
-        //            PolarCoordinate position = findRealVehiclePosition();
-        //            if (position != null)
-        //            {
-        //                jsonRealVehicle.put("position", pjc.toJson(position));
-        //            }
-        //
-        //            response.put("rv", jsonRealVehicle);
-        //        }
-        //
-        //        List<VirtualVehicle> vvs = vvRepo.findAllVehicles();
-        //        if (vvs != null && vvs.size() > 0)
-        //        {
-        //            response.put("vvs", vjc.toJsonArray(vvs.toArray(new VirtualVehicle[0])));
-        //        }
-        //
-        //        return new JsonStreamResponse(response);
-
         FeatureCollection fc = new FeatureCollection();
 
         if (what == null || "rvs".equals(what))

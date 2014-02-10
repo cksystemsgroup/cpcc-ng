@@ -435,7 +435,8 @@ public class RosNodeServiceImpl implements RosNodeService
 
         if (topicRoot == null || className == null)
         {
-            LOG.error("Can not start ROS node group.");
+            LOG.error("Can not start ROS node group: " + device.getTopicRoot() + ", id=" + device.getId()
+                + ", className=" + className);
             launchAllDeviceAdapters(device);
             return;
         }
