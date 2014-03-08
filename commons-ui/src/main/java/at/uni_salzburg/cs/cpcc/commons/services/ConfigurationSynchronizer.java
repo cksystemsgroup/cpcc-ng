@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.gs.services;
+package at.uni_salzburg.cs.cpcc.commons.services;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +33,7 @@ public interface ConfigurationSynchronizer
 {
     /**
      * @param targets the real vehicle to synchronize the configuration with.
-     * @throws IOException in case of errors.
+     * @throws IOException thrown in case of errors.
      */
     void syncConfig(List<RealVehicle> targets) throws IOException;
 
@@ -43,32 +43,25 @@ public interface ConfigurationSynchronizer
      */
     JSONArray syncSensorDefinitionConfig(JSONArray sensorDefs);
 
-    
     /**
      * @param realVehicles the real vehicles to be synchronized with the local database as a JSON array.
      * @return the real vehicles that are newer in the local database.
      */
     JSONArray syncRealVehicleConfig(JSONArray realVehicles);
-    
-    
-    
-    /**
-     * The real vehicle configuration should be synchronized to all other real vehicles.
-     */
-//    void initRealVehicleConfigSync();
 
     /**
-     * @return the last real vehicle configuration synchronization time.
+     * @param content the parameters to be updated in this vehicle's configuration.
+     * @throws IOException thrown in case of errors.
      */
-//    Date getLastRealVehicleConfigSync();
+    /**
+     * @param content the parameters to be updated in this vehicle's configuration.
+     * @return the serialized configuration items that are newer in the hosting real vehicle.
+     * @throws IOException thrown in case of errors.
+     */
+    byte[] updateOwnConfig(byte[] content) throws IOException;
 
     /**
-     * The sensor definition configuration should be synchronized to all other real vehicles.
+     * Inform the service that the configuration has been changed.
      */
-//    void initSensorDefinitionConfigSync();
-
-    /**
-     * @return the last sensor definition configuration synchronization time.
-     */
-//    Date getSensorDefinitionConfigSync();
+    void notifyConfigurationChange();
 }

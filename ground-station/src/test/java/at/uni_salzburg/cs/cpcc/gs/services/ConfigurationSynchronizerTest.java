@@ -29,6 +29,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.util.TimerTask;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.tapestry5.json.JSONArray;
+import org.hibernate.Session;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeMethod;
@@ -50,6 +52,9 @@ import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse.Status;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
+import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizerImpl;
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
+import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleType;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
@@ -67,6 +72,7 @@ public class ConfigurationSynchronizerTest
     private Long cycleTime;
     private QueryManager qm;
     private CommunicationService com;
+    private Session session;
 
     //    private RealVehicle syncRealVehicle;
     //    private Connector syncConnector;
@@ -74,30 +80,29 @@ public class ConfigurationSynchronizerTest
     private CommunicationResponse response = new CommunicationResponse();
 
     private String result1 =
-        "{\"rvs\":[{\"id\":\"10\",\"aoo\":\"[{lat: 43.85,lng: 13.45}]\",\"name\":\"GS01\",\"sen\":[1],"
-            + "\"type\":\"GROUND_STATION\",\"upd\":\"10010\",\"url\":\"http://localhost:12345/gs01\"},"
+        "{\"rvs\":[{\"id\":\"10\",\"aoo\":\"[{lat: 43.85,lng: 13.45}]\",\"name\":\"GS01\",\"sen\":[1],\"upd\":10010,"
+            + "\"type\":\"GROUND_STATION\",\"url\":\"http://localhost:12345/gs01\"},"
             + "{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
-            + "{lat: 43.9,lng: 13.5},{lat: 43.8,lng: 13.4}]\",\"name\":\"RV01\",\"sen\":[2],"
-            + "\"type\":\"QUADROCOPTER\",\"upd\":\"1\",\"url\":\"http://localhost:12345/rv01\"},"
+            + "{lat: 43.9,lng: 13.5},{lat: 43.8,lng: 13.4}]\",\"name\":\"RV01\",\"sen\":[2],\"upd\":1,"
+            + "\"type\":\"QUADROCOPTER\",\"deleted\":false,\"url\":\"http://localhost:12345/rv01\"},"
             + "{\"id\":\"2\",\"aoo\":\"[{lat: 43.9,lng: 13.4},{lat: 43.9,lng: 13.5},{lat: 44.0,lng: 13.5},"
-            + "{lat: 44.0,lng: 13.5},{lat: 43.9,lng: 13.4}]\",\"name\":\"RV02\",\"sen\":[1,3],"
-            + "\"type\":\"FIXED_WING_AIRCRAFT\",\"upd\":\"2\",\"url\":\"http://localhost:12345/rv02\"},"
+            + "{lat: 44.0,lng: 13.5},{lat: 43.9,lng: 13.4}]\",\"name\":\"RV02\",\"sen\":[1,3],\"upd\":2,"
+            + "\"type\":\"FIXED_WING_AIRCRAFT\",\"deleted\":false,\"url\":\"http://localhost:12345/rv02\"},"
             + "{\"id\":\"3\",\"aoo\":\"[{lat: 43.8,lng: 13.5},{lat: 43.8,lng: 13.6},{lat: 43.9,lng: 13.6},"
-            + "{lat: 43.9,lng: 13.6},{lat: 43.8,lng: 13.5}]\",\"name\":\"RV03\",\"sen\":[1,2,3],"
-            + "\"type\":\"MOBILE_PHONE\",\"upd\":\"3\",\"url\":\"http://localhost:12345/rv03\"},"
+            + "{lat: 43.9,lng: 13.6},{lat: 43.8,lng: 13.5}]\",\"name\":\"RV03\",\"sen\":[1,2,3],\"upd\":3,"
+            + "\"type\":\"MOBILE_PHONE\",\"deleted\":false,\"url\":\"http://localhost:12345/rv03\"},"
             + "{\"id\":\"4\",\"aoo\":\"[{lat: 43.9,lng: 13.5},{lat: 43.9,lng: 13.6},{lat: 44.0,lng: 13.6},"
-            + "{lat: 44.0,lng: 13.6},{lat: 43.9,lng: 13.5}]\",\"name\":\"RV04\",\"sen\":[1,2,3,4],"
-            + "\"type\":\"TABLET\",\"upd\":\"4\",\"url\":\"http://localhost:12345/rv04\"}],"
-            + "\"sen\":["
-            + "{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":\"1000\",\"description\":\"Altimeter\","
-            + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\"},{\"id\":\"2\","
-            + "\"visibility\":\"PRIVILEGED_VV\",\"lastUpdate\":\"2000\","
-            + "\"description\":\"Belly Mounted Camera 640x480\","
+            + "{lat: 44.0,lng: 13.6},{lat: 43.9,lng: 13.5}]\",\"name\":\"RV04\",\"sen\":[1,2,3,4],\"upd\":4,"
+            + "\"type\":\"TABLET\",\"deleted\":false,\"url\":\"http://localhost:12345/rv04\"}],\"sen\":["
+            + "{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":1000,\"description\":\"Altimeter\","
+            + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\",\"deleted\":false},{\"id\":\"2\","
+            + "\"visibility\":\"PRIVILEGED_VV\",\"lastUpdate\":2000,\"description\":\"Belly Mounted Camera 640x480\","
             + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment='north'\","
-            + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\"},{\"id\":\"3\",\"visibility\":\"NO_VV\","
-            + "\"lastUpdate\":\"3000\",\"description\":\"CO2\",\"messageType\":\"std_msgs/Float32\","
-            + "\"type\":\"CO2\"},{\"id\":\"4\",\"visibility\":\"ALL_VV\",\"lastUpdate\":\"4000\","
-            + "\"description\":\"GPS\",\"messageType\":\"sensor_msgs/NavSatFix\",\"type\":\"GPS\"}]}";
+            + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\",\"deleted\":false},"
+            + "{\"id\":\"3\",\"visibility\":\"NO_VV\",\"lastUpdate\":3000,\"description\":\"CO2\","
+            + "\"messageType\":\"std_msgs/Float32\",\"type\":\"CO2\",\"deleted\":false},{\"id\":\"4\","
+            + "\"visibility\":\"ALL_VV\",\"lastUpdate\":4000,\"description\":\"GPS\","
+            + "\"messageType\":\"sensor_msgs/NavSatFix\",\"type\":\"GPS\",\"deleted\":false}]}";
 
     //    private String response1 = "";
 
@@ -142,6 +147,7 @@ public class ConfigurationSynchronizerTest
         sd1.setParameters(null);
         sd1.setType(SensorType.ALTIMETER);
         sd1.setVisibility(SensorVisibility.ALL_VV);
+        sd1.setDeleted(false);
 
         sd2.setId(2);
         sd2.setDescription("Belly Mounted Camera 640x480");
@@ -150,6 +156,7 @@ public class ConfigurationSynchronizerTest
         sd2.setParameters("width=640 height=480 yaw=0 down=1.571 alignment='north'");
         sd2.setType(SensorType.CAMERA);
         sd2.setVisibility(SensorVisibility.PRIVILEGED_VV);
+        sd2.setDeleted(false);
 
         sd3.setId(3);
         sd3.setDescription("CO2");
@@ -158,6 +165,7 @@ public class ConfigurationSynchronizerTest
         sd3.setParameters(null);
         sd3.setType(SensorType.CO2);
         sd3.setVisibility(SensorVisibility.NO_VV);
+        sd3.setDeleted(false);
 
         sd4.setId(4);
         sd4.setDescription("GPS");
@@ -166,6 +174,7 @@ public class ConfigurationSynchronizerTest
         sd4.setParameters(null);
         sd4.setType(SensorType.GPS);
         sd4.setVisibility(SensorVisibility.ALL_VV);
+        sd4.setDeleted(false);
 
         sd1new.setId(1);
         sd1new.setDescription("Barometer");
@@ -174,6 +183,7 @@ public class ConfigurationSynchronizerTest
         sd1new.setParameters("random=1080:1100");
         sd1new.setType(SensorType.BAROMETER);
         sd1new.setVisibility(SensorVisibility.NO_VV);
+        sd1new.setDeleted(false);
 
         gs1.setId(10);
         gs1.setAreaOfOperation("[{lat: 43.85,lng: 13.45}]");
@@ -191,6 +201,7 @@ public class ConfigurationSynchronizerTest
         rv1.setSensors(rv1SensorList);
         rv1.setType(RealVehicleType.QUADROCOPTER);
         rv1.setUrl("http://localhost:12345/rv01");
+        rv1.setDeleted(false);
 
         rv2.setId(2);
         rv2.setAreaOfOperation("[{lat: 43.9,lng: 13.4},{lat: 43.9,lng: 13.5},{lat: 44.0,lng: 13.5},"
@@ -200,6 +211,7 @@ public class ConfigurationSynchronizerTest
         rv2.setSensors(rv2SensorList);
         rv2.setType(RealVehicleType.FIXED_WING_AIRCRAFT);
         rv2.setUrl("http://localhost:12345/rv02");
+        rv2.setDeleted(false);
 
         rv3.setId(3);
         rv3.setAreaOfOperation("[{lat: 43.8,lng: 13.5},{lat: 43.8,lng: 13.6},{lat: 43.9,lng: 13.6},"
@@ -209,6 +221,7 @@ public class ConfigurationSynchronizerTest
         rv3.setSensors(rv3SensorList);
         rv3.setType(RealVehicleType.MOBILE_PHONE);
         rv3.setUrl("http://localhost:12345/rv03");
+        rv3.setDeleted(false);
 
         rv4.setId(4);
         rv4.setAreaOfOperation("[{lat: 43.9,lng: 13.5},{lat: 43.9,lng: 13.6},{lat: 44.0,lng: 13.6},"
@@ -218,6 +231,7 @@ public class ConfigurationSynchronizerTest
         rv4.setSensors(rv4SensorList);
         rv4.setType(RealVehicleType.TABLET);
         rv4.setUrl("http://localhost:12345/rv04");
+        rv4.setDeleted(false);
 
         rv5.setId(5);
         rv5.setAreaOfOperation("[{lat: 44.0,lng: 13.5},{lat: 44.0,lng: 13.6},{lat: 44.1,lng: 13.6},"
@@ -227,6 +241,7 @@ public class ConfigurationSynchronizerTest
         rv5.setSensors(rv5SensorList);
         rv5.setType(RealVehicleType.UNMANNED_UNDERWATER_VEHICLE);
         rv5.setUrl("http://localhost:12345/rv05");
+        rv5.setDeleted(false);
 
         rv1new.setId(1);
         rv1new.setAreaOfOperation("[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
@@ -236,6 +251,7 @@ public class ConfigurationSynchronizerTest
         rv1new.setSensors(rv1SensorList);
         rv1new.setType(RealVehicleType.FIXED_WING_AIRCRAFT);
         rv1new.setUrl("http://localhost:12345/rv01new");
+        rv1new.setDeleted(false);
 
         timerService = mock(TimerService.class);
         doAnswer(new Answer<Object>()
@@ -250,9 +266,17 @@ public class ConfigurationSynchronizerTest
             }
         }).when(timerService).periodicSchedule(any(TimerTask.class), anyLong(), anyLong());
 
+        Parameter rvNameParam = mock(Parameter.class);
+        when(rvNameParam.getValue()).thenReturn("GS01");
+
         qm = mock(QueryManager.class);
         // when(qm.findAllRealVehicles()).thenReturn(Arrays.asList(gs1, rv1, rv2, rv3, rv4));
         // when(qm.findAllSensorDefinitions()).thenReturn(Arrays.asList(sd1, sd2, sd3, sd4));
+        when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(rvNameParam);
+        when(qm.findRealVehicleByName(rvNameParam.getValue())).thenReturn(gs1);
+        when(qm.findAllRealVehicles()).thenReturn(new ArrayList<RealVehicle>(Arrays.asList(gs1, rv1, rv2, rv3, rv4)));
+        session = mock(Session.class);
+        when(qm.getSession()).thenReturn(session);
 
         response.setStatus(Status.OK);
         response.setContent(null);
@@ -273,7 +297,9 @@ public class ConfigurationSynchronizerTest
 
         jsonConv = new CoreJsonConverterImpl();
 
-        sync = new ConfigurationSynchronizerImpl(timerService, qm, com, jsonConv);
+        RealVehicleStateService stateSrv = mock(RealVehicleStateService.class);
+
+        sync = new ConfigurationSynchronizerImpl(timerService, qm, com, jsonConv, stateSrv);
     }
 
     @Test
@@ -291,26 +317,26 @@ public class ConfigurationSynchronizerTest
                 Arrays.asList(sd1, sd2, sd3, sd4),
                 Arrays.asList(sd1new)
             },
-            new Object[]{
-                Arrays.asList(sd1, sd2, sd3, sd4),
-                Arrays.asList(sd1new, sd2, sd3, sd4),
-                new ArrayList<SensorDefinition>()
-            },
-            new Object[]{
-                new ArrayList<SensorDefinition>(),
-                Arrays.asList(sd1, sd2, sd3, sd4),
-                new ArrayList<SensorDefinition>()
-            },
-            new Object[]{
-                Arrays.asList(sd1, sd2, sd3, sd4),
-                Arrays.asList(sd1, sd2, sd4),
-                new ArrayList<SensorDefinition>()
-            },
-            new Object[]{
-                Arrays.asList(sd1, sd2, sd4),
-                Arrays.asList(sd1, sd2, sd3, sd4),
-                new ArrayList<SensorDefinition>()
-            },
+//            new Object[]{
+//                Arrays.asList(sd1, sd2, sd3, sd4),
+//                Arrays.asList(sd1new, sd2, sd3, sd4),
+//                new ArrayList<SensorDefinition>()
+//            },
+//            new Object[]{
+//                new ArrayList<SensorDefinition>(),
+//                Arrays.asList(sd1, sd2, sd3, sd4),
+//                new ArrayList<SensorDefinition>()
+//            },
+//            new Object[]{
+//                Arrays.asList(sd1, sd2, sd3, sd4),
+//                Arrays.asList(sd1, sd2, sd4),
+//                new ArrayList<SensorDefinition>()
+//            },
+//            new Object[]{
+//                Arrays.asList(sd1, sd2, sd4),
+//                Arrays.asList(sd1, sd2, sd3, sd4),
+//                new ArrayList<SensorDefinition>()
+//            },
         };
     }
 
@@ -325,7 +351,7 @@ public class ConfigurationSynchronizerTest
         JSONArray sensorDefs = jsonConv.toJsonArray(in.toArray(new SensorDefinition[0]));
         JSONArray back = sync.syncSensorDefinitionConfig(sensorDefs);
 
-        List<SensorDefinition> result = jsonConv.toSensorDefinitionList(back);
+        List<SensorDefinition> result = ConvUtils.toSensorDefinitionList(back);
 
         assertThat(result).isNotNull().containsAll(out);
         assertThat(out).containsAll(result);
@@ -378,7 +404,7 @@ public class ConfigurationSynchronizerTest
         JSONArray realVehicles = jsonConv.toJsonArray(true, in.toArray(new RealVehicle[0]));
         JSONArray back = sync.syncRealVehicleConfig(realVehicles);
 
-        List<RealVehicle> result = jsonConv.toRealVehicleList(back);
+        List<RealVehicle> result = ConvUtils.toRealVehicleList(back);
 
         reconstructRealVehicleListFromDb(result);
 
@@ -422,7 +448,172 @@ public class ConfigurationSynchronizerTest
     }
 
     @DataProvider
-    public Object[][] sensorDefinitionDataProvider()
+    public Object[][] sensorDefinition1DataProvider()
+    {
+        return new Object[][]{
+            new Object[]{
+                new ArrayList<RealVehicle>(),
+                new ArrayList<SensorDefinition>(),
+                rv1,
+                "",
+                "{\"rvs\":[],\"sen\":[]}",
+                new Object[]{},
+                new Object[]{},
+                new Object[]{},
+            },
+            new Object[]{
+                new ArrayList<RealVehicle>(),
+                Arrays.asList(sd1),
+                rv1,
+                "",
+                "{\"rvs\":[],\"sen\":[{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":1000,"
+                    + "\"description\":\"Altimeter\",\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\",\"deleted\":false}]}",
+                new Object[]{},
+                new Object[]{},
+                new Object[]{},
+            },
+            new Object[]{
+                Arrays.asList(rv1),
+                new ArrayList<SensorDefinition>(),
+                rv2,
+                "",
+                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
+                    + "{lat: 43.9,lng: 13.5},{lat: 43.8,lng: 13.4}]\",\"name\":\"RV01\",\"sen\":[2],"
+                    + "\"upd\":1,\"type\":\"QUADROCOPTER\",\"deleted\":false,\"url\":\"http://localhost:12345/rv01\"}],\"sen\":[]}",
+                new Object[]{},
+                new Object[]{},
+                new Object[]{},
+            },
+            new Object[]{
+                Arrays.asList(rv1),
+                Arrays.asList(sd1),
+                rv3,
+                "",
+                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
+                    + "{lat: 43.9,lng: 13.5},{lat: 43.8,lng: 13.4}]\",\"name\":\"RV01\",\"sen\":[2],"
+                    + "\"upd\":1,\"type\":\"QUADROCOPTER\",\"deleted\":false,\"url\":\"http://localhost:12345/rv01\"}],"
+                    + "\"sen\":[{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":1000,"
+                    + "\"description\":\"Altimeter\",\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\",\"deleted\":false}]}",
+                new Object[]{},
+                new Object[]{},
+                new Object[]{},
+            },
+            new Object[]{
+                Arrays.asList(),
+                Arrays.asList(),
+                rv4,
+                "{\"rvs\":[],\"sen\":[]}",
+                "{\"rvs\":[],\"sen\":[]}",
+                new Object[]{},
+                new Object[]{},
+                new Object[]{},
+            },
+            new Object[]{
+                new ArrayList<RealVehicle>(),
+                new ArrayList<SensorDefinition>(),
+                rv1,
+                "{\"rvs\":[],\"sen\":[{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":1000,"
+                    + "\"description\":\"Altimeter\",\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\",\"deleted\":false}]}",
+                "{\"rvs\":[],\"sen\":[]}",
+                new Object[]{},
+                new Object[]{},
+                new Object[]{sd1},
+            },
+            new Object[]{
+                new ArrayList<RealVehicle>(),
+                new ArrayList<SensorDefinition>(),
+                rv2,
+                "{\"rvs\":[{\"id\":\"5\",\"aoo\":\"[{lat: 44.0,lng: 13.5},{lat: 44.0,lng: 13.6},{lat: 44.1,lng: 13.6},"
+                    + "{lat: 44.1,lng: 13.6},{lat: 44.0,lng: 13.5}]\",\"name\":\"RV05\",\"sen\":[],"
+                    + "\"type\":\"UNMANNED_UNDERWATER_VEHICLE\",\"upd\":\"5\","
+                    + "\"url\":\"http://localhost:12345/rv05\"}],\"sen\":[]}",
+                "{\"rvs\":[],\"sen\":[]}",
+                new Object[]{},
+                new Object[]{},
+                new Object[]{rv5},
+            },
+            new Object[]{
+                Arrays.asList(rv1),
+                Arrays.asList(sd2),
+                rv3,
+                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
+                    + "{lat: 43.9,lng: 13.5}]\",\"name\":\"RV01new\",\"sen\":[2],\"type\":\"FIXED_WING_AIRCRAFT\","
+                    + "\"upd\":\"10001\",\"url\":\"http://localhost:12345/rv01new\"}],\"sen\":[]}",
+                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
+                    + "{lat: 43.9,lng: 13.5},{lat: 43.8,lng: 13.4}]\",\"name\":\"RV01\",\"sen\":[2],"
+                    + "\"upd\":1,\"type\":\"QUADROCOPTER\",\"deleted\":false,\"url\":\"http://localhost:12345/rv01\"}],"
+                    + "\"sen\":["
+                    + "{\"id\":\"2\",\"visibility\":\"PRIVILEGED_VV\",\"lastUpdate\":2000,"
+                    + "\"description\":\"Belly Mounted Camera 640x480\","
+                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment='north'\","
+                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\",\"deleted\":false}]}",
+                new Object[]{rv1new},
+                new Object[]{},
+                new Object[]{},
+            },
+            new Object[]{
+                Arrays.asList(rv1new),
+                Arrays.asList(sd2),
+                rv4,
+                "{\"rvs\":[],\"sen\":[]}",
+                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
+                    + "{lat: 43.9,lng: 13.5}]\",\"name\":\"RV01new\",\"sen\":[2],\"upd\":10001,\"type\":\"FIXED_WING_AIRCRAFT\","
+                    + "\"deleted\":false,\"url\":\"http://localhost:12345/rv01new\"}],"
+                    + "\"sen\":[{\"id\":\"2\",\"visibility\":\"PRIVILEGED_VV\",\"lastUpdate\":2000,"
+                    + "\"description\":\"Belly Mounted Camera 640x480\","
+                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment='north'\","
+                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\",\"deleted\":false}]}",
+                new Object[]{},
+                new Object[]{},
+                new Object[]{},
+            },
+        };
+    }
+
+    @Test(dataProvider = "sensorDefinition1DataProvider")
+    public void shouldUpdateOwnSensorDefinitionConfig(
+        List<RealVehicle> rvsDb,
+        List<SensorDefinition> sdsDb,
+        RealVehicle targetRV,
+        String responseContent,
+        String expectedResult,
+        Object[] dbUpdates,
+        Object[] dbDeletes,
+        Object[] dbSaves
+        ) throws IOException
+    {
+        setUpQmAllSensorDefinitions(sdsDb, new ArrayList<SensorDefinition>());
+        setUpQmAllRealVehicles(rvsDb, new ArrayList<RealVehicle>());
+
+        response.setContent(responseContent.getBytes());
+        response.setStatus(Status.OK);
+
+        sync.syncConfig(Arrays.asList(targetRV));
+
+        System.out.println("### " + expectedResult);
+        verify(com).transfer(targetRV, Connector.CONFIGURATION_UPDATE, expectedResult.getBytes());
+
+        verify(qm, times(responseContent.length() == 0 ? 1 : 2)).findAllSensorDefinitions();
+        verify(qm, times(responseContent.length() == 0 ? 1 : 2)).findAllRealVehicles();
+
+        for (Object obj : dbUpdates)
+        {
+            verify(qm).saveOrUpdate(eq(obj));
+        }
+
+        for (Object obj : dbDeletes)
+        {
+            verify(qm).delete(eq(obj));
+        }
+
+        for (Object obj : dbSaves)
+        {
+            verify(session).save(eq(obj));
+        }
+    }
+
+    @DataProvider
+    public Object[][] sensorDefinition2DataProvider()
     {
         return new Object[][]{
             new Object[]{
@@ -437,106 +628,19 @@ public class ConfigurationSynchronizerTest
             new Object[]{
                 new ArrayList<RealVehicle>(),
                 Arrays.asList(sd1),
-                rv1,
+                gs1,
                 "",
                 "{\"rvs\":[],\"sen\":[{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":\"1000\","
                     + "\"description\":\"Altimeter\",\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\"}]}",
                 new Object[]{},
                 new Object[]{},
             },
-            new Object[]{
-                Arrays.asList(rv1),
-                new ArrayList<SensorDefinition>(),
-                rv2,
-                "",
-                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
-                    + "{lat: 43.9,lng: 13.5},{lat: 43.8,lng: 13.4}]\",\"name\":\"RV01\",\"sen\":[2],"
-                    + "\"type\":\"QUADROCOPTER\",\"upd\":\"1\",\"url\":\"http://localhost:12345/rv01\"}],\"sen\":[]}",
-                new Object[]{},
-                new Object[]{},
-            },
-            new Object[]{
-                Arrays.asList(rv1),
-                Arrays.asList(sd1),
-                rv3,
-                "",
-                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
-                    + "{lat: 43.9,lng: 13.5},{lat: 43.8,lng: 13.4}]\",\"name\":\"RV01\",\"sen\":[2],"
-                    + "\"type\":\"QUADROCOPTER\",\"upd\":\"1\",\"url\":\"http://localhost:12345/rv01\"}],"
-                    + "\"sen\":[{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":\"1000\","
-                    + "\"description\":\"Altimeter\",\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\"}]}",
-                new Object[]{},
-                new Object[]{},
-            },
-            new Object[]{
-                Arrays.asList(),
-                Arrays.asList(),
-                rv4,
-                "{\"rvs\":[],\"sen\":[]}",
-                "{\"rvs\":[],\"sen\":[]}",
-                new Object[]{},
-                new Object[]{},
-            },
-            new Object[]{
-                new ArrayList<RealVehicle>(),
-                new ArrayList<SensorDefinition>(),
-                rv1,
-                "{\"rvs\":[],\"sen\":[{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":\"1000\","
-                    + "\"description\":\"Altimeter\",\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\"}]}",
-                "{\"rvs\":[],\"sen\":[]}",
-                new Object[]{sd1},
-                new Object[]{},
-            },
-            new Object[]{
-                new ArrayList<RealVehicle>(),
-                new ArrayList<SensorDefinition>(),
-                rv2,
-                "{\"rvs\":[{\"id\":\"5\",\"aoo\":\"[{lat: 44.0,lng: 13.5},{lat: 44.0,lng: 13.6},{lat: 44.1,lng: 13.6},"
-                    + "{lat: 44.1,lng: 13.6},{lat: 44.0,lng: 13.5}]\",\"name\":\"RV05\",\"sen\":[],"
-                    + "\"type\":\"UNMANNED_UNDERWATER_VEHICLE\",\"upd\":\"5\","
-                    + "\"url\":\"http://localhost:12345/rv05\"}],\"sen\":[]}",
-                "{\"rvs\":[],\"sen\":[]}",
-                new Object[]{rv5},
-                new Object[]{},
-            },
-            new Object[]{
-                Arrays.asList(rv1),
-                Arrays.asList(sd2),
-                rv3,
-                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
-                    + "{lat: 43.9,lng: 13.5}]\",\"name\":\"RV01new\",\"sen\":[2],\"type\":\"FIXED_WING_AIRCRAFT\","
-                    + "\"upd\":\"10001\",\"url\":\"http://localhost:12345/rv01new\"}],\"sen\":[]}",
-                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
-                    + "{lat: 43.9,lng: 13.5},{lat: 43.8,lng: 13.4}]\",\"name\":\"RV01\",\"sen\":[2],"
-                    + "\"type\":\"QUADROCOPTER\",\"upd\":\"1\",\"url\":\"http://localhost:12345/rv01\"}],"
-                    + "\"sen\":["
-                    + "{\"id\":\"2\",\"visibility\":\"PRIVILEGED_VV\",\"lastUpdate\":\"2000\","
-                    + "\"description\":\"Belly Mounted Camera 640x480\","
-                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment='north'\","
-                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\"}]}",
-                new Object[]{rv1new},
-                new Object[]{sd2},
-            },
-            new Object[]{
-                Arrays.asList(rv1new),
-                Arrays.asList(sd2),
-                rv4,
-                "{\"rvs\":[],\"sen\":[]}",
-                "{\"rvs\":[{\"id\":\"1\",\"aoo\":\"[{lat: 43.8,lng: 13.4},{lat: 43.8,lng: 13.5},{lat: 43.9,lng: 13.5},"
-                    + "{lat: 43.9,lng: 13.5}]\",\"name\":\"RV01new\",\"sen\":[2],\"type\":\"FIXED_WING_AIRCRAFT\","
-                    + "\"upd\":\"10001\",\"url\":\"http://localhost:12345/rv01new\"}],"
-                    + "\"sen\":[{\"id\":\"2\",\"visibility\":\"PRIVILEGED_VV\",\"lastUpdate\":\"2000\","
-                    + "\"description\":\"Belly Mounted Camera 640x480\","
-                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment='north'\","
-                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\"}]}",
-                new Object[]{},
-                new Object[]{},
-            },
+
         };
     }
 
-    @Test(dataProvider = "sensorDefinitionDataProvider")
-    public void shouldUpdateOwnSensorDefinitionConfig(
+    @Test(dataProvider = "sensorDefinition2DataProvider")
+    public void shouldNotUpdateOwnSensorDefinitionConfigToHostingRv(
         List<RealVehicle> rvsDb,
         List<SensorDefinition> sdsDb,
         RealVehicle targetRV,
@@ -552,42 +656,26 @@ public class ConfigurationSynchronizerTest
         response.setContent(responseContent.getBytes());
         response.setStatus(Status.OK);
 
-        // String buggerit = new String(expectedResult);
-        // System.out.println("buggerit: " + buggerit);
-
         sync.syncConfig(Arrays.asList(targetRV));
 
-        verify(com).transfer(targetRV, Connector.CONFIGURATION_UPDATE, expectedResult.getBytes());
-
-        verify(qm, times(responseContent.length() == 0 ? 1 : 2)).findAllSensorDefinitions();
-        verify(qm, times(responseContent.length() == 0 ? 1 : 2)).findAllRealVehicles();
-
-        for (Object obj : dbUpdates)
-        {
-            verify(qm).saveOrUpdate(eq(obj));
-        }
-
-        for (Object obj : dbDeletes)
-        {
-            verify(qm).delete(eq(obj));
-        }
+        verifyZeroInteractions(com);
     }
 
     private void verifyRealVehicleAccessInDb(List<RealVehicle> in)
     {
-        for (RealVehicle sd : in)
-        {
-            verify(qm).findRealVehicleById(eq(sd.getId()));
-        }
+        //        for (RealVehicle sd : in)
+        //        {
+        //            verify(qm).findRealVehicleById(eq(sd.getId()));
+        //        }
 
         for (RealVehicle sd : addedRVs)
         {
-            verify(qm).saveOrUpdate(eq(sd));
+            verify(session).save(eq(sd));
         }
 
         for (RealVehicle sd : removedRVs)
         {
-            verify(qm).delete(eq(sd));
+            verify(qm).saveOrUpdate(eq(sd));
         }
 
         for (RealVehicle sd : changedRVs)
@@ -676,19 +764,14 @@ public class ConfigurationSynchronizerTest
     {
         verify(qm).findAllSensorDefinitions();
 
-        for (SensorDefinition sd : in)
-        {
-            verify(qm).findSensorDefinitionById(eq(sd.getId()));
-        }
-
         for (SensorDefinition sd : addedSDs)
         {
-            verify(qm).saveOrUpdate(eq(sd));
+            verify(session).save(eq(sd));
         }
 
         for (SensorDefinition sd : removedSDs)
         {
-            verify(qm).delete(eq(sd));
+            verify(qm).saveOrUpdate(eq(sd));
         }
 
         for (SensorDefinition sd : changedSDs)

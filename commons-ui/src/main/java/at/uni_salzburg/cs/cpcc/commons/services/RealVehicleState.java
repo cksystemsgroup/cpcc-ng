@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.gs.services;
+package at.uni_salzburg.cs.cpcc.commons.services;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -28,7 +28,7 @@ import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 /**
  * RealVehicleStatus
  */
-public class RealVehicleStatus
+public class RealVehicleState
 {
     private RealVehicle realVehicle;
 
@@ -43,7 +43,7 @@ public class RealVehicleStatus
     /**
      * @param realVehicle the associated real vehicle.
      */
-    public RealVehicleStatus(RealVehicle realVehicle)
+    public RealVehicleState(RealVehicle realVehicle)
     {
         this.realVehicle = realVehicle;
     }

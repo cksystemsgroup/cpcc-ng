@@ -1,0 +1,140 @@
+
+
+#########################################################################
+# 1. Generate initial change log:
+
+cd ~/work/cpcc-ng-workspace/cpcc-ng/core/src/main/resources
+
+mkdir -p dbchange/1.0.0
+
+CP=~/.m2/repository/com/h2database/h2/1.3.175/h2-1.3.175.jar
+JAR=~/.m2/repository/org/liquibase/liquibase-core/3.1.1/liquibase-core-3.1.1.jar
+URL='jdbc:h2:tcp://localhost:9095/GS;MVCC=true';
+
+java -classpath $OE:$CP:$JAR liquibase.integration.commandline.Main \
+        --driver=org.h2.Driver  \
+        --url="$URL" \
+        --username=sa \
+        --password= \
+        --changeLogFile=dbchange/1.0.0/ChangeLog-initial.xml \
+        generateChangeLog
+
+mv dbchange/1.0.0/ChangeLog-initial.xml dbchange/1.0.0/ChangeLog-initial.xml-orig
+
+perl \
+   -e '$_=join("",<>); '  \
+   -e 's#[\r\n]*\s*</changeSet>\s*[\r\n]*\s*<changeSet[^>]*>##mg;' \
+   -e 'print $_;' \
+   dbchange/1.0.0/ChangeLog-initial.xml-orig > dbchange/1.0.0/ChangeLog-initial.xml
+
+perl -pi \
+   -e 's#author="clem \(generated\)"#author="ckrainer"#;'  \
+   -e 's#id="\d+[-]\d+"#id="1.0.0"#;' \
+   -e 's#schemaName="[^"]*"##;' \
+   -e 's#baseTableSchemaName="[^"]*"##;' \
+   -e 's#referencedTableSchemaName="[^"]*"##;' \
+   -e 's#primaryKeyTablespace="[^"]*"##;' \
+   -e 's#tablespace="[^"]*"##;' \
+   dbchange/1.0.0/ChangeLog-initial.xml
+
+
+#########################################################################
+# 2. Create local database and run diff against original database.
+
+cd ~/work/cpcc-ng-workspace/cpcc-ng/core/src/main/resources
+
+mkdir -p dbchange/1.0.0
+
+CP=~/.m2/repository/com/h2database/h2/1.3.175/h2-1.3.175.jar
+JAR=~/.m2/repository/org/liquibase/liquibase-core/3.1.1/liquibase-core-3.1.1.jar
+REFURL='jdbc:h2:tcp://localhost:9095/REF;MVCC=true';
+URL='jdbc:h2:tcp://localhost:9095/GS;MVCC=true';
+URL='jdbc:h2:tcp://localhost:9095/RV;MVCC=true';
+URL='jdbc:h2:tcp://localhost:8202/rv02';
+URL='jdbc:h2:tcp://localhost:8202/rv03';
+URL='jdbc:h2:tcp://localhost:8202/rv04';
+URL='jdbc:h2:tcp://localhost:8202/rv05';
+URL='jdbc:h2:tcp://localhost:8202/rv06';
+URL='jdbc:h2:tcp://localhost:8202/rv07';
+URL='jdbc:h2:tcp://localhost:8202/rv08';
+URL='jdbc:h2:tcp://localhost:8202/rv09';
+
+java -classpath $CP:$JAR liquibase.integration.commandline.Main \
+        --driver=org.h2.Driver  \
+        --url="$REFURL" \
+        --username=sa \
+        --password= \
+        --changeLogFile=dbchange/update.xml \
+    update
+
+
+# GS:
+java -classpath $CP:$JAR liquibase.integration.commandline.Main \
+        --driver=org.h2.Driver  \
+        --url="$URL" \
+        --username=sa \
+        --password= \
+    diff \
+        --referenceUrl="$REFURL" \
+        --referenceUsername=sa \
+        --referencePassword=
+
+java -classpath $CP:$JAR liquibase.integration.commandline.Main \
+        --driver=org.h2.Driver  \
+        --url="$REFURL" \
+        --username=sa \
+        --password= \
+    diff \
+        --referenceUrl="$URL" \
+        --referenceUsername=sa \
+        --referencePassword=
+
+rm -f nix.diff.xml
+java -classpath $CP:$JAR liquibase.integration.commandline.Main \
+        --driver=org.h2.Driver  \
+        --url="$URL" \
+        --username=sa \
+        --password= \
+	--changeLogFile=nix.diff.xml \
+    diffChangeLog \
+        --referenceUrl="$REFURL" \
+        --referenceUsername=sa \
+        --referencePassword=
+
+java -classpath $CP:$JAR liquibase.integration.commandline.Main \
+        --driver=org.h2.Driver  \
+        --url="$URL" \
+        --username=sa \
+        --password= \
+        --changeLogFile=nix.diff.xml \
+    updateSQL | grep -v -e '^$' -e DATABASECHANGELOG | tee nix.sql
+
+
+
+java -classpath $CP:$JAR liquibase.integration.commandline.Main \
+        --driver=org.h2.Driver  \
+        --url="$URL" \
+        --username=sa \
+        --password= \
+        --changeLogFile=dbchange/update.xml \
+    updateSQL
+
+java -classpath $CP:$JAR liquibase.integration.commandline.Main \
+        --driver=org.h2.Driver  \
+        --url="$URL" \
+        --username=sa \
+        --password= \
+        --changeLogFile=dbchange/update.xml \
+    clearChecksums
+
+java -classpath $CP:$JAR liquibase.integration.commandline.Main \
+        --driver=org.h2.Driver  \
+        --url="$URL" \
+        --username=sa \
+        --password= \
+        --changeLogFile=dbchange/update.xml \
+    changelogSync
+
+
+
+

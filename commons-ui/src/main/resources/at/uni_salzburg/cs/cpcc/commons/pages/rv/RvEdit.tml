@@ -6,8 +6,8 @@
 	<form t:type="form" t:validate="realVehicle" t:id="form">
 		<t:errors />
 
-		<div t:type="beaneditor" t:object="realVehicle" t:exclude="id,lastUpdate"
-			t:reorder="name,type,url,areaOfOperation">
+		<div t:type="beaneditor" t:object="realVehicle" t:exclude="id,lastUpdate,areaOfOperation"
+			t:reorder="name,type,url">
 		
 			<p:name>
 				<t:label t:type="label" for="name" />
@@ -26,10 +26,12 @@
 					value="realVehicle.url" t:validate="maxlength=255" size="30" />
 			</p:url>
 			
+			<!--
 			<p:areaOfOperation>
 				<t:label for="areaOfOperation" />
 				<t:textarea t:id="areaOfOperation" rows="5" t:class="span4" value="realVehicle.areaOfOperation" />
 			</p:areaOfOperation>
+			-->
 		</div>
 
 		<div class="form-actions">

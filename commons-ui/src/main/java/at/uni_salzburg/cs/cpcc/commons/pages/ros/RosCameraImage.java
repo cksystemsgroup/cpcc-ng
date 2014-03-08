@@ -28,7 +28,7 @@ import org.apache.tapestry5.annotations.PageActivationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.commons.services.image.PngImageStreamResponse;
+import at.uni_salzburg.cs.cpcc.core.utils.PngImageStreamResponse;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.ImageProvider;
 import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverter;

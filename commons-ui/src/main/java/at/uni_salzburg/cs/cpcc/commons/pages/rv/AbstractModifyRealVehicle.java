@@ -33,6 +33,8 @@ import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
+import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
@@ -47,7 +49,7 @@ public class AbstractModifyRealVehicle
     protected static final String ERROR_AREA_OF_OPERATIUONS_IS_NULL = "error.area.of.operations.is.null";
     protected static final String ERROR_REAL_VEHICLE_NAME_ALREADY_EXISTS = "error.real.vehicle.name.already.exists";
     protected static final String ERROR_REAL_VEHICLE_URL_ALREADY_EXISTS = "error.real.vehicle.url.already.exists";
-    
+
     @Inject
     protected QueryManager qm;
 
@@ -57,9 +59,15 @@ public class AbstractModifyRealVehicle
     @Inject
     protected Messages messages;
 
+    @Inject
+    protected RealVehicleStateService rvss;
+
     @Valid
     @Property
     protected RealVehicle realVehicle;
+
+    @Inject
+    protected ConfigurationSynchronizer confSync;
 
     @Component(id = "form")
     protected Form form;
@@ -73,6 +81,8 @@ public class AbstractModifyRealVehicle
     {
         realVehicle.setLastUpdate(new Date());
         qm.saveOrUpdate(realVehicle);
+        rvss.notifyConfigurationChange();
+        confSync.notifyConfigurationChange();
         return RvList.class;
     }
 
@@ -81,24 +91,24 @@ public class AbstractModifyRealVehicle
      */
     protected void checkAreaOfOperation()
     {
-//        if (sensor.getParameters() != null)
-//        {
-//            try
-//            {
-//                parserService.parse(sensor.getParameters());
-//            }
-//            catch (ParseException e)
-//            {
-//                String msg = parserService.formatParserErrorMessage(sensor.getParameters(),
-//                    messages.get(ERROR_PARSING_SYNTAX), e);
-//                form.recordError(msg);
-//            }
-//            catch (IOException e)
-//            {
-//                String msg = String.format(messages.get(ERROR_PARSING), e.getMessage());
-//                form.recordError(msg);
-//            }
-//        }
+        //        if (sensor.getParameters() != null)
+        //        {
+        //            try
+        //            {
+        //                parserService.parse(sensor.getParameters());
+        //            }
+        //            catch (ParseException e)
+        //            {
+        //                String msg = parserService.formatParserErrorMessage(sensor.getParameters(),
+        //                    messages.get(ERROR_PARSING_SYNTAX), e);
+        //                form.recordError(msg);
+        //            }
+        //            catch (IOException e)
+        //            {
+        //                String msg = String.format(messages.get(ERROR_PARSING), e.getMessage());
+        //                form.recordError(msg);
+        //            }
+        //        }
         if (realVehicle.getAreaOfOperation() == null)
         {
             String msg = messages.get(ERROR_AREA_OF_OPERATIUONS_IS_NULL);

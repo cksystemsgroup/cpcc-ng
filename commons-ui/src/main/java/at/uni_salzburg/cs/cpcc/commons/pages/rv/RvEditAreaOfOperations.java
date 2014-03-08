@@ -22,6 +22,7 @@ package at.uni_salzburg.cs.cpcc.commons.pages.rv;
 import static org.apache.tapestry5.EventConstants.SUCCESS;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -44,10 +45,12 @@ import org.geojson.GeoJsonObject;
 import org.geojson.Polygon;
 
 import at.uni_salzburg.cs.cpcc.commons.pages.Viewer;
+import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
-import at.uni_salzburg.cs.cpcc.core.services.PngResourceStreamResponse;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.utils.PngResourceStreamResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -56,8 +59,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class RvEditAreaOfOperations extends Viewer
 {
-    private static final String ERROR_MINALT_GT_MAXALT = "error.minalt.gt.maxalt";
-
     @PageActivationContext
     private String vehicleId;
 
@@ -66,7 +67,13 @@ public class RvEditAreaOfOperations extends Viewer
 
     @Inject
     private CoreGeoJsonConverter geoConv;
-
+    
+    @Inject
+    protected RealVehicleStateService rvss;
+    
+    @Inject
+    protected ConfigurationSynchronizer confSync;
+    
     @Valid
     @Property
     protected RealVehicle realVehicle;
@@ -99,7 +106,6 @@ public class RvEditAreaOfOperations extends Viewer
      */
     public void onActivate(Integer id)
     {
-        System.out.println("RvEditAreaOfOperations onActivate " + id);
         realVehicle = qm.findRealVehicleById(id);
         realVehicleZones = realVehicle.getAreaOfOperation();
     }
@@ -111,7 +117,6 @@ public class RvEditAreaOfOperations extends Viewer
      */
     public StreamResponse onActivate(String folder, String imageName)
     {
-        System.out.println("RvEditAreaOfOperations onActivate " + folder + " " + imageName);
         String pngResourcePath = "at/uni_salzburg/cs/cpcc/commons/" + folder + "/" + imageName;
         return new PngResourceStreamResponse(pngResourcePath);
     }
@@ -127,28 +132,14 @@ public class RvEditAreaOfOperations extends Viewer
         js.addScript("drawInit();");
     }
 
-    /**
-     * Callback function for validating form data.
-     */
-    void onValidateFromRvForm()
-    {
-        System.out.println("RvEditAreaOfOperations.onValidateFromRvForm ");
-        //checkAreaOfOperation();
-
-        if (minAltitude != null && maxAltitude != null && minAltitude > maxAltitude)
-        {
-            String msg = messages.get(ERROR_MINALT_GT_MAXALT);
-            rvForm.recordError(msg);
-        }
-    }
-
     @OnEvent(SUCCESS)
     @CommitAfter
     void storeZones()
     {
-        System.out.println("storeZones: " + realVehicleZones);
         realVehicle.setAreaOfOperation(realVehicleZones);
-        System.out.println("bugger it!" + vehicleId + ", rv=" + realVehicle);
+        realVehicle.setLastUpdate(new Date());
+        rvss.notifyConfigurationChange();
+        confSync.notifyConfigurationChange();
     }
 
     /**

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.commons.services.image;
+package at.uni_salzburg.cs.cpcc.core.utils;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ import java.io.InputStream;
 
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.commons.services.image.PngImageStreamResponse;
+import at.uni_salzburg.cs.cpcc.core.utils.PngImageStreamResponse;
 
 /**
  * PngImageStreamResponseTest

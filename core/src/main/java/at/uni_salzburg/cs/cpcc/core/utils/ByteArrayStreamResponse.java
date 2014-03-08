@@ -1,7 +1,7 @@
 /*
  * This code is part of the CPCC-NG project.
  *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+ * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.core.services;
+package at.uni_salzburg.cs.cpcc.core.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,23 +25,23 @@ import java.io.InputStream;
 
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.services.Response;
-import org.geojson.FeatureCollection;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * GeoJsonStreamResponse
+ * ByteArrayStreamResponse
  */
-public class GeoJsonStreamResponse implements StreamResponse
+public class ByteArrayStreamResponse implements StreamResponse
 {
-    private FeatureCollection featureCollection;
+    private byte[] data;
+    private String contentType;
 
     /**
-     * @param featureCollection the FeatureCollection object to be streamed.
+     * @param contentType the content type to be reported to the client.
+     * @param data the data to be transmitted to the client.
      */
-    public GeoJsonStreamResponse(FeatureCollection featureCollection)
+    public ByteArrayStreamResponse(String contentType, byte[] data)
     {
-        this.featureCollection = featureCollection;
+        this.data = data != null ? data : new byte[0];
+        this.contentType = contentType;
     }
 
     /**
@@ -50,7 +50,7 @@ public class GeoJsonStreamResponse implements StreamResponse
     @Override
     public String getContentType()
     {
-        return "application/json";
+        return contentType;
     }
 
     /**
@@ -59,8 +59,7 @@ public class GeoJsonStreamResponse implements StreamResponse
     @Override
     public InputStream getStream() throws IOException
     {
-        byte[] byteArray = new ObjectMapper().writeValueAsBytes(featureCollection);
-        return new ByteArrayInputStream(byteArray);
+        return new ByteArrayInputStream(data);
     }
 
     /**
@@ -69,7 +68,7 @@ public class GeoJsonStreamResponse implements StreamResponse
     @Override
     public void prepareResponse(Response response)
     {
-        // intentionally empty.
+        // Intentionally empty.
     }
 
 }

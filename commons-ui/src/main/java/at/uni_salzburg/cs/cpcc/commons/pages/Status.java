@@ -36,8 +36,8 @@ import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
 import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
-import at.uni_salzburg.cs.cpcc.core.services.GeoJsonStreamResponse;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.utils.GeoJsonStreamResponse;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractGpsSensorAdapter;
@@ -84,14 +84,18 @@ public class Status
     {
         FeatureCollection fc = new FeatureCollection();
 
-        if (what == null || "rvs".equals(what))
+        if (isNullOrEqual(what, "rvs"))
         {
-            fc.add(pjc.toFeature(findRealVehicle()));
+            RealVehicle rv = findRealVehicle();
+            if (rv != null)
+            {
+                fc.add(pjc.toFeature(rv));
+            }
         }
 
         PolarCoordinate position = findRealVehiclePosition();
 
-        if (position != null && (what == null || "pos".equals(what)))
+        if (position != null && isNullOrEqual(what, "pos"))
         {
             Point point = pjc.toPoint(position);
             Feature pointFeature = new Feature();
@@ -100,7 +104,7 @@ public class Status
             fc.add(pointFeature);
         }
 
-        if (what == null || "vvs".equals(what))
+        if (isNullOrEqual(what, "vvs"))
         {
             List<VirtualVehicle> vvs = vvRepo.findAllVehicles();
             if (vvs != null && vvs.size() > 0)
@@ -110,6 +114,16 @@ public class Status
         }
 
         return new GeoJsonStreamResponse(fc);
+    }
+
+    /**
+     * @param a the value to be tested.
+     * @param b another value.
+     * @return true if a is null or a equals b.
+     */
+    private static boolean isNullOrEqual(String a, String b)
+    {
+        return a == null || a.equals(b);
     }
 
     /**

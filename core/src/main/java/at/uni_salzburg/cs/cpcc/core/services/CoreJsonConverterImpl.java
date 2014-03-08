@@ -19,7 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.core.services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -41,26 +40,6 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
 {
     // private static final Logger LOG = LoggerFactory.getLogger(CoreJsonConverterImpl.class);
 
-    private static final String POSITON_ALTITUDE = "alt";
-    private static final String POSITON_LONGITUDE = "lon";
-    private static final String POSITON_LATITUDE = "lat";
-
-    private static final String REAL_VEHICLE_ID = "id";
-    private static final String REAL_VEHICLE_SENSORS = "sen";
-    private static final String REAL_VEHICLE_LAST_UPDATE = "upd";
-    private static final String REAL_VEHICLE_AREA_OF_OPERATION = "aoo";
-    private static final String REAL_VEHICLE_URL = "url";
-    private static final String REAL_VEHICLE_NAME = "name";
-    private static final String REAL_VEHICLE_TYPE = "type";
-
-    private static final String SENSOR_DEFINITION_LAST_UPDATE = "lastUpdate";
-    private static final String SENSOR_DEFINITION_PARAMETERS = "parameters";
-    private static final String SENSOR_DEFINITION_VISIBILITY = "visibility";
-    private static final String SENSOR_DEFINITION_MESSAGE_TYPE = "messageType";
-    private static final String SENSOR_DEFINITION_TYPE = "type";
-    private static final String SENSOR_DEFINITION_DESCRIPTION = "description";
-    private static final String SENSOR_DEFINITION_ID = "id";
-
     /**
      * PersistenceJsonConverterImpl
      */
@@ -77,15 +56,18 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
     {
         JSONObject o = new JSONObject(
             SENSOR_DEFINITION_ID, vehicle.getId().toString(),
-            REAL_VEHICLE_NAME, vehicle.getName(),
-            REAL_VEHICLE_URL, vehicle.getUrl()
-            );
+            REAL_VEHICLE_NAME, vehicle.getName());
 
         o.put(REAL_VEHICLE_AREA_OF_OPERATION, vehicle.getAreaOfOperation());
-        o.put(REAL_VEHICLE_LAST_UPDATE, Long.toString(vehicle.getLastUpdate().getTime()));
         o.put(REAL_VEHICLE_TYPE, vehicle.getType().toString());
         o.put(REAL_VEHICLE_URL, vehicle.getUrl());
+        o.put(REAL_VEHICLE_DELETED, vehicle.getDeleted());
 
+        if (vehicle.getLastUpdate() != null)
+        {
+            o.put(REAL_VEHICLE_LAST_UPDATE, vehicle.getLastUpdate().getTime());
+        }
+        
         if (sensorIdsOnly)
         {
             Integer[] ids = new Integer[vehicle.getSensors().size()];
@@ -97,7 +79,8 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         }
         else
         {
-            o.put(REAL_VEHICLE_SENSORS, toJsonArray(vehicle.getSensors().toArray(new SensorDefinition[0])));
+            List<SensorDefinition> sensors = vehicle.getSensors();
+            o.put(REAL_VEHICLE_SENSORS, toJsonArray(sensors.toArray(new SensorDefinition[sensors.size()])));
         }
 
         return o;
@@ -123,14 +106,20 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
     @Override
     public JSONObject toJson(SensorDefinition sensor)
     {
-        return new JSONObject(
+        JSONObject o = new JSONObject(
             SENSOR_DEFINITION_ID, sensor.getId().toString(),
             SENSOR_DEFINITION_DESCRIPTION, sensor.getDescription(),
             SENSOR_DEFINITION_TYPE, sensor.getType().toString(),
             SENSOR_DEFINITION_MESSAGE_TYPE, sensor.getMessageType(),
             SENSOR_DEFINITION_VISIBILITY, sensor.getVisibility().toString(),
-            SENSOR_DEFINITION_PARAMETERS, sensor.getParameters(),
-            SENSOR_DEFINITION_LAST_UPDATE, Long.toString(sensor.getLastUpdate().getTime()));
+            SENSOR_DEFINITION_PARAMETERS, sensor.getParameters());
+
+        if (sensor.getLastUpdate() != null)
+        {
+            o.put(SENSOR_DEFINITION_LAST_UPDATE, sensor.getLastUpdate().getTime());            
+        }
+        o.put(SENSOR_DEFINITION_DELETED, sensor.getDeleted());
+        return o;
     }
 
     /**
@@ -187,118 +176,64 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         return a;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public List<RealVehicle> toRealVehicleList(JSONArray vehicleList)
+    public int fillInNewerRealVehicleFromJsonObject(RealVehicle rv, JSONObject rvObj)
     {
-        List<RealVehicle> sdList = new ArrayList<RealVehicle>();
-        for (int k = 0, l = vehicleList.length(); k < l; ++k)
+        Date lastUpdateNew = new Date(rvObj.getLong(REAL_VEHICLE_LAST_UPDATE));
+        long lastUpdateDb = rv.getLastUpdate().getTime();
+
+        if (lastUpdateNew.getTime() < lastUpdateDb)
         {
-            JSONObject sd = vehicleList.getJSONObject(k);
-            sdList.add(toRealVehicle(sd));
-        }
-        return sdList;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RealVehicle toRealVehicle(JSONObject vehicle)
-    {
-        RealVehicle rv = new RealVehicle();
-        rv.setId(vehicle.getInt(REAL_VEHICLE_ID));
-        rv.setLastUpdate(new Date(vehicle.getLong(REAL_VEHICLE_LAST_UPDATE)));
-        rv.setAreaOfOperation(vehicle.getString(REAL_VEHICLE_AREA_OF_OPERATION));
-        rv.setUrl(vehicle.getString(REAL_VEHICLE_URL));
-        rv.setName(vehicle.getString(REAL_VEHICLE_NAME));
-        rv.setType(RealVehicleType.valueOf(vehicle.getString(REAL_VEHICLE_TYPE)));
-
-        JSONArray sensors = (JSONArray) vehicle.get(REAL_VEHICLE_SENSORS);
-
-        for (int k = 0, l = sensors.length(); k < l; ++k)
-        {
-            SensorDefinition sd = new SensorDefinition();
-            sd.setId(sensors.getInt(k));
-            rv.getSensors().add(sd);
+            return -1;
         }
 
-        return rv;
+        if (lastUpdateNew.getTime() == lastUpdateDb)
+        {
+            return 0;
+        }
 
-        //        int id = vehicle.getInt(SENSOR_DEFINITION_ID);
-        //        RealVehicle rv = qm.findRealVehicleById(id);
+        rv.setId(rvObj.getInt(REAL_VEHICLE_ID));
+        rv.setLastUpdate(lastUpdateNew);
+        rv.setAreaOfOperation(rvObj.getString(REAL_VEHICLE_AREA_OF_OPERATION));
+        rv.setUrl(rvObj.getString(REAL_VEHICLE_URL));
+        rv.setName(rvObj.getString(REAL_VEHICLE_NAME));
+        rv.setType(RealVehicleType.valueOf(rvObj.getString(REAL_VEHICLE_TYPE)));
+        rv.setDeleted(
+            rvObj.isNull(REAL_VEHICLE_DELETED)
+                ? Boolean.FALSE
+                : rvObj.getBoolean(REAL_VEHICLE_DELETED));
         //
-        //        if (rv == null)
-        //        {
-        //            rv = new RealVehicle();
-        //            rv.setId(id);
-        //        }
-        //
-        //        JSONArray sensors = (JSONArray) vehicle.get(REAL_VEHICLE_SENSORS);
-        //        Set<Integer> sensorIds = new HashSet<Integer>();
+        //        JSONArray sensors = (JSONArray) rvObj.get(REAL_VEHICLE_SENSORS);
         //
         //        for (int k = 0, l = sensors.length(); k < l; ++k)
         //        {
-        //            Integer sensorId = (Integer) sensors.get(k);
-        //            sensorIds.add(sensorId);
-        //
-        //            SensorDefinition foundSd = null;
-        //            for (SensorDefinition sd : rv.getSensors())
-        //            {
-        //                if (sd.getId().intValue() == sensorId.intValue())
-        //                {
-        //                    foundSd = sd;
-        //                    break;
-        //                }
-        //            }
-        //
-        //            if (foundSd == null)
-        //            {
-        //                SensorDefinition sd = qm.findSensorDefinitionById(sensorId);
-        //                rv.getSensors().add(sd);
-        //                LOG.debug("Adding sensor definition " + sensorId + " (" + sd.getDescription()
-        //                    + ") to real vehicle " + rv.getName() + " (" + rv.getId() + ")");
-        //            }
+        //            SensorDefinition sd = new SensorDefinition();
+        //            sd.setId(sensors.getInt(k));
+        //            rv.getSensors().add(sd);
         //        }
-        //
-        //        List<SensorDefinition> toBeRemoved = new ArrayList<SensorDefinition>();
-        //        for (int k = 0, l = rv.getSensors().size(); k < l; ++k)
-        //        {
-        //            SensorDefinition sd = rv.getSensors().get(k);
-        //            if (!sensorIds.contains(sd.getId()))
-        //            {
-        //                toBeRemoved.add(sd);
-        //            }
-        //        }
-        //
-        //        rv.getSensors().removeAll(toBeRemoved);
-        //        return rv;
+
+        return 1;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<SensorDefinition> toSensorDefinitionList(JSONArray sensorList)
+    public int fillInNewerSensorDefinitionFromJsonObject(SensorDefinition sd, JSONObject sensor)
     {
-        List<SensorDefinition> sdList = new ArrayList<SensorDefinition>();
-        for (int k = 0, l = sensorList.length(); k < l; ++k)
+        Date lastUpdateNew = new Date(sensor.getLong(SENSOR_DEFINITION_LAST_UPDATE));
+        long lastUpdateDb = sd.getLastUpdate() != null ? sd.getLastUpdate().getTime() : 0;
+
+        if (lastUpdateNew.getTime() < lastUpdateDb)
         {
-            JSONObject sd = sensorList.getJSONObject(k);
-            sdList.add(toSensorDefinition(sd));
+            return -1;
         }
-        return sdList;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SensorDefinition toSensorDefinition(JSONObject sensor)
-    {
-        SensorDefinition sd = new SensorDefinition();
+        if (lastUpdateNew.getTime() == lastUpdateDb)
+        {
+            return 0;
+        }
+
         sd.setId(sensor.getInt(SENSOR_DEFINITION_ID));
         sd.setDescription(sensor.getString(SENSOR_DEFINITION_DESCRIPTION));
         sd.setType(SensorType.valueOf(sensor.getString(SENSOR_DEFINITION_TYPE)));
@@ -308,7 +243,11 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
             sensor.isNull(SENSOR_DEFINITION_PARAMETERS)
                 ? null
                 : sensor.getString(SENSOR_DEFINITION_PARAMETERS));
-        sd.setLastUpdate(new Date(sensor.getLong(SENSOR_DEFINITION_LAST_UPDATE)));
-        return sd;
+        sd.setLastUpdate(lastUpdateNew);
+        sd.setDeleted(
+            sensor.isNull(SENSOR_DEFINITION_DELETED)
+                ? Boolean.FALSE
+                : sensor.getBoolean(SENSOR_DEFINITION_DELETED));
+        return 1;
     }
 }

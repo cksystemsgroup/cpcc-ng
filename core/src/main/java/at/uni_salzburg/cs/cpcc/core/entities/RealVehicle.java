@@ -37,6 +37,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -48,8 +49,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"url"})})
 public class RealVehicle
 {
+    @GeneratedValue(generator = "UniqueIntegerIdGenerator")
+    @GenericGenerator(name = "UniqueIntegerIdGenerator",
+        strategy = "at.uni_salzburg.cs.cpcc.core.services.UniqueIntegerIdGenerator")
     @Id
-    @GeneratedValue
     private Integer id;
 
     @NotNull
@@ -67,12 +70,15 @@ public class RealVehicle
     @Lob
     private String areaOfOperation;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     private List<SensorDefinition> sensors = new ArrayList<SensorDefinition>();
 
     @NotNull
     @Type(type = "timestamp")
     private java.util.Date lastUpdate;
+
+    @NotNull
+    private Boolean deleted;
 
     /**
      * @return the id
@@ -186,6 +192,22 @@ public class RealVehicle
     public void setLastUpdate(java.util.Date lastUpdate)
     {
         this.lastUpdate = lastUpdate;
+    }
+
+    /**
+     * @return true if this record is to be considered as deleted.
+     */
+    public Boolean getDeleted()
+    {
+        return deleted;
+    }
+
+    /**
+     * @param deleted set to true if this record is to be considered as deleted.
+     */
+    public void setDeleted(Boolean deleted)
+    {
+        this.deleted = deleted;
     }
 
     /**

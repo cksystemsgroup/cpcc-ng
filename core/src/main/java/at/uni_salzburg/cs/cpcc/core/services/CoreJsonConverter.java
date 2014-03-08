@@ -19,8 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.core.services;
 
-import java.util.List;
-
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
@@ -29,10 +27,32 @@ import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 
 /**
- * PersistenceJsonConverter
+ * CoreJsonConverter
  */
 public interface CoreJsonConverter
 {
+    String POSITON_ALTITUDE = "alt";
+    String POSITON_LONGITUDE = "lon";
+    String POSITON_LATITUDE = "lat";
+
+    String REAL_VEHICLE_ID = "id";
+    String REAL_VEHICLE_SENSORS = "sen";
+    String REAL_VEHICLE_LAST_UPDATE = "upd";
+    String REAL_VEHICLE_AREA_OF_OPERATION = "aoo";
+    String REAL_VEHICLE_URL = "url";
+    String REAL_VEHICLE_NAME = "name";
+    String REAL_VEHICLE_TYPE = "type";
+    String REAL_VEHICLE_DELETED = "deleted";
+
+    String SENSOR_DEFINITION_LAST_UPDATE = "lastUpdate";
+    String SENSOR_DEFINITION_PARAMETERS = "parameters";
+    String SENSOR_DEFINITION_VISIBILITY = "visibility";
+    String SENSOR_DEFINITION_MESSAGE_TYPE = "messageType";
+    String SENSOR_DEFINITION_TYPE = "type";
+    String SENSOR_DEFINITION_DESCRIPTION = "description";
+    String SENSOR_DEFINITION_ID = "id";
+    String SENSOR_DEFINITION_DELETED = "deleted";
+
     /**
      * @param sensorIdsOnly if true the JSON objects contains the identifications of the sensors only.
      * @param vehicle a real vehicle object.
@@ -58,7 +78,7 @@ public interface CoreJsonConverter
      * @return the requested JSON array.
      */
     JSONArray toJsonArray(SensorDefinition... sensors);
-    
+
     /**
      * @param coordinate a polar coordinate.
      * @return the requested JSON object.
@@ -70,38 +90,25 @@ public interface CoreJsonConverter
      * @return the requested JSON object.
      */
     JSONArray toJsonArray(Integer... numbers);
-    
+
     /**
      * @param numbers a list of double numbers.
      * @return the requested JSON object.
      */
     JSONArray toJsonArray(Double... numbers);
-    
+
     /**
-     * @param vehicleList the list of real vehicles as JSON array.
-     * @return the converted list.
+     * @param rv the vehicle object to be filled.
+     * @param rvObj the vehicle as a JSON object.
+     * @return 1 if the vehicle has been updated, 0 if both vehicles are equal, -1 if the JSON object is older.
      */
-    List<RealVehicle> toRealVehicleList(JSONArray vehicleList);
-    
+    int fillInNewerRealVehicleFromJsonObject(RealVehicle rv, JSONObject rvObj);
+
     /**
-     * Convert a real vehicle JSON object to a real vehicle object. This method assumes that sensor definitions are 
-     * handed over as an array of sensor definition IDs. Sensor definition IDs referenced by the JSON object must have
-     * corresponding counterparts in the database to have this method working properly.
-     * 
-     * @param vehicle the vehicle as a JSON object.
-     * @return the converted vehicle.
+     * @param sd the sensor definition object to be filled.
+     * @param sdObj the source sensor definition as a JSON object.
+     * @return 1 if the sensor definition has been updated, 0 if both sensor definitions are equal, -1 if the JSON
+     *         object is older.
      */
-    RealVehicle toRealVehicle(JSONObject vehicle);
-    
-    /**
-     * @param sensorList the list of sensor definitions as JSON array.
-     * @return the converted list.
-     */
-    List<SensorDefinition> toSensorDefinitionList(JSONArray sensorList);
-    
-    /**
-     * @param sensor the sensor definition as a JSON object.
-     * @return the converted sensor definition.
-     */
-    SensorDefinition toSensorDefinition(JSONObject sensor);
+    int fillInNewerSensorDefinitionFromJsonObject(SensorDefinition sd, JSONObject sdObj);
 }

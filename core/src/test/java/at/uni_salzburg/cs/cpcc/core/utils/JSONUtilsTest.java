@@ -21,8 +21,11 @@ package at.uni_salzburg.cs.cpcc.core.utils;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 
+import org.apache.tapestry5.json.JSONObject;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
@@ -37,5 +40,28 @@ public class JSONUtilsTest
         assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
+    }
+
+    @DataProvider
+    public Object[][] jsonDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{"{\"a\":1}"},
+            new Object[]{"{\"b\":1,\"a\":2}"},
+            new Object[]{"{\"features\":[{\"properties\":{\"type\":\"depot\"},\"type\":\"Feature\",\"geometry\":"
+                + "{\"type\":\"Point\",\"coordinates\":[-122.42642641067503,37.807478357821374]}}],\"properties\":"
+                + "{\"center\":{\"lng\":-122.4251925945282,\"lat\":37.80787675625266},\"zoom\":17,\"layer\":null},"
+                + "\"type\":\"FeatureCollection\"}"},
+        };
+    }
+
+    @Test(dataProvider = "jsonDataProvider")
+    public void shouldConvertJsonObjectsToByteArrays(String jsonString) throws IOException
+    {
+        JSONObject obj = new JSONObject(jsonString);
+        byte[] ba = JSONUtils.toByteArray(obj);
+        System.out.println(new String(ba));
+
+        assertThat(ba).isNotNull().isEqualTo(jsonString.getBytes());
     }
 }

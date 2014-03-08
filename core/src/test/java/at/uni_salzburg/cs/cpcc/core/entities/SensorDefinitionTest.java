@@ -137,10 +137,114 @@ public class SensorDefinitionTest
     }
 
     @Test(dataProvider = "visibilityDataProvider")
-    public void should(SensorVisibility visibility)
+    public void shouldStroreVisibility(SensorVisibility visibility)
     {
         sd.setVisibility(visibility);
         assertThat(sd.getVisibility()).isNotNull().isEqualTo(visibility);
     }
 
+    @Test
+    public void shouldFindEqualObjects()
+    {
+        SensorDefinition sd1 = new SensorDefinition();
+        sd1.setId(12);
+        sd1.setDescription("sd1");
+        sd1.setType(SensorType.ALTIMETER);
+        sd1.setParameters("params1");
+        sd1.setVisibility(SensorVisibility.ALL_VV);
+        sd1.setLastUpdate(new Date(12345678));
+        sd1.setMessageType("std_msgs/String");
+
+        assertThat(sd1.equals(sd1)).isTrue();
+
+        SensorDefinition sd2 = new SensorDefinition();
+        sd2.setId(15);
+        sd2.setDescription("sd2");
+        sd2.setType(SensorType.AREA_OF_OPERATIONS);
+        sd2.setParameters("param2");
+        sd2.setVisibility(SensorVisibility.NO_VV);
+        sd2.setLastUpdate(new Date(87654321));
+        sd2.setMessageType("std_msgs/Float32");
+
+        assertThat(sd1.equals(null)).isFalse();
+        assertThat(sd1.equals(new Date())).isFalse();
+        assertThat(sd1.equals(sd2)).isFalse();
+
+        sd2.setDescription("sd1");
+        assertThat(sd1.equals(sd2)).isFalse();
+
+        sd2.setId(12);
+        assertThat(sd1.equals(sd2)).isFalse();
+
+        sd2.setType(SensorType.ALTIMETER);
+        assertThat(sd1.equals(sd2)).isFalse();
+
+        sd2.setParameters("params1");
+        assertThat(sd1.equals(sd2)).isFalse();
+
+        sd2.setVisibility(SensorVisibility.ALL_VV);
+        assertThat(sd1.equals(sd2)).isFalse();
+
+        sd2.setMessageType("std_msgs/String");
+        assertThat(sd1.equals(sd2)).isTrue();
+
+        sd2.setLastUpdate(new Date(12345678));
+        assertThat(sd1.equals(sd2)).isTrue();
+    }
+
+    @Test
+    public void shouldCalculateOwnHashCode()
+    {
+        SensorDefinition sd1 = new SensorDefinition();
+        assertThat(sd1.hashCode()).isEqualTo(0);
+
+        sd1.setId(12);
+        assertThat(sd1.hashCode()).isEqualTo(492);
+
+        sd1.setDescription("sd1");
+        assertThat(sd1.hashCode()).isEqualTo(4206060);
+
+        sd1.setType(SensorType.ALTIMETER);
+        assertThat(sd1.hashCode()).isEqualTo(4206091);
+
+        sd1.setParameters("params1");
+        assertThat(sd1.hashCode()).isEqualTo(-1532332758);
+
+        sd1.setVisibility(SensorVisibility.ALL_VV);
+        assertThat(sd1.hashCode()).isEqualTo(-1532332689);
+
+        sd1.setMessageType("std_msgs/String");
+        assertThat(sd1.hashCode()).isEqualTo(-1068436571);
+
+        sd1.setLastUpdate(new Date(12345678));
+        assertThat(sd1.hashCode()).isEqualTo(-1068436571);
+    }
+
+    @Test
+    public void shouldImplementToString()
+    {
+        SensorDefinition sd1 = new SensorDefinition();
+        sd1.setId(12);
+        sd1.setDescription("sd1");
+        sd1.setType(SensorType.ALTIMETER);
+        sd1.setParameters("p1");
+        sd1.setVisibility(SensorVisibility.ALL_VV);
+        sd1.setLastUpdate(new Date(12345678));
+        sd1.setMessageType("std_msgs/String");
+
+        assertThat(sd1.toString()).isNotNull().isEqualTo(
+            "(id=12, description=sd1, type=ALTIMETER, parameters=p1, visibility=ALL_VV, messageType=std_msgs/String)");
+
+        SensorDefinition sd2 = new SensorDefinition();
+        sd2.setId(15);
+        sd2.setDescription("sd2");
+        sd2.setType(SensorType.CO2);
+        sd2.setParameters("param2");
+        sd2.setVisibility(SensorVisibility.NO_VV);
+        sd2.setLastUpdate(new Date(87654321));
+        sd2.setMessageType("std_msgs/Float32");
+
+        assertThat(sd2.toString()).isNotNull().isEqualTo(
+            "(id=15, description=sd2, type=CO2, parameters=param2, visibility=NO_VV, messageType=std_msgs/Float32)");
+    }
 }

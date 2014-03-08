@@ -21,6 +21,7 @@ package at.uni_salzburg.cs.cpcc.commons.pages.sensor;
 
 import static org.apache.tapestry5.EventConstants.ACTIVATE;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -29,6 +30,8 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
+import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 
@@ -39,25 +42,34 @@ public class SensorList
 {
     @Inject
     private QueryManager qm;
+
+    @Inject
+    protected RealVehicleStateService rvss;
+    
+    @Inject
+    protected ConfigurationSynchronizer confSync;
     
     @Property
     private List<SensorDefinition> sensorList;
-    
+
     @Property
     private SensorDefinition sensor;
-    
+
     @OnEvent(ACTIVATE)
     void loadSensorList()
     {
         sensorList = qm.findAllSensorDefinitions();
     }
-    
+
     @OnEvent("deleteSensor")
     @CommitAfter
     void deleteSensor(Integer id)
     {
-//        qm.deleteSensorDefinitionById(id);
         SensorDefinition sd = qm.findSensorDefinitionById(id);
-        qm.delete(sd);
+        sd.setLastUpdate(new Date());
+        sd.setDeleted(Boolean.TRUE);
+        qm.saveOrUpdate(sd);
+        rvss.notifyConfigurationChange();
+        confSync.notifyConfigurationChange();
     }
 }

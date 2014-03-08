@@ -176,8 +176,8 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public void deleteSensorDefinitionById(Integer id)
     {
-        //        getSession().createQuery("DELETE FROM realvehicle_sensordefinition WHERE sensors_id = :id")
-        //            .setInteger("id", id);
+        // getSession().createQuery("DELETE FROM realvehicle_sensordefinition WHERE sensors_id = :id")
+        //     .setInteger("id", id);
         getSession().createQuery("DELETE FROM SensorDefinition WHERE id = :id")
             .setInteger("id", id);
     }
@@ -189,8 +189,17 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public List<RealVehicle> findAllRealVehicles()
     {
-//        return (List<RealVehicle>) getSession().createCriteria(RealVehicle.class).list();
         return (List<RealVehicle>) getSession().createQuery("FROM RealVehicle").list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<RealVehicle> findAllRealVehiclesOrderByName()
+    {
+        return (List<RealVehicle>) getSession().createQuery("FROM RealVehicle ORDER BY name").list();
     }
 
     /**
@@ -209,7 +218,7 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
         return (RealVehicle) getSession().createQuery("FROM RealVehicle WHERE url = :url")
             .setString(REAL_VEHICLE_URL, url).uniqueResult();
     }
-    
+
     /**
      * {@inheritDoc}
      */

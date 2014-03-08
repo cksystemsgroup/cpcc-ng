@@ -31,7 +31,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.mozilla.javascript.ScriptableObject;
 import org.ros.node.NodeConfiguration;
 
-import at.uni_salzburg.cs.cpcc.commons.services.image.PngImageStreamResponse;
+import at.uni_salzburg.cs.cpcc.core.utils.PngImageStreamResponse;
 import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverter;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;

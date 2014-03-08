@@ -20,7 +20,7 @@
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
@@ -54,7 +54,7 @@ public interface CoreGeoJsonConverter
      * @throws JsonMappingException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    FeatureCollection toFeatureCollection(List<RealVehicle> rvList)
+    FeatureCollection toFeatureCollection(Collection<RealVehicle> rvList)
         throws JsonParseException, JsonMappingException, IOException;
 
     /**

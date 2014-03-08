@@ -35,7 +35,7 @@ import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
-import at.uni_salzburg.cs.cpcc.commons.pages.Configuration;
+import at.uni_salzburg.cs.cpcc.commons.pages.configuration.ConfigurationEdit;
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
 import at.uni_salzburg.cs.cpcc.core.entities.DeviceType;
 import at.uni_salzburg.cs.cpcc.core.services.DeviceTypeSelectHelpers;
@@ -89,7 +89,7 @@ public abstract class AbstractRosModifyDevice
         qm.saveOrUpdateMappingAttributes(device);
         nodeService.updateDevice(device);
         nodeService.updateMappingAttributes(qm.findMappingAttributesByDevice(device));
-        return Configuration.class;
+        return ConfigurationEdit.class;
     }
 
     /**

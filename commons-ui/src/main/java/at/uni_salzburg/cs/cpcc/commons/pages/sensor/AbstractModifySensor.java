@@ -34,6 +34,8 @@ import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
+import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
@@ -54,6 +56,12 @@ public class AbstractModifySensor
     protected OptionsParserService parserService;
 
     @Inject
+    protected RealVehicleStateService rvss;
+    
+    @Inject
+    protected ConfigurationSynchronizer confSync;
+
+    @Inject
     protected Messages messages;
 
     @Valid
@@ -72,6 +80,8 @@ public class AbstractModifySensor
     {
         sensor.setLastUpdate(new Date());
         qm.saveOrUpdate(sensor);
+        rvss.notifyConfigurationChange();
+        confSync.notifyConfigurationChange();
         return SensorList.class;
     }
 

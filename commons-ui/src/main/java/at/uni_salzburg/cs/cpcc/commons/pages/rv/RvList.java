@@ -21,6 +21,7 @@ package at.uni_salzburg.cs.cpcc.commons.pages.rv;
 
 import static org.apache.tapestry5.EventConstants.ACTIVATE;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,24 +40,26 @@ public class RvList
 {
     @Inject
     private QueryManager qm;
-    
+
     @Property
     private List<RealVehicle> realVehicleList;
-    
+
     @Property
     private RealVehicle realVehicle;
-    
+
     @OnEvent(ACTIVATE)
     void loadSensorList()
     {
-        realVehicleList = qm.findAllRealVehicles();
+        realVehicleList = qm.findAllRealVehiclesOrderByName();
     }
-    
+
     @OnEvent("deleteRealVehicle")
     @CommitAfter
     void deleteRealVehicle(Integer id)
     {
         RealVehicle rv = qm.findRealVehicleById(id);
-        qm.delete(rv);
+        rv.setDeleted(Boolean.TRUE);
+        rv.setLastUpdate(new Date());
+        qm.saveOrUpdate(rv);
     }
 }

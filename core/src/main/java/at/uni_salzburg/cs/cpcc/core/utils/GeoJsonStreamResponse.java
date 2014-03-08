@@ -17,32 +17,31 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.core.services;
+package at.uni_salzburg.cs.cpcc.core.utils;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 
 import org.apache.tapestry5.StreamResponse;
-import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Response;
+import org.geojson.FeatureCollection;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * JsonStreamResponse
+ * GeoJsonStreamResponse
  */
-public class JsonStreamResponse implements StreamResponse
+public class GeoJsonStreamResponse implements StreamResponse
 {
-    private JSONObject jsonObject;
+    private FeatureCollection featureCollection;
 
     /**
-     * @param jsonObject the JSON object to be streamed.
+     * @param featureCollection the FeatureCollection object to be streamed.
      */
-    public JsonStreamResponse(JSONObject jsonObject)
+    public GeoJsonStreamResponse(FeatureCollection featureCollection)
     {
-        this.jsonObject = jsonObject;
+        this.featureCollection = featureCollection;
     }
 
     /**
@@ -60,13 +59,8 @@ public class JsonStreamResponse implements StreamResponse
     @Override
     public InputStream getStream() throws IOException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-        OutputStreamWriter streamWriter = new OutputStreamWriter(out, "UTF-8");
-        PrintWriter writer = new PrintWriter(streamWriter);
-        jsonObject.print(writer);
-        writer.close();
-        out.close();
-        return new ByteArrayInputStream(out.toByteArray());
+        byte[] byteArray = new ObjectMapper().writeValueAsBytes(featureCollection);
+        return new ByteArrayInputStream(byteArray);
     }
 
     /**

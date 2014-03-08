@@ -17,9 +17,9 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.gs.services;
+package at.uni_salzburg.cs.cpcc.commons.services;
 
-import java.util.List;
+import java.util.Collection;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
@@ -28,7 +28,6 @@ import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
  */
 public interface RealVehicleStateService
 {
-
     /**
      * Reload the data from the database.
      */
@@ -37,10 +36,20 @@ public interface RealVehicleStateService
     /**
      * @return the list of real vehicle status information.
      */
-    List<RealVehicleStatus> getRealVehicleStatus();
+    Collection<RealVehicleState> getRealVehicleStatus();
 
     /**
      * @return the list of real vehicles being monitored.
      */
-    List<RealVehicle> getRealVehicles();
+    Collection<RealVehicle> getRealVehicles();
+    
+    /**
+     * @param listener the real vehicle state listener.
+     */
+    void addRealVehicleStateListener(RealVehicleStateListener listener);
+    
+    /**
+     * Inform the service that the configuration has been changed.
+     */
+    void notifyConfigurationChange();
 }

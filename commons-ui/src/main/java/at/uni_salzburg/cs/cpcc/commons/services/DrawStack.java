@@ -19,25 +19,16 @@
  */
 package at.uni_salzburg.cs.cpcc.commons.services;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.internal.TapestryInternalUtils;
 import org.apache.tapestry5.services.AssetSource;
-import org.apache.tapestry5.services.javascript.JavaScriptStack;
 import org.apache.tapestry5.services.javascript.StylesheetLink;
 
 /**
  * DrawStack
  */
-public class DrawStack implements JavaScriptStack
+public class DrawStack extends AbstractJavaScriptStack
 {
-    private StylesheetLink[] stylesheets;
-
-    private Asset[] javaScriptLibraries;
-
     /**
      * @param assetSource the asset source
      */
@@ -59,39 +50,4 @@ public class DrawStack implements JavaScriptStack
             };
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> getStacks()
-    {
-        return Collections.emptyList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Asset> getJavaScriptLibraries()
-    {
-        return Arrays.asList(javaScriptLibraries);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<StylesheetLink> getStylesheets()
-    {
-        return Arrays.asList(stylesheets);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getInitialization()
-    {
-        return null;
-    }
 }

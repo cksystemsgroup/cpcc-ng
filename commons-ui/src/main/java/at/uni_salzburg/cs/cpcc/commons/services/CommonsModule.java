@@ -48,6 +48,8 @@ public final class CommonsModule
     {
         binder.bind(ImageTagService.class, ImageTagServiceImpl.class);
         binder.bind(StorageContentTagService.class, StorageContentTagServiceImpl.class);
+        binder.bind(RealVehicleStateService.class, RealVehicleStateServiceImpl.class).eagerLoad();
+        binder.bind(ConfigurationSynchronizer.class, ConfigurationSynchronizerImpl.class).eagerLoad();
     }
 
     /**

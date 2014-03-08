@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="ckrainer" id="1.0.0">
+        <createTable tableName="DEVICE">
+            <column autoIncrement="true" name="ID" type="INT(10)">
+                <constraints primaryKey="true" primaryKeyName="PK_DEVICE"/>
+            </column>
+            <column name="CONFIGURATION" type="VARCHAR(512)"/>
+            <column name="TOPICROOT" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE_ID" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="DEVICETYPE">
+            <column autoIncrement="true" name="ID" type="INT(10)">
+                <constraints primaryKey="true" primaryKeyName="PK_DEVICETYPE"/>
+            </column>
+            <column name="CLASSNAME" type="VARCHAR(120)"/>
+            <column name="NAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MAINTOPIC_ID" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="DEVICETYPE_TOPIC">
+            <column name="DEVICETYPE_ID" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBTOPICS_ID" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="MAPPINGATTRIBUTES">
+            <column name="CONNECTEDTOAUTOPILOT" type="BOOLEAN(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VVVISIBLE" type="BOOLEAN(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TOPIC_ID" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEVICE_ID" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENSORDEFINITION_ID" type="INT(10)"/>
+        </createTable>
+        <createTable tableName="PARAMETER">
+            <column autoIncrement="true" name="ID" type="INT(10)">
+                <constraints primaryKey="true" primaryKeyName="PK_PARAMETER"/>
+            </column>
+            <column name="NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SORT" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="VARCHAR(255)"/>
+        </createTable>
+        <createTable tableName="REALVEHICLE">
+            <column autoIncrement="true" name="ID" type="INT(10)">
+                <constraints primaryKey="true" primaryKeyName="PK_REALVEHICLE"/>
+            </column>
+            <column name="LASTUPDATE" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="URL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="UNKNOWN" name="TYPE" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AREAOFOPERATION" type="CLOB"/>
+        </createTable>
+        <createTable tableName="REALVEHICLE_SENSORDEFINITION">
+            <column name="REALVEHICLE_ID" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENSORS_ID" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="SENSORDEFINITION">
+            <column autoIncrement="true" name="ID" type="INT(10)">
+                <constraints primaryKey="true" primaryKeyName="PK_SENSORDEFINITION"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LASTUPDATE" type="TIMESTAMP"/>
+            <column name="MESSAGETYPE" type="VARCHAR(50)"/>
+            <column name="PARAMETERS" type="VARCHAR(1024)"/>
+            <column name="TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VISIBILITY" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="TOPIC">
+            <column autoIncrement="true" name="ID" type="INT(10)">
+                <constraints primaryKey="true" primaryKeyName="PK_TOPIC"/>
+            </column>
+            <column name="ADAPTERCLASSNAME" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CATEGORY" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MESSAGETYPE" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NODETYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBPATH" type="VARCHAR(50)"/>
+        </createTable>
+        <createTable tableName="VIRTUALVEHICLE">
+            <column autoIncrement="true" name="ID" type="INT(10)">
+                <constraints primaryKey="true" primaryKeyName="PK_VIRTUALVEHICLE"/>
+            </column>
+            <column defaultValueNumeric="1" name="APIVERSION" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CODE" type="CLOB"/>
+            <column name="CONTINUATION" type="BLOB"/>
+            <column name="ENDTIME" type="TIMESTAMP"/>
+            <column name="MIGRATIONSTARTTIME" type="TIMESTAMP"/>
+            <column name="NAME" type="VARCHAR(36)"/>
+            <column name="STARTTIME" type="TIMESTAMP"/>
+            <column name="STATE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UUID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MIGRATIONDESTINATION_ID" type="INT(10)"/>
+        </createTable>
+        <createTable tableName="VIRTUALVEHICLESTORAGE">
+            <column autoIncrement="true" name="ID" type="INT(10)">
+                <constraints primaryKey="true" primaryKeyName="PK_VIRTUALVEHICLESTORAGE"/>
+            </column>
+            <column name="CONTENT" type="BLOB"/>
+            <column name="MODIFICATIONTIME" type="TIMESTAMP"/>
+            <column name="NAME" type="VARCHAR(128)"/>
+            <column name="VIRTUALVEHICLE_ID" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="DEVICE_ID, TOPIC_ID" constraintName="PK_MAPPINGATTRIBUTES" tableName="MAPPINGATTRIBUTES"/>
+        <addForeignKeyConstraint baseColumnNames="DEVICETYPE_ID" baseTableName="DEVICETYPE_TOPIC" constraintName="FK_DTDT_DEVICETYPE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="DEVICETYPE"/>
+        <addForeignKeyConstraint baseColumnNames="SUBTOPICS_ID" baseTableName="DEVICETYPE_TOPIC" constraintName="FK_DTST_TOPIC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="TOPIC"/>
+        <addForeignKeyConstraint baseColumnNames="VIRTUALVEHICLE_ID" baseTableName="VIRTUALVEHICLESTORAGE" constraintName="FK_VSVV_VIRTUALVEHICLE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="VIRTUALVEHICLE"/>
+        <addForeignKeyConstraint baseColumnNames="SENSORS_ID" baseTableName="REALVEHICLE_SENSORDEFINITION" constraintName="FK_RVSD_SENSORDEFINITION" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="SENSORDEFINITION"/>
+        <addForeignKeyConstraint baseColumnNames="REALVEHICLE_ID" baseTableName="REALVEHICLE_SENSORDEFINITION" constraintName="FK_RVSD_REALVEHICLE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="REALVEHICLE"/>
+        <addForeignKeyConstraint baseColumnNames="TOPIC_ID" baseTableName="MAPPINGATTRIBUTES" constraintName="FK_MATO_TOPIC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="TOPIC"/>
+        <addForeignKeyConstraint baseColumnNames="DEVICE_ID" baseTableName="MAPPINGATTRIBUTES" constraintName="FK_MADE_DEVICE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="DEVICE"/>
+        <addForeignKeyConstraint baseColumnNames="SENSORDEFINITION_ID" baseTableName="MAPPINGATTRIBUTES" constraintName="FK_MASD_SENSORDEFINITION" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="SENSORDEFINITION"/>
+        <addForeignKeyConstraint baseColumnNames="TYPE_ID" baseTableName="DEVICE" constraintName="FK_DETY_DEVICETYPE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="DEVICETYPE"/>
+        <addForeignKeyConstraint baseColumnNames="MAINTOPIC_ID" baseTableName="DEVICETYPE" constraintName="FK_DTMT_TOPIC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="TOPIC"/>
+        <addForeignKeyConstraint baseColumnNames="MIGRATIONDESTINATION_ID" baseTableName="VIRTUALVEHICLE" constraintName="FK_VVMD_REALVEHICLE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="REALVEHICLE"/>
+        <addUniqueConstraint columnNames="URL" constraintName="IX_REALVEHICLE_URL" deferrable="false" disabled="false" initiallyDeferred="false" tableName="REALVEHICLE"/>
+        <addUniqueConstraint columnNames="NAME" constraintName="IX_DEVICETYPE_NAME" deferrable="false" disabled="false" initiallyDeferred="false" tableName="DEVICETYPE"/>
+        <addUniqueConstraint columnNames="TOPICROOT" constraintName="IX_DEVICE_TOPICROOT" deferrable="false" disabled="false" initiallyDeferred="false" tableName="DEVICE"/>
+    </changeSet>
+</databaseChangeLog>

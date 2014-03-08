@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.commons.pages;
+package at.uni_salzburg.cs.cpcc.commons.pages.configuration;
 
 import static org.apache.tapestry5.EventConstants.PREPARE;
 
@@ -58,7 +58,7 @@ import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleMapper;
 /**
  * Configuration
  */
-public class Configuration
+public class ConfigurationEdit
 {
     @Inject
     private QueryManager qm;

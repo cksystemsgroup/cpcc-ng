@@ -115,7 +115,7 @@ public interface QueryManager extends Repository
      * @return the sensor definition.
      */
     SensorDefinition findSensorDefinitionById(Integer id);
-    
+
     /**
      * @param type the message type.
      * @return the list of sensor definitions.
@@ -126,7 +126,7 @@ public interface QueryManager extends Repository
      * @return the list of sensor definitions.
      */
     List<SensorDefinition> findAllSensorDefinitions();
-    
+
     /**
      * @return the list of visible sensor definitions.
      */
@@ -147,11 +147,16 @@ public interface QueryManager extends Repository
      * @param id the sensor definition identification.
      */
     void deleteSensorDefinitionById(Integer id);
-    
+
     /**
      * @return the list of available real vehicles
      */
     List<RealVehicle> findAllRealVehicles();
+
+    /**
+     * @return the list of available real vehicles ordered by name.
+     */
+    List<RealVehicle> findAllRealVehiclesOrderByName();
 
     /**
      * @param name the real vehicle name.
@@ -164,12 +169,10 @@ public interface QueryManager extends Repository
      * @return the real vehicle or null if not found.
      */
     RealVehicle findRealVehicleByUrl(String url);
-    
+
     /**
      * @param id the real vehicle identification.
      * @return the real vehicle or null if not found.
      */
     RealVehicle findRealVehicleById(Integer id);
-
-    
 }

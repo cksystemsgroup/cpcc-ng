@@ -20,7 +20,7 @@
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 import org.geojson.Feature;
@@ -66,7 +66,7 @@ public class CoreGeoJsonConverterImpl implements CoreGeoJsonConverter
      * {@inheritDoc}
      */
     @Override
-    public FeatureCollection toFeatureCollection(List<RealVehicle> rvList)
+    public FeatureCollection toFeatureCollection(Collection<RealVehicle> rvList)
         throws JsonParseException, JsonMappingException, IOException
     {
         FeatureCollection fc = new FeatureCollection();

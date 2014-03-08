@@ -29,6 +29,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleState;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
 /**
@@ -60,7 +61,7 @@ public class RealVehicleStatusTest
     public void shouldStoreProperties(RealVehicle realVehicle, String statusString, boolean statusUpdateRunning, boolean connected, Date lastUpdate)
         throws UnsupportedEncodingException
     {
-        RealVehicleStatus status = new RealVehicleStatus(realVehicle);
+        RealVehicleState status = new RealVehicleState(realVehicle);
         status.setStatus(statusString == null ? null :statusString.getBytes());
         status.setStatusUpdateRunning(statusUpdateRunning);
         status.setConnected(connected);

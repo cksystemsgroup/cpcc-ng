@@ -27,10 +27,10 @@ import org.apache.tapestry5.StreamResponse;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleState;
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
-import at.uni_salzburg.cs.cpcc.core.services.GeoJsonStreamResponse;
-import at.uni_salzburg.cs.cpcc.gs.services.RealVehicleStateService;
-import at.uni_salzburg.cs.cpcc.gs.services.RealVehicleStatus;
+import at.uni_salzburg.cs.cpcc.core.utils.GeoJsonStreamResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -69,7 +69,7 @@ public class JsonState
         if ("rvPositions".equals(what))
         {
             FeatureCollection rvPositions = new FeatureCollection();
-            for (RealVehicleStatus status : rvs.getRealVehicleStatus())
+            for (RealVehicleState status : rvs.getRealVehicleStatus())
             {
                 byte[] s = status.getStatus();
                 if (s.length == 0)

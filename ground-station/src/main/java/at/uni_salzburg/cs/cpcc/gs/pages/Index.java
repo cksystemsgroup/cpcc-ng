@@ -19,6 +19,7 @@
  */
 package at.uni_salzburg.cs.cpcc.gs.pages;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,10 +28,10 @@ import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.Property;
 
 import at.uni_salzburg.cs.cpcc.commons.components.DeviceTree;
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleState;
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.gs.services.RealVehicleStateService;
-import at.uni_salzburg.cs.cpcc.gs.services.RealVehicleStatus;
 
 /**
  * Index
@@ -56,12 +57,12 @@ public class Index
     private RealVehicleStateService state;
 
     @Property
-    private RealVehicleStatus stateString;
+    private RealVehicleState stateString;
     
     /**
      * @return the state list.
      */
-    public List<RealVehicleStatus> getStateList()
+    public Collection<RealVehicleState> getStateList()
     {
 //        Map<RealVehicle, byte[]> x = state.getRealVehicleStatus();
 //

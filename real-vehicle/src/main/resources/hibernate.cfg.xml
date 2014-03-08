@@ -18,8 +18,7 @@
 		<!-- Other settings -->
 		<property name="current_session_context_class">thread</property>
 		<property name="format_sql">true</property>
-		<property name="hbm2ddl.auto">update</property>
-<!-- 		<mapping package="at.uni_salzburg.cs.cpcc.rv.entities" /> -->
-		<mapping package="at.uni_salzburg.cs.cpcc.persistence.entities" />
+		<property name="hbm2ddl.auto">validate</property>
+		<!-- <mapping package="at.uni_salzburg.cs.cpcc.persistence.entities" /> -->
 	</session-factory>
 </hibernate-configuration>

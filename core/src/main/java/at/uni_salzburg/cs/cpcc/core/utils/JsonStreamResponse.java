@@ -17,28 +17,32 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package at.uni_salzburg.cs.cpcc.core.services;
+package at.uni_salzburg.cs.cpcc.core.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import org.apache.tapestry5.StreamResponse;
+import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.Response;
 
 /**
- * PngResourceStreamResponse
+ * JsonStreamResponse
  */
-public class PngResourceStreamResponse implements StreamResponse
+public class JsonStreamResponse implements StreamResponse
 {
-
-    private String pngResourcePath;
+    private JSONObject jsonObject;
 
     /**
-     * @param pngResourcePath the resource path to the PNG image.
+     * @param jsonObject the JSON object to be streamed.
      */
-    public PngResourceStreamResponse(String pngResourcePath)
+    public JsonStreamResponse(JSONObject jsonObject)
     {
-        this.pngResourcePath = pngResourcePath;
+        this.jsonObject = jsonObject;
     }
 
     /**
@@ -47,7 +51,7 @@ public class PngResourceStreamResponse implements StreamResponse
     @Override
     public String getContentType()
     {
-        return "application/png";
+        return "application/json";
     }
 
     /**
@@ -56,7 +60,13 @@ public class PngResourceStreamResponse implements StreamResponse
     @Override
     public InputStream getStream() throws IOException
     {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(pngResourcePath);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+        OutputStreamWriter streamWriter = new OutputStreamWriter(out, "UTF-8");
+        PrintWriter writer = new PrintWriter(streamWriter);
+        jsonObject.print(writer);
+        writer.close();
+        out.close();
+        return new ByteArrayInputStream(out.toByteArray());
     }
 
     /**

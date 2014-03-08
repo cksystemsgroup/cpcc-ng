@@ -47,7 +47,7 @@ public final class AppModule
      */
     public static void bind(ServiceBinder binder)
     {
-        binder.bind(RealVehicleStateService.class, RealVehicleStateServiceImpl.class).eagerLoad();
+        // Intentional empty.
     }
 
     /**

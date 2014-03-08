@@ -27,6 +27,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import at.uni_salzburg.cs.cpcc.core.utils.StringUtilities;
@@ -38,8 +39,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Entity
 public class SensorDefinition
 {
+    @GeneratedValue(generator = "UniqueIntegerIdGenerator")
+    @GenericGenerator(name = "UniqueIntegerIdGenerator",
+        strategy = "at.uni_salzburg.cs.cpcc.core.services.UniqueIntegerIdGenerator")
     @Id
-    @GeneratedValue
     private Integer id;
 
     @NotNull
@@ -63,6 +66,9 @@ public class SensorDefinition
 
     @Size(max = 50)
     private String messageType;
+
+    @NotNull
+    private Boolean deleted;
 
     /**
      * @return the id
@@ -179,6 +185,22 @@ public class SensorDefinition
     }
 
     /**
+     * @return true if this record is to be considered as deleted.
+     */
+    public Boolean getDeleted()
+    {
+        return deleted;
+    }
+
+    /**
+     * @param deleted set to true if this record is to be considered as deleted.
+     */
+    public void setDeleted(Boolean deleted)
+    {
+        this.deleted = deleted;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -239,9 +261,9 @@ public class SensorDefinition
     {
         return (id != null ? id.hashCode() : 0) * 41
             + (description != null ? description.hashCode() : 0) * 37
-            + (type != null ? type.hashCode() : 0) * 31
+            + (type != null ? type.ordinal() + 1 : 0) * 31
             + (parameters != null ? parameters.hashCode() : 0) * 29
-            + (visibility != null ? visibility.hashCode() : 0) * 23
+            + (visibility != null ? visibility.ordinal() + 1 : 0) * 23
             + (messageType != null ? messageType.hashCode() : 0) * 19;
     }
 
@@ -249,6 +271,6 @@ public class SensorDefinition
     public String toString()
     {
         return "(id=" + id + ", description=" + description + ", type=" + type + ", parameters=" + parameters
-            + ", visibility=" + visibility + ", messageType" + messageType + ")";
+            + ", visibility=" + visibility + ", messageType=" + messageType + ")";
     }
 }
