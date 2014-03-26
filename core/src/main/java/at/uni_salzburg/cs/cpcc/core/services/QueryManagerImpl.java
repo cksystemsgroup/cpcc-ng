@@ -21,6 +21,7 @@ package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -170,6 +171,23 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
         return x;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Date findLatestSensorDefinitionOrRealVehicleChangeDate()
+    {
+        Date sdd = (Date) getSession().createQuery("select max(lastUpdate) from SensorDefinition").uniqueResult();
+        Date rvd = (Date) getSession().createQuery("select max(lastUpdate) from RealVehicle").uniqueResult();
+        
+        if (sdd != null && rvd != null)
+        {
+            return sdd.compareTo(rvd) > 1 ? sdd : rvd;
+        }
+        
+        return sdd != null ? sdd : rvd != null ? rvd : null;
+    }
+    
     /**
      * {@inheritDoc}
      */

@@ -20,7 +20,7 @@
 				t:reorder="rvName,connected,statusUpdateRunning,lastUpdate,statusString"
 				class="table table-striped table-condensed topic-table">
 	
-				<p:rvNameCell>${stateString.RealVehicle.Name}</p:rvNameCell>
+				<p:rvNameCell><a href="${stateString.RealVehicle.url}" target="_blank">${stateString.RealVehicle.Name}</a></p:rvNameCell>
 	
 				<p:lastUpdateCell>
 					<t:output t:format="${message:dateFormat}" t:value="stateString.LastUpdate" />

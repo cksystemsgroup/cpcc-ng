@@ -57,6 +57,8 @@ public class ConfigurationSynchronizerImpl extends TimerTask
 {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationSynchronizerImpl.class);
 
+    private static final int DB_CHANGE_TIMEOUT = 10;
+
     private QueryManager qm;
     private CommunicationService com;
     private CoreJsonConverter jsonConv;
@@ -64,6 +66,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
     private long configurationChangeTime = 0;
     private Map<Integer, Long> lastUpdateMap = new HashMap<Integer, Long>();
     private int hostingRealVehicleId = 0;
+    private ConfigurationChangeWaiter changeWaiter;
 
     /**
      * @param timerService the timer service.
@@ -78,12 +81,13 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         this.qm = qm;
         this.com = com;
         this.jsonConv = jsonConv;
+        this.changeWaiter = new ConfigurationChangeWaiter(qm);
         timerService.periodicSchedule(this, 10000, 1000);
         stateSrv.addRealVehicleStateListener(this);
 
         determineHostingRealVehicleId();
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -147,19 +151,32 @@ public class ConfigurationSynchronizerImpl extends TimerTask
 
         if (realVehicleState.isConnected())
         {
-            Transaction transaction = qm.getSession().beginTransaction();
-            try
-            {
-                syncConfig(Arrays.asList(rv));
-                transaction.commit();
-            }
-            catch (Throwable e)
-            {
-                transaction.rollback();
-                LOG.error("Can not synchronize real vehicle " + rv.getName() + " (" + rv.getId() + ")", e);
-            }
-            qm.getSession().clear();
+            syncConfigWithTransaction(Arrays.asList(rv));
         }
+    }
+
+    /**
+     * @param targetList the real vehicles to synchronize the configuration with.
+     */
+    private void syncConfigWithTransaction(List<RealVehicle> targetList)
+    {
+        if (!changeWaiter.waitForDatabaseChange(DB_CHANGE_TIMEOUT))
+        {
+            return;
+        }
+
+        Transaction transaction = qm.getSession().beginTransaction();
+        try
+        {
+            syncConfig(targetList);
+            transaction.commit();
+        }
+        catch (Throwable e)
+        {
+            transaction.rollback();
+            LOG.error("Can not synchronize configuration to other real vehicles.", e);
+        }
+        qm.getSession().clear();
     }
 
     /**
@@ -294,24 +311,27 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             JSONObject sd = sensorDefs.getJSONObject(k);
 
             // SensorDefinition dbSd = qm.findSensorDefinitionById(sd.getInt(CoreJsonConverter.SENSOR_DEFINITION_ID));
-            int sdId = sd.getInt(CoreJsonConverter.REAL_VEHICLE_ID);
+            int sdId = sd.getInt(CoreJsonConverter.SENSOR_DEFINITION_ID);
             SensorDefinition dbSd = null;
             for (SensorDefinition r : allSds)
             {
                 if (r.getId().intValue() == sdId)
                 {
                     dbSd = r;
+                    // LOG.info("### found SensorDefinition id=" + sdId + "      " + r.getLastUpdate());
                     break;
                 }
             }
 
-            boolean saveOlny = false;
+            boolean saveOnly = false;
             if (dbSd == null)
             {
                 dbSd = new SensorDefinition();
+                dbSd.setId(sdId);
                 dbSd.setLastUpdate(new Date(0));
                 allSds.add(dbSd);
-                saveOlny = true;
+                saveOnly = true;
+                LOG.info("### new SensorDefinition id=" + sdId);
             }
 
             int updated = 0;
@@ -330,19 +350,23 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             switch (updated)
             {
                 case -1:
+                    LOG.info("### send back SensorDefinition id=" + sdId + " " + dbSd.getLastUpdate().toString());
                     back.add(dbSd);
                     break;
                 case 1:
-                    if (saveOlny)
+                    if (saveOnly)
                     {
+                        LOG.info("### save SensorDefinition id=" + sdId + " " + dbSd.getLastUpdate().toString());
                         qm.getSession().save(dbSd);
                     }
                     else
                     {
+                        LOG.info("### update SensorDefinition id=" + sdId + " " + dbSd.getLastUpdate().toString());
                         qm.saveOrUpdate(dbSd);
                     }
                     break;
                 default:
+                    LOG.info("### do nothing SensorDefinition id=" + sdId + " " + dbSd.getLastUpdate().toString());
                     break;
             }
         }
@@ -374,6 +398,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
 
             if (!found)
             {
+                LOG.info("### delete SensorDefinition id=" + dbItem.getId());
                 dbItem.setDeleted(Boolean.TRUE);
                 qm.saveOrUpdate(dbItem);
             }
@@ -401,6 +426,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
                 if (r.getId().intValue() == rdId)
                 {
                     dbRv = r;
+                    // LOG.info("### found RealVehicle id=" + rdId);
                     break;
                 }
             }
@@ -409,9 +435,11 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             if (dbRv == null)
             {
                 dbRv = new RealVehicle();
+                dbRv.setId(rdId);
                 dbRv.setLastUpdate(new Date(0));
                 allRvs.add(dbRv);
                 saveOnly = true;
+                LOG.info("### new RealVehicle id=" + rdId);
             }
 
             int updated = 0;
@@ -430,16 +458,19 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             switch (updated)
             {
                 case -1:
+                    LOG.info("### send back RealVehicle id=" + rdId);
                     back.add(dbRv);
                     break;
                 case 1:
                     updateSensorDefinitions(dbRv, rv);
                     if (saveOnly)
                     {
+                        LOG.info("### save RealVehicle id=" + rdId);
                         qm.getSession().save(dbRv);
                     }
                     else
                     {
+                        LOG.info("### update RealVehicle id=" + rdId);
                         qm.saveOrUpdate(dbRv);
                     }
                     break;
@@ -475,6 +506,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
 
             if (!found)
             {
+                LOG.info("### remove RealVehicle id=" + dbItem.getId());
                 dbItem.setDeleted(Boolean.TRUE);
                 qm.saveOrUpdate(dbItem);
             }
@@ -518,7 +550,6 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         }
 
         dbRv.getSensors().removeAll(removedSds);
-
     }
 
     /**
@@ -530,18 +561,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         if (configurationChanged)
         {
             configurationChanged = false;
-            Transaction transaction = qm.getSession().beginTransaction();
-            List<RealVehicle> rvs = qm.findAllRealVehicles();
-            try
-            {
-                syncConfig(rvs);
-                transaction.commit();
-            }
-            catch (Throwable e)
-            {
-                transaction.rollback();
-                LOG.error("Can not synchronize configuration to other real vehicles.", e);
-            }
+            syncConfigWithTransaction(qm.findAllRealVehicles());
         }
     }
 

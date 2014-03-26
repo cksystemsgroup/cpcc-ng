@@ -25,10 +25,18 @@
 				t:title="${message:editSensor}"> <i class="icon-pencil"></i>
 			</a>
 			&nbsp;
-			<a t:type="eventlink" t:event="deleteSensor"
-				t:context="sensor.id" href="#"
-				title="${message:deleteSensor}"> <i class="icon-remove"></i>
-			</a>
+			<t:if test="sensor.deleted">
+				<a t:type="eventlink" t:event="activateSensor"
+					t:context="sensor.id" href="#"
+					title="${message:activateSensor}"> <i class="icon-ok-circle"></i>
+				</a>
+				<p:else>
+					<a t:type="eventlink" t:event="deactivateSensor"
+						t:context="sensor.id" href="#"
+						title="${message:deactivateSensor}"> <i class="icon-ban-circle"></i>
+					</a>
+				</p:else>
+			</t:if>
 		</p:actionsCell>
 
 		<p:empty>

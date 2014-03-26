@@ -19,8 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.commons.pages.sensor;
 
-import static org.apache.tapestry5.EventConstants.ACTIVATE;
-
 import java.util.Date;
 import java.util.List;
 
@@ -45,25 +43,36 @@ public class SensorList
 
     @Inject
     protected RealVehicleStateService rvss;
-    
+
     @Inject
     protected ConfigurationSynchronizer confSync;
-    
-    @Property
-    private List<SensorDefinition> sensorList;
 
     @Property
     private SensorDefinition sensor;
 
-    @OnEvent(ACTIVATE)
-    void loadSensorList()
+    /**
+     * @return the current list of sensors.
+     */
+    public List<SensorDefinition> getSensorList()
     {
-        sensorList = qm.findAllSensorDefinitions();
+        return qm.findAllSensorDefinitions();
     }
 
-    @OnEvent("deleteSensor")
+    @OnEvent("activateSensor")
     @CommitAfter
-    void deleteSensor(Integer id)
+    void activateSensor(Integer id)
+    {
+        SensorDefinition sd = qm.findSensorDefinitionById(id);
+        sd.setLastUpdate(new Date());
+        sd.setDeleted(Boolean.FALSE);
+        qm.saveOrUpdate(sd);
+        rvss.notifyConfigurationChange();
+        confSync.notifyConfigurationChange();
+    }
+
+    @OnEvent("deactivateSensor")
+    @CommitAfter
+    void deactivateSensor(Integer id)
     {
         SensorDefinition sd = qm.findSensorDefinitionById(id);
         sd.setLastUpdate(new Date());

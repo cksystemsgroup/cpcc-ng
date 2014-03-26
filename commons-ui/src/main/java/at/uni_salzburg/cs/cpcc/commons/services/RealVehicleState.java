@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
 /**
- * RealVehicleStatus
+ * RealVehicleState
  */
 public class RealVehicleState
 {

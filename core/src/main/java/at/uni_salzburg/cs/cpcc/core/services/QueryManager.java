@@ -20,6 +20,7 @@
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -142,6 +143,11 @@ public interface QueryManager extends Repository
      * @return the sensor definition or null if not found.
      */
     SensorDefinition findSensorDefinitionByDescription(String description);
+    
+    /**
+     * @return the latest change time of a sensor definition or real vehicle.
+     */
+    Date findLatestSensorDefinitionOrRealVehicleChangeDate();
 
     /**
      * @param id the sensor definition identification.

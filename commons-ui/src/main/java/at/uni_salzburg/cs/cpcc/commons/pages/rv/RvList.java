@@ -30,6 +30,8 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
+import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
+import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 
@@ -41,6 +43,12 @@ public class RvList
     @Inject
     private QueryManager qm;
 
+    @Inject
+    protected RealVehicleStateService rvss;
+
+    @Inject
+    protected ConfigurationSynchronizer confSync;
+    
     @Property
     private List<RealVehicle> realVehicleList;
 
@@ -53,13 +61,27 @@ public class RvList
         realVehicleList = qm.findAllRealVehiclesOrderByName();
     }
 
-    @OnEvent("deleteRealVehicle")
+    @OnEvent("activateRealVehicle")
     @CommitAfter
-    void deleteRealVehicle(Integer id)
+    void activateRealVehicle(Integer id)
+    {
+        RealVehicle rv = qm.findRealVehicleById(id);
+        rv.setDeleted(Boolean.FALSE);
+        rv.setLastUpdate(new Date());
+        qm.saveOrUpdate(rv);
+        rvss.notifyConfigurationChange();
+        confSync.notifyConfigurationChange();
+    }
+
+    @OnEvent("deactivateRealVehicle")
+    @CommitAfter
+    void deactivateRealVehicle(Integer id)
     {
         RealVehicle rv = qm.findRealVehicleById(id);
         rv.setDeleted(Boolean.TRUE);
         rv.setLastUpdate(new Date());
         qm.saveOrUpdate(rv);
+        rvss.notifyConfigurationChange();
+        confSync.notifyConfigurationChange();
     }
 }

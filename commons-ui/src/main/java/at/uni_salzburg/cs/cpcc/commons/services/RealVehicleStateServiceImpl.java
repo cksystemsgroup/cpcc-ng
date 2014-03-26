@@ -47,6 +47,8 @@ import at.uni_salzburg.cs.cpcc.core.services.TimerService;
  */
 public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicleStateService
 {
+    private static final int DB_CHANGE_TIMEOUT = 10;
+
     private QueryManager qm;
     private CommunicationService com;
     private boolean configurationChange = true;
@@ -54,6 +56,7 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
     private int numberOfPoolThreads;
     private Set<RealVehicleStateListener> stateListenerSet =
         Collections.synchronizedSet(new HashSet<RealVehicleStateListener>());
+    private ConfigurationChangeWaiter changeWaiter;
 
     /**
      * @param qm the query manager.
@@ -64,6 +67,7 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
     {
         this.qm = qm;
         this.com = com;
+        this.changeWaiter = new ConfigurationChangeWaiter(qm);
 
         // TODO move parameters to configuration.
         numberOfPoolThreads = 10;
@@ -110,8 +114,11 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
     {
         if (configurationChange)
         {
+            if (changeWaiter.waitForDatabaseChange(DB_CHANGE_TIMEOUT))
+            {
+                reload();
+            }
             configurationChange = false;
-            reload();
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfPoolThreads);
@@ -251,5 +258,4 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
     {
         stateListenerSet.add(listener);
     }
-
 }

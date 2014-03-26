@@ -27,6 +27,8 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
 import org.geojson.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
@@ -40,6 +42,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class CoreGeoJsonConverterImpl implements CoreGeoJsonConverter
 {
+    private static final Logger LOG = LoggerFactory.getLogger(CoreGeoJsonConverterImpl.class);
+
     /**
      * {@inheritDoc}
      */
@@ -55,8 +59,15 @@ public class CoreGeoJsonConverterImpl implements CoreGeoJsonConverter
 
         if (!StringUtils.isEmpty(rv.getAreaOfOperation()))
         {
-            GeoJsonObject aoo = new ObjectMapper().readValue(rv.getAreaOfOperation(), GeoJsonObject.class);
-            feature.setGeometry(aoo);
+            try
+            {
+                GeoJsonObject aoo = new ObjectMapper().readValue(rv.getAreaOfOperation(), GeoJsonObject.class);
+                feature.setGeometry(aoo);
+            }
+            catch (Exception e)
+            {
+                LOG.error("Can not parse area of operation of real vehicle " + rv.getName() + " (" + rv.getId() + ")");
+            }
         }
 
         return feature;
