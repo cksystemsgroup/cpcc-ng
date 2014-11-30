@@ -46,13 +46,9 @@
 		<module>core</module>
 	</modules>
 
-	<!-- <scm> <connection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</connection> 
-		<developerConnection>scm:svn:http://zoot.site/jnavigator/svn-cpcc/ESEP/trunk</developerConnection> 
-		</scm> -->
 	<scm>
-		<connection>scm:git:ssh://git@bitbucket.org/ckrainer/cpcc-ng.git</connection>
-	  <tag>cpcc-ng-project-0.0.1</tag>
-  </scm>
+		<connection>scm:git:https://github.com/cksystemsgroup/cpcc-ng.git</connection>
+	</scm>
 
 	<dependencyManagement>
 		<dependencies>
