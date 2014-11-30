@@ -4,7 +4,7 @@
 	<groupId>at.uni-salzburg.cs.cpcc</groupId>
 	<artifactId>cpcc-ng-project</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>Cyber Physical Cloud Computing Next Generation Project</name>
 	<description>Cyber Physical Cloud Computing Next Generation Project</description>
 
@@ -48,7 +48,8 @@
 
 	<scm>
 		<connection>scm:git:https://github.com/cksystemsgroup/cpcc-ng.git</connection>
-	</scm>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<dependencyManagement>
 		<dependencies>
