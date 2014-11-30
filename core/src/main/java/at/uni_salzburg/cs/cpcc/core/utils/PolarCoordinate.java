@@ -152,7 +152,7 @@ public class PolarCoordinate
      */
     public String toString()
     {
-        return "(" + latitude + "°, " + longitude + "°, " + altitude + "m)";
+        return "(" + latitude + "\u00B0, " + longitude + "\u00B0, " + altitude + "m)";
     }
 
 }
