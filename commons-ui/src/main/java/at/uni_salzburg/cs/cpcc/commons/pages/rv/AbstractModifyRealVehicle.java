@@ -30,8 +30,8 @@ import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
+import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
 import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
@@ -76,12 +76,15 @@ public class AbstractModifyRealVehicle
      * @return the page to show next.
      */
     @OnEvent(SUCCESS)
-    @CommitAfter
     protected Object storeRealVehicle()
     {
+        Transaction t = qm.getSession().getTransaction();
+        t.begin();
         realVehicle.setLastUpdate(new Date());
         qm.saveOrUpdate(realVehicle);
         rvss.notifyConfigurationChange();
+        t.commit();
+        
         confSync.notifyConfigurationChange();
         return RvList.class;
     }

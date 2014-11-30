@@ -26,7 +26,7 @@ import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
 import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
@@ -59,25 +59,31 @@ public class SensorList
     }
 
     @OnEvent("activateSensor")
-    @CommitAfter
     void activateSensor(Integer id)
     {
+        Transaction t = qm.getSession().getTransaction();
+        t.begin();
         SensorDefinition sd = qm.findSensorDefinitionById(id);
         sd.setLastUpdate(new Date());
         sd.setDeleted(Boolean.FALSE);
         qm.saveOrUpdate(sd);
+        t.commit();
+        
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
     }
 
     @OnEvent("deactivateSensor")
-    @CommitAfter
     void deactivateSensor(Integer id)
     {
+        Transaction t = qm.getSession().getTransaction();
+        t.begin();
         SensorDefinition sd = qm.findSensorDefinitionById(id);
         sd.setLastUpdate(new Date());
         sd.setDeleted(Boolean.TRUE);
         qm.saveOrUpdate(sd);
+        t.commit();
+        
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
     }

@@ -21,8 +21,8 @@ import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
+import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.pages.Vehicle;
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
@@ -67,11 +67,14 @@ public class AbstractModifyVehicle
      * @return the page to show next.
      */
     @OnEvent(SUCCESS)
-    @CommitAfter
     protected Object storeVehicle()
     {
+        Transaction t = repository.getSession().getTransaction();
+        t.begin();
         vehicle.setCode(vehicle.getCode().trim());
         repository.saveOrUpdate(vehicle);
+        t.commit();
+        
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
         return Vehicle.class;

@@ -36,13 +36,13 @@ import org.apache.tapestry5.annotations.Persist;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.annotations.SetupRender;
 import org.apache.tapestry5.corelib.components.Form;
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
 import org.geojson.Polygon;
+import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.pages.Viewer;
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
@@ -133,11 +133,14 @@ public class RvEditAreaOfOperations extends Viewer
     }
 
     @OnEvent(SUCCESS)
-    @CommitAfter
     void storeZones()
     {
+        Transaction t = qm.getSession().getTransaction();
+        t.begin();
         realVehicle.setAreaOfOperation(realVehicleZones);
         realVehicle.setLastUpdate(new Date());
+        t.commit();
+        
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
     }

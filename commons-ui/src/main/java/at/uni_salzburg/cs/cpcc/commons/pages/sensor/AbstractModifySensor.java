@@ -31,8 +31,8 @@ import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
+import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
 import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
@@ -75,11 +75,14 @@ public class AbstractModifySensor
      * @return the page to show next.
      */
     @OnEvent(SUCCESS)
-    @CommitAfter
     protected Object storeSensorDefinition()
     {
+        Transaction t = qm.getSession().getTransaction();
+        t.begin();
         sensor.setLastUpdate(new Date());
         qm.saveOrUpdate(sensor);
+        t.commit();
+        
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
         return SensorList.class;

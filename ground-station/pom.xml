@@ -108,6 +108,12 @@
 
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>at.uni-salzburg.cs.cpcc</groupId>
 			<artifactId>ros-service</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>

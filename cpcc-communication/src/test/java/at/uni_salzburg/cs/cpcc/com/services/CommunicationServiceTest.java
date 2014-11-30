@@ -38,7 +38,6 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.ContentEncodingHttpClient;
 import org.apache.http.localserver.LocalTestServer;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.protocol.HttpContext;

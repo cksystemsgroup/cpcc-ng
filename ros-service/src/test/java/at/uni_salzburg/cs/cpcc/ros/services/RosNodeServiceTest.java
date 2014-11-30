@@ -169,6 +169,14 @@ public class RosNodeServiceTest
 
         Collection<TopicSystemState> topics = systemState.getResult().getTopics();
         Assert.assertNotNull(topics);
+        if (!topics.isEmpty())
+        {
+            for (TopicSystemState x : topics)
+            {
+                System.out.println("### Topic: " + x.getTopicName());
+            }
+        }
+        
         Assert.assertTrue(topics.isEmpty());
 
         svc.updateRosCore(false);

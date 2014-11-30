@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
 import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
@@ -62,25 +62,31 @@ public class RvList
     }
 
     @OnEvent("activateRealVehicle")
-    @CommitAfter
     void activateRealVehicle(Integer id)
     {
+        Transaction t = qm.getSession().getTransaction();
+        t.begin();
         RealVehicle rv = qm.findRealVehicleById(id);
         rv.setDeleted(Boolean.FALSE);
         rv.setLastUpdate(new Date());
         qm.saveOrUpdate(rv);
+        t.commit();
+        
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
     }
 
     @OnEvent("deactivateRealVehicle")
-    @CommitAfter
     void deactivateRealVehicle(Integer id)
     {
+        Transaction t = qm.getSession().getTransaction();
+        t.begin();
         RealVehicle rv = qm.findRealVehicleById(id);
         rv.setDeleted(Boolean.TRUE);
         rv.setLastUpdate(new Date());
         qm.saveOrUpdate(rv);
+        t.commit();
+        
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
     }
