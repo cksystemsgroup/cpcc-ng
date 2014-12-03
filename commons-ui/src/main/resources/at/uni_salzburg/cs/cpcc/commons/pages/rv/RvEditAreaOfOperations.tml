@@ -1,44 +1,57 @@
 <html t:type="layout"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<t:jquery.dialog t:clientId="dialog">
-	<form t:type="form" t:id="jsForm">
-		<t:errors />
+<!-- <t:jquery.dialog t:clientId="dialog"> -->
+<!-- 	<t:Form t:id="jsForm"> -->
+<!-- 		<t:errors /> -->
 
-		<div class="control-group">
-			<label class="control-label" for="minAltitude">${message:minAltitude}</label>
-			<div class="controls">
-				<t:textfield t:size="6" t:id="minAltitude" />
-			</div>
-		</div>
+<!-- 		<div class="control-group"> -->
+<!-- 			<label class="control-label" for="minAltitude">${message:minAltitude}</label> -->
+<!-- 			<div class="controls"> -->
+<!-- 				<t:textfield t:size="6" t:id="minAltitude" /> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
 
-		<div class="control-group">
-			<label class="control-label" for="maxAltitude">${message:maxAltitude}</label>
-			<div class="controls">
-				<t:textfield t:size="6" t:id="maxAltitude" />
-			</div>
-		</div>
+<!-- 		<div class="control-group"> -->
+<!-- 			<label class="control-label" for="maxAltitude">${message:maxAltitude}</label> -->
+<!-- 			<div class="controls"> -->
+<!-- 				<t:textfield t:size="6" t:id="maxAltitude" /> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
 
-		<div class="control-group">
-			<a href="javascript:dialogOk()" class="btn btn-primary">${message:btn.commit}</a>
-			<a href="javascript:dialogCancel()" class="btn">${message:btn.cancel}</a>
-		</div>
+<!-- 		<div class="control-group"> -->
+<!-- 			<a href="javascript:dialogOk()" class="btn btn-primary">${message:btn.commit}</a> -->
+<!-- 			<a href="javascript:dialogCancel()" class="btn">${message:btn.cancel}</a> -->
+<!-- 		</div> -->
+<!-- 	</t:Form> -->
+<!-- </t:jquery.dialog> -->
 
-	</form>
-</t:jquery.dialog>
+<!-- <t:Zone t:id="rvZone"> -->
+<!-- 	<t:Form t:id="rvForm" t:zone="^"> -->
+<!-- 		<t:errors /> -->
+<!-- 		<t:TextField t:id="realVehicleZones" t:value="realVehicleZones" -->
+<!-- 			style="display:none" /> -->
+<!-- 	</t:Form> -->
+<!-- </t:Zone> -->
 
-<t:zone t:id="rvZone">
-	<form t:type="form" t:id="rvForm" t:zone="^">
-		<t:errors />
-		<t:textfield t:id="realVehicleZones" t:value="realVehicleZones" style="display:none" />
-	</form>
-</t:zone>
+<!-- <form t:type="form" t:id="invisibleForm"> -->
+<!-- 	<t:textfield t:id="otherRealVehicleZones" -->
+<!-- 		t:value="otherRealVehicleZones" style="display:none" /> -->
+<!-- </form> -->
 
-<form t:type="form" t:id="invisibleForm">
-	<t:textfield t:id="otherRealVehicleZones" t:value="otherRealVehicleZones" style="display:none" />
-</form>
+<!-- <div id="map" class="map"></div> -->
 
-<div id="map" class="map"></div>
+<l:LeafletMap t:id="map" t:drawControl="true" t:center="prop:mapCenter"
+	t:zoom="prop:zoomLevel" t:height="500" />
+
+<l:LeafletRegionLayer t:mapId="map"
+	t:name="message:otherRealVehicles.name"
+	t:value="prop:otherRealVehicleRegions" t:frequencySecs="15" />
+
+<l:LeafletDrawControl t:id="drawControl" t:mapId="map"
+	t:data="prop:realVehicleRegions" t:position="topleft"
+	t:polygonEnabled="true" t:rectangleEnabled="false"
+	t:polylineEnabled="false" t:circleEnabled="false" />
 
 </html>

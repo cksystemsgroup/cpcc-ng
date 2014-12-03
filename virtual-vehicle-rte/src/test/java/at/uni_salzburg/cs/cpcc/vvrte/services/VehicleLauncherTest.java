@@ -37,6 +37,7 @@ import javax.sql.rowset.serial.SerialException;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -101,16 +102,19 @@ public class VehicleLauncherTest
 
         session = mock(Session.class);
         when(session.beginTransaction()).thenReturn(transaction);
+        SessionFactory sessionFactory = mock(SessionFactory.class);
+        when(sessionFactory.openSession()).thenReturn(session);
+        when(session.getSessionFactory()).thenReturn(sessionFactory );
 
         QueryManager qm = mock(QueryManager.class);
-        when(qm.getSession()).thenReturn(session);
+        // when(qm.getSession()).thenReturn(session);
 
         JavascriptService jss = mock(JavascriptService.class);
         when(jss.createWorker(anyString(), anyInt())).thenReturn(worker);
 
         VirtualVehicleMigrator migrator = mock(VirtualVehicleMigrator.class);
         
-        launcher = new VirtualVehicleLauncherImpl(qm, jss, migrator);
+        launcher = new VirtualVehicleLauncherImpl(session, jss, migrator);
     }
 
     @Test

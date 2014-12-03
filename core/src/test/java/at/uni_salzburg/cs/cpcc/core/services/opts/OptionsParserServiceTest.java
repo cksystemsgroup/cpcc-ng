@@ -19,8 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.core.services.opts;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.offset;
 
@@ -30,16 +28,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.fest.assertions.api.Fail;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import at.uni_salzburg.cs.cpcc.core.services.opts.Option;
-import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
-import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserServiceImpl;
-import at.uni_salzburg.cs.cpcc.core.services.opts.ParseException;
-import at.uni_salzburg.cs.cpcc.core.services.opts.Symbol;
-import at.uni_salzburg.cs.cpcc.core.services.opts.Token;
 
 /**
  * OptionsParserServiceTest
@@ -60,19 +52,19 @@ public class OptionsParserServiceTest
         Collection<Option> result = svc.parse("");
         assertThat(result).isNotNull().isEmpty();
     }
-    
+
     @Test
     public void shouldParseNullOptions() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse(null);
         assertThat(result).isNotNull().isEmpty();
     }
-    
+
     @Test
     public void shouldParseCorrectOptions() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse("bugger=lala looney=3.141592 caspar='xxx uu'");
-        
+
         assertThat(result).isNotNull().hasSize(3);
 
         Option bugger = null;
@@ -162,53 +154,66 @@ public class OptionsParserServiceTest
     @Test()
     public void shouldFailOnInvalidItem() throws IOException, ParseException
     {
-        catchException(svc).parse("1.bugger=nix");
-
-        assertThat(caughtException())
-            .isInstanceOf(ParseException.class)
-            .hasMessage("Expected a IDENT but got a NUMBER in line 1 column 3");
+        try
+        {
+            svc.parse("1.bugger=nix");
+            Fail.failBecauseExceptionWasNotThrown(ParseException.class);
+        }
+        catch (ParseException e)
+        {
+            assertThat(e).hasMessage("Expected a IDENT but got a NUMBER in line 1 column 3");
+        }
     }
 
     @Test()
     public void shouldFailOnMissingEqualSymbol() throws IOException, ParseException
     {
         String source = "bugger nix";
-        catchException(svc).parse(source);
 
-        assertThat(caughtException())
-            .isInstanceOf(ParseException.class)
-            .hasMessage("Expected a EQUALS but got a IDENT in line 1 column 10");
-
-        assertThat(svc.formatParserErrorMessage(source, "%s", (ParseException) caughtException()))
-            .isEqualTo("bugger nix<*>\n");
+        try
+        {
+            svc.parse(source);
+            Fail.failBecauseExceptionWasNotThrown(ParseException.class);
+        }
+        catch (ParseException e)
+        {
+            assertThat(e).hasMessage("Expected a EQUALS but got a IDENT in line 1 column 10");
+            assertThat(svc.formatParserErrorMessage(source, "%s", e)).isEqualTo("bugger nix<*>\n");
+        }
     }
 
-    @Test()
+    @Test
     public void shouldFailOnInvalidList() throws IOException, ParseException
     {
         String source = "bugger=(nix";
-        catchException(svc).parse(source);
 
-        assertThat(caughtException())
-            .isInstanceOf(ParseException.class)
-            .hasMessage("Expected a RIGHT_PAREN but got a END in line 1 column 11");
-
-        assertThat(svc.formatParserErrorMessage(source, "%s", (ParseException) caughtException()))
-            .isEqualTo("bugger=(nix<*>\n");
+        try
+        {
+            svc.parse(source);
+            Fail.failBecauseExceptionWasNotThrown(ParseException.class);
+        }
+        catch (ParseException e)
+        {
+            assertThat(e).hasMessage("Expected a RIGHT_PAREN but got a END in line 1 column 11");
+            assertThat(svc.formatParserErrorMessage(source, "%s", e)).isEqualTo("bugger=(nix<*>\n");
+        }
     }
 
-    @Test()
+    @Test
     public void shouldFailOnAdditionalEqualsSymbol() throws IOException, ParseException
     {
         String source = "bugger==nix=a";
-        catchException(svc).parse(source);
 
-        assertThat(caughtException())
-            .isInstanceOf(ParseException.class)
-            .hasMessage("Expected a LITERAL, IDENT or NUMBER but got a EQUALS in line 1 column 9");
-
-        assertThat(svc.formatParserErrorMessage(source, "%s", (ParseException) caughtException()))
-            .isEqualTo("bugger==n<*>ix=a\n");
+        try
+        {
+            svc.parse(source);
+            Fail.failBecauseExceptionWasNotThrown(ParseException.class);
+        }
+        catch (ParseException e)
+        {
+            assertThat(e).hasMessage("Expected a LITERAL, IDENT or NUMBER but got a EQUALS in line 1 column 9");
+            assertThat(svc.formatParserErrorMessage(source, "%s", e)).isEqualTo("bugger==n<*>ix=a\n");
+        }
     }
 
     @Test
@@ -221,21 +226,24 @@ public class OptionsParserServiceTest
         assertThat(result.get("lala")).containsExactly("13.4");
         assertThat(result.get("pos")).containsExactly("47.1", "13.2", "10");
     }
-    
+
     @Test()
     public void shouldFailOnMalformedList() throws IOException, ParseException
     {
         String source = "bugger=(1,=";
-        catchException(svc).parse(source);
 
-        assertThat(caughtException())
-            .isInstanceOf(ParseException.class)
-            .hasMessage("Expected a LITERAL, IDENT or NUMBER but got a EQUALS in line 1 column 11");
-
-        assertThat(svc.formatParserErrorMessage(source, "%s", (ParseException) caughtException()))
-            .isEqualTo("bugger=(1,=<*>\n");
+        try
+        {
+            svc.parse(source);
+            Fail.failBecauseExceptionWasNotThrown(ParseException.class);
+        }
+        catch (ParseException e)
+        {
+            assertThat(e).hasMessage("Expected a LITERAL, IDENT or NUMBER but got a EQUALS in line 1 column 11");
+            assertThat(svc.formatParserErrorMessage(source, "%s", e)).isEqualTo("bugger=(1,=<*>\n");
+        }
     }
-    
+
     @DataProvider
     public Object[][] errorMessageDataProvider()
     {

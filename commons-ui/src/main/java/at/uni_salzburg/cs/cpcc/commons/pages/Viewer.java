@@ -26,18 +26,20 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 /**
  * Viewer
  */
+@Deprecated
 public class Viewer
 {
     @Inject
     private JavaScriptSupport js;
 
-    /**
-     * import the Map JavaScript stack.
-     */
-    @SetupRender
-    public void importStack()
-    {
-        js.importStack("map");
-        js.addScript("viewerInit();");
-    }
+    // TODO fix me
+//    /**
+//     * import the Map JavaScript stack.
+//     */
+//    @SetupRender
+//    public void importStack()
+//    {
+//        js.importStack("map");
+//        js.addScript("viewerInit();");
+//    }
 }

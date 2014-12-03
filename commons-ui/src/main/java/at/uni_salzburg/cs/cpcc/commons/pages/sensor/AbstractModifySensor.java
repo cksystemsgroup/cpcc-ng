@@ -1,21 +1,11 @@
 /*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * This code is part of the CPCC-NG project. Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com> This program
+ * is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 package at.uni_salzburg.cs.cpcc.commons.pages.sensor;
 
@@ -32,6 +22,7 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.ioc.Messages;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
@@ -50,6 +41,9 @@ public class AbstractModifySensor
     protected static final String ERROR_PARSING_SYNTAX = "error.parsing.syntax";
 
     @Inject
+    protected Session session;
+
+    @Inject
     protected QueryManager qm;
 
     @Inject
@@ -57,7 +51,7 @@ public class AbstractModifySensor
 
     @Inject
     protected RealVehicleStateService rvss;
-    
+
     @Inject
     protected ConfigurationSynchronizer confSync;
 
@@ -77,12 +71,13 @@ public class AbstractModifySensor
     @OnEvent(SUCCESS)
     protected Object storeSensorDefinition()
     {
-        Transaction t = qm.getSession().getTransaction();
+        Session newSession = session.getSessionFactory().openSession();
+        Transaction t = newSession.getTransaction();
         t.begin();
         sensor.setLastUpdate(new Date());
-        qm.saveOrUpdate(sensor);
+        newSession.saveOrUpdate(sensor);
         t.commit();
-        
+
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
         return SensorList.class;

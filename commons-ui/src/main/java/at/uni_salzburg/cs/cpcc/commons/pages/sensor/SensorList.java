@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
@@ -38,6 +39,9 @@ import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
  */
 public class SensorList
 {
+    @Inject
+    private Session session;
+    
     @Inject
     private QueryManager qm;
 
@@ -61,12 +65,12 @@ public class SensorList
     @OnEvent("activateSensor")
     void activateSensor(Integer id)
     {
-        Transaction t = qm.getSession().getTransaction();
+        Transaction t = session.getTransaction();
         t.begin();
         SensorDefinition sd = qm.findSensorDefinitionById(id);
         sd.setLastUpdate(new Date());
         sd.setDeleted(Boolean.FALSE);
-        qm.saveOrUpdate(sd);
+        session.saveOrUpdate(sd);
         t.commit();
         
         rvss.notifyConfigurationChange();
@@ -76,12 +80,12 @@ public class SensorList
     @OnEvent("deactivateSensor")
     void deactivateSensor(Integer id)
     {
-        Transaction t = qm.getSession().getTransaction();
+        Transaction t = session.getTransaction();
         t.begin();
         SensorDefinition sd = qm.findSensorDefinitionById(id);
         sd.setLastUpdate(new Date());
         sd.setDeleted(Boolean.TRUE);
-        qm.saveOrUpdate(sd);
+        session.saveOrUpdate(sd);
         t.commit();
         
         rvss.notifyConfigurationChange();

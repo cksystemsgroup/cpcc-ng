@@ -1,88 +1,117 @@
 <html t:type="layout" title="${message:rosList}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
-	xmlns:p="tapestry:parameter">
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
-<section id="deviceDetail">
-
-	<div class="row-fluid">
-		<div class="span3 bs-docs-sidebar">
-			<h4>
-				<t:pagelink page="index">${message:device.tree.label}</t:pagelink>
-			</h4>
-			<div t:id="deviceTree"></div>
-		</div>
-
-		<div class="span8">
-
-			<t:zone t:id="zone" t:mixins='jquery/zonerefresh' t:period='1'
-				t:update="show" t:context="deviceDetailLinkContext">
-
-				<div class="well well-small">
-					<p>
-						<strong>${message:device.type.name}</strong>:&nbsp;${deviceTypeName}
-						&nbsp;&nbsp; <strong>${message:device.root.topic}</strong>:&nbsp;${deviceDetailLinkContext}
-					</p>
-					<table t:type="grid" t:source="deviceParameterList"
-						t:row="deviceParameter" t:add="parameter" t:exclude="empty"
-						class="table table-striped table-condensed topic-table">
-
-						<p:parameterCell>
-							${deviceParameter}
-						</p:parameterCell>
-					</table>
-				</div>
-
-				<table border="0" cellpadding="0" cellspacing="0" width="100%">
-					<tbody>
-						<tr t:type="Loop" t:source="adapterList" t:value="adapter">
-							<td>
-								<div class="well well-small">
-									<p>
-										<strong>${message:adapterNodeName}</strong>:&nbsp;${adapter.DefaultNodeName}
-										<t:if test="adapter.Topic">
-											&nbsp;&nbsp;
-											<strong>${message:adapterTopicName}</strong>:&nbsp;${adapter.Topic.Name}
-											&nbsp;&nbsp;
-											<strong>${message:adapterTopicType}</strong>:&nbsp;${adapter.Topic.Type}
-										</t:if>
-									</p>
-									<table>
-										<tr>
-											<td>
-												<table t:type="grid" t:source="adapterParameterList"
-													t:row="adapterParameter" t:add="parameter"
-													t:exclude="empty"
-													class="table table-striped table-condensed topic-table">
-
-													<p:parameterCell>
-														<t:if test="adapterParameter">
-															${adapterParameter}
-														</t:if>
-													</p:parameterCell>
-
-													<p:empty>
-														nothing to show!
-													</p:empty>
-												</table>
-											</td>
-										</tr>
-										<tr>
-											<td><t:if test="adapterHasImage">
-												<div style="width: ${dimension.Width}px; height: ${dimension.Height}px">
-													<t:outputRaw value="adapterImageTag" />
-												</div>
-												</t:if></td>
-										</tr>
-									</table>
-								</div>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</t:zone>
-		</div>
+<div class="row">
+	<div class="col-md-12">
+		<h4>
+			<t:pagelink page="index">${message:device.tree.label}</t:pagelink>
+		</h4>
+		<!-- TODO -->
+		<div t:id="deviceTree"></div>
 	</div>
 
-</section>
+	<t:Zone t:id="zone">
+		<!--  t:mixins='jquery/zonerefresh' t:period='1'
+				t:update="show" t:context="deviceDetailLinkContext"  -->
+
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<dl class="cpcc-panel-title">
+						<dt>${message:device.type.name}</dt>
+						<dd>${deviceTypeName}</dd>
+					</dl>
+				</div>
+
+				<div class="panel-body">
+					<dl class="cpcc-panel-body">
+						<dt>${message:device.root.topic}</dt>
+						<dd>${deviceDetailLinkContext}</dd>
+					</dl>
+				</div>
+
+				<t:If t:test="deviceParameterList">
+					<table class="table table-striped table-condensed cpcc-panel">
+						<thead>
+							<tr>
+								<th>${message:deviceParameters}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr t:type="loop" t:source="deviceParameterList"
+								t:value="deviceParameter">
+								<td>${deviceParameter}</td>
+							</tr>
+
+						</tbody>
+					</table>
+
+					<p:else>
+						<div class="panel-body">
+							<div class="cpcc-panel-body">${message:noDeviceFound}</div>
+						</div>
+					</p:else>
+				</t:If>
+			</div>
+		</div>
+
+		<t:Loop t:source="adapterList" t:value="adapter">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<dl class="cpcc-panel-title">
+							<dt>${message:adapterNodeName}</dt>
+							<dd>${adapter.DefaultNodeName}</dd>
+						</dl>
+					</div>
+
+					<t:if test="adapter.Topic">
+						<div class="panel-body">
+							<dl class="cpcc-panel-body">
+								<dt>${message:adapterTopicName}</dt>
+								<dd>${adapter.Topic.Name}</dd>
+								<dt>${message:adapterTopicType}</dt>
+								<dd>${adapter.Topic.Type}</dd>
+							</dl>
+						</div>
+					</t:if>
+
+					<t:If t:test="adapterParameterList">
+						<table class="table table-striped table-condensed cpcc-panel">
+							<thead>
+								<tr>
+									<th>${message:adapterParameters}</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr t:type="loop" t:source="adapterParameterList"
+									t:value="adapterParameter">
+
+									<t:if test="adapterParameter">
+										<td>${adapterParameter}</td>
+									</t:if>
+								</tr>
+							</tbody>
+						</table>
+						
+						<p:else>
+							<div class="panel-body">
+								<div class="cpcc-panel-body">${message:noAdapterFound}</div>
+							</div>
+						</p:else>
+					</t:If>
+
+					<t:if test="adapterHasImage">
+						<div class="panel-body">
+							<t:outputRaw value="adapterImageTag" />
+						</div>
+					</t:if>
+				</div>
+			</div>
+		</t:Loop>
+	</t:Zone>
+
+</div>
 
 </html>

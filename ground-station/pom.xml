@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>at.uni-salzburg.cs.cpcc</groupId>
@@ -26,7 +27,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>c3p0</groupId>
+			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
 		</dependency>
 
@@ -50,7 +51,7 @@
 
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
+			<artifactId>mockito-all</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -61,8 +62,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.googlecode.catch-exception</groupId>
-			<artifactId>catch-exception</artifactId>
+			<groupId>org.skyscreamer</groupId>
+			<artifactId>jsonassert</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -82,11 +83,6 @@
 			<groupId>org.apache.tapestry</groupId>
 			<artifactId>tapestry-javadoc</artifactId>
 			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.trsvax</groupId>
-			<artifactId>tapestry-bootstrap</artifactId>
 		</dependency>
 
 		<dependency>
@@ -131,12 +127,17 @@
 
 		<dependency>
 			<groupId>at.uni-salzburg.cs</groupId>
-			<artifactId>tapestry-ace-textarea</artifactId>
+			<artifactId>tapestry-ace-editor</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>at.uni-salzburg.cs</groupId>
+			<artifactId>tapestry-leaflet</artifactId>
 		</dependency>
 	</dependencies>
 
 	<build>
-		<finalName>real-vehicle</finalName>
+		<finalName>ground-station</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -183,15 +184,13 @@
 			<!-- </plugin> -->
 
 			<plugin>
-				<!-- <groupId>org.mortbay.jetty</groupId> -->
-				<!-- <artifactId>jetty-maven-plugin</artifactId> -->
-				<!-- <version>8.1.11.v20130520</version> -->
-				<!-- <version>9.0.5.v20130815</version> -->
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.1.0.RC1</version>
+				<!-- <version>9.1.0.RC1</version> -->
+				<version>9.2.5.v20141112</version>
+
 				<configuration>
-				    <jvmArgs>-Xmx1024m -Xss128k</jvmArgs>
+					<jvmArgs>-Xmx1024m -Xss128k</jvmArgs>
 					<!-- <useProvidedScope>true</useProvidedScope> -->
 					<!-- <requestLog implementation="org.mortbay.jetty.NCSARequestLog"> -->
 					<!-- This doesn't do anything for Jetty, but is a workaround for a Maven 

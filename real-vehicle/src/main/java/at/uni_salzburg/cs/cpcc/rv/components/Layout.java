@@ -34,20 +34,10 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 
-import com.trsvax.bootstrap.annotations.Exclude;
-
 /**
  * Layout component for pages of application real vehicle web application.
  */
-@Exclude(stylesheet = {"core"})
-@Import(stylesheet = {
-    "classpath:/com/trsvax/bootstrap/assets/bootstrap/css/bootstrap.css",
-    "classpath:/com/trsvax/bootstrap/assets/bootstrap/css/bootstrap-responsive.css",
-    "layout.css"
-},
-    library = {
-        "classpath:/com/trsvax/bootstrap/assets/bootstrap/js/bootstrap.js"
-    })
+@Import(module = "bootstrap/collapse", stylesheet = "layout.css")
 public class Layout
 {
     /**

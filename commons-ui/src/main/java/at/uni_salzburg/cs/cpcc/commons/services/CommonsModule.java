@@ -19,13 +19,13 @@
  */
 package at.uni_salzburg.cs.cpcc.commons.services;
 
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.Translator;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
 import org.apache.tapestry5.services.LibraryMapping;
-import org.apache.tapestry5.services.javascript.JavaScriptStack;
 
 import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagService;
 import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagServiceImpl;
@@ -88,13 +88,17 @@ public final class CommonsModule
         configuration.add("uri", new UriTranslator("uri"));
     }
 
-    /**
-     * @param configuration the mapped configuration
-     */
-    public static void contributeJavaScriptStackSource(MappedConfiguration<String, JavaScriptStack> configuration)
-    {
-        configuration.addInstance("map", MapStack.class);
-        configuration.addInstance("draw", DrawStack.class);
-    }
+    //    /**
+    //     * @param configuration the mapped configuration
+    //     */
+    //    public static void contributeJavaScriptStackSource(MappedConfiguration<String, JavaScriptStack> configuration)
+    //    {
+    //        configuration.addInstance("map", MapStack.class);
+    //        configuration.addInstance("draw", DrawStack.class);
+    //    }
 
+    public static void contributeApplicationDefaults(MappedConfiguration<String, String> configuration)
+    {
+        configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
+    }
 }

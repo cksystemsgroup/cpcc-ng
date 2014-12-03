@@ -67,7 +67,7 @@ public class ImageTagServiceTest
 
         when(abstracAdapter1.getTopic()).thenReturn(topic1);
 
-        when(request.getContextPath()).thenReturn("/test-context");
+        // when(request.getContextPath()).thenReturn("/test-context");
 
         when(requestGlobals.getRequest()).thenReturn(request);
 
@@ -84,7 +84,7 @@ public class ImageTagServiceTest
         when(messages.get("camera.image.alt")).thenReturn("image-alt");
         when(messages.get("camera.image.title")).thenReturn("image-title");
 
-        imageTagService = new ImageTagServiceImpl(requestGlobals, messages);
+        imageTagService = new ImageTagServiceImpl(requestGlobals, messages, "/test-context");
     }
 
     @DataProvider

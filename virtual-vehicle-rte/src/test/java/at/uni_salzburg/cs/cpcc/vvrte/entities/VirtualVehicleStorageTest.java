@@ -24,7 +24,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Date;
 
-import org.hibernate.util.SerializationHelper;
+import org.hibernate.internal.util.SerializationHelper;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
 import org.testng.annotations.BeforeMethod;

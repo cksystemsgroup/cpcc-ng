@@ -1,7 +1,7 @@
 /*
  * This code is part of the CPCC-NG project.
  *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+ * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.core.services;
 
-import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +27,8 @@ import java.util.Date;
 
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.json.JSONException;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -182,10 +183,10 @@ public class CoreJsonConverterTest
     }
 
     @Test(dataProvider = "singleVehicleDataProvider")
-    public void shouldConvertRealVehicles(RealVehicle vehicle, String expectedJsonString)
+    public void shouldConvertRealVehicles(RealVehicle vehicle, String expectedJsonString) throws JSONException
     {
         JSONObject result = converter.toJson(false, vehicle);
-        assertThat(result.toString(true)).isNotNull().isEqualTo(expectedJsonString);
+        JSONAssert.assertEquals(expectedJsonString, result.toString(true), false);
     }
 
     @DataProvider
@@ -308,8 +309,9 @@ public class CoreJsonConverterTest
 
     @Test(dataProvider = "multiVehicleDataProvider")
     public void shouldConvertRealVehicleArrays(RealVehicle[] vehicles, String expectedJsonString)
+        throws JSONException
     {
         JSONArray result = converter.toJsonArray(false, vehicles);
-        assertThat(result.toString(true)).isNotNull().isEqualTo(expectedJsonString);
+        JSONAssert.assertEquals(expectedJsonString, result.toString(true), false);
     }
 }

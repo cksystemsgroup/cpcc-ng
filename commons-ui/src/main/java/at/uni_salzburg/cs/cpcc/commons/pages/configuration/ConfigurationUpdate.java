@@ -24,8 +24,6 @@ import java.io.InputStream;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.tapestry5.EventConstants;
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.services.RequestGlobals;
 
@@ -36,16 +34,15 @@ import at.uni_salzburg.cs.cpcc.core.utils.ByteArrayStreamResponse;
  * ConfigurationUpdate
  */
 public class ConfigurationUpdate
-{    
+{
     @Inject
     private RequestGlobals requestGlobals;
 
     @Inject
     private ConfigurationSynchronizer synchronizer;
 
-    @OnEvent(value = EventConstants.ACTIVATE)
     @CommitAfter
-    private Object activate() throws Exception
+    private Object onActivate() throws Exception
     {
         InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();
         byte[] requestData = IOUtils.toByteArray(inputStream);

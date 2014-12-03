@@ -1,7 +1,7 @@
 /*
  * This code is part of the CPCC-NG project.
  *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+ * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,9 @@ package at.uni_salzburg.cs.cpcc.commons.services.image;
 
 import java.awt.Dimension;
 
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.RequestGlobals;
 
 import sensor_msgs.Image;
@@ -47,9 +49,10 @@ public class ImageTagServiceImpl implements ImageTagService
      * @param requestGlobals the request globals.
      * @param messages the messages service.
      */
-    public ImageTagServiceImpl(RequestGlobals requestGlobals, Messages messages)
+    public ImageTagServiceImpl(RequestGlobals requestGlobals, Messages messages
+        , @Symbol(SymbolConstants.CONTEXT_PATH) String contextPath)
     {
-        this.contextPath = requestGlobals.getRequest().getContextPath();
+        this.contextPath = contextPath; // requestGlobals.getRequest().getContextPath();
         this.messages = messages;
     }
 
@@ -75,7 +78,7 @@ public class ImageTagServiceImpl implements ImageTagService
         String alt = messages.get(ROS_CAMERA_IMAGE_TAG_ALT);
         String title = messages.get(ROS_CAMERA_IMAGE_TAG_TITLE);
         long time = System.currentTimeMillis();
-        
+
         return String.format(ROS_CAMERA_IMAGE_TAG, contextPath, ROS_CAMERA_IMAGE, param, time, width, height, alt,
             title);
     }

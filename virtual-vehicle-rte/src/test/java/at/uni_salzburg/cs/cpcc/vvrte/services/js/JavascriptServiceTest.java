@@ -19,8 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
@@ -33,7 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.hibernate.util.SerializationHelper;
+import org.fest.assertions.api.Fail;
+import org.hibernate.internal.util.SerializationHelper;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
@@ -80,10 +79,16 @@ public class JavascriptServiceTest
     public void shouldDenyWrongApiVersion() throws InterruptedException, IOException
     {
         JavascriptService jss = new JavascriptServiceImpl(null);
-        catchException(jss).createWorker("function f(x){return x+1} f(7)", 1000);
 
-        assertThat(caughtException()).isInstanceOf(IOException.class);
-        assertThat(caughtException().getMessage()).isEqualTo("Can not handle API version 1000");
+        try
+        {
+            jss.createWorker("function f(x){return x+1} f(7)", 1000);
+            Fail.failBecauseExceptionWasNotThrown(IOException.class);
+        }
+        catch (IOException e)
+        {
+            assertThat(e.getMessage()).isEqualTo("Can not handle API version 1000");
+        }
     }
 
     @Test
@@ -96,7 +101,7 @@ public class JavascriptServiceTest
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream stdOut = new PrintStream(out, true);
         VvRteFunctions.setStdOut(stdOut);
-        
+
         InputStream scriptStream = this.getClass().getResourceAsStream("simple-vv.js");
         String script = IOUtils.toString(scriptStream, "UTF-8");
         assertThat(script).isNotNull().isNotEmpty();
@@ -140,22 +145,22 @@ public class JavascriptServiceTest
         InputStream scriptStream = this.getClass().getResourceAsStream("storage-test.js");
         String script = IOUtils.toString(scriptStream, "UTF-8");
         assertThat(script).isNotNull().isNotEmpty();
-        
+
         functions.setMigrate(false);
         JavascriptWorker x = jss.createWorker(script, 1);
         x.run();
         stdOut.flush();
-        
+
         // System.out.println("shouldHandleVvRte() result: '" + x.getResult() + "'");
         // System.out.println("shouldHandleVvRte() output: '" + out.toString("UTF-8") + "'");
         assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
-        
+
         InputStream resultStream = this.getClass().getResourceAsStream("storage-test-expected-result.txt");
         String expectedResult = IOUtils.toString(resultStream, "UTF-8");
-        
+
         assertThat(out.toString("UTF-8")).isNotNull().isEqualTo(expectedResult);
     }
-    
+
     @DataProvider
     public static Object[][] emptyScriptDataProvider()
     {
@@ -237,7 +242,7 @@ public class JavascriptServiceTest
     {
 
         private boolean migrate = false;
-        
+
         private Map<String, ScriptableObject> storageMap = new HashMap<String, ScriptableObject>();
 
         /**
@@ -401,21 +406,21 @@ public class JavascriptServiceTest
             // TODO Auto-generated method stub
             return true;
         }
-        
+
         @Override
         public ScriptableObject loadObject(String name)
         {
             System.out.println("loadObject " + name);
             return storageMap.get(name);
         }
-        
+
         @Override
         public void storeObject(String name, ScriptableObject obj)
         {
             System.out.println("storeObject " + name);
-            storageMap.put(name, (ScriptableObject)SerializationHelper.clone(obj));
+            storageMap.put(name, (ScriptableObject) SerializationHelper.clone(obj));
         }
-        
+
         @Override
         public List<String> listObjects(String pattern)
         {
@@ -430,7 +435,7 @@ public class JavascriptServiceTest
             }
             return result;
         }
-        
+
         @Override
         public void removeObject(String name)
         {

@@ -22,6 +22,7 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.ioc.Messages;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.pages.Vehicle;
@@ -40,6 +41,9 @@ public class AbstractModifyVehicle
     private static final String ERROR_NAME_REQUIRED = "error.name.required";
     private static final String ERROR_CODE_REQUIRED = "error.code.required";
     private static final String ERROR_API_VERSION_REQUIRED = "error.api.version.required";
+    
+    @Inject
+    protected Session session;
     
     @Inject
     protected VvRteRepository repository;
@@ -69,10 +73,10 @@ public class AbstractModifyVehicle
     @OnEvent(SUCCESS)
     protected Object storeVehicle()
     {
-        Transaction t = repository.getSession().getTransaction();
+        Transaction t = session.getTransaction();
         t.begin();
         vehicle.setCode(vehicle.getCode().trim());
-        repository.saveOrUpdate(vehicle);
+        session.saveOrUpdate(vehicle);
         t.commit();
         
         rvss.notifyConfigurationChange();

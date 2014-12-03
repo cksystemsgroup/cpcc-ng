@@ -44,7 +44,8 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
-import org.hibernate.util.SerializationHelper;
+import org.hibernate.Session;
+import org.hibernate.internal.util.SerializationHelper;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.mozilla.javascript.NativeObject;
@@ -69,6 +70,7 @@ public class VirtualVehicleMigratorTest
     private VvRteRepository repo;
     private VirtualVehicleMigrator migrator;
     private CommunicationService com;
+    private Session session;
     private QueryManager qm;
     private Parameter paramChunkSize;
 
@@ -81,6 +83,8 @@ public class VirtualVehicleMigratorTest
     public void setUp()
     {
         paramChunkSize = mock(Parameter.class);
+        
+        session = mock(Session.class);
 
         qm = mock(QueryManager.class);
         when(qm.findParameterByName(eq(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE), anyString()))
@@ -88,7 +92,7 @@ public class VirtualVehicleMigratorTest
 
         repo = mock(VvRteRepository.class);
 
-        when(repo.getQueryManager()).thenReturn(qm);
+        // when(repo.getQueryManager()).thenReturn(qm);
 
         setUpVv1();
         setUpVv2();
@@ -96,7 +100,7 @@ public class VirtualVehicleMigratorTest
 
         com = mock(CommunicationService.class);
 
-        migrator = new VirtualVehicleMigratorImpl(repo, com);
+        migrator = new VirtualVehicleMigratorImpl(repo, com, qm, session);
         assertThat(migrator).isNotNull();
     }
 
@@ -371,7 +375,7 @@ public class VirtualVehicleMigratorTest
                 }
                 return null;
             }
-        }).when(repo).saveOrUpdate(anyObject());
+        }).when(session).saveOrUpdate(anyObject());
 
         when(repo.findStorageItemByVirtualVehicleAndName(any(VirtualVehicle.class), anyString()))
             .thenAnswer(new Answer<VirtualVehicleStorage>()

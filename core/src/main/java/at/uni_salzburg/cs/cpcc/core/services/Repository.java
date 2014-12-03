@@ -21,8 +21,6 @@ package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.util.Collection;
 
-import org.hibernate.Session;
-
 /**
  * Repository
  */
@@ -36,12 +34,12 @@ public interface Repository
     /**
      * @param o the database object to be saved.
      */
-    void saveOrUpdate(Object o);
+    // void saveOrUpdate(Object o);
 
     /**
      * @param o the database object to be deleted.
      */
-    void delete(Object o);
+    // void delete(Object o);
 
     /**
      * @param list the database objects to be deleted.
@@ -51,5 +49,5 @@ public interface Repository
     /**
      * @return the session
      */
-    Session getSession();
+    // Session getSession();
 }

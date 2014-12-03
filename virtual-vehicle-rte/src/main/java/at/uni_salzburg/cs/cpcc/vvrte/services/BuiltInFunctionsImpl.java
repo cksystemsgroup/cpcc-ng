@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
@@ -54,7 +55,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private TaskAnalyzer taskAnalyzer;
     private VvRteRepository vvRteRepo;
     private QueryManager qm;
-    
+    private Session session;
+
     /**
      * @param rns the ROS node service.
      * @param opts the options parser service-
@@ -66,7 +68,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      */
     public BuiltInFunctionsImpl(RosNodeService rns, OptionsParserService opts, MessageConverter conv,
         VirtualVehicleMapper mapper, TaskExecutionService taskExecutor, TaskAnalyzer taskAnalyzer,
-        VvRteRepository vvRteRepo)
+        VvRteRepository vvRteRepo, QueryManager qm, Session session)
     {
         this.rns = rns;
         this.opts = opts;
@@ -75,7 +77,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         this.taskExecutor = taskExecutor;
         this.taskAnalyzer = taskAnalyzer;
         this.vvRteRepo = vvRteRepo;
-        this.qm = vvRteRepo.getQueryManager();
+        this.qm = qm; // vvRteRepo.getQueryManager();
+        this.session = session;
     }
 
     /**
@@ -317,8 +320,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         item.setModificationTime(new Date());
         item.setContent(obj);
 
-        Transaction t = vvRteRepo.getSession().beginTransaction();
-        vvRteRepo.saveOrUpdate(item);
+        Transaction t = session.beginTransaction();
+        session.saveOrUpdate(item);
         t.commit();
     }
 
@@ -335,8 +338,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             return;
         }
 
-        Transaction t = vvRteRepo.getSession().beginTransaction();
-        vvRteRepo.delete(item);
+        Transaction t = session.beginTransaction();
+        session.delete(item);
         t.commit();
     }
 

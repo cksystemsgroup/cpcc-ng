@@ -19,8 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.task;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -30,6 +28,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import java.lang.reflect.Method;
 import java.util.TimerTask;
 
+import org.fest.assertions.api.Fail;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -157,13 +156,18 @@ public class TimerServiceTest
     public void shouldScheduleOneTaskOnlyOnce() throws InterruptedException
     {
         timerService.periodicSchedule(timerTaskA, 0, 200);
-        catchException(timerService).periodicSchedule(timerTaskA, 0, 1000);
 
-        assertThat(caughtException())
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("TimerTask already has a schedule.");
+        try
+        {
+            timerService.periodicSchedule(timerTaskA, 0, 1000);
+            Fail.failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertThat(e).hasMessage("TimerTask already has a schedule.");
+        }
     }
-    
+
     @Test
     public void shouldNotCancelUnscheduledTask()
     {

@@ -19,29 +19,73 @@
  */
 package at.uni_salzburg.cs.cpcc.gs.pages;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
-import org.apache.tapestry5.annotations.SetupRender;
-import org.apache.tapestry5.services.javascript.JavaScriptSupport;
-
-import at.uni_salzburg.cs.cpcc.commons.pages.Viewer;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 
 /**
  * GsViewer
  */
-public class GsViewer extends Viewer
+public class GsViewer
 {
     @Inject
-    private JavaScriptSupport js;
+    private QueryManager qm;
 
-    /**
-     * import the Map JavaScript stack.
-     */
-    @SetupRender
-    public void importStack()
+    public String getMapCenter()
     {
-        super.importStack();
-        js.importStack("RealVehicle");
-        js.addScript("realVehicleInit();");
+        return "[37.8085124939787,-122.42505311965941]";
+    }
+
+    public String getZoomLevel()
+    {
+        return "17";
+    }
+
+    //    public JSONObject getRegions()
+    //    {
+    //        JSONObject obj = new JSONObject();
+    //
+    //        List<RealVehicle> rvList = qm.findAllRealVehicles();
+    //        for (RealVehicle rv : rvList)
+    //        {
+    //            obj.put(rv.getName(), new JSONObject(rv.getAreaOfOperation()));
+    //        }
+    //        
+    //        System.out.println("getRegions: " + obj.toCompactString());
+    //
+    //        return obj;
+    //    }
+
+    public String getRegions()
+    {
+        StringBuilder b = new StringBuilder();
+
+        List<RealVehicle> rvList = qm.findAllRealVehicles();
+        boolean first = true;
+
+        b.append("{");
+        for (RealVehicle rv : rvList)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                b.append(",");
+            }
+            b.append("\"").append(rv.getName()).append("\":").append(rv.getAreaOfOperation());
+        }
+        b.append("}");
+
+        return b.toString();
+    }
+
+    public String getVehicles()
+    {
+        return "{}";
     }
 }

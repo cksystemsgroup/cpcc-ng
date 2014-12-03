@@ -28,7 +28,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Type;
-import org.hibernate.util.SerializationHelper;
+import org.hibernate.internal.util.SerializationHelper;
 import org.mozilla.javascript.ScriptableObject;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

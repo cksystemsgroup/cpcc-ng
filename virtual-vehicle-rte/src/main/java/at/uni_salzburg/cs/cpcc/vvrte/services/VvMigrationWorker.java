@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ public class VvMigrationWorker extends Thread
     private VvRteRepository vvRepository;
     private CommunicationService com;
     private VirtualVehicleMigrator migrator;
+    private Session session;
 
     /**
      * @param vehicle the virtual vehicle to be migrated.
@@ -55,12 +57,13 @@ public class VvMigrationWorker extends Thread
      * @param migrator the migration service.
      */
     public VvMigrationWorker(VirtualVehicle vehicle, VvRteRepository vvRepository, CommunicationService com,
-        VirtualVehicleMigrator migrator)
+        VirtualVehicleMigrator migrator, Session session)
     {
         this.vehicle = vehicle;
         this.vvRepository = vvRepository;
         this.com = com;
         this.migrator = migrator;
+        this.session = session;
     }
 
     /**
@@ -76,13 +79,13 @@ public class VvMigrationWorker extends Thread
 
         setName("MIG-" + vehicle.getName() + "-" + vehicle.getMigrationDestination().getName());
 
-        Transaction transaction = vvRepository.getSession().beginTransaction();
+        Transaction transaction = session.beginTransaction();
         vehicle.setState(VirtualVehicleState.MIGRATING);
         vehicle.setMigrationStartTime(new Date());
-        vvRepository.saveOrUpdate(vehicle);
+        session.saveOrUpdate(vehicle);
         transaction.commit();
 
-        transaction = vvRepository.getSession().beginTransaction();
+        transaction = session.beginTransaction();
 
         try
         {
@@ -119,7 +122,7 @@ public class VvMigrationWorker extends Thread
             else
             {
                 vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-                vvRepository.saveOrUpdate(vehicle);
+                session.saveOrUpdate(vehicle);
             }
 
             transaction.commit();

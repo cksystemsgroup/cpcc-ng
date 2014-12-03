@@ -1,57 +1,66 @@
 <html t:type="layout" title="${message:realVehicleOverview}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<br />
-<section id="buttons">
-	<a t:type="pagelink" t:page="commons/rv/new" href="#"
-		class="btn btn-primary">${message:createNewRealVehicle}</a>
-</section>
+<!-- <div class="row"> -->
+<!-- 	<div class="col-md-12"> -->
+<t:PageLink t:page="commons/rv/new" href="#" class="btn btn-primary">${message:createNewRealVehicle}</t:PageLink>
+<!-- 	</div> -->
+<!-- </div> -->
 
-<section id="realVehicleOverview">
-	<h3>${message:realVehicleOverview}</h3>
-	<table t:type="grid" t:source="realVehicleList" t:row="realVehicle" t:exclude="areaOfOperation"
-		t:add="actions"
-		class="table table-striped table-condensed topic-table">
+<!-- <div class="row"> -->
+<!-- 	<div class="col-md-12"> -->
+<h4>${message:realVehicleOverview}</h4>
 
-		<p:urlCell>
-			<a href="${realVehicle.url}" target="_blank">${realVehicle.url}</a>
-		</p:urlCell>
+<t:Grid t:source="realVehicleList" t:row="realVehicle"
+	t:exclude="areaOfOperation" t:add="actions"
+	class="table table-striped table-condensed topic-table">
 
-		<p:lastUpdateCell>
-			<t:output t:format="${message:dateFormat}"
-				t:value="realVehicle.lastUpdate" />
-		</p:lastUpdateCell>
+	<p:urlCell>
+		<a href="${realVehicle.url}" target="_blank">${realVehicle.url}</a>
+	</p:urlCell>
 
-		<p:actionsCell>
-			<a t:type="pagelink" t:page="commons/rv/edit"
-				t:context="realVehicle.id" href="#"
-				t:title="${message:editRealVehicle}"> <i class="icon-pencil"></i>
-			</a>
-			&nbsp;
-			<a t:type="pagelink" t:page="commons/rv/editAreaOfOperations"
-				t:context="realVehicle.id" href="#"
-				t:title="${message:editRealVehicleAreaOfOperations}"> <i class="icon-edit"></i>
-			</a>
-			&nbsp;
-			<t:if test="realVehicle.deleted">
-				<a t:type="eventlink" t:event="activateRealVehicle"
+	<p:lastUpdateCell>
+		<t:output t:format="message:dateFormat"
+			t:value="realVehicle.lastUpdate" />
+	</p:lastUpdateCell>
+
+	<p:actionsCell>
+		<ul class="list-inline">
+			<li><t:PageLink t:page="commons/rv/edit"
 					t:context="realVehicle.id" href="#"
-					title="${message:activateRealVehicle}"> <i class="icon-ok-circle"></i>
-				</a>
-				<p:else>
-					<a t:type="eventlink" t:event="deactivateRealVehicle"
+					t:title="${message:editRealVehicle}">
+					<span class="glyphicon glyphicon-pencil" />
+				</t:PageLink></li>
+
+			<li><t:PageLink t:page="commons/rv/editAreaOfOperations"
+					t:context="realVehicle.id" href="#"
+					t:title="${message:editRealVehicleAreaOfOperations}">
+					<span class="glyphicon glyphicon-edit" />
+				</t:PageLink></li>
+
+			<t:if test="realVehicle.deleted">
+				<li><t:EventLink t:event="activateRealVehicle"
 						t:context="realVehicle.id" href="#"
-						title="${message:deactivateRealVehicle}"> <i class="icon-ban-circle"></i>
-					</a>
+						title="${message:activateRealVehicle}">
+						<span class="glyphicon glyphicon-ok-circle" />
+					</t:EventLink></li>
+				<p:else>
+					<li><t:EventLink t:event="deactivateRealVehicle"
+							t:context="realVehicle.id" href="#"
+							title="${message:deactivateRealVehicle}">
+							<span class="glyphicon glyphicon-ban-circle" />
+						</t:EventLink></li>
 				</p:else>
 			</t:if>
-		</p:actionsCell>
+		</ul>
+	</p:actionsCell>
 
-		<p:empty>
-			<p>${message:noRealVehicleFound}</p>
-		</p:empty>
-	</table>
-</section>
+	<p:empty>
+		<p>${message:noRealVehicleFound}</p>
+	</p:empty>
+</t:Grid>
+<!-- 	</div> -->
+<!-- </div> -->
 
 </html>

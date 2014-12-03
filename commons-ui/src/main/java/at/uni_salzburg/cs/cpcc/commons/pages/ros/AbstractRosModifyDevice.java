@@ -34,6 +34,7 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
+import org.hibernate.Session;
 
 import at.uni_salzburg.cs.cpcc.commons.pages.configuration.ConfigurationEdit;
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
@@ -54,6 +55,9 @@ public abstract class AbstractRosModifyDevice
     protected static final String ERROR_PARSING = "error.parsing";
     protected static final String ERROR_PARSING_SYNTAX = "error.parsing.syntax";
 
+    @Inject
+    protected Session session;
+    
     @Inject
     protected QueryManager qm;
 
@@ -85,7 +89,7 @@ public abstract class AbstractRosModifyDevice
             device.setTopicRoot("/" + device.getTopicRoot());
         }
 
-        qm.saveOrUpdate(device);
+        session.saveOrUpdate(device);
         qm.saveOrUpdateMappingAttributes(device);
         nodeService.updateDevice(device);
         nodeService.updateMappingAttributes(qm.findMappingAttributesByDevice(device));

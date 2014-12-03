@@ -24,12 +24,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
@@ -45,7 +45,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
 {
     private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleLauncherImpl.class);
 
-    private QueryManager qm;
+    // private QueryManager qm;
+    private Session session;
     private JavascriptService jss;
     private VirtualVehicleMigrator migrator;
     private Map<JavascriptWorker, VirtualVehicle> vehicleMap = new HashMap<JavascriptWorker, VirtualVehicle>();
@@ -55,9 +56,9 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      * @param jss the JavaScript service.
      * @param migrator the migration service.
      */
-    public VirtualVehicleLauncherImpl(QueryManager qm, JavascriptService jss, VirtualVehicleMigrator migrator)
+    public VirtualVehicleLauncherImpl(Session session, JavascriptService jss, VirtualVehicleMigrator migrator)
     {
-        this.qm = qm;
+        this.session = session;
         this.jss = jss;
         this.migrator = migrator;
 
@@ -85,7 +86,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         }
 
         vehicle.setStartTime(new Date());
-        qm.saveOrUpdate(vehicle);
+        session.saveOrUpdate(vehicle);
 
         startVehicle(vehicle, false);
     }
@@ -160,7 +161,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         {
             VirtualVehicleMappingDecision decision = null;
 
-            Transaction t = qm.getSession().beginTransaction();
+            Session newSession = session.getSessionFactory().openSession();
+            Transaction t = newSession.beginTransaction();
             vehicle.setState(vehicleState);
 
             switch (state)
@@ -193,9 +195,9 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
                     break;
             }
 
-            qm.getSession().saveOrUpdate(vehicle);
+            newSession.saveOrUpdate(vehicle);
             t.commit();
-            qm.getSession().flush();
+            newSession.flush();
 
             if (decision != null)
             {

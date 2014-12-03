@@ -31,6 +31,7 @@ import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.ioc.Messages;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
@@ -51,8 +52,11 @@ public class AbstractModifyRealVehicle
     protected static final String ERROR_REAL_VEHICLE_URL_ALREADY_EXISTS = "error.real.vehicle.url.already.exists";
 
     @Inject
-    protected QueryManager qm;
+    protected Session session;
 
+    @Inject
+    protected QueryManager qm;
+    
     @Inject
     protected OptionsParserService parserService;
 
@@ -78,10 +82,10 @@ public class AbstractModifyRealVehicle
     @OnEvent(SUCCESS)
     protected Object storeRealVehicle()
     {
-        Transaction t = qm.getSession().getTransaction();
+        Transaction t = session.getTransaction();
         t.begin();
         realVehicle.setLastUpdate(new Date());
-        qm.saveOrUpdate(realVehicle);
+        session.saveOrUpdate(realVehicle);
         rvss.notifyConfigurationChange();
         t.commit();
         

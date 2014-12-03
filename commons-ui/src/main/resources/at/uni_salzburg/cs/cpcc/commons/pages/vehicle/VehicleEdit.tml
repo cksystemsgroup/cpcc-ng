@@ -1,36 +1,51 @@
 <html t:type="layout" title="${message:editVehicle}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<section id="vehicleEdit">
-	<form t:type="form" t:validate="vehicle" t:id="form">
-		<t:errors />
+<!-- <div class="row"> -->
+<!-- 	<div class="col-md-12"> -->
+<h4>${message:editVehicle}</h4>
 
-		<div t:type="beaneditor" t:object="vehicle"
-			t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime" t:reorder="name,code">
+<t:Form t:validate="vehicle" t:id="form">
+	<t:Errors />
 
-			<p:name>
-				<t:label t:type="label" for="name" />
-				<input t:type="TextField" t:id="name" t:class="span8"
-					value="vehicle.name" t:validate="maxlength=36" size="30" />
-			</p:name>
+	<t:BeanEditor t:object="vehicle"
+		t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime"
+		t:reorder="name,code">
 
-			<p:code>
-				<t:label for="code" />
-				<t:textarea t:id="code" rows="25" t:class="span8"
-					t:value="vehicle.code" t:mixins="ace/Ace"
-					parameters="{'mode':'javascript','theme':'eclipse','gutter':'true','softWrap':'off','keybindings':'vim','showPrintMargin':'false','useSoftTabs':'true','showInvisibles':'false'}" />
-			</p:code>
-		</div>
+		<p:name>
+			<t:Label t:type="label" for="name" />
+			<t:TextField t:id="name" value="vehicle.name"
+				t:validate="maxlength=36" />
+		</p:name>
 
-		<div class="form-actions">
-			<input type="submit" t:type="submit" t:value="${message:btn.commit}"
-				t:class="btn btn-primary" /> <a t:type="pagelink" t:page="commons/vehicle"
-				t:class="btn">${message:btn.cancel}</a>
-		</div>
-	</form>
-</section>
+		<p:code>
+			<t:Label for="code" />
+			<!-- 
+			<t:textarea t:id="code" rows="25" t:value="vehicle.code"
+				t:mixins="ace/Ace"
+				parameters="{'mode':'javascript','theme':'eclipse','gutter':'true','softWrap':'off','keybindings':'vim','showPrintMargin':'false','useSoftTabs':'true','showInvisibles':'false'}" />
+			-->
+			<t:TextArea t:id="code" rows="25" t:value="vehicle.code"
+				t:clientId="buggerit" t:mixins="ace/AceEditor"
+				AceEditor.readOnly="false" AceEditor.theme="chrome"
+				AceEditor.mode="javascript" AceEditor.animatedScroll="true"
+				AceEditor.hScrollBarAlwaysVisible="false" AceEditor.padding="0"
+				AceEditor.printMarginColumn="80" AceEditor.showGutter="true"
+				AceEditor.showInvisibles="false" AceEditor.showPrintMargin="false" />
+		</p:code>
+	</t:BeanEditor>
 
-
+	<div class="form-actions">
+		<ul class="list-inline">
+			<li><t:Submit t:value="${message:btn.commit}"
+					t:class="btn btn-primary" /></li>
+			<li><t:PageLink t:page="commons/vehicle"
+					t:class="btn btn-default">${message:btn.cancel}</t:PageLink></li>
+		</ul>
+	</div>
+</t:Form>
+<!-- 	</div> -->
+<!-- </div> -->
 
 </html>

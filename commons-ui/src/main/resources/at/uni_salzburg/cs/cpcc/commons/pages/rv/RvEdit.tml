@@ -1,44 +1,50 @@
 <html t:type="layout" title="${message:realVehicleEdit}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<section id="realVehicleEdit">
-	<form t:type="form" t:validate="realVehicle" t:id="form">
-		<t:errors />
+<!-- <div class="row"> -->
+<!-- 	<div class="col-md-12"> -->
+<t:Form t:validate="realVehicle" t:id="form">
+	<t:Errors />
 
-		<div t:type="beaneditor" t:object="realVehicle" t:exclude="id,lastUpdate,areaOfOperation"
-			t:reorder="name,type,url">
-		
-			<p:name>
-				<t:label t:type="label" for="name" />
-				<input t:type="TextField" t:id="name" t:class="span4"
-					value="realVehicle.name" t:validate="maxlength=50" size="30" />
-			</p:name>
-			
-			<p:type>
-				<t:label t:type="label" for="type" />
-				<t:select t:type="select" t:id="type" t:class="span4" t:value="realVehicle.type" />
-			</p:type>
-			
-			<p:url>
-				<t:label t:type="label" for="url" />
-				<input t:type="TextField" t:id="url" t:class="span4"
-					value="realVehicle.url" t:validate="maxlength=255" size="30" />
-			</p:url>
-			
-			<!--
-			<p:areaOfOperation>
-				<t:label for="areaOfOperation" />
-				<t:textarea t:id="areaOfOperation" rows="5" t:class="span4" value="realVehicle.areaOfOperation" />
-			</p:areaOfOperation>
-			-->
-		</div>
+	<div t:type="beaneditor" t:object="realVehicle"
+		t:exclude="id,lastUpdate,areaOfOperation" t:reorder="name,type,url">
 
-		<div class="form-actions">
-			<input type="submit" t:type="submit" t:value="${message:btn.commit}" t:class="btn btn-primary" />
-			<a t:type="pagelink" t:page="commons/rv/list" t:class="btn">${message:btn.cancel}</a>
-		</div>
-	</form>
-</section>
+		<p:name>
+			<t:Label t:type="label" for="name" />
+			<t:TextField t:id="name" value="realVehicle.name"
+				t:validate="maxlength=50" />
+		</p:name>
+
+		<p:type>
+			<t:Label t:type="label" for="type" />
+			<t:Select t:type="select" t:id="type" t:value="realVehicle.type" />
+		</p:type>
+
+		<p:url>
+			<t:label t:type="label" for="url" />
+			<t:TextField t:id="url" value="realVehicle.url"
+				t:validate="maxlength=255" />
+		</p:url>
+
+		<!--
+		<p:areaOfOperation>
+			<t:label for="areaOfOperation" />
+			<t:textarea t:id="areaOfOperation" rows="5" t:class="span4" value="realVehicle.areaOfOperation" />
+		</p:areaOfOperation>
+		-->
+	</div>
+
+	<div class="form-actions">
+		<ul class="list-inline">
+			<li><t:Submit t:type="submit" t:value="${message:btn.commit}"
+					t:class="btn btn-primary" /></li>
+			<li><t:PageLink t:page="commons/rv/list"
+					t:class="btn btn-default">${message:btn.cancel}</t:PageLink></li>
+		</ul>
+	</div>
+</t:Form>
+<!-- 	</div> -->
+<!-- </div> -->
 
 </html>

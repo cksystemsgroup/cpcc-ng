@@ -34,7 +34,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>c3p0</groupId>
+			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
 		</dependency>
 
@@ -62,11 +62,11 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.googlecode.catch-exception</groupId>
-			<artifactId>catch-exception</artifactId>
-			<scope>test</scope>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>com.googlecode.catch-exception</groupId> -->
+		<!-- <artifactId>catch-exception</artifactId> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
 	</dependencies>
 
 	<build>

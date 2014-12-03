@@ -23,13 +23,12 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.tapestry5.ValidationException;
+import org.fest.assertions.api.Fail;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -48,7 +47,7 @@ public class UriTranslatorTest
     {
         translator = spy(new UriTranslator(null));
     }
-    
+
     @DataProvider
     public Object[][] nameDataProvider()
     {
@@ -98,7 +97,7 @@ public class UriTranslatorTest
     {
         assertThat(translator.getType()).isInstanceOf(Class.class).isEqualTo(URI.class);
     }
-    
+
     @Test
     public void shouldHaveASpecificMessageKey()
     {
@@ -110,16 +109,24 @@ public class UriTranslatorTest
     {
         translator.parseClient(null, uri == null ? null : uri.toString(), null);
     }
-    
+
     @Test
     public void parseClientShouldThrowUSEOnInvalidUri() throws ValidationException
     {
         translator = new UriTranslator(null);
         String message = "an exception message";
-        catchException(translator).parseClient(null, "lala:\\buggerit", message);
-        assertThat(caughtException()).isInstanceOf(ValidationException.class).hasMessage(message);
+
+        try
+        {
+            translator.parseClient(null, "lala:\\buggerit", message);
+            Fail.failBecauseExceptionWasNotThrown(ValidationException.class);
+        }
+        catch (ValidationException e)
+        {
+            assertThat(e).hasMessage(message);
+        }
     }
-    
+
     @Test
     public void shouldRenderNothing()
     {

@@ -19,8 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.ros.sim.osm;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.times;
@@ -43,6 +41,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.easymock.EasyMock;
+import org.fest.assertions.api.Fail;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.easymock.PowerMock;
@@ -71,11 +70,11 @@ public class TileCacheTest extends PowerMockTestCase
     private File tempDirectory;
 
     private CloseableHttpClient client;
-    
+
     private HttpEntity entity;
-    
+
     private CloseableHttpResponse response;
-    
+
     private String responseData = "this is just a test.";
 
     private StatusLine statusLine200ok = new StatusLine()
@@ -132,10 +131,10 @@ public class TileCacheTest extends PowerMockTestCase
         PowerMockito.doReturn("http://my.tile.server/%1$d/%2$d/%3$d.png").when(config).getTileServerUrl();
 
         tileCache = new TileCache(config);
-        
+
         entity = Mockito.mock(HttpEntity.class);
         when(entity.getContent()).thenReturn(new ByteArrayInputStream(responseData.getBytes("UTF-8")));
-        
+
         response = PowerMockito.mock(CloseableHttpResponse.class);
         PowerMockito.when(response.getStatusLine()).thenReturn(statusLine200ok);
         PowerMockito.when(response.getEntity()).thenReturn(entity);
@@ -178,18 +177,18 @@ public class TileCacheTest extends PowerMockTestCase
         assertThat(file.exists()).isTrue();
         assertThat(tempDirectory.exists()).isTrue();
     }
-    
+
     @Test(dataProvider = "tileCoordinatesDataProvider")
     public void shouldCreateTileCacheFile(int zoom, int x, int y) throws Exception
     {
         assertThat(tileCache).isNotNull();
 
         File file = tileCache.getTile(zoom, x, y);
-        
+
         String content = IOUtils.toString(new FileInputStream(file), "UTF-8");
         assertThat(content).isNotNull().isEqualTo(responseData);
     }
-    
+
     @Test(dataProvider = "tileCoordinatesDataProvider")
     public void shouldLoadCachedTileCacheFile(int zoom, int x, int y) throws Exception
     {
@@ -199,13 +198,13 @@ public class TileCacheTest extends PowerMockTestCase
         String content1 = IOUtils.toString(new FileInputStream(file1), "UTF-8");
         assertThat(content1).isNotNull().isEqualTo(responseData);
         Mockito.verify(client).execute((HttpUriRequest) anyObject());
-        
+
         File file2 = tileCache.getTile(zoom, x, y);
         String content2 = IOUtils.toString(new FileInputStream(file2), "UTF-8");
         assertThat(content2).isNotNull().isEqualTo(responseData);
         Mockito.verify(client).execute((HttpUriRequest) anyObject());
     }
-    
+
     @Test(dataProvider = "tileCoordinatesDataProvider")
     public void shouldRecognizeExistingTileCacheFolder(int zoom, int x, int y) throws Exception
     {
@@ -215,45 +214,57 @@ public class TileCacheTest extends PowerMockTestCase
         String content1 = IOUtils.toString(new FileInputStream(file1), "UTF-8");
         assertThat(content1).isNotNull().isEqualTo(responseData);
         Mockito.verify(client).execute((HttpUriRequest) anyObject());
-        
+
         when(entity.getContent()).thenReturn(new ByteArrayInputStream(responseData.getBytes("UTF-8")));
-        
-        File file2 = tileCache.getTile(zoom, x, y+1);
+
+        File file2 = tileCache.getTile(zoom, x, y + 1);
         String content2 = IOUtils.toString(new FileInputStream(file2), "UTF-8");
         assertThat(content2).isNotNull().isEqualTo(responseData);
         Mockito.verify(client, times(2)).execute((HttpUriRequest) anyObject());
     }
-    
+
     @Test(dataProvider = "tileCoordinatesDataProvider")
     public void shouldHandleIOEAtDownload(int zoom, int x, int y) throws Exception
     {
         String msg = "thrown on purpose";
         assertThat(tileCache).isNotNull();
         PowerMockito.doThrow(new IOException(msg)).when(client).execute((HttpUriRequest) anyObject());
-        
-        catchException(tileCache).getTile(zoom, x, y);
-        
-        assertThat(caughtException()).isInstanceOf(IOException.class).hasMessage(msg);
+
+        try
+        {
+            tileCache.getTile(zoom, x, y);
+            Fail.failBecauseExceptionWasNotThrown(IOException.class);
+        }
+        catch (IOException e)
+        {
+            assertThat(e).hasMessage(msg);
+        }
     }
-    
+
     @Test(dataProvider = "tileCoordinatesDataProvider")
     public void shouldHandleDownLoadErrors(int zoom, int x, int y) throws IOException
     {
         PowerMockito.when(response.getStatusLine()).thenReturn(statusLine503error);
 
-        catchException(tileCache).getTile(zoom, x, y);
-
-        String msg = String.format("Can not load URL 'http://my.tile.server/%d/%d/%d.png' "
-            + "code=503 (503 Service Unavailable)", zoom, x, y);
-        assertThat(caughtException()).isInstanceOf(IOException.class).hasMessage(msg);
+        try
+        {
+            tileCache.getTile(zoom, x, y);
+            Fail.failBecauseExceptionWasNotThrown(IOException.class);
+        }
+        catch (IOException e)
+        {
+            String msg = String.format("Can not load URL 'http://my.tile.server/%d/%d/%d.png' "
+                + "code=503 (503 Service Unavailable)", zoom, x, y);
+            assertThat(e).hasMessage(msg);
+        }
     }
-    
+
     @Test(dataProvider = "tileCoordinatesDataProvider")
     public void shouldHandleNullResponseWithoutExceptions(int zoom, int x, int y) throws IOException
     {
         PowerMockito.when(response.getEntity()).thenReturn(null);
-//        when(entity.getContent()).thenReturn(null);
-        
+        //        when(entity.getContent()).thenReturn(null);
+
         tileCache.getTile(zoom, x, y);
     }
 }

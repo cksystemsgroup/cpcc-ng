@@ -1,21 +1,11 @@
 /*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * This code is part of the CPCC-NG project. Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com> This program
+ * is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
@@ -34,11 +24,13 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
 import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
@@ -53,21 +45,26 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private VvRteRepository vvRepository;
     private CommunicationService com;
     private Set<VirtualVehicleListener> listenerSet = new HashSet<VirtualVehicleListener>();
+    private QueryManager qm;
+    private Session session;
 
     /**
      * @param vvRepository the virtual vehicle repository.
      * @param com the communication service.
      */
-    public VirtualVehicleMigratorImpl(VvRteRepository vvRepository, CommunicationService com)
+    public VirtualVehicleMigratorImpl(VvRteRepository vvRepository, CommunicationService com, QueryManager qm
+        , Session session)
     {
         this.vvRepository = vvRepository;
         this.com = com;
+        this.qm = qm;
+        this.session = session;
     }
 
     @Override
     public void initiateMigration(VirtualVehicle vehicle)
     {
-        VvMigrationWorker worker = new VvMigrationWorker(vehicle, vvRepository, com, this);
+        VvMigrationWorker worker = new VvMigrationWorker(vehicle, vvRepository, com, this, session);
         worker.start();
     }
 
@@ -98,8 +95,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     public byte[] findChunk(VirtualVehicle virtualVehicle, String lastStorageName, int chunkNumber)
         throws IOException, ArchiveException
     {
-        Parameter paramChunkSize = vvRepository.getQueryManager()
-            .findParameterByName(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE, "10");
+        Parameter paramChunkSize = qm.findParameterByName(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE, "10");
 
         int chunkSize = Integer.parseInt(paramChunkSize.getValue());
 
@@ -350,13 +346,13 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         {
             byte[] continuation = IOUtils.toByteArray(inStream);
             virtualVehicleHolder.getVirtualVehicle().setContinuation(continuation);
-            vvRepository.saveOrUpdate(virtualVehicleHolder.getVirtualVehicle());
+            session.saveOrUpdate(virtualVehicleHolder.getVirtualVehicle());
         }
         else if ("vv/vv-source.js".equals(entry.getName()))
         {
             byte[] source = IOUtils.toByteArray(inStream);
             virtualVehicleHolder.getVirtualVehicle().setCode(new String(source, "UTF-8"));
-            vvRepository.saveOrUpdate(virtualVehicleHolder.getVirtualVehicle());
+            session.saveOrUpdate(virtualVehicleHolder.getVirtualVehicle());
         }
         else
         {
@@ -387,7 +383,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         }
 
         vv.setState(lastChunk ? VirtualVehicleState.MIGRATION_COMPLETED : VirtualVehicleState.MIGRATING);
-        vvRepository.saveOrUpdate(vv);
+        session.saveOrUpdate(vv);
 
         LOG.info("migration: " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last=" + lastChunk);
     }
@@ -419,7 +415,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         }
 
         vv.setMigrationDestination(null);
-        vvRepository.saveOrUpdate(vv);
+        session.saveOrUpdate(vv);
         return vv;
     }
 
@@ -445,7 +441,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         item.setModificationTime(entry.getModTime());
         item.setContentAsByteArray(IOUtils.toByteArray(inStream));
 
-        vvRepository.saveOrUpdate(item);
+        session.saveOrUpdate(item);
     }
 
     @Override

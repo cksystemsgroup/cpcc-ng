@@ -1,38 +1,45 @@
 <html t:type="layout" title="${message:rosEditDevice}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<section id="deviceEdit">
-	<form t:type="form" t:validate="device" t:id="form">
-		<t:errors />
+<!-- <section id="deviceEdit"> -->
+<t:Form t:validate="device" t:id="form">
+	<t:Errors />
 
-		<div t:type="beaneditor" t:object="device" t:exclude="id"
-			t:add="deviceTypeName"
+	<div class="form-group">
+		<t:BeanEditor t:object="device" t:exclude="id" t:add="deviceTypeName"
 			t:reorder="topicRoot,deviceTypeName,configuration">
+
 			<p:topicRoot>
-				<t:label t:type="label" for="topicRoot" />
-				<input t:type="TextField" t:id="topicRoot" t:class="span4"
-					value="device.topicRoot" t:validate="maxlength=100" size="30" />
+				<t:Label t:type="label" for="topicRoot" />
+				<input t:type="TextField" t:id="topicRoot" value="device.topicRoot"
+					t:validate="maxlength=100" />
 			</p:topicRoot>
+
 			<p:deviceTypeName>
-				<t:label t:type="label" for="deviceTypeName" />
-				<t:select t:type="select" t:id="deviceTypeName" t:class="span4"
+				<t:Label t:type="label" for="deviceTypeName" />
+				<t:select t:type="select" t:id="deviceTypeName"
 					t:model="deviceTypeNameSelectModel"
 					t:encoder="deviceTypeNameEncoder" t:value="device.type" />
 			</p:deviceTypeName>
+
 			<p:configuration>
-				<t:label for="configuration" />
-				<t:textarea t:id="configuration" rows="5" t:class="span4"
+				<t:Label for="configuration" />
+				<t:TextArea t:id="configuration" rows="5"
 					value="device.configuration" />
 			</p:configuration>
-		</div>
+		</t:BeanEditor>
+	</div>
 
-		<div class="form-actions">
-			<input type="submit" t:type="submit" t:value="${message:btn.commit}"
-				t:class="btn btn-primary" /> <a t:type="pagelink"
-				t:page="commons/configuration" t:class="btn">${message:btn.cancel}</a>
-		</div>
-	</form>
-</section>
+	<div class="form-actions">
+		<ul class="list-inline">
+			<li><t:Submit t:type="submit" t:value="${message:btn.commit}"
+					t:class="btn btn-primary" /></li>
+			<li><t:PageLink t:page="commons/configuration/edit"
+					t:class="btn btn-default">${message:btn.cancel}</t:PageLink></li>
+		</ul>
+	</div>
+</t:Form>
+<!-- </section> -->
 
 </html>

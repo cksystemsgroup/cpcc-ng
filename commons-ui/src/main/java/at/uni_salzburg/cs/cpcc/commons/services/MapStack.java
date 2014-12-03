@@ -19,14 +19,18 @@
  */
 package at.uni_salzburg.cs.cpcc.commons.services;
 
+import java.util.List;
+
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.internal.TapestryInternalUtils;
 import org.apache.tapestry5.services.AssetSource;
+import org.apache.tapestry5.services.javascript.JavaScriptAggregationStrategy;
 import org.apache.tapestry5.services.javascript.StylesheetLink;
 
 /**
  * MapStack
  */
+@Deprecated
 public class MapStack extends AbstractJavaScriptStack
 {
     /**
@@ -56,4 +60,19 @@ public class MapStack extends AbstractJavaScriptStack
             };
     }
 
+    @Override
+    public List<String> getModules()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public JavaScriptAggregationStrategy getJavaScriptAggregationStrategy()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    
 }

@@ -23,12 +23,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.core.services.AbstractRepository;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
@@ -40,22 +40,19 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
 {
     private static final Logger LOG = LoggerFactory.getLogger(VvRteRepositoryImpl.class);
 
-    private QueryManager qm;
-
     /**
      * @param qm the query manager
      */
-    public VvRteRepositoryImpl(QueryManager qm)
+    public VvRteRepositoryImpl(Session session)
     {
-        super(qm.getSession());
-        this.qm = qm;
+        super(session);
 
         resetVirtualVehicleStates();
     }
 
     private void resetVirtualVehicleStates()
     {
-        Transaction t = getSession().beginTransaction();
+        Transaction t = getSession().getSessionFactory().openSession().beginTransaction();
         getSession().createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
             .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED)
             .setParameter("oldState", VirtualVehicleState.MIGRATING)
@@ -63,14 +60,14 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
         t.commit();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public QueryManager getQueryManager()
-    {
-        return qm;
-    }
+//    /**
+//     * {@inheritDoc}
+//     */
+//    @Override
+//    public QueryManager getQueryManager()
+//    {
+//        return qm;
+//    }
 
     /**
      * {@inheritDoc}

@@ -21,11 +21,6 @@ package at.uni_salzburg.cs.cpcc.rv.services;
 
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.annotations.Contribute;
-
-import com.trsvax.bootstrap.environment.TableEnvironment;
-import com.trsvax.bootstrap.environment.TableValues;
-import com.trsvax.bootstrap.services.EnvironmentSetup;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to configure and extend
@@ -84,9 +79,9 @@ public final class AppModule
     /**
      * @param configuration the application configuration.
      */
-    @Contribute(EnvironmentSetup.class)
-    public static void provideEnvironmentSetup(MappedConfiguration<Class<?>, Object> configuration)
-    {
-        configuration.override(TableEnvironment.class, new TableValues(null).withType("table"));
-    }
+//    @Contribute(EnvironmentSetup.class)
+//    public static void provideEnvironmentSetup(MappedConfiguration<Class<?>, Object> configuration)
+//    {
+//        configuration.override(TableEnvironment.class, new TableValues(null).withType("table"));
+//    }
 }

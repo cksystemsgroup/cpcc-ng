@@ -1,26 +1,14 @@
 /*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * This code is part of the CPCC-NG project. Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com> This program
+ * is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 package at.uni_salzburg.cs.cpcc.core.services;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.TimerTask;
@@ -81,10 +69,16 @@ public class TimerServiceTest
         };
 
         timerService.periodicSchedule(timerTask, 0, 100);
-        catchException(timerService).periodicSchedule(timerTask, 0, 100);
 
-        assertThat(caughtException()).isNotNull().isInstanceOf(IllegalArgumentException.class);
-        assertThat(caughtException().getMessage()).isEqualTo("TimerTask already has a schedule.");
+        try
+        {
+            timerService.periodicSchedule(timerTask, 0, 100);
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertThat(e.getMessage()).isEqualTo("TimerTask already has a schedule.");
+        }
+
     }
 
     static int counter2 = 0;

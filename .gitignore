@@ -9,6 +9,7 @@
 /.settings
 /.tomcatplugin
 /bin
+build
 /logs
 /null
 /playground

@@ -1,26 +1,14 @@
 /*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * This code is part of the CPCC-NG project. Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com> This program
+ * is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 package at.uni_salzburg.cs.cpcc.gs.services;
 
-import static com.googlecode.catchexception.CatchException.catchException;
-import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -42,8 +30,10 @@ import java.util.TimerTask;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.tapestry5.json.JSONArray;
 import org.hibernate.Session;
+import org.json.JSONException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -136,6 +126,9 @@ public class ConfigurationSynchronizerTest
     private ArrayList<SensorDefinition> changedSDs;
     private ArrayList<SensorDefinition> removedSDs;
     private ArrayList<SensorDefinition> addedSDs;
+
+    private int transferCount;
+    private byte[] lastTransferData;
 
     @BeforeMethod
     public void setUp() throws ClientProtocolException, IOException
@@ -276,7 +269,7 @@ public class ConfigurationSynchronizerTest
         when(qm.findRealVehicleByName(rvNameParam.getValue())).thenReturn(gs1);
         when(qm.findAllRealVehicles()).thenReturn(new ArrayList<RealVehicle>(Arrays.asList(gs1, rv1, rv2, rv3, rv4)));
         session = mock(Session.class);
-        when(qm.getSession()).thenReturn(session);
+        // when(qm.getSession()).thenReturn(session);
 
         response.setStatus(Status.OK);
         response.setContent(null);
@@ -287,10 +280,13 @@ public class ConfigurationSynchronizerTest
             @Override
             public CommunicationResponse answer(InvocationOnMock invocation) throws Throwable
             {
+                ++transferCount;
                 //Object[] args = invocation.getArguments();
                 //RealVehicle syncRealVehicle = (RealVehicle) args[0];
                 //Connector syncConnector = (Connector) args[1];
                 //byte[] syncData = (byte[]) args[2];
+
+                lastTransferData = invocation.getArgumentAt(2, byte[].class);
                 return response;
             }
         }).when(com).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
@@ -299,7 +295,7 @@ public class ConfigurationSynchronizerTest
 
         RealVehicleStateService stateSrv = mock(RealVehicleStateService.class);
 
-        sync = new ConfigurationSynchronizerImpl(timerService, qm, com, jsonConv, stateSrv);
+        sync = new ConfigurationSynchronizerImpl(timerService, session, qm, com, jsonConv, stateSrv);
     }
 
     @Test
@@ -317,26 +313,26 @@ public class ConfigurationSynchronizerTest
                 Arrays.asList(sd1, sd2, sd3, sd4),
                 Arrays.asList(sd1new)
             },
-//            new Object[]{
-//                Arrays.asList(sd1, sd2, sd3, sd4),
-//                Arrays.asList(sd1new, sd2, sd3, sd4),
-//                new ArrayList<SensorDefinition>()
-//            },
-//            new Object[]{
-//                new ArrayList<SensorDefinition>(),
-//                Arrays.asList(sd1, sd2, sd3, sd4),
-//                new ArrayList<SensorDefinition>()
-//            },
-//            new Object[]{
-//                Arrays.asList(sd1, sd2, sd3, sd4),
-//                Arrays.asList(sd1, sd2, sd4),
-//                new ArrayList<SensorDefinition>()
-//            },
-//            new Object[]{
-//                Arrays.asList(sd1, sd2, sd4),
-//                Arrays.asList(sd1, sd2, sd3, sd4),
-//                new ArrayList<SensorDefinition>()
-//            },
+        //            new Object[]{
+        //                Arrays.asList(sd1, sd2, sd3, sd4),
+        //                Arrays.asList(sd1new, sd2, sd3, sd4),
+        //                new ArrayList<SensorDefinition>()
+        //            },
+        //            new Object[]{
+        //                new ArrayList<SensorDefinition>(),
+        //                Arrays.asList(sd1, sd2, sd3, sd4),
+        //                new ArrayList<SensorDefinition>()
+        //            },
+        //            new Object[]{
+        //                Arrays.asList(sd1, sd2, sd3, sd4),
+        //                Arrays.asList(sd1, sd2, sd4),
+        //                new ArrayList<SensorDefinition>()
+        //            },
+        //            new Object[]{
+        //                Arrays.asList(sd1, sd2, sd4),
+        //                Arrays.asList(sd1, sd2, sd3, sd4),
+        //                new ArrayList<SensorDefinition>()
+        //            },
         };
     }
 
@@ -421,8 +417,7 @@ public class ConfigurationSynchronizerTest
         when(com.transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class)))
             .thenThrow(IOException.class);
 
-        catchException(sync).syncConfig(Arrays.asList(rv1));
-        assertThat(caughtException()).isNull();
+        sync.syncConfig(Arrays.asList(rv1));
     }
 
     @Test
@@ -430,21 +425,30 @@ public class ConfigurationSynchronizerTest
     {
         response.setStatus(Status.NOT_OK);
 
-        catchException(sync).syncConfig(Arrays.asList(rv1));
-        assertThat(caughtException()).isNull();
+        sync.syncConfig(Arrays.asList(rv1));
     }
 
     @Test
-    public void shouldSynchronizeRealVehicleConfigurations() throws ClientProtocolException, IOException
+    public void shouldSynchronizeRealVehicleConfigurations() throws ClientProtocolException, IOException, JSONException
     {
+        transferCount = 0;
+        lastTransferData = null;
+
         when(qm.findAllRealVehicles()).thenReturn(Arrays.asList(gs1, rv1, rv2, rv3, rv4));
         when(qm.findAllSensorDefinitions()).thenReturn(Arrays.asList(sd1, sd2, sd3, sd4));
 
         sync.syncConfig(Arrays.asList(rv1));
 
-        //System.out.println("buggerit: " + new String(result1));
+        // System.out.println("### buggerit: " + new String(result1));
 
-        verify(com).transfer(rv1, Connector.CONFIGURATION_UPDATE, result1.getBytes());
+        // verify(com).transfer(rv1, Connector.CONFIGURATION_UPDATE, result1.getBytes());
+
+        verify(com).transfer(eq(rv1), eq(Connector.CONFIGURATION_UPDATE), any(byte[].class));
+            
+        assertThat(transferCount).isEqualTo(1);
+        assertThat(lastTransferData).isNotNull();
+
+        JSONAssert.assertEquals(result1, new String(lastTransferData), false);
     }
 
     @DataProvider
@@ -580,8 +584,11 @@ public class ConfigurationSynchronizerTest
         Object[] dbUpdates,
         Object[] dbDeletes,
         Object[] dbSaves
-        ) throws IOException
+        ) throws IOException, JSONException
     {
+        transferCount = 0;
+        lastTransferData = null;
+        
         setUpQmAllSensorDefinitions(sdsDb, new ArrayList<SensorDefinition>());
         setUpQmAllRealVehicles(rvsDb, new ArrayList<RealVehicle>());
 
@@ -591,19 +598,25 @@ public class ConfigurationSynchronizerTest
         sync.syncConfig(Arrays.asList(targetRV));
 
         System.out.println("### " + expectedResult);
-        verify(com).transfer(targetRV, Connector.CONFIGURATION_UPDATE, expectedResult.getBytes());
+        // verify(com).transfer(targetRV, Connector.CONFIGURATION_UPDATE, expectedResult.getBytes());
+        
+        verify(com).transfer(eq(targetRV), eq(Connector.CONFIGURATION_UPDATE), any(byte[].class));
+        
+        assertThat(transferCount).isEqualTo(1);
+        assertThat(lastTransferData).isNotNull();
+        JSONAssert.assertEquals(expectedResult, new String(lastTransferData), false);
 
         verify(qm, times(responseContent.length() == 0 ? 1 : 2)).findAllSensorDefinitions();
         verify(qm, times(responseContent.length() == 0 ? 1 : 2)).findAllRealVehicles();
 
         for (Object obj : dbUpdates)
         {
-            verify(qm).saveOrUpdate(eq(obj));
+            verify(session).saveOrUpdate(eq(obj));
         }
 
         for (Object obj : dbDeletes)
         {
-            verify(qm).delete(eq(obj));
+            verify(session).delete(eq(obj));
         }
 
         for (Object obj : dbSaves)
@@ -675,12 +688,12 @@ public class ConfigurationSynchronizerTest
 
         for (RealVehicle sd : removedRVs)
         {
-            verify(qm).saveOrUpdate(eq(sd));
+            verify(session).saveOrUpdate(eq(sd));
         }
 
         for (RealVehicle sd : changedRVs)
         {
-            verify(qm).saveOrUpdate(eq(sd));
+            verify(session).saveOrUpdate(eq(sd));
         }
     }
 
@@ -771,12 +784,12 @@ public class ConfigurationSynchronizerTest
 
         for (SensorDefinition sd : removedSDs)
         {
-            verify(qm).saveOrUpdate(eq(sd));
+            verify(session).saveOrUpdate(eq(sd));
         }
 
         for (SensorDefinition sd : changedSDs)
         {
-            verify(qm).saveOrUpdate(eq(sd));
+            verify(session).saveOrUpdate(eq(sd));
         }
     }
 

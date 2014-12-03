@@ -28,6 +28,7 @@ import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
@@ -40,6 +41,9 @@ import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
  */
 public class RvList
 {
+    @Inject
+    private Session session;
+    
     @Inject
     private QueryManager qm;
 
@@ -64,12 +68,12 @@ public class RvList
     @OnEvent("activateRealVehicle")
     void activateRealVehicle(Integer id)
     {
-        Transaction t = qm.getSession().getTransaction();
+        Transaction t = session.getTransaction();
         t.begin();
         RealVehicle rv = qm.findRealVehicleById(id);
         rv.setDeleted(Boolean.FALSE);
         rv.setLastUpdate(new Date());
-        qm.saveOrUpdate(rv);
+        session.saveOrUpdate(rv);
         t.commit();
         
         rvss.notifyConfigurationChange();
@@ -79,12 +83,12 @@ public class RvList
     @OnEvent("deactivateRealVehicle")
     void deactivateRealVehicle(Integer id)
     {
-        Transaction t = qm.getSession().getTransaction();
+        Transaction t = session.getTransaction();
         t.begin();
         RealVehicle rv = qm.findRealVehicleById(id);
         rv.setDeleted(Boolean.TRUE);
         rv.setLastUpdate(new Date());
-        qm.saveOrUpdate(rv);
+        session.saveOrUpdate(rv);
         t.commit();
         
         rvss.notifyConfigurationChange();

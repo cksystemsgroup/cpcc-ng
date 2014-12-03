@@ -1,48 +1,52 @@
 <html t:type="layout" title="${message:sensorDefinitionOverview}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<br />
-<section id="buttons">
-	<a t:type="pagelink" t:page="commons/sensor/new" href="#"
-		class="btn btn-primary">${message:createNewSensor}</a>
-</section>
+<!-- <div class="row"> -->
+<!-- 	<div class="col-md-12"> -->
+<t:PageLink t:page="commons/sensor/new" class="btn btn-primary">${message:createNewSensor}</t:PageLink>
+<!-- 	</div> -->
+<!-- </div> -->
 
-<section id="sensorDefinitions">
-	<h3>${message:sensorDefinitions}</h3>
-	<table t:type="grid" t:source="sensorList"
-		t:row="sensor"
-		t:add="actions"
-		class="table table-striped table-condensed topic-table">
+<!-- <div class="row"> -->
+<!-- 	<div class="col-md-12"> -->
+<h4>${message:sensorDefinitions}</h4>
 
-		<p:lastUpdateCell>
-			<t:output t:format="${message:dateFormat}" t:value="sensor.lastUpdate"/>
-		</p:lastUpdateCell>
+<t:Grid t:source="sensorList" t:row="sensor" t:add="actions"
+	class="table table-striped table-condensed">
 
-		<p:actionsCell>
-			<a t:type="pagelink" t:page="commons/sensor/edit"
-				t:context="sensor.id" href="#"
-				t:title="${message:editSensor}"> <i class="icon-pencil"></i>
-			</a>
-			&nbsp;
+	<p:lastUpdateCell>
+		<t:Output t:format="message:dateFormat" t:value="sensor.lastUpdate" />
+	</p:lastUpdateCell>
+
+	<p:actionsCell>
+		<ul class="list-inline">
+			<li><t:PageLink t:page="commons/sensor/edit"
+					t:context="sensor.id" href="#" t:title="${message:editSensor}">
+					<span class="glyphicon glyphicon-pencil" />
+				</t:PageLink></li>
+
 			<t:if test="sensor.deleted">
-				<a t:type="eventlink" t:event="activateSensor"
-					t:context="sensor.id" href="#"
-					title="${message:activateSensor}"> <i class="icon-ok-circle"></i>
-				</a>
+				<li><t:EventLink t:event="activateSensor" t:context="sensor.id"
+						href="#" t:title="${message:activateSensor}">
+						<span class="glyphicon glyphicon-ok-circle" />
+					</t:EventLink></li>
 				<p:else>
-					<a t:type="eventlink" t:event="deactivateSensor"
-						t:context="sensor.id" href="#"
-						title="${message:deactivateSensor}"> <i class="icon-ban-circle"></i>
-					</a>
+					<li><t:EventLink t:event="deactivateSensor"
+							t:context="sensor.id" href="#"
+							t:title="${message:deactivateSensor}">
+							<span class="glyphicon glyphicon-ban-circle" />
+						</t:EventLink></li>
 				</p:else>
 			</t:if>
-		</p:actionsCell>
+		</ul>
+	</p:actionsCell>
 
-		<p:empty>
-			<p>${message:noSensorDefinitionFound}</p>
-		</p:empty>
-	</table>
-</section>
+	<p:empty>
+		<p>${message:noSensorDefinitionFound}</p>
+	</p:empty>
+</t:Grid>
+<!-- 	</div> -->
+<!-- </div> -->
 
 </html>

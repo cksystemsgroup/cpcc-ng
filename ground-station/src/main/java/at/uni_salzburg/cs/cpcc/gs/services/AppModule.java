@@ -23,13 +23,7 @@ import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.Translator;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.Contribute;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
-import org.apache.tapestry5.services.javascript.JavaScriptStack;
-
-import com.trsvax.bootstrap.environment.TableEnvironment;
-import com.trsvax.bootstrap.environment.TableValues;
-import com.trsvax.bootstrap.services.EnvironmentSetup;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to configure and extend
@@ -74,13 +68,13 @@ public final class AppModule
         configuration.add(SymbolConstants.HMAC_PASSPHRASE, "Eith6Du9reeSa7aiaiweaM7oaCh6quae");
     }
     
-    /**
-     * @param configuration the mapped configuration
-     */
-    public static void contributeJavaScriptStackSource(MappedConfiguration<String, JavaScriptStack> configuration)
-    {
-        configuration.addInstance("RealVehicle", RealVehicleStack.class);
-    }
+//    /**
+//     * @param configuration the mapped configuration
+//     */
+//    public static void contributeJavaScriptStackSource(MappedConfiguration<String, JavaScriptStack> configuration)
+//    {
+//        configuration.addInstance("RealVehicle", RealVehicleStack.class);
+//    }
     
     /**
      * @param configuration the configuration
@@ -92,12 +86,12 @@ public final class AppModule
     {
     }
 
-    /**
-     * @param configuration the application configuration.
-     */
-    @Contribute(EnvironmentSetup.class)
-    public static void provideEnvironmentSetup(MappedConfiguration<Class<?>, Object> configuration)
-    {
-        configuration.override(TableEnvironment.class, new TableValues(null).withType("table"));
-    }
+//    /**
+//     * @param configuration the application configuration.
+//     */
+//    @Contribute(EnvironmentSetup.class)
+//    public static void provideEnvironmentSetup(MappedConfiguration<Class<?>, Object> configuration)
+//    {
+//        configuration.override(TableEnvironment.class, new TableValues(null).withType("table"));
+//    }
 }

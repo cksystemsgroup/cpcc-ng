@@ -1,0 +1,28 @@
+<html t:type="layout" title="message:gsViewerTitle"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter" xmlns:l="tapestry-library:leaflet">
+
+<l:LeafletMap t:id="map" t:drawControl="true"
+	t:center="prop:mapCenter" t:zoom="prop:zoomLevel"
+	t:height="500" />
+
+<l:LeafletEmptyLayer t:mapId="map" t:name="message:emptyLayer.name" />
+
+<l:LeafletTileLayer t:mapId="map" t:name="message:tile.layerOne.name"
+	t:urlTemplate="message:tile.layerOne.urlTemplate"
+	t:options="message:tile.layerOne.options" />
+
+<l:LeafletTileLayer t:mapId="map" t:name="message:tile.layerTwo.name"
+	t:urlTemplate="message:tile.layerTwo.urlTemplate"
+	t:options="message:tile.layerTwo.options" />
+
+<l:LeafletRegionLayer t:mapId="map" t:name="message:regionLayer.name"
+	t:value="prop:regions" t:frequencySecs="30" />
+
+<!-- <l:LeafletVehicleLayer t:mapId="map" -->
+<!-- 	t:name="message:vehicleLayer.name" t:value="prop:vehicles" -->
+<!-- 	t:frequencySecs="1" /> -->
+
+<l:LeafletLayerControl t:id="layerControl" t:mapId="map" />
+
+</html>

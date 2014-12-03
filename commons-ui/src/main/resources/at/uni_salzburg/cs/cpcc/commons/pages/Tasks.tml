@@ -1,112 +1,112 @@
 <html t:type="layout" title="${message:taskOverview}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<br />
+<!-- <div class="row"> -->
+<!-- 	<div class="col-md-12"> -->
+<h4>${message:currentRunningTask}</h4>
 
-<section id="currentRunningTask">
-	<h3>${message:currentRunningTask}</h3>
-	<t:zone t:id="zone1" t:mixins='jquery/zonerefresh' t:period='1'
-		t:update="show">
-		<table t:type="grid" t:source="getCurrentActiveTaskList()"
-			t:row="currentRunningTask"
-			t:exclude="completed,lastInTaskGroup"
-			t:reorder="creationTime,position,tolerance,sensors"
-			t:add="position,sensors"
-			class="table table-striped table-condensed topic-table">
+<t:Zone t:id="zone1" t:mixins="ZoneRefresh" ZoneRefresh.period="1">
+	<!-- ZoneRefresh.context="'show'" -->
+	<t:Grid t:source="getCurrentActiveTaskList()"
+		t:row="currentRunningTask" t:exclude="completed,lastInTaskGroup"
+		t:reorder="creationTime,position,tolerance,sensors"
+		t:add="position,sensors"
+		class="table table-striped table-condensed topic-table">
 
-			<p:positionCell>
-				${currentRunningTask.getPosition().toString()}
-			</p:positionCell>
-			
-			<p:creationTimeCell>
-				${getTime(currentRunningTask.creationTime)}
-			</p:creationTimeCell>
-			
-			<p:lastInTaskGroupCell>
-				${currentRunningTask.lastInTaskGroup}
-			</p:lastInTaskGroupCell>
+		<p:positionCell>
+			${currentRunningTask.getPosition().toString()}
+		</p:positionCell>
 
-			<p:sensorsCell>
-				<!-- <t:outputRaw value="getSortedSensorList(currentRunningTask)" /> -->
-				${getSortedSensorList(currentRunningTask)}
-			</p:sensorsCell>
+		<p:creationTimeCell>
+			${getTime(currentRunningTask.creationTime)}
+		</p:creationTimeCell>
 
-			<p:empty>
-				<p>${message:noCurrentRunningTaskFound}</p>
-			</p:empty>
-		</table>
-	</t:zone>
-</section>
+		<p:lastInTaskGroupCell>
+			${currentRunningTask.lastInTaskGroup}
+		</p:lastInTaskGroupCell>
 
-<section id="scheduledTaskList">
-	<t:zone t:id="zone2" t:mixins='jquery/zonerefresh' t:period='1'
-		t:update="show">
-		<h3>${message:scheduledTaskList}</h3>
-		<table t:type="grid" t:source="tes.getScheduledTasks()"
-			t:row="scheduledTask"
-			t:exclude="completed,lastInTaskGroup"
-			t:reorder="creationTime,position,tolerance,sensors"
-			t:add="position,sensors"
-			class="table table-striped table-condensed topic-table">
-			
-			<p:positionCell>
-				${scheduledTask.getPosition().toString()}
-			</p:positionCell>
-			
-			<p:creationTimeCell>
-				${getTime(scheduledTask.creationTime)}
-			</p:creationTimeCell>
-			
-			<p:lastInTaskGroupCell>
-				${scheduledTask.lastInTaskGroup}
-			</p:lastInTaskGroupCell>
+		<p:sensorsCell>
+			${getSortedSensorList(currentRunningTask)}
+		</p:sensorsCell>
 
-			<p:sensorsCell>
-				<!-- <t:outputRaw value="getSortedSensorList(scheduledTask)" /> -->
-				${getSortedSensorList(scheduledTask)}
-			</p:sensorsCell>
-			
-			<p:empty>
-				<p>${message:noScheduledTaskFound}</p>
-			</p:empty>
-		</table>
-	</t:zone>
-</section>
+		<p:empty>
+			<p>${message:noCurrentRunningTaskFound}</p>
+		</p:empty>
+	</t:Grid>
+	<!-- </t:Zone> -->
+	<!-- 	</div> -->
+	<!-- </div> -->
 
-<section id="pendingTaskList">
-	<t:zone t:id="zone3" t:mixins='jquery/zonerefresh' t:period='1'
-		t:update="show">
-		<h3>${message:pendingTaskList}</h3>
-		<table t:type="grid" t:source="tes.getPendingTasks()"
-			t:row="pendingTask"
-			t:exclude="completed,lastInTaskGroup"
-			t:reorder="creationTime,position,tolerance,sensors"
-			t:add="position,sensors"
-			class="table table-striped table-condensed topic-table">
+	<!-- <div class="row"> -->
+	<!-- 	<div class="col-md-12"> -->
+	<h4>${message:scheduledTaskList}</h4>
 
-			<p:positionCell>
-				${pendingTask.getPosition().toString()}
-			</p:positionCell>
-			
-			<p:creationTimeCell>
-				${getTime(pendingTask.creationTime)}
-			</p:creationTimeCell>
-			
-			<p:lastInTaskGroupCell>
-				${pendingTask.lastInTaskGroup}
-			</p:lastInTaskGroupCell>
+	<!-- <t:Zone t:id="zone2" t:mixins="ZoneRefresh" ZoneRefresh.period="1"> -->
+	<!-- ZoneRefresh.context="'show'" -->
+	<t:Grid t:source="tes.getScheduledTasks()" t:row="scheduledTask"
+		t:exclude="completed,lastInTaskGroup"
+		t:reorder="creationTime,position,tolerance,sensors"
+		t:add="position,sensors"
+		class="table table-striped table-condensed topic-table">
 
-			<p:sensorsCell>
-				<!--  <t:outputRaw value="getSortedSensorList(pendingTask)" /> -->
-				${getSortedSensorList(pendingTask)}
-			</p:sensorsCell>
-			
-			<p:empty>
-				<p>${message:noPendingTaskFound}</p>
-			</p:empty>
-		</table>
-	</t:zone>
-</section>
+		<p:positionCell>
+			${scheduledTask.getPosition().toString()}
+		</p:positionCell>
 
+		<p:creationTimeCell>
+			${getTime(scheduledTask.creationTime)}
+		</p:creationTimeCell>
+
+		<p:lastInTaskGroupCell>
+			${scheduledTask.lastInTaskGroup}
+		</p:lastInTaskGroupCell>
+
+		<p:sensorsCell>
+			${getSortedSensorList(scheduledTask)}
+		</p:sensorsCell>
+
+		<p:empty>
+			<p>${message:noScheduledTaskFound}</p>
+		</p:empty>
+	</t:Grid>
+	<!-- </t:Zone> -->
+	<!-- 	</div> -->
+	<!-- </div> -->
+
+	<!-- <div class="row"> -->
+	<!-- 	<div class="col-md-12"> -->
+	<h4>${message:pendingTaskList}</h4>
+
+	<!-- <t:Zone t:id="zone3" t:mixins='ZoneRefresh' ZoneRefresh.period='1'> -->
+	<!-- ZoneRefresh.context="'show'" -->
+	<t:Grid t:source="tes.getPendingTasks()" t:row="pendingTask"
+		t:exclude="completed,lastInTaskGroup"
+		t:reorder="creationTime,position,tolerance,sensors"
+		t:add="position,sensors"
+		class="table table-striped table-condensed topic-table">
+
+		<p:positionCell>
+			${pendingTask.getPosition().toString()}
+		</p:positionCell>
+
+		<p:creationTimeCell>
+			${getTime(pendingTask.creationTime)}
+		</p:creationTimeCell>
+
+		<p:lastInTaskGroupCell>
+			${pendingTask.lastInTaskGroup}
+		</p:lastInTaskGroupCell>
+
+		<p:sensorsCell>
+			${getSortedSensorList(pendingTask)}
+		</p:sensorsCell>
+
+		<p:empty>
+			<p>${message:noPendingTaskFound}</p>
+		</p:empty>
+	</t:Grid>
+</t:Zone>
+<!-- 	</div> -->
+<!-- </div> -->
 </html>

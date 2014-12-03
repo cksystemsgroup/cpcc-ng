@@ -1,0 +1,17 @@
+.cpcc-panel-title {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.cpcc-panel-body {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.cpcc-panel>thead>tr>th {
+	padding: 5px 15px;
+}
+
+.cpcc-panel>tbody>tr>td {
+	padding: 5px 15px;
+}

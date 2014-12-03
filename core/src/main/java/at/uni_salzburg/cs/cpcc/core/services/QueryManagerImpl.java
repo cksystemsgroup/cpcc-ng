@@ -68,8 +68,10 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public Device findDeviceByTopicRoot(String topicRoot)
     {
-        return (Device) getSession().createQuery("from Device where topicRoot = :topicRoot")
-            .setString(TOPIC_ROOT, topicRoot).uniqueResult();
+        return (Device) getSession()
+            .createQuery("from Device where topicRoot = :topicRoot")
+            .setString(TOPIC_ROOT, topicRoot)
+            .uniqueResult();
     }
 
     /**
@@ -79,7 +81,9 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public List<Device> findAllDevices()
     {
-        return (List<Device>) getSession().createCriteria(Device.class).addOrder(Property.forName(TOPIC_ROOT).asc())
+        return (List<Device>) getSession()
+            .createCriteria(Device.class)
+            .addOrder(Property.forName(TOPIC_ROOT).asc())
             .list();
     }
 
@@ -89,7 +93,9 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public DeviceType findDeviceTypeByName(String name)
     {
-        return (DeviceType) getSession().createQuery("from DeviceType where name = :name").setString(DEVICE_NAME, name)
+        return (DeviceType) getSession()
+            .createQuery("from DeviceType where name = :name")
+            .setString(DEVICE_NAME, name)
             .uniqueResult();
     }
 
@@ -111,8 +117,10 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public Parameter findParameterByName(String name)
     {
-        return (Parameter) getSession().createQuery("from Parameter where name = :name")
-            .setString(DEVICE_NAME, name).uniqueResult();
+        return (Parameter) getSession()
+            .createQuery("from Parameter where name = :name")
+            .setString(DEVICE_NAME, name)
+            .uniqueResult();
     }
 
     /**
@@ -142,7 +150,8 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     {
         SensorDefinition x = (SensorDefinition) getSession()
             .createQuery("FROM SensorDefinition WHERE id = :id")
-            .setInteger("id", id).uniqueResult();
+            .setInteger("id", id)
+            .uniqueResult();
         return x;
     }
 
@@ -155,7 +164,8 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     {
         List<SensorDefinition> x = (List<SensorDefinition>) getSession()
             .createQuery("from SensorDefinition where messagetype = :messagetype")
-            .setString(SENSOR_MESSAGETYPE, messagetype).list();
+            .setString(SENSOR_MESSAGETYPE, messagetype)
+            .list();
         return x;
     }
 
@@ -167,7 +177,8 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     {
         SensorDefinition x = (SensorDefinition) getSession()
             .createQuery("from SensorDefinition where description = :description")
-            .setString(SENSOR_DESCRIPTION, description).uniqueResult();
+            .setString(SENSOR_DESCRIPTION, description)
+            .uniqueResult();
         return x;
     }
 
@@ -177,26 +188,30 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public Date findLatestSensorDefinitionOrRealVehicleChangeDate()
     {
-        Date sdd = (Date) getSession().createQuery("select max(lastUpdate) from SensorDefinition").uniqueResult();
-        Date rvd = (Date) getSession().createQuery("select max(lastUpdate) from RealVehicle").uniqueResult();
+        Date sdd = (Date) getSession()
+            .createQuery("select max(lastUpdate) from SensorDefinition")
+            .uniqueResult();
         
+        Date rvd = (Date) getSession()
+            .createQuery("select max(lastUpdate) from RealVehicle")
+            .uniqueResult();
+
         if (sdd != null && rvd != null)
         {
             return sdd.compareTo(rvd) > 1 ? sdd : rvd;
         }
-        
+
         return sdd != null ? sdd : rvd != null ? rvd : null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void deleteSensorDefinitionById(Integer id)
     {
-        // getSession().createQuery("DELETE FROM realvehicle_sensordefinition WHERE sensors_id = :id")
-        //     .setInteger("id", id);
-        getSession().createQuery("DELETE FROM SensorDefinition WHERE id = :id")
+        getSession()
+            .createQuery("DELETE FROM SensorDefinition WHERE id = :id")
             .setInteger("id", id);
     }
 
@@ -207,7 +222,9 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public List<RealVehicle> findAllRealVehicles()
     {
-        return (List<RealVehicle>) getSession().createQuery("FROM RealVehicle").list();
+        return (List<RealVehicle>) getSession()
+            .createQuery("FROM RealVehicle")
+            .list();
     }
 
     /**
@@ -217,7 +234,9 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public List<RealVehicle> findAllRealVehiclesOrderByName()
     {
-        return (List<RealVehicle>) getSession().createQuery("FROM RealVehicle ORDER BY name").list();
+        return (List<RealVehicle>) getSession()
+            .createQuery("FROM RealVehicle ORDER BY name")
+            .list();
     }
 
     /**
@@ -226,15 +245,19 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public RealVehicle findRealVehicleByName(String name)
     {
-        return (RealVehicle) getSession().createQuery("FROM RealVehicle WHERE name = :name")
-            .setString(REAL_VEHICLE_NAME, name).uniqueResult();
+        return (RealVehicle) getSession()
+            .createQuery("FROM RealVehicle WHERE name = :name")
+            .setString(REAL_VEHICLE_NAME, name)
+            .uniqueResult();
     }
 
     @Override
     public RealVehicle findRealVehicleByUrl(String url)
     {
-        return (RealVehicle) getSession().createQuery("FROM RealVehicle WHERE url = :url")
-            .setString(REAL_VEHICLE_URL, url).uniqueResult();
+        return (RealVehicle) getSession()
+            .createQuery("FROM RealVehicle WHERE url = :url")
+            .setString(REAL_VEHICLE_URL, url)
+            .uniqueResult();
     }
 
     /**
@@ -245,7 +268,8 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     {
         RealVehicle x = (RealVehicle) getSession()
             .createQuery("FROM RealVehicle WHERE id = :id")
-            .setInteger("id", id).uniqueResult();
+            .setInteger("id", id)
+            .uniqueResult();
         return x;
     }
 
@@ -300,7 +324,9 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     {
         return (MappingAttributes) getSession()
             .createQuery("from MappingAttributes where pk.device.id = :deviceId and pk.topic.id = :topicId")
-            .setInteger(DEVICE_ID, device.getId()).setInteger("topicId", topic.getId()).uniqueResult();
+            .setInteger(DEVICE_ID, device.getId())
+            .setInteger("topicId", topic.getId())
+            .uniqueResult();
     }
 
     /**
@@ -312,7 +338,8 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     {
         return (List<MappingAttributes>) getSession()
             .createQuery("from MappingAttributes where pk.device.id = :deviceId)")
-            .setParameter(DEVICE_ID, device.getId()).list();
+            .setParameter(DEVICE_ID, device.getId())
+            .list();
     }
 
     /**
@@ -322,7 +349,9 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public List<MappingAttributes> findAllMappingAttributes()
     {
-        return (List<MappingAttributes>) getSession().createCriteria(MappingAttributes.class).list();
+        return (List<MappingAttributes>) getSession()
+            .createCriteria(MappingAttributes.class)
+            .list();
     }
 
     /**
@@ -332,7 +361,8 @@ public class QueryManagerImpl extends AbstractRepository implements QueryManager
     @Override
     public List<MappingAttributes> findAllVvVisibleMappingAttributes()
     {
-        return (List<MappingAttributes>) getSession().createQuery("from MappingAttributes where vvVisible = true")
+        return (List<MappingAttributes>) getSession()
+            .createQuery("from MappingAttributes where vvVisible = true")
             .list();
     }
 

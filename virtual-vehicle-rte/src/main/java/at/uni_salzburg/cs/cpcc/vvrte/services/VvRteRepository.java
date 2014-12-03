@@ -22,7 +22,6 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 import java.util.Collection;
 import java.util.List;
 
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.services.Repository;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
@@ -32,10 +31,10 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
  */
 public interface VvRteRepository extends Repository
 {
-    /**
-     * @return the query manager.
-     */
-    QueryManager getQueryManager();
+//    /**
+//     * @return the query manager.
+//     */
+//    QueryManager getQueryManager();
 
     /**
      * @return the available virtual vehicles.
@@ -50,12 +49,12 @@ public interface VvRteRepository extends Repository
     /**
      * @param o the database object to be saved.
      */
-    void saveOrUpdate(Object o);
+    //void saveOrUpdate(Object o);
 
     /**
      * @param o the database object to be deleted.
      */
-    void delete(Object o);
+    //void delete(Object o);
 
     /**
      * @param list the database objects to be deleted.

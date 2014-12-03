@@ -50,33 +50,33 @@ public class RosDeviceDetail
 {
     @Inject
     private QueryManager qm;
-    
+
     @Inject
     private ImageTagService imageTagService;
-    
+
     @Property
     @Inject
     private RosNodeService nodeService;
-    
+
     @PageActivationContext
     @Property
     private String deviceDetailLinkContext;
-    
-    @Component(parameters = { "devices=deviceList" })
+
+    @Component(parameters = {"devices=deviceList"})
     private DeviceTree deviceTree;
-    
+
     @Property
     private String deviceParameter;
-    
+
     @Property
     private AbstractRosAdapter adapter;
-    
+
     @Property
     private String adapterParameter;
-    
+
     @InjectComponent
     private Zone zone;
-    
+
     /**
      * @return the list of devices.
      */
@@ -84,7 +84,7 @@ public class RosDeviceDetail
     {
         return qm.findAllDevices();
     }
-    
+
     /**
      * @return the device type name.
      */
@@ -97,7 +97,7 @@ public class RosDeviceDetail
         }
         return device.getType().getName();
     }
-    
+
     /**
      * @return the device parameter list.
      */
@@ -115,7 +115,7 @@ public class RosDeviceDetail
         }
         return renderParameterList(group.getCurrentState());
     }
-    
+
     /**
      * @return the adapter list.
      */
@@ -133,7 +133,7 @@ public class RosDeviceDetail
         List<AbstractRosAdapter> l = nodeService.getAdapterNodes().get(device.getTopicRoot());
         return l;
     }
-    
+
     /**
      * @return the adapter parameter list.
      */
@@ -157,7 +157,7 @@ public class RosDeviceDetail
         }
         return "sensor_msgs/Image".equals(adapter.getTopic().getType());
     }
-    
+
     /**
      * @return the tag for the adapter's image data.
      */
@@ -165,7 +165,7 @@ public class RosDeviceDetail
     {
         return imageTagService.getRosImageTag(adapter);
     }
-    
+
     /**
      * @return the image dimensions.
      */
@@ -173,7 +173,7 @@ public class RosDeviceDetail
     {
         return imageTagService.getRosImageDimension(adapter);
     }
-    
+
     /**
      * @param state the state map.
      * @return the parameter list.
@@ -184,7 +184,7 @@ public class RosDeviceDetail
         {
             return Arrays.asList(new String[0]);
         }
-        
+
         Map<String, String> parameterMap = new TreeMap<String, String>();
         for (Entry<String, List<String>> entry : state.entrySet())
         {
@@ -218,5 +218,5 @@ public class RosDeviceDetail
 
         return parameterMap.values();
     }
-    
+
 }

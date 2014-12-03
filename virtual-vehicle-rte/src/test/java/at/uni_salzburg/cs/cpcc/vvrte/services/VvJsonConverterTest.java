@@ -19,7 +19,6 @@
  */
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +26,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.tapestry5.json.JSONArray;
+import org.json.JSONException;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -168,11 +169,11 @@ public class VvJsonConverterTest
     }
 
     @Test(dataProvider = "vehiclesDataProvider")
-    public void shouldConvertVehicles(VirtualVehicle[] vehicles, String expectedJsonString)
+    public void shouldConvertVehicles(VirtualVehicle[] vehicles, String expectedJsonString) throws JSONException
     {
         JSONArray result = converter.toJsonArray(vehicles);
 
-        assertThat(result.toString(true)).isNotNull().isEqualTo(expectedJsonString);
+        JSONAssert.assertEquals(expectedJsonString, result.toString(true), false);
     }
 
     @DataProvider
@@ -409,10 +410,10 @@ public class VvJsonConverterTest
     }
 
     @Test(dataProvider = "tasksDataProvider")
-    public void shouldConvertTasks(Task[] tasks, String expectedJsonString)
+    public void shouldConvertTasks(Task[] tasks, String expectedJsonString) throws JSONException
     {
         JSONArray result = converter.toJsonArray(tasks);
 
-        assertThat(result.toString(true)).isNotNull().isEqualTo(expectedJsonString);
+        JSONAssert.assertEquals(expectedJsonString, result.toString(true), false);
     }
 }

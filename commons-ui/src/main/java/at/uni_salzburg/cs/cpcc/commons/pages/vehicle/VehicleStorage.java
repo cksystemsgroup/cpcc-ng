@@ -19,13 +19,10 @@
  */
 package at.uni_salzburg.cs.cpcc.commons.pages.vehicle;
 
-import static org.apache.tapestry5.EventConstants.ACTIVATE;
-
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.PageActivationContext;
 import org.apache.tapestry5.annotations.Property;
 
@@ -33,7 +30,6 @@ import at.uni_salzburg.cs.cpcc.commons.services.StorageContentTagService;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * VehicleStorage
@@ -46,9 +42,9 @@ public class VehicleStorage
     @Inject
     protected StorageContentTagService storageTagService;
 
-    @PageActivationContext
-    @Property
-    private Integer virtualVehicleId;
+//    @PageActivationContext
+//    @Property
+//    private Integer virtualVehicleId;
 
     @Property
     private VirtualVehicle virtualVehicle;
@@ -59,9 +55,7 @@ public class VehicleStorage
     @Property
     private VirtualVehicleStorage storageItem;
 
-    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "both fields are read by the template")
-    @OnEvent(ACTIVATE)
-    void loadParameters(Integer vvId)
+    void onActivate(Integer vvId)
     {
         virtualVehicle = vvRteRepo.findVirtualVehicleById(vvId);
         storageList = vvRteRepo.findStorageItemsByVirtualVehicle(vvId);

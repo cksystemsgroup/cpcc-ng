@@ -61,7 +61,7 @@ public abstract class AbstractRepository implements Repository
     /**
      * @param o the database object to be saved.
      */
-    public void saveOrUpdate(Object o)
+    protected void saveOrUpdate(Object o)
     {
         if (o != null)
         {
@@ -72,7 +72,7 @@ public abstract class AbstractRepository implements Repository
     /**
      * @param o the database object to be deleted.
      */
-    public void delete(Object o)
+    protected void delete(Object o)
     {
         try
         {
@@ -102,7 +102,7 @@ public abstract class AbstractRepository implements Repository
     /**
      * @return the session
      */
-    public Session getSession()
+    protected Session getSession()
     {
         return session;
     }

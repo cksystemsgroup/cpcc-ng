@@ -24,42 +24,79 @@ import static org.apache.tapestry5.EventConstants.PREPARE;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.inject.Inject;
 
 import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.ValueEncoder;
+import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
+import org.hibernate.Session;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
+import at.uni_salzburg.cs.cpcc.commons.services.EnumFormatter;
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
 import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.core.entities.Topic;
-import at.uni_salzburg.cs.cpcc.core.entities.TopicCategory;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.services.SensorDefinitionSelectHelpers;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleMapper;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
- * Configuration
+ * Configuration edit page.
  */
 public class ConfigurationEdit
 {
+    private static final String MSG_DELETE_DEVICE_CONFIRM = "deleteDeviceConfirm";
+
+    @Inject
+    private Messages messages;
+
+    @Inject
+    private Request request;
+
+    @Inject
+    private AjaxResponseRenderer ajaxResponseRenderer;
+
+    @InjectComponent
+    private Zone realVehicleNameFormZone;
+    
+    
+    @InjectComponent
+    private Zone  uriFormZone;
+    
+    @InjectComponent
+    private Zone coreFormZone;
+    
+    @InjectComponent
+    private Zone deviceFormZone;
+    
+    @InjectComponent
+    private Zone mappingFormZone;
+    
+    @Inject
+    private Session session;
+
     @Inject
     private QueryManager qm;
 
@@ -93,6 +130,15 @@ public class ConfigurationEdit
     @Property
     private MappingAttributes mappingConfig;
 
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "RegisterUserDetail.tml uses this formatter.")
+    @Property
+    private Format enumFormat;
+
+    public String getDeleteDeviceConfirmationMessage()
+    {
+        return messages.format(MSG_DELETE_DEVICE_CONFIRM, deviceConfig.getTopicRoot());
+    }
+
     @OnEvent(PREPARE)
     void loadParameters()
     {
@@ -102,6 +148,7 @@ public class ConfigurationEdit
         realVehicle = qm.findRealVehicleByName(realVehicleName.getValue());
         deviceList = qm.findAllDevices();
         mappingList = orderByTopic(qm.findAllMappingAttributes());
+        enumFormat = new EnumFormatter(messages);
     }
 
     /**
@@ -111,6 +158,7 @@ public class ConfigurationEdit
     private Collection<MappingAttributes> orderByTopic(Collection<MappingAttributes> attributeList)
     {
         Map<String, MappingAttributes> tree = new TreeMap<String, MappingAttributes>();
+        
         for (MappingAttributes attribute : attributeList)
         {
             StringBuilder b = new StringBuilder(attribute.getPk().getDevice().getTopicRoot());
@@ -123,81 +171,21 @@ public class ConfigurationEdit
             }
             tree.put(b.toString(), attribute);
         }
+        
         return tree.values();
     }
 
-    @OnEvent("deleteDevice")
     @CommitAfter
-    void deleteDevice(String topic)
+    void onDeleteDevice(String topic)
     {
         Device device = qm.findDeviceByTopicRoot(topic);
         Collection<MappingAttributes> mappings = qm.findMappingAttributesByDevice(device);
         nodeService.shutdownMappingAttributes(mappings);
         nodeService.shutdownDevice(device);
         qm.deleteAll(mappings);
-        qm.delete(device);
-    }
-
-    @OnEvent("connectToAutoPilot")
-    @CommitAfter
-    void connectToAutoPilot(String topic)
-    {
-        Map<String, MappingAttributes> attributeMap = qm.findAllMappingAttributesAsMap();
-        if (!attributeMap.containsKey(topic))
-        {
-            return;
-        }
-
-        TopicCategory category = attributeMap.get(topic).getPk().getTopic().getCategory();
-
-        for (Entry<String, MappingAttributes> entry : attributeMap.entrySet())
-        {
-            MappingAttributes attributes = entry.getValue();
-            Topic attributeTopic = attributes.getPk().getTopic();
-            if (category != attributeTopic.getCategory())
-            {
-                continue;
-            }
-            boolean connectedToAutopilot = topic.equals(entry.getKey());
-            attributes.setConnectedToAutopilot(connectedToAutopilot);
-            qm.saveOrUpdate(attributes);
-        }
-    }
-
-    @OnEvent("disconnectFromAutoPilot")
-    @CommitAfter
-    void disconnectFromAutoPilot(String topic)
-    {
-        MappingAttributes attributes = qm.findMappingAttributesByTopic(topic);
-        if (attributes != null)
-        {
-            attributes.setConnectedToAutopilot(Boolean.FALSE);
-            qm.saveOrUpdate(attributes);
-        }
-    }
-
-    @OnEvent("setInvisibleInVirtualVehicle")
-    @CommitAfter
-    void setInvisibleInVirtualVehicle(String topic)
-    {
-        MappingAttributes attributes = qm.findMappingAttributesByTopic(topic);
-        if (attributes != null)
-        {
-            attributes.setVvVisible(Boolean.FALSE);
-            qm.saveOrUpdate(attributes);
-        }
-    }
-
-    @OnEvent("setVisibleInVirtualVehicle")
-    @CommitAfter
-    void setVisibleInVirtualVehicle(String topic)
-    {
-        MappingAttributes attributes = qm.findMappingAttributesByTopic(topic);
-        if (attributes != null)
-        {
-            attributes.setVvVisible(Boolean.TRUE);
-            qm.saveOrUpdate(attributes);
-        }
+        session.delete(device);
+        
+        handleXhrRequest(deviceFormZone);
     }
 
     @CommitAfter
@@ -205,38 +193,44 @@ public class ConfigurationEdit
     {
         if (realVehicleName.getValue() == null)
         {
+            handleXhrRequest(realVehicleNameFormZone);
             return;
         }
-        qm.saveOrUpdate(realVehicleName);
+        session.saveOrUpdate(realVehicleName);
 
         if (realVehicle == null)
         {
             realVehicle = qm.findRealVehicleByName(realVehicleName.getValue());
+            handleXhrRequest(realVehicleNameFormZone);
             return;
         }
+        
         realVehicle.setName(realVehicleName.getValue());
-        qm.saveOrUpdate(realVehicle);
+        session.saveOrUpdate(realVehicle);
         mapper.refresh();
+        handleXhrRequest(realVehicleNameFormZone);
     }
 
     @CommitAfter
     void onSuccessFromUriForm() throws URISyntaxException
     {
-        qm.saveOrUpdate(masterServerURI);
+        session.saveOrUpdate(masterServerURI);
         nodeService.updateMasterServerURI(new URI(masterServerURI.getValue()));
+        handleXhrRequest(uriFormZone);
     }
 
     @CommitAfter
     void onSuccessFromCoreForm()
     {
-        qm.saveOrUpdate(internalRosCore);
+        session.saveOrUpdate(internalRosCore);
         nodeService.updateRosCore(Boolean.parseBoolean(internalRosCore.getValue()));
+        handleXhrRequest(coreFormZone);
     }
 
     @CommitAfter
     void onSuccessFromMappingForm()
     {
-        qm.saveOrUpdateAll(mappingList);
+        session.saveOrUpdate(mappingConfig);
 
         if (realVehicle != null)
         {
@@ -251,10 +245,12 @@ public class ConfigurationEdit
             }
             realVehicle.setSensors(sdList);
             realVehicle.setLastUpdate(new Date());
-            qm.saveOrUpdate(realVehicle);
+            session.saveOrUpdate(realVehicle);
         }
 
         nodeService.updateMappingAttributes(mappingList);
+        
+        handleXhrRequest(mappingFormZone);
     }
 
     /**
@@ -263,8 +259,7 @@ public class ConfigurationEdit
     public SelectModel getSensorDefinitionNameSelectModel()
     {
         return SensorDefinitionSelectHelpers.selectModel(
-            qm.findSensorDefinitionsByMessageType(mappingConfig.getPk().getTopic().getMessageType())
-            );
+            qm.findSensorDefinitionsByMessageType(mappingConfig.getPk().getTopic().getMessageType()));
     }
 
     /**
@@ -281,5 +276,16 @@ public class ConfigurationEdit
     public Boolean getSensorDefinitionsAvailable()
     {
         return qm.findSensorDefinitionsByMessageType(mappingConfig.getPk().getTopic().getMessageType()).size() > 0;
+    }
+
+    /**
+     * @param zone the zone.
+     */
+    private void handleXhrRequest(Zone zone)
+    {
+        if (request.isXHR())
+        {
+            ajaxResponseRenderer.addRender(zone);
+        }
     }
 }

@@ -88,7 +88,7 @@ public class VvMigrationWorkerTest
         when(session.beginTransaction()).thenReturn(transaction);
 
         vvRepository = mock(VvRteRepository.class);
-        when(vvRepository.getSession()).thenReturn(session);
+        // when(vvRepository.getSession()).thenReturn(session);
 
         com = mock(CommunicationService.class);
         when(com.transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class))).thenAnswer(
@@ -133,7 +133,7 @@ public class VvMigrationWorkerTest
                 }
             });
 
-        worker = new VvMigrationWorker(virtualVehicle, vvRepository, com, migrator);
+        worker = new VvMigrationWorker(virtualVehicle, vvRepository, com, migrator, session);
     }
 
     @Test

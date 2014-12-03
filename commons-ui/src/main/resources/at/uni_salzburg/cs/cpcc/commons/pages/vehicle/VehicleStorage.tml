@@ -1,42 +1,42 @@
 <html t:type="layout" title="${message:storageItemsList}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<br />
+<!-- <t:jquery.dialog t:clientId="dialog"> -->
+<!-- 	<img id="dialogImage" src="" /> -->
+<!-- </t:jquery.dialog> -->
 
-<t:jquery.dialog t:clientId="dialog">
-	<img id="dialogImage" src="" />
-</t:jquery.dialog>
+<!-- <div class="row"> -->
+<!-- 	<div class="col-md-12"> -->
+<t:Zone t:id="zone" t:mixins="ZoneRefresh" ZoneRefresh.period="10">
 
-<!-- <script>var imageLinks = [];</script> -->
-      
-<section id="storageItemsList">
-	<t:zone t:id="zone" t:mixins='jquery/zonerefresh' t:period='10'
-		t:update="show" t:context="virtualVehicleId">
-		<t:form t:id="storageItemsForm">
-			<h3>
-				${message:storageItemsList}
-				<t:if test="virtualVehicle">&quot;${virtualVehicle.name}&quot; (${virtualVehicle.id})</t:if>
-			</h3>
-			<table t:type="grid" t:source="storageList" t:row="storageItem"
-				t:reorder="id,name,modificationTime" t:add="content"
-				class="table table-striped table-condensed topic-table">
+	<t:Form t:id="storageItemsForm">
+		<h4>
+			${message:storageItemsList}
+			<t:If test="virtualVehicle">&quot;${virtualVehicle.name}&quot; (${virtualVehicle.id})</t:If>
+		</h4>
 
-				<p:modificationTimeCell>
-					<t:output t:format="${message:dateFormat}"
-						t:value="storageItem.modificationTime" />
-				</p:modificationTimeCell>
+		<t:Grid t:source="storageList" t:row="storageItem"
+			t:reorder="id,name,modificationTime" t:add="content"
+			class="table table-striped table-condensed topic-table">
 
-				<p:contentCell>
-					<t:outputRaw value="contentLink" />
-				</p:contentCell>
+			<p:modificationTimeCell>
+				<t:output t:format="message:dateFormat"
+					t:value="storageItem.modificationTime" />
+			</p:modificationTimeCell>
 
-				<p:empty>
-					<p>${message:noStorageItemFound}</p>
-				</p:empty>
-			</table>
-		</t:form>
-	</t:zone>
-</section>
+			<p:contentCell>
+				<t:outputRaw value="contentLink" />
+			</p:contentCell>
+
+			<p:empty>
+				<p>${message:noStorageItemFound}</p>
+			</p:empty>
+		</t:Grid>
+
+	</t:Form>
+</t:Zone>
+<!-- 		</div> -->
+<!-- 		</div> -->
 
 </html>

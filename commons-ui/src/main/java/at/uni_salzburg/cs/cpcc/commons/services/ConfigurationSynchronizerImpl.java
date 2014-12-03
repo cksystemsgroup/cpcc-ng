@@ -33,6 +33,7 @@ import java.util.TimerTask;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
 
     private static final int DB_CHANGE_TIMEOUT = 10;
 
+    private Session session;
     private QueryManager qm;
     private CommunicationService com;
     private CoreJsonConverter jsonConv;
@@ -75,9 +77,10 @@ public class ConfigurationSynchronizerImpl extends TimerTask
      * @param jsonConv the core JSON converter service.
      * @param stateSrv the real vehicle state service.
      */
-    public ConfigurationSynchronizerImpl(TimerService timerService, QueryManager qm, CommunicationService com,
+    public ConfigurationSynchronizerImpl(TimerService timerService, Session session, QueryManager qm, CommunicationService com,
         CoreJsonConverter jsonConv, RealVehicleStateService stateSrv)
     {
+        this.session = session;
         this.qm = qm;
         this.com = com;
         this.jsonConv = jsonConv;
@@ -165,7 +168,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             return;
         }
 
-        Transaction transaction = qm.getSession().beginTransaction();
+        Transaction transaction = session.beginTransaction();
         try
         {
             syncConfig(targetList);
@@ -176,7 +179,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             transaction.rollback();
             LOG.error("Can not synchronize configuration to other real vehicles.", e);
         }
-        qm.getSession().clear();
+        session.clear();
     }
 
     /**
@@ -357,12 +360,12 @@ public class ConfigurationSynchronizerImpl extends TimerTask
                     if (saveOnly)
                     {
                         LOG.info("### save SensorDefinition id=" + sdId + " " + dbSd.getLastUpdate().toString());
-                        qm.getSession().save(dbSd);
+                        session.save(dbSd);
                     }
                     else
                     {
                         LOG.info("### update SensorDefinition id=" + sdId + " " + dbSd.getLastUpdate().toString());
-                        qm.saveOrUpdate(dbSd);
+                        session.saveOrUpdate(dbSd);
                     }
                     break;
                 default:
@@ -400,7 +403,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             {
                 LOG.info("### delete SensorDefinition id=" + dbItem.getId());
                 dbItem.setDeleted(Boolean.TRUE);
-                qm.saveOrUpdate(dbItem);
+                session.saveOrUpdate(dbItem);
             }
         }
     }
@@ -466,12 +469,12 @@ public class ConfigurationSynchronizerImpl extends TimerTask
                     if (saveOnly)
                     {
                         LOG.info("### save RealVehicle id=" + rdId);
-                        qm.getSession().save(dbRv);
+                        session.save(dbRv);
                     }
                     else
                     {
                         LOG.info("### update RealVehicle id=" + rdId);
-                        qm.saveOrUpdate(dbRv);
+                        session.saveOrUpdate(dbRv);
                     }
                     break;
                 default:
@@ -508,7 +511,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             {
                 LOG.info("### remove RealVehicle id=" + dbItem.getId());
                 dbItem.setDeleted(Boolean.TRUE);
-                qm.saveOrUpdate(dbItem);
+                session.saveOrUpdate(dbItem);
             }
         }
     }

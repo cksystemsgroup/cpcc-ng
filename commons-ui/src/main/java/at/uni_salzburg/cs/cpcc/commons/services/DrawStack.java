@@ -19,14 +19,18 @@
  */
 package at.uni_salzburg.cs.cpcc.commons.services;
 
+import java.util.List;
+
 import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.internal.TapestryInternalUtils;
 import org.apache.tapestry5.services.AssetSource;
+import org.apache.tapestry5.services.javascript.JavaScriptAggregationStrategy;
 import org.apache.tapestry5.services.javascript.StylesheetLink;
 
 /**
  * DrawStack
  */
+@Deprecated
 public class DrawStack extends AbstractJavaScriptStack
 {
     /**
@@ -48,6 +52,20 @@ public class DrawStack extends AbstractJavaScriptStack
                 assetSource.getAsset(null, "classpath:/at/uni_salzburg/cs/cpcc/commons/js/zoneEditMessages.js", null),
                 assetSource.getUnlocalizedAsset("/at/uni_salzburg/cs/cpcc/commons/js/zoneEdit.js"),
             };
+    }
+
+    @Override
+    public List<String> getModules()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public JavaScriptAggregationStrategy getJavaScriptAggregationStrategy()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
