@@ -5,7 +5,7 @@
 	<groupId>at.uni-salzburg.cs.cpcc</groupId>
 	<artifactId>cpcc-ng-project</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>Cyber Physical Cloud Computing Next Generation Project</name>
 	<description>Cyber Physical Cloud Computing Next Generation Project</description>
 
