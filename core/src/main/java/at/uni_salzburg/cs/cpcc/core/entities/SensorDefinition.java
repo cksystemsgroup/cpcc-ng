@@ -238,7 +238,7 @@ public class SensorDefinition
             return false;
         }
 
-        if (!StringUtilities.equals(getParameters(), other.getParameters()))
+        if (!StringUtilities.isEqual(getParameters(), other.getParameters()))
         {
             return false;
         }
@@ -248,7 +248,7 @@ public class SensorDefinition
             return false;
         }
 
-        if (!StringUtilities.equals(getMessageType(), other.getMessageType()))
+        if (!StringUtilities.isEqual(getMessageType(), other.getMessageType()))
         {
             return false;
         }

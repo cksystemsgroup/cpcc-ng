@@ -57,7 +57,7 @@ public class StringUtilitiesTest
     @Test(dataProvider = "equalStringsDataProvider")
     public void shouldDetectEqualStrings(String a, String b)
     {
-        assertThat(StringUtilities.equals(a, b)).isTrue();
+        assertThat(StringUtilities.isEqual(a, b)).isTrue();
     }
 
     @DataProvider
@@ -74,7 +74,7 @@ public class StringUtilitiesTest
     @Test(dataProvider = "notEqualStringsDataProvider")
     public void shouldDetectNotEqualStrings(String a, String b)
     {
-        assertThat(StringUtilities.equals(a, b)).isFalse();
+        assertThat(StringUtilities.isEqual(a, b)).isFalse();
     }
 
     @DataProvider

@@ -34,7 +34,7 @@ public final class StringUtilities
      * @param b second string or null.
      * @return true if both strings are equal or both strings are null.
      */
-    public static boolean equals(String a, String b)
+    public static boolean isEqual(String a, String b)
     {
         if (a == null && b == null)
         {

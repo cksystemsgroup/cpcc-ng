@@ -176,7 +176,8 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
                 CommunicationResponse resp =
                     com.transfer(status.getRealVehicle(), Connector.REAL_VEHICLE_STATUS, new byte[0]);
 
-                if (status.getRealVehicle().getName().equals("RV01"))
+                // TODO remove.
+                if ("RV01".equals(status.getRealVehicle().getName()))
                 {
                     System.out.println("buggerit! RV01");
                 }

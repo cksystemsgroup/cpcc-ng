@@ -40,7 +40,7 @@ public class ByteArrayStreamResponse implements StreamResponse
      */
     public ByteArrayStreamResponse(String contentType, byte[] data)
     {
-        this.data = data != null ? data : new byte[0];
+        this.data = data;
         this.contentType = contentType;
     }
 

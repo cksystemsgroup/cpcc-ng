@@ -1,7 +1,7 @@
 /*
  * This code is part of the CPCC-NG project.
  *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+ * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.tapestry5.annotations.PageActivationContext;
 import org.apache.tapestry5.annotations.Property;
 
 import at.uni_salzburg.cs.cpcc.commons.services.StorageContentTagService;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * VehicleStorage
@@ -42,13 +42,16 @@ public class VehicleStorage
     @Inject
     protected StorageContentTagService storageTagService;
 
-//    @PageActivationContext
-//    @Property
-//    private Integer virtualVehicleId;
+    // TODO
+    //    @PageActivationContext
+    //    @Property
+    //    private Integer virtualVehicleId;
 
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "VehicleStorage.tml uses this variable.")
     @Property
     private VirtualVehicle virtualVehicle;
 
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "VehicleStorage.tml uses this variable.")
     @Property
     private List<VirtualVehicleStorage> storageList;
 

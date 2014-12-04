@@ -22,6 +22,7 @@ package at.uni_salzburg.cs.cpcc.commons.pages.ros;
 import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -106,12 +107,12 @@ public class RosDeviceDetail
         Device device = qm.findDeviceByTopicRoot(deviceDetailLinkContext);
         if (device == null)
         {
-            return null;
+            return Collections.emptySet();
         }
         RosNodeGroup group = nodeService.getDeviceNodes().get(device.getTopicRoot());
         if (group == null)
         {
-            return null;
+            return Collections.emptySet();
         }
         return renderParameterList(group.getCurrentState());
     }
@@ -123,12 +124,12 @@ public class RosDeviceDetail
     {
         if (deviceDetailLinkContext == null)
         {
-            return null;
+            return Collections.emptySet();
         }
         Device device = qm.findDeviceByTopicRoot(deviceDetailLinkContext);
         if (device == null)
         {
-            return null;
+            return Collections.emptySet();
         }
         List<AbstractRosAdapter> l = nodeService.getAdapterNodes().get(device.getTopicRoot());
         return l;
@@ -141,7 +142,7 @@ public class RosDeviceDetail
     {
         if (adapter == null)
         {
-            return null;
+            return Collections.emptySet();
         }
         return renderParameterList(adapter.getCurrentState());
     }
@@ -182,7 +183,7 @@ public class RosDeviceDetail
     {
         if (state == null)
         {
-            return Arrays.asList(new String[0]);
+            return Collections.emptySet();
         }
 
         Map<String, String> parameterMap = new TreeMap<String, String>();

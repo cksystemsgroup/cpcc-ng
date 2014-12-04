@@ -102,7 +102,7 @@ public class AbstractModifyVehicle
         try
         {
             Object[] result = javaScriptService.codeVerification(vehicle.getCode(), 1);
-            if (result != null)
+            if (result != null && result.length > 0)
             {
                 form.recordError(messages.format(ERROR_AT_COMPILATION, result));
             }

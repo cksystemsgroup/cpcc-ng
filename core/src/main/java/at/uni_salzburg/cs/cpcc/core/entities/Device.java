@@ -19,6 +19,7 @@
  */
 package at.uni_salzburg.cs.cpcc.core.entities;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -140,7 +141,7 @@ public class Device implements ITreeNode
     @Override
     public List<ITreeNode> getChildren()
     {
-        return null;
+        return Collections.emptyList();
     }
 
     /**
