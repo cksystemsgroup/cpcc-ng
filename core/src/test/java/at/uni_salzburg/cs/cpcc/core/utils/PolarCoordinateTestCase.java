@@ -102,6 +102,6 @@ public class PolarCoordinateTestCase
     {
         PolarCoordinate v = new PolarCoordinate(1, 2, 3);
         String cooardinateString = v.toString();
-        AssertJUnit.assertEquals("(1.0°, 2.0°, 3.0m)", cooardinateString);
+        AssertJUnit.assertEquals("(1.0\u00B0, 2.0\u00B0, 3.0m)", cooardinateString);
     }
 }
