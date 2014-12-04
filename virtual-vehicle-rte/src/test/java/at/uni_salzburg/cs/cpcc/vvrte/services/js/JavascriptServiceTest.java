@@ -186,7 +186,7 @@ public class JavascriptServiceTest
     {
         JavascriptService jss = new JavascriptServiceImpl(null);
         Object[] result = jss.codeVerification(script, 1);
-        assertThat(result).isNull();
+        assertThat(result).isNotNull().hasSize(0);
     }
 
     @Test
@@ -213,7 +213,7 @@ public class JavascriptServiceTest
         String script = "var x = 0;\nx x x";
         JavascriptService jss = new JavascriptServiceImpl(null);
         Object[] result = jss.codeVerification(script, 1);
-        assertThat(result).isNotNull();
+        assertThat(result).isNotNull().hasSize(4);
 
         Integer column = (Integer) result[0];
         Integer line = (Integer) result[1];
@@ -232,7 +232,7 @@ public class JavascriptServiceTest
         String script = "function f(x){return x+1} f(7)";
         JavascriptService jss = new JavascriptServiceImpl(null);
         Object[] result = jss.codeVerification(script, 1);
-        assertThat(result).isNull();
+        assertThat(result).isNotNull().hasSize(0);
     }
 
     /**

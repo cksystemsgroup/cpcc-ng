@@ -85,7 +85,7 @@ public class CameraTest
     private static final String HEIGHT_120 = "data/height-120.png";
     private static final String HEIGHT_150 = "data/height-150.png";
     private static final String HEIGHT_200 = "data/height-200.png";
-    
+
     private static final File blackTileFile = new File(CameraTest.class.getResource(BLACK_TILE).getFile());
     private static final File blueTileFile = new File(CameraTest.class.getResource(BLUE_TILE).getFile());
     private static final File cyanTileFile = new File(CameraTest.class.getResource(CYAN_TILE).getFile());
@@ -102,7 +102,7 @@ public class CameraTest
     private static final String height120 = CameraTest.class.getResource(HEIGHT_120).getFile();
     private static final String height150 = CameraTest.class.getResource(HEIGHT_150).getFile();
     private static final String height200 = CameraTest.class.getResource(HEIGHT_200).getFile();
-    
+
     private Configuration config;
     private Camera camera;
     private GeodeticSystem gs;
@@ -171,13 +171,13 @@ public class CameraTest
         testFileHandler.getResponses().put("/18/41925/101292.png", new Object[]{"image/png", whiteTileFile});
         testFileHandler.getResponses().put("/18/41925/101293.png", new Object[]{"image/png", blackTileFile});
         testFileHandler.getResponses().put("/18/41925/101294.png", new Object[]{"image/png", blueTileFile});
-        
+
         testFileHandler.getResponses().put("/18/41926/101290.png", new Object[]{"image/png", cyanTileFile});
         testFileHandler.getResponses().put("/18/41926/101291.png", new Object[]{"image/png", greenTileFile});
         testFileHandler.getResponses().put("/18/41926/101292.png", new Object[]{"image/png", purpleTileFile});
         testFileHandler.getResponses().put("/18/41926/101293.png", new Object[]{"image/png", redTileFile});
         testFileHandler.getResponses().put("/18/41926/101294.png", new Object[]{"image/png", whiteTileFile});
-        
+
         HttpProcessor httpproc = HttpProcessorBuilder.create()
             .add(new ResponseDate())
             .add(new ResponseServer("Test/1.1"))
@@ -287,12 +287,12 @@ public class CameraTest
         byte[] reference = FileUtils.readFileToByteArray(new File(imageName));
         assertThat(buffer).isEqualTo(reference);
     }
-    
+
     @Test
     public void shouldReturnNullImageOnNullPosition() throws IOException
     {
         byte[] buffer = camera.getImage(null);
-        assertThat(buffer).isNull();
+        assertThat(buffer).isNotNull().hasSize(0);
     }
 
 }

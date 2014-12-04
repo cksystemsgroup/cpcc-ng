@@ -37,8 +37,9 @@ public class JavascriptServiceImpl implements JavascriptService
 {
     private static final Logger LOG = LoggerFactory.getLogger(JavascriptServiceImpl.class);
 
-    private Set<String> allowedClasses = new HashSet<String>();
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
+    private Set<String> allowedClasses = new HashSet<String>();
     private Set<String> allowedClassesRegex = new HashSet<String>();
 
     /**
@@ -115,7 +116,7 @@ public class JavascriptServiceImpl implements JavascriptService
             Script compiledScript = cx.compileString(completedScript, "<check>", 1, null);
             if (compiledScript != null)
             {
-                return null;
+                return EMPTY_OBJECT_ARRAY;
             }
         }
         catch (RhinoException e)

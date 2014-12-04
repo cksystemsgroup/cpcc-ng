@@ -1,5 +1,5 @@
 /*
- * This code is part of the CPCC-NG and the JNavigator project.
+ * This code is part of the CPCC-NG project.
  *
  * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
  *
@@ -36,6 +36,8 @@ import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
  */
 public class Camera
 {
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    
     private TileCache tileCache;
     private BufferedImage map;
     private MercatorProjection topLeftTile;
@@ -62,8 +64,8 @@ public class Camera
      */
     private void initMap()
     {
-        map = new BufferedImage(mapWidth * cfg.getTileWidth(), mapHeight * cfg.getTileHeight(),
-            BufferedImage.TYPE_INT_RGB);
+        map = new BufferedImage(mapWidth * cfg.getTileWidth(), mapHeight * cfg.getTileHeight()
+            , BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g2d = map.createGraphics();
         tiles = new Graphics[mapWidth][mapHeight];
@@ -72,8 +74,8 @@ public class Camera
         {
             for (int h = 0; h < mapHeight; ++h)
             {
-                tiles[w][h] = g2d.create(w * cfg.getTileWidth(), h * cfg.getTileHeight(), cfg.getTileWidth(),
-                    cfg.getTileHeight());
+                tiles[w][h] = g2d.create(w * cfg.getTileWidth(), h * cfg.getTileHeight()
+                    , cfg.getTileWidth(), cfg.getTileHeight());
             }
         }
     }
@@ -85,35 +87,35 @@ public class Camera
      */
     public byte[] getImage(PolarCoordinate position) throws IOException
     {
-
         if (position == null)
         {
-            return null;
+            return EMPTY_BYTE_ARRAY;
         }
 
-        if (position.getAltitude() > 200)
+        PolarCoordinate pos = new PolarCoordinate(position);
+
+        if (pos.getAltitude() > 200)
         {
-            position.setAltitude(200);
+            pos.setAltitude(200);
         }
 
         if (cfg.getOriginPosition() != null)
         {
-            position =
-                cfg.getGeodeticSystem().walk(cfg.getOriginPosition(), -position.getLatitude(), position.getLongitude(),
-                    position.getAltitude());
+            pos = cfg.getGeodeticSystem().walk(cfg.getOriginPosition()
+                , -pos.getLatitude(), pos.getLongitude(), pos.getAltitude());
         }
 
-        double dx = position.getAltitude() * Math.tan(cfg.getCameraApertureAngle() / 2.0);
+        double dx = pos.getAltitude() * Math.tan(cfg.getCameraApertureAngle() / 2.0);
         double dy = dx * cfg.getCameraHeight() / cfg.getCameraWidth();
 
-        PolarCoordinate topLeftPosition = cfg.getGeodeticSystem().walk(position, -dy, -dx, 0);
-        PolarCoordinate bottomRightPosition = cfg.getGeodeticSystem().walk(position, dy, dx, 0);
+        PolarCoordinate topLeftPosition = cfg.getGeodeticSystem().walk(pos, -dy, -dx, 0);
+        PolarCoordinate bottomRightPosition = cfg.getGeodeticSystem().walk(pos, dy, dx, 0);
 
-        MercatorProjection newTopLeftTile =
-            new MercatorProjection(cfg.getZoomLevel(), topLeftPosition.getLatitude(), topLeftPosition.getLongitude());
-        MercatorProjection newBottomRightTile =
-            new MercatorProjection(cfg.getZoomLevel(), bottomRightPosition.getLatitude(),
-                bottomRightPosition.getLongitude());
+        MercatorProjection newTopLeftTile = new MercatorProjection(cfg.getZoomLevel()
+            , topLeftPosition.getLatitude(), topLeftPosition.getLongitude());
+
+        MercatorProjection newBottomRightTile = new MercatorProjection(cfg.getZoomLevel()
+            , bottomRightPosition.getLatitude(), bottomRightPosition.getLongitude());
 
         boolean reloadTiles = topLeftTile == null || !topLeftTile.equalsTile(newTopLeftTile);
         topLeftTile = newTopLeftTile;
@@ -181,6 +183,7 @@ public class Camera
         {
             height = 1;
         }
+
         if (width < 1)
         {
             width = 1;
@@ -197,5 +200,4 @@ public class Camera
 
         return bos.toByteArray();
     }
-
 }

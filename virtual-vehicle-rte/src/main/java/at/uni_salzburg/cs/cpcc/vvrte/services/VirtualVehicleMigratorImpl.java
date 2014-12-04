@@ -42,6 +42,8 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 {
     private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleMigratorImpl.class);
 
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+    
     private VvRteRepository vvRepository;
     private CommunicationService com;
     private Set<VirtualVehicleListener> listenerSet = new HashSet<VirtualVehicleListener>();
@@ -108,7 +110,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         if (storageChunk.size() == 0 && chunkNumber > 1)
         {
             virtualVehicle.setState(VirtualVehicleState.MIGRATION_COMPLETED);
-            return null;
+            return EMPTY_BYTE_ARRAY;
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
