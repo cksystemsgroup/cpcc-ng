@@ -34,6 +34,8 @@ import org.geojson.FeatureCollection;
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
+import org.json.JSONException;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -147,54 +149,55 @@ public class CoreGeoJsonConverterTest
     }
 
     @Test(dataProvider = "realVehicleDataProvider")
-    public void shouldConvertRealVehicleToFeature(RealVehicle rv, String expected) throws IOException
+    public void shouldConvertRealVehicleToFeature(RealVehicle rv, String expected) throws IOException, JSONException
     {
         Feature feature = conv.toFeature(rv);
 
-        String json = new ObjectMapper().writeValueAsString(feature);
+        String actual = new ObjectMapper().writeValueAsString(feature);
 
-        assertThat(json).isNotNull().isEqualTo(expected);
+        assertThat(actual).isNotNull();
+        JSONAssert.assertEquals(expected, actual, false);
     }
-    
+
     @DataProvider
     public Object[][] realVehicleListDataProvider()
     {
         return new Object[][]{
-            new Object[]{Arrays.asList(rv1), 
+            new Object[]{Arrays.asList(rv1),
                 "{\"type\":\"FeatureCollection\",\"features\":["
-                + "{\"type\":\"Feature\","
-                + "\"properties\":{\"name\":\"rv1\",\"rvtype\":\"QUADROCOPTER\",\"type\":\"rv\"},\"id\":\"1\"}]}"
+                    + "{\"type\":\"Feature\","
+                    + "\"properties\":{\"name\":\"rv1\",\"rvtype\":\"QUADROCOPTER\",\"type\":\"rv\"},\"id\":\"1\"}]}"
             },
-            new Object[]{Arrays.asList(rv1,rv2),
+            new Object[]{Arrays.asList(rv1, rv2),
                 "{\"type\":\"FeatureCollection\",\"features\":["
-                + "{\"type\":\"Feature\","
-                + "\"properties\":{\"name\":\"rv1\",\"rvtype\":\"QUADROCOPTER\",\"type\":\"rv\"},\"id\":\"1\"},"
-                + "{\"type\":\"Feature\","
-                + "\"properties\":{\"name\":\"rv2\",\"rvtype\":\"FIXED_WING_AIRCRAFT\",\"type\":\"rv\"},"
-                + "\"geometry\":{\"type\":\"FeatureCollection\",\"features\":["
-                + "{\"type\":\"Feature\","
-                + "\"properties\":{\"type\":\"depot\"},"
-                + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[-122.4255,37.8085]}},"
-                + "{\"type\":\"Feature\","
-                + "\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
-                + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-122.425,37.808],[-122.426,37.808],"
-                + "[-122.426,37.809],[-122.425,37.809],[-122.425,37.808]]]}}]},\"id\":\"2\"}]}"
+                    + "{\"type\":\"Feature\","
+                    + "\"properties\":{\"name\":\"rv1\",\"rvtype\":\"QUADROCOPTER\",\"type\":\"rv\"},\"id\":\"1\"},"
+                    + "{\"type\":\"Feature\","
+                    + "\"properties\":{\"name\":\"rv2\",\"rvtype\":\"FIXED_WING_AIRCRAFT\",\"type\":\"rv\"},"
+                    + "\"geometry\":{\"type\":\"FeatureCollection\",\"features\":["
+                    + "{\"type\":\"Feature\","
+                    + "\"properties\":{\"type\":\"depot\"},"
+                    + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[-122.4255,37.8085]}},"
+                    + "{\"type\":\"Feature\","
+                    + "\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
+                    + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-122.425,37.808],[-122.426,37.808],"
+                    + "[-122.426,37.809],[-122.425,37.809],[-122.425,37.808]]]}}]},\"id\":\"2\"}]}"
             },
         };
     }
 
     @Test(dataProvider = "realVehicleListDataProvider")
     public void shouldConvertRealVehicleListToFeatureCollection(List<RealVehicle> rv, String expected)
-        throws IOException
+        throws IOException, JSONException
     {
         FeatureCollection fc = conv.toFeatureCollection(rv);
 
-        String json = new ObjectMapper().writeValueAsString(fc);
+        String actual = new ObjectMapper().writeValueAsString(fc);
 
-        assertThat(json).isNotNull().isEqualTo(expected);
+        assertThat(actual).isNotNull();
+        JSONAssert.assertEquals(expected, actual, false);
     }
-    
-    
+
     @Test
     public void buggeritRV() throws JsonProcessingException
     {
@@ -205,35 +208,37 @@ public class CoreGeoJsonConverterTest
         // rv02
         // double[][] pos = {{37.80800, -122.42500},{37.80800, -122.42600},{37.80900, -122.42600},{37.80900, -122.42500},{37.80800, -122.42500}};
         // double[] depot = {37.80850, -122.42550};
-        
+
         // rv03
         // double[][] pos = {{37.80800, -122.42400},{37.80800, -122.42500},{37.80900, -122.42500},{37.80900, -122.42400},{37.80800, -122.42400}};
         // double[] depot = {37.80850, -122.42450};
-        
+
         // rv04
         // double[][] pos = {{37.80900, -122.42600},{37.80900, -122.42700},{37.81000, -122.42700},{37.81000, -122.42600},{37.80900, -122.42600}};
         // double[] depot = {37.80950, -122.42650};
-        
+
         // rv05
         // double[][] pos = {{37.80900, -122.42500},{37.80900, -122.42600},{37.81000, -122.42600},{37.81000, -122.42500},{37.80900, -122.42500}};
         // double[] depot = {37.80950, -122.42550};
-        
+
         // rv06        
         // double[][] pos = {{37.80900, -122.42400},{37.80900, -122.42500},{37.81000, -122.42500},{37.81000, -122.42400},{37.80900, -122.42400}};
         // double[] depot = {37.80950, -122.42450};
-        
+
         // rv07
         // double[][] pos = {{37.80700, -122.42600},{37.80700, -122.42700},{37.80800, -122.42700},{37.80800, -122.42600},{37.80700, -122.42600}};
         // double[] depot = {37.80750,  -122.42650};
-        
+
         // rv08
         // double[][] pos = {{37.80700, -122.42500},{37.80700, -122.42600},{37.80800, -122.42600},{37.80800, -122.42500},{37.80700, -122.42500}};
         // double[] depot = {37.80750, -122.42550};
-        
+
         // rv09
-        double[][] pos = {{37.80700, -122.42400},{37.80700, -122.42500},{37.80800, -122.42500},{37.80800, -122.42400},{37.80700, -122.42400}};
+        double[][] pos =
+        {{37.80700, -122.42400}, {37.80700, -122.42500}, {37.80800, -122.42500}, {37.80800, -122.42400},
+            {37.80700, -122.42400}};
         double[] depot = {37.80750, -122.42450};
-        
+
         Point point = new Point(depot[1], depot[0]);
 
         Feature pointFeature = new Feature();
@@ -261,12 +266,12 @@ public class CoreGeoJsonConverterTest
 
         System.out.println(json);
     }
-    
+
     @Test
     public void buggeritGS() throws JsonProcessingException
     {
-//        [{lat: 37.80800,lng: -122.42600}]
-        
+        //        [{lat: 37.80800,lng: -122.42600}]
+
         Point point = new Point(-122.42600, 37.80800);
 
         Feature pointFeature = new Feature();
