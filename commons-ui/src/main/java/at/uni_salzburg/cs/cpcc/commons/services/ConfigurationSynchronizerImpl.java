@@ -58,6 +58,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
 {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationSynchronizerImpl.class);
 
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
     private static final int DB_CHANGE_TIMEOUT = 10;
 
     private Session session;
@@ -77,7 +78,8 @@ public class ConfigurationSynchronizerImpl extends TimerTask
      * @param jsonConv the core JSON converter service.
      * @param stateSrv the real vehicle state service.
      */
-    public ConfigurationSynchronizerImpl(TimerService timerService, Session session, QueryManager qm, CommunicationService com,
+    public ConfigurationSynchronizerImpl(TimerService timerService, Session session, QueryManager qm,
+        CommunicationService com,
         CoreJsonConverter jsonConv, RealVehicleStateService stateSrv)
     {
         this.session = session;
@@ -90,7 +92,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
 
         determineHostingRealVehicleId();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -273,7 +275,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         if (content == null)
         {
             LOG.info("updateOwnConfig: no data!");
-            return null;
+            return EMPTY_BYTE_ARRAY;
         }
 
         LOG.info("updateOwnConfig: data length=" + content.length);
@@ -281,7 +283,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         String jsonString = new String(content, "UTF-8");
         if (StringUtils.isEmpty(jsonString))
         {
-            return null;
+            return EMPTY_BYTE_ARRAY;
         }
 
         JSONObject o = new JSONObject(jsonString);
@@ -295,7 +297,9 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         JSONArray realVehiclesBack = syncRealVehicleConfig(realVehicles);
         back.put("rvs", realVehiclesBack);
 
-        return sensorsBack.length() == 0 && realVehiclesBack.length() == 0 ? null : JSONUtils.toByteArray(back);
+        return sensorsBack.length() == 0 && realVehiclesBack.length() == 0
+            ? EMPTY_BYTE_ARRAY
+            : JSONUtils.toByteArray(back);
     }
 
     /**

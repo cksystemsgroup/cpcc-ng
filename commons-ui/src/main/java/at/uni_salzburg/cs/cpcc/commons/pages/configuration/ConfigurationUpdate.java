@@ -42,7 +42,7 @@ public class ConfigurationUpdate
     private ConfigurationSynchronizer synchronizer;
 
     @CommitAfter
-    private Object onActivate() throws Exception
+    Object onActivate() throws Exception
     {
         InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();
         byte[] requestData = IOUtils.toByteArray(inputStream);

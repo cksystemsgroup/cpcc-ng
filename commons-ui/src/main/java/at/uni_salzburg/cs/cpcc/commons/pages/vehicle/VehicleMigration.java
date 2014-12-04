@@ -23,8 +23,6 @@ import java.io.InputStream;
 
 import javax.inject.Inject;
 
-import org.apache.tapestry5.EventConstants;
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.services.RequestGlobals;
 import org.apache.tapestry5.util.TextStreamResponse;
@@ -42,9 +40,8 @@ public class VehicleMigration
     @Inject
     private VirtualVehicleMigrator migrator;
 
-    @OnEvent(value = EventConstants.ACTIVATE)
     @CommitAfter
-    private Object activate() throws Exception
+    Object onActivate() throws Exception
     {
         InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();
         String response = migrator.storeChunk(inputStream);
