@@ -82,13 +82,21 @@ public class AbstractModifyRealVehicle
     @OnEvent(SUCCESS)
     protected Object storeRealVehicle()
     {
-        Transaction t = session.getTransaction();
-        t.begin();
-        realVehicle.setLastUpdate(new Date());
-        session.saveOrUpdate(realVehicle);
+        Session newSession = session.getSessionFactory().openSession();
+        try
+        {
+            Transaction t = newSession.getTransaction();
+            t.begin();
+            realVehicle.setLastUpdate(new Date());
+            newSession.saveOrUpdate(realVehicle);
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
+
         rvss.notifyConfigurationChange();
-        t.commit();
-        
         confSync.notifyConfigurationChange();
         return RvList.class;
     }

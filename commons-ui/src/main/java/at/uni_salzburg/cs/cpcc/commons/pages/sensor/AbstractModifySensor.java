@@ -72,11 +72,18 @@ public class AbstractModifySensor
     protected Object storeSensorDefinition()
     {
         Session newSession = session.getSessionFactory().openSession();
-        Transaction t = newSession.getTransaction();
-        t.begin();
-        sensor.setLastUpdate(new Date());
-        newSession.saveOrUpdate(sensor);
-        t.commit();
+        try
+        {
+            Transaction t = newSession.getTransaction();
+            t.begin();
+            sensor.setLastUpdate(new Date());
+            newSession.saveOrUpdate(sensor);
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
 
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();

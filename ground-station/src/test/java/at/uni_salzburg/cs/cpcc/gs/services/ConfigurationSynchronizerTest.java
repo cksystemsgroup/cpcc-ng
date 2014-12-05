@@ -1,11 +1,21 @@
 /*
- * This code is part of the CPCC-NG project. Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com> This program
- * is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ * This code is part of the CPCC-NG project.
+ *
+ * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 package at.uni_salzburg.cs.cpcc.gs.services;
 
@@ -345,7 +355,7 @@ public class ConfigurationSynchronizerTest
         setUpQmAllSensorDefinitions(db, in);
 
         JSONArray sensorDefs = jsonConv.toJsonArray(in.toArray(new SensorDefinition[0]));
-        JSONArray back = sync.syncSensorDefinitionConfig(sensorDefs);
+        JSONArray back = sync.syncSensorDefinitionConfig(session, sensorDefs);
 
         List<SensorDefinition> result = ConvUtils.toSensorDefinitionList(back);
 
@@ -398,7 +408,7 @@ public class ConfigurationSynchronizerTest
         setUpQmAllRealVehicles(db, in);
 
         JSONArray realVehicles = jsonConv.toJsonArray(true, in.toArray(new RealVehicle[0]));
-        JSONArray back = sync.syncRealVehicleConfig(realVehicles);
+        JSONArray back = sync.syncRealVehicleConfig(session, realVehicles);
 
         List<RealVehicle> result = ConvUtils.toRealVehicleList(back);
 
@@ -417,7 +427,7 @@ public class ConfigurationSynchronizerTest
         when(com.transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class)))
             .thenThrow(IOException.class);
 
-        sync.syncConfig(Arrays.asList(rv1));
+        sync.syncConfig(session, Arrays.asList(rv1));
     }
 
     @Test
@@ -425,7 +435,7 @@ public class ConfigurationSynchronizerTest
     {
         response.setStatus(Status.NOT_OK);
 
-        sync.syncConfig(Arrays.asList(rv1));
+        sync.syncConfig(session, Arrays.asList(rv1));
     }
 
     @Test
@@ -437,14 +447,14 @@ public class ConfigurationSynchronizerTest
         when(qm.findAllRealVehicles()).thenReturn(Arrays.asList(gs1, rv1, rv2, rv3, rv4));
         when(qm.findAllSensorDefinitions()).thenReturn(Arrays.asList(sd1, sd2, sd3, sd4));
 
-        sync.syncConfig(Arrays.asList(rv1));
+        sync.syncConfig(session, Arrays.asList(rv1));
 
         // System.out.println("### buggerit: " + new String(result1));
 
         // verify(com).transfer(rv1, Connector.CONFIGURATION_UPDATE, result1.getBytes());
 
         verify(com).transfer(eq(rv1), eq(Connector.CONFIGURATION_UPDATE), any(byte[].class));
-            
+
         assertThat(transferCount).isEqualTo(1);
         assertThat(lastTransferData).isNotNull();
 
@@ -588,20 +598,20 @@ public class ConfigurationSynchronizerTest
     {
         transferCount = 0;
         lastTransferData = null;
-        
+
         setUpQmAllSensorDefinitions(sdsDb, new ArrayList<SensorDefinition>());
         setUpQmAllRealVehicles(rvsDb, new ArrayList<RealVehicle>());
 
         response.setContent(responseContent.getBytes());
         response.setStatus(Status.OK);
 
-        sync.syncConfig(Arrays.asList(targetRV));
+        sync.syncConfig(session, Arrays.asList(targetRV));
 
         System.out.println("### " + expectedResult);
         // verify(com).transfer(targetRV, Connector.CONFIGURATION_UPDATE, expectedResult.getBytes());
-        
+
         verify(com).transfer(eq(targetRV), eq(Connector.CONFIGURATION_UPDATE), any(byte[].class));
-        
+
         assertThat(transferCount).isEqualTo(1);
         assertThat(lastTransferData).isNotNull();
         JSONAssert.assertEquals(expectedResult, new String(lastTransferData), false);
@@ -669,7 +679,7 @@ public class ConfigurationSynchronizerTest
         response.setContent(responseContent.getBytes());
         response.setStatus(Status.OK);
 
-        sync.syncConfig(Arrays.asList(targetRV));
+        sync.syncConfig(session, Arrays.asList(targetRV));
 
         verifyZeroInteractions(com);
     }

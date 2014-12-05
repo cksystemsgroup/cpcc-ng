@@ -331,9 +331,17 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         item.setModificationTime(new Date());
         item.setContent(obj);
 
-        Transaction t = session.beginTransaction();
-        session.saveOrUpdate(item);
-        t.commit();
+        Session newSession = session.getSessionFactory().openSession();
+        try
+        {
+            Transaction t = newSession.beginTransaction();
+            newSession.saveOrUpdate(item);
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
     }
 
     /**
@@ -349,9 +357,17 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             return;
         }
 
-        Transaction t = session.beginTransaction();
-        session.delete(item);
-        t.commit();
+        Session newSession = session.getSessionFactory().openSession();
+        try
+        {
+            Transaction t = newSession.getTransaction();
+            newSession.delete(item);
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
     }
 
     /**

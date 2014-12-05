@@ -79,58 +79,67 @@ public class VvMigrationWorker extends Thread
 
         setName("MIG-" + vehicle.getName() + "-" + vehicle.getMigrationDestination().getName());
 
-        Transaction transaction = session.beginTransaction();
-        vehicle.setState(VirtualVehicleState.MIGRATING);
-        vehicle.setMigrationStartTime(new Date());
-        session.saveOrUpdate(vehicle);
-        transaction.commit();
-
-        transaction = session.beginTransaction();
-
+        Session newSession = session.getSessionFactory().openSession();
         try
         {
-            byte[] chunk = migrator.findFirstChunk(vehicle);
-            if (chunk == null)
-            {
-                throw new IOException("Can not find first chunk of virtual vehicle");
-            }
+            Transaction transaction = newSession.beginTransaction();
+            vehicle.setState(VirtualVehicleState.MIGRATING);
+            vehicle.setMigrationStartTime(new Date());
+            newSession.saveOrUpdate(vehicle);
+            transaction.commit();
 
-            CommunicationResponse response = com.transfer(vehicle.getMigrationDestination(), Connector.MIGRATE, chunk);
-
-            int chunkNumber = 1;
-            while (response.getStatus() == Status.OK)
+            transaction = newSession.beginTransaction();
+            try
             {
-                chunk = migrator.findChunk(vehicle, new String(response.getContent(),"UTF-8"), chunkNumber);
+                byte[] chunk = migrator.findFirstChunk(vehicle);
                 if (chunk == null)
                 {
-                    if (chunkNumber == 1)
-                    {
-                        throw new IOException("Second chunk is empty, which is not allowed.");
-                    }
-                    break;
+                    throw new IOException("Can not find first chunk of virtual vehicle");
                 }
-                response = com.transfer(vehicle.getMigrationDestination(), Connector.MIGRATE, chunk);
-                ++chunkNumber;
-            }
 
-            if (response.getStatus() == Status.OK)
-            {
-                // vehicle.setState(VirtualVehicleState.MIGRATION_COMPLETED);
-                // vehicle.setMigrationStartTime(null);
-                vvRepository.deleteVirtualVehicleById(vehicle);
-            }
-            else
-            {
-                vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-                session.saveOrUpdate(vehicle);
-            }
+                CommunicationResponse response =
+                    com.transfer(vehicle.getMigrationDestination(), Connector.MIGRATE, chunk);
 
-            transaction.commit();
+                int chunkNumber = 1;
+                while (response.getStatus() == Status.OK)
+                {
+                    chunk = migrator.findChunk(vehicle, new String(response.getContent(), "UTF-8"), chunkNumber);
+                    if (chunk == null)
+                    {
+                        if (chunkNumber == 1)
+                        {
+                            throw new IOException("Second chunk is empty, which is not allowed.");
+                        }
+                        break;
+                    }
+                    response = com.transfer(vehicle.getMigrationDestination(), Connector.MIGRATE, chunk);
+                    ++chunkNumber;
+                }
+
+                if (response.getStatus() == Status.OK)
+                {
+                    // vehicle.setState(VirtualVehicleState.MIGRATION_COMPLETED);
+                    // vehicle.setMigrationStartTime(null);
+                    vvRepository.deleteVirtualVehicleById(vehicle);
+                }
+                else
+                {
+                    vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+                    newSession.saveOrUpdate(vehicle);
+                }
+
+                transaction.commit();
+            }
+            catch (IOException | ArchiveException e)
+            {
+                LOG.error("Migration aborted! Virtual vehicle: " + vehicle.getName()
+                    + " (" + vehicle.getUuid() + ")", e);
+                transaction.rollback();
+            }
         }
-        catch (IOException | ArchiveException e)
+        finally
         {
-            LOG.error("Migration aborted! Virtual vehicle: " + vehicle.getName() + " (" + vehicle.getUuid() + ")", e);
-            transaction.rollback();
+            newSession.close();
         }
 
         running = false;

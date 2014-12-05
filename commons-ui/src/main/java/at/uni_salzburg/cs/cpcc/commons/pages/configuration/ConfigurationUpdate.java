@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.services.RequestGlobals;
+import org.hibernate.Session;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
 import at.uni_salzburg.cs.cpcc.core.utils.ByteArrayStreamResponse;
@@ -35,6 +36,9 @@ import at.uni_salzburg.cs.cpcc.core.utils.ByteArrayStreamResponse;
  */
 public class ConfigurationUpdate
 {
+    @Inject
+    private Session session;
+
     @Inject
     private RequestGlobals requestGlobals;
 
@@ -46,7 +50,7 @@ public class ConfigurationUpdate
     {
         InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();
         byte[] requestData = IOUtils.toByteArray(inputStream);
-        byte[] responseData = synchronizer.updateOwnConfig(requestData);
+        byte[] responseData = synchronizer.updateOwnConfig(session, requestData);
         return new ByteArrayStreamResponse("text/plain", responseData);
     }
 }

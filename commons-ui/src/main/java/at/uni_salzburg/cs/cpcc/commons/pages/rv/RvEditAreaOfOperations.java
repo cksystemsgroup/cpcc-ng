@@ -104,11 +104,20 @@ public class RvEditAreaOfOperations
 
     void onSuccess()
     {
-        Transaction t = session.getSessionFactory().openSession().getTransaction();
-        t.begin();
-        realVehicle.setAreaOfOperation(realVehicleRegions);
-        realVehicle.setLastUpdate(new Date());
-        t.commit();
+        Session newSession = session.getSessionFactory().openSession();
+        try
+        {
+            Transaction t = newSession.getTransaction();
+            t.begin();
+            realVehicle.setAreaOfOperation(realVehicleRegions);
+            realVehicle.setLastUpdate(new Date());
+            newSession.saveOrUpdate(realVehicle);
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
 
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.tapestry5.json.JSONArray;
+import org.hibernate.Session;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
@@ -32,33 +33,33 @@ import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 public interface ConfigurationSynchronizer
 {
     /**
+     * @param session the database session.
      * @param targets the real vehicle to synchronize the configuration with.
      * @throws IOException thrown in case of errors.
      */
-    void syncConfig(List<RealVehicle> targets) throws IOException;
+    void syncConfig(Session session, List<RealVehicle> targets) throws IOException;
 
     /**
+     * @param session the database session.
      * @param sensorDefs the sensor definitions to be synchronized with the local database as a JSON array.
      * @return the sensor definitions that are newer in the local database.
      */
-    JSONArray syncSensorDefinitionConfig(JSONArray sensorDefs);
+    JSONArray syncSensorDefinitionConfig(Session session, JSONArray sensorDefs);
 
     /**
+     * @param session the database session.
      * @param realVehicles the real vehicles to be synchronized with the local database as a JSON array.
      * @return the real vehicles that are newer in the local database.
      */
-    JSONArray syncRealVehicleConfig(JSONArray realVehicles);
+    JSONArray syncRealVehicleConfig(Session session, JSONArray realVehicles);
 
     /**
-     * @param content the parameters to be updated in this vehicle's configuration.
-     * @throws IOException thrown in case of errors.
-     */
-    /**
+     * @param session the database session.
      * @param content the parameters to be updated in this vehicle's configuration.
      * @return the serialized configuration items that are newer in the hosting real vehicle.
      * @throws IOException thrown in case of errors.
      */
-    byte[] updateOwnConfig(byte[] content) throws IOException;
+    byte[] updateOwnConfig(Session session, byte[] content) throws IOException;
 
     /**
      * Inform the service that the configuration has been changed.

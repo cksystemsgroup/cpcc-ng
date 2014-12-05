@@ -162,42 +162,48 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
             VirtualVehicleMappingDecision decision = null;
 
             Session newSession = session.getSessionFactory().openSession();
-            Transaction t = newSession.beginTransaction();
-            vehicle.setState(vehicleState);
-
-            switch (state)
+            try
             {
-                case INTERRUPTED:
-                    vehicle.setContinuation(worker.getSnapshot());
-                    decision = (VirtualVehicleMappingDecision) worker.getApplicationState();
+                Transaction t = newSession.beginTransaction();
+                vehicle.setState(vehicleState);
 
-                    if (decision.isMigration() && decision.getRealVehicles().size() > 0)
-                    {
-                        // TODO select the best suitable RV instead of taking just the first.
-                        RealVehicle migrationDestination = decision.getRealVehicles().get(0);
-                        vehicle.setMigrationDestination(migrationDestination);
-                        vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
-                    }
-                    else
-                    {
-                        decision = null;
-                        vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-                        vehicle.setMigrationDestination(null);
-                    }
-                    break;
-                case FINISHED:
-                    vehicle.setEndTime(new Date());
-                    break;
-                case DEFECTIVE:
-                    LOG.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
-                    break;
-                default:
-                    break;
+                switch (state)
+                {
+                    case INTERRUPTED:
+                        vehicle.setContinuation(worker.getSnapshot());
+                        decision = (VirtualVehicleMappingDecision) worker.getApplicationState();
+
+                        if (decision.isMigration() && decision.getRealVehicles().size() > 0)
+                        {
+                            // TODO select the best suitable RV instead of taking just the first.
+                            RealVehicle migrationDestination = decision.getRealVehicles().get(0);
+                            vehicle.setMigrationDestination(migrationDestination);
+                            vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
+                        }
+                        else
+                        {
+                            decision = null;
+                            vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+                            vehicle.setMigrationDestination(null);
+                        }
+                        break;
+                    case FINISHED:
+                        vehicle.setEndTime(new Date());
+                        break;
+                    case DEFECTIVE:
+                        LOG.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
+                        break;
+                    default:
+                        break;
+                }
+
+                newSession.saveOrUpdate(vehicle);
+                t.commit();
             }
-
-            newSession.saveOrUpdate(vehicle);
-            t.commit();
-            newSession.flush();
+            finally
+            {
+                newSession.close();
+            }
 
             if (decision != null)
             {

@@ -73,12 +73,20 @@ public class AbstractModifyVehicle
     @OnEvent(SUCCESS)
     protected Object storeVehicle()
     {
-        Transaction t = session.getTransaction();
-        t.begin();
-        vehicle.setCode(vehicle.getCode().trim());
-        session.saveOrUpdate(vehicle);
-        t.commit();
-        
+        Session newSession = session.getSessionFactory().openSession();
+        try
+        {
+            Transaction t = newSession.getTransaction();
+            t.begin();
+            vehicle.setCode(vehicle.getCode().trim());
+            newSession.saveOrUpdate(vehicle);
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
+
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
         return Vehicle.class;

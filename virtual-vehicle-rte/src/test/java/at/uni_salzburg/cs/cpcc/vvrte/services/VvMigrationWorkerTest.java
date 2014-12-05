@@ -36,6 +36,7 @@ import java.util.List;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.http.client.ClientProtocolException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -86,6 +87,10 @@ public class VvMigrationWorkerTest
 
         session = mock(Session.class);
         when(session.beginTransaction()).thenReturn(transaction);
+
+        SessionFactory sessionFactory = mock(SessionFactory.class);
+        when(sessionFactory.openSession()).thenReturn(session);
+        when(session.getSessionFactory()).thenReturn(sessionFactory);
 
         vvRepository = mock(VvRteRepository.class);
         // when(vvRepository.getSession()).thenReturn(session);
@@ -164,7 +169,7 @@ public class VvMigrationWorkerTest
         verify(transaction, times(2)).commit();
         verify(transaction, never()).rollback();
     }
-    
+
     @Test
     public void shouldContinueInterruptedMigration() throws ClientProtocolException, IOException, InterruptedException
     {
@@ -172,7 +177,7 @@ public class VvMigrationWorkerTest
         when(virtualVehicle.getName()).thenReturn("vv01");
         when(virtualVehicle.getMigrationDestination()).thenReturn(realVehicle);
         when(virtualVehicle.getState()).thenReturn(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        
+
         worker.start();
         worker.join();
         assertThat(worker.getName()).isEqualTo(
@@ -299,7 +304,7 @@ public class VvMigrationWorkerTest
         verify(transaction, times(2)).commit();
         verify(transaction, never()).rollback();
     }
-    
+
     @Test
     public void shouldAbortMigrationOnWrongVirtualVehicleState()
         throws ClientProtocolException, IOException, InterruptedException, ArchiveException

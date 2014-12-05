@@ -46,28 +46,27 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     public VvRteRepositoryImpl(Session session)
     {
         super(session);
-
         resetVirtualVehicleStates();
     }
 
     private void resetVirtualVehicleStates()
     {
-        Transaction t = getSession().getSessionFactory().openSession().beginTransaction();
-        getSession().createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
-            .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED)
-            .setParameter("oldState", VirtualVehicleState.MIGRATING)
-            .executeUpdate();
-        t.commit();
-    }
+        Session newSession = getSession().getSessionFactory().openSession();
+        try
+        {
+            Transaction t = newSession.getTransaction();
+            newSession.createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
+                .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED)
+                .setParameter("oldState", VirtualVehicleState.MIGRATING)
+                .executeUpdate();
 
-//    /**
-//     * {@inheritDoc}
-//     */
-//    @Override
-//    public QueryManager getQueryManager()
-//    {
-//        return qm;
-//    }
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -76,11 +75,9 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public List<VirtualVehicle> findAllVehicles()
     {
-        //        return (List<VirtualVehicle>) getSession()
-        //            .createCriteria(VirtualVehicle.class)
-        //            .addOrder(Order.asc("id"))
-        //            .list();
-        return (List<VirtualVehicle>) getSession().createQuery("FROM VirtualVehicle v ORDER BY v.id").list();
+        return (List<VirtualVehicle>) getSession()
+            .createQuery("FROM VirtualVehicle v ORDER BY v.id")
+            .list();
     }
 
     /**

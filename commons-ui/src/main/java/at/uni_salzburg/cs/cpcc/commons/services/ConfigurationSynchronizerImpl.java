@@ -61,7 +61,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
     private static final int DB_CHANGE_TIMEOUT = 10;
 
-    private Session session;
+    private Session sess;
     private QueryManager qm;
     private CommunicationService com;
     private CoreJsonConverter jsonConv;
@@ -82,7 +82,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         CommunicationService com,
         CoreJsonConverter jsonConv, RealVehicleStateService stateSrv)
     {
-        this.session = session;
+        this.sess = session;
         this.qm = qm;
         this.com = com;
         this.jsonConv = jsonConv;
@@ -170,25 +170,32 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             return;
         }
 
-        Transaction transaction = session.beginTransaction();
+        Session newSession = sess.getSessionFactory().openSession();
         try
         {
-            syncConfig(targetList);
-            transaction.commit();
+            Transaction transaction = newSession.getTransaction();
+            try
+            {
+                syncConfig(newSession, targetList);
+                transaction.commit();
+            }
+            catch (Throwable e)
+            {
+                transaction.rollback();
+                LOG.error("Can not synchronize configuration to other real vehicles.", e);
+            }
         }
-        catch (Throwable e)
+        finally
         {
-            transaction.rollback();
-            LOG.error("Can not synchronize configuration to other real vehicles.", e);
+            newSession.close();
         }
-        session.clear();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void syncConfig(List<RealVehicle> targetList) throws IOException
+    public void syncConfig(Session session, List<RealVehicle> targetList) throws IOException
     {
         Parameter rvNameParam = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME);
         if (StringUtils.isEmpty(rvNameParam.getValue().trim()))
@@ -221,7 +228,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
                 CommunicationResponse res = com.transfer(target, Connector.CONFIGURATION_UPDATE, data);
                 if (res.getStatus() == Status.OK)
                 {
-                    updateOwnConfig(res.getContent());
+                    updateOwnConfig(session, res.getContent());
                 }
 
                 lastUpdateMap.put(target.getId(), syncTime);
@@ -270,7 +277,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
      * @throws IOException
      */
     @Override
-    public synchronized byte[] updateOwnConfig(byte[] content) throws IOException
+    public synchronized byte[] updateOwnConfig(Session session, byte[] content) throws IOException
     {
         if (content == null)
         {
@@ -290,11 +297,11 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         JSONObject back = new JSONObject();
 
         JSONArray sensors = (JSONArray) o.get("sen");
-        JSONArray sensorsBack = syncSensorDefinitionConfig(sensors);
+        JSONArray sensorsBack = syncSensorDefinitionConfig(session, sensors);
         back.put("sen", sensorsBack);
 
         JSONArray realVehicles = (JSONArray) o.get("rvs");
-        JSONArray realVehiclesBack = syncRealVehicleConfig(realVehicles);
+        JSONArray realVehiclesBack = syncRealVehicleConfig(session, realVehicles);
         back.put("rvs", realVehiclesBack);
 
         return sensorsBack.length() == 0 && realVehiclesBack.length() == 0
@@ -306,7 +313,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
      * {@inheritDoc}
      */
     @Override
-    public synchronized JSONArray syncSensorDefinitionConfig(JSONArray sensorDefs)
+    public synchronized JSONArray syncSensorDefinitionConfig(Session session, JSONArray sensorDefs)
     {
         List<SensorDefinition> allSds = qm.findAllSensorDefinitions();
 
@@ -378,7 +385,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             }
         }
 
-        deleteObsoleteSensorDefinitions(allSds, incoming);
+        deleteObsoleteSensorDefinitions(session, allSds, incoming);
 
         return jsonConv.toJsonArray(back.toArray(new SensorDefinition[back.size()]));
     }
@@ -387,7 +394,8 @@ public class ConfigurationSynchronizerImpl extends TimerTask
      * @param allSds all sensor definitions this vehicle knows.
      * @param incoming the sensor definitions transferred from the remote real vehicle.
      */
-    private void deleteObsoleteSensorDefinitions(List<SensorDefinition> allSds, List<SensorDefinition> incoming)
+    private void deleteObsoleteSensorDefinitions(Session session, List<SensorDefinition> allSds
+        , List<SensorDefinition> incoming)
     {
         for (int k = 0, l = allSds.size(); k < l; ++k)
         {
@@ -416,7 +424,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
      * {@inheritDoc}
      */
     @Override
-    public synchronized JSONArray syncRealVehicleConfig(JSONArray realVehicles)
+    public synchronized JSONArray syncRealVehicleConfig(Session session, JSONArray realVehicles)
     {
         List<RealVehicle> allRvs = new ArrayList<RealVehicle>(qm.findAllRealVehicles());
 
@@ -486,7 +494,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             }
         }
 
-        deleteObsoleteRealVehicles(allRvs, incoming);
+        deleteObsoleteRealVehicles(session, allRvs, incoming);
 
         return jsonConv.toJsonArray(true, back.toArray(new RealVehicle[back.size()]));
     }
@@ -495,7 +503,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
      * @param allRvs all real vehicles this vehicle knows.
      * @param incoming the real vehicles transferred from the remote real vehicle.
      */
-    private void deleteObsoleteRealVehicles(List<RealVehicle> allRvs, List<RealVehicle> incoming)
+    private void deleteObsoleteRealVehicles(Session session, List<RealVehicle> allRvs, List<RealVehicle> incoming)
     {
         for (int k = 0, l = allRvs.size(); k < l; ++k)
         {

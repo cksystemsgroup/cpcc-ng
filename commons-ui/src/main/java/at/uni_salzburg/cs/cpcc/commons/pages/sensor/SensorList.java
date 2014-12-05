@@ -65,28 +65,32 @@ public class SensorList
     @OnEvent("activateSensor")
     void activateSensor(Integer id)
     {
-        Transaction t = session.getTransaction();
-        t.begin();
-        SensorDefinition sd = qm.findSensorDefinitionById(id);
-        sd.setLastUpdate(new Date());
-        sd.setDeleted(Boolean.FALSE);
-        session.saveOrUpdate(sd);
-        t.commit();
-        
-        rvss.notifyConfigurationChange();
-        confSync.notifyConfigurationChange();
+        updateSensorDefinition(id, Boolean.FALSE);
     }
 
     @OnEvent("deactivateSensor")
     void deactivateSensor(Integer id)
     {
-        Transaction t = session.getTransaction();
-        t.begin();
-        SensorDefinition sd = qm.findSensorDefinitionById(id);
-        sd.setLastUpdate(new Date());
-        sd.setDeleted(Boolean.TRUE);
-        session.saveOrUpdate(sd);
-        t.commit();
+        updateSensorDefinition(id, Boolean.TRUE);
+    }
+
+    private void updateSensorDefinition(Integer id, Boolean deleted)
+    {
+        Session newSession = session.getSessionFactory().openSession();
+        try
+        {
+            Transaction t = newSession.getTransaction();
+            t.begin();
+            SensorDefinition sd = qm.findSensorDefinitionById(id);
+            sd.setLastUpdate(new Date());
+            sd.setDeleted(deleted);
+            newSession.saveOrUpdate(sd);
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
         
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();

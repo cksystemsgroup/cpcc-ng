@@ -68,14 +68,22 @@ public class RvList
     @OnEvent("activateRealVehicle")
     void activateRealVehicle(Integer id)
     {
-        Transaction t = session.getTransaction();
-        t.begin();
-        RealVehicle rv = qm.findRealVehicleById(id);
-        rv.setDeleted(Boolean.FALSE);
-        rv.setLastUpdate(new Date());
-        session.saveOrUpdate(rv);
-        t.commit();
-        
+        Session newSession = session.getSessionFactory().openSession();
+        try
+        {
+            Transaction t = newSession.getTransaction();
+            t.begin();
+            RealVehicle rv = qm.findRealVehicleById(id);
+            rv.setDeleted(Boolean.FALSE);
+            rv.setLastUpdate(new Date());
+            newSession.saveOrUpdate(rv);
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
+
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
     }
@@ -83,14 +91,22 @@ public class RvList
     @OnEvent("deactivateRealVehicle")
     void deactivateRealVehicle(Integer id)
     {
-        Transaction t = session.getTransaction();
-        t.begin();
-        RealVehicle rv = qm.findRealVehicleById(id);
-        rv.setDeleted(Boolean.TRUE);
-        rv.setLastUpdate(new Date());
-        session.saveOrUpdate(rv);
-        t.commit();
-        
+        Session newSession = session.getSessionFactory().openSession();
+        try
+        {
+            Transaction t = newSession.getTransaction();
+            t.begin();
+            RealVehicle rv = qm.findRealVehicleById(id);
+            rv.setDeleted(Boolean.TRUE);
+            rv.setLastUpdate(new Date());
+            newSession.saveOrUpdate(rv);
+            t.commit();
+        }
+        finally
+        {
+            newSession.close();
+        }
+
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
     }
