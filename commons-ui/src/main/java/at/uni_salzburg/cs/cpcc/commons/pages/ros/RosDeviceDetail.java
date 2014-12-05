@@ -20,7 +20,6 @@
 package at.uni_salzburg.cs.cpcc.commons.pages.ros;
 
 import java.awt.Dimension;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
