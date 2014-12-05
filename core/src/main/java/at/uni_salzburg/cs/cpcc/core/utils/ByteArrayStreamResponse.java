@@ -26,6 +26,8 @@ import java.io.InputStream;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.services.Response;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * ByteArrayStreamResponse
  */
@@ -38,6 +40,7 @@ public class ByteArrayStreamResponse implements StreamResponse
      * @param contentType the content type to be reported to the client.
      * @param data the data to be transmitted to the client.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposed on purpose!")
     public ByteArrayStreamResponse(String contentType, byte[] data)
     {
         this.data = data;

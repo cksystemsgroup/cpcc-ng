@@ -24,7 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.services.RequestGlobals;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJSON;
@@ -48,9 +50,9 @@ public class StorageContentTagServiceImpl implements StorageContentTagService
      * @param requestGlobals the request globals.
      * @param messages the messages service.
      */
-    public StorageContentTagServiceImpl(RequestGlobals requestGlobals, Messages messages)
+    public StorageContentTagServiceImpl(RequestGlobals requestGlobals, Messages messages
+        , @Symbol(SymbolConstants.CONTEXT_PATH) String contextPath)
     {
-        String contextPath = requestGlobals.getRequest().getContextPath();
         defaultService = new JSONContentTagService(contextPath, messages);
         serviceMap.put("sensor_msgs/Image", new ImageContentTagService(contextPath, messages));
     }
