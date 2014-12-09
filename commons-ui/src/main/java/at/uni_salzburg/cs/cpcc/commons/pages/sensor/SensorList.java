@@ -24,10 +24,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
 import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
@@ -40,8 +39,8 @@ import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 public class SensorList
 {
     @Inject
-    private Session session;
-    
+    private HibernateSessionManager sessionManager;
+
     @Inject
     private QueryManager qm;
 
@@ -62,36 +61,26 @@ public class SensorList
         return qm.findAllSensorDefinitions();
     }
 
-    @OnEvent("activateSensor")
-    void activateSensor(Integer id)
+    @CommitAfter
+    void onActivateSensor(Integer id)
     {
         updateSensorDefinition(id, Boolean.FALSE);
     }
 
-    @OnEvent("deactivateSensor")
-    void deactivateSensor(Integer id)
+    @CommitAfter
+    void onDeactivateSensor(Integer id)
     {
         updateSensorDefinition(id, Boolean.TRUE);
     }
 
     private void updateSensorDefinition(Integer id, Boolean deleted)
     {
-        Session newSession = session.getSessionFactory().openSession();
-        try
-        {
-            Transaction t = newSession.getTransaction();
-            t.begin();
-            SensorDefinition sd = qm.findSensorDefinitionById(id);
-            sd.setLastUpdate(new Date());
-            sd.setDeleted(deleted);
-            newSession.saveOrUpdate(sd);
-            t.commit();
-        }
-        finally
-        {
-            newSession.close();
-        }
-        
+        SensorDefinition sd = qm.findSensorDefinitionById(id);
+        sd.setLastUpdate(new Date());
+        sd.setDeleted(deleted);
+        sessionManager.getSession().saveOrUpdate(sd);
+        sessionManager.commit();
+
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
     }

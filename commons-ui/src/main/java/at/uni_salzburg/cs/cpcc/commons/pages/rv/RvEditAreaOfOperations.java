@@ -27,12 +27,12 @@ import javax.validation.Valid;
 
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
 import org.geojson.Polygon;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
 import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class RvEditAreaOfOperations
 {
     @Inject
-    protected Session session;
+    protected HibernateSessionManager sessionManager;
 
     @Inject
     protected QueryManager qm;
@@ -102,22 +102,13 @@ public class RvEditAreaOfOperations
         return new PngResourceStreamResponse(pngResourcePath);
     }
 
+    @CommitAfter
     void onSuccess()
     {
-        Session newSession = session.getSessionFactory().openSession();
-        try
-        {
-            Transaction t = newSession.getTransaction();
-            t.begin();
-            realVehicle.setAreaOfOperation(realVehicleRegions);
-            realVehicle.setLastUpdate(new Date());
-            newSession.saveOrUpdate(realVehicle);
-            t.commit();
-        }
-        finally
-        {
-            newSession.close();
-        }
+        realVehicle.setAreaOfOperation(realVehicleRegions);
+        realVehicle.setLastUpdate(new Date());
+        sessionManager.getSession().saveOrUpdate(realVehicle);
+        sessionManager.commit();
 
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();

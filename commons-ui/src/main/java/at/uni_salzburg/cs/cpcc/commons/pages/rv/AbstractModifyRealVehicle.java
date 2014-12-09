@@ -30,9 +30,9 @@ import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
 import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
@@ -52,11 +52,11 @@ public class AbstractModifyRealVehicle
     protected static final String ERROR_REAL_VEHICLE_URL_ALREADY_EXISTS = "error.real.vehicle.url.already.exists";
 
     @Inject
-    protected Session session;
+    protected HibernateSessionManager sessionManager;
 
     @Inject
     protected QueryManager qm;
-    
+
     @Inject
     protected OptionsParserService parserService;
 
@@ -80,21 +80,12 @@ public class AbstractModifyRealVehicle
      * @return the page to show next.
      */
     @OnEvent(SUCCESS)
+    @CommitAfter
     protected Object storeRealVehicle()
     {
-        Session newSession = session.getSessionFactory().openSession();
-        try
-        {
-            Transaction t = newSession.getTransaction();
-            t.begin();
-            realVehicle.setLastUpdate(new Date());
-            newSession.saveOrUpdate(realVehicle);
-            t.commit();
-        }
-        finally
-        {
-            newSession.close();
-        }
+        realVehicle.setLastUpdate(new Date());
+        sessionManager.getSession().saveOrUpdate(realVehicle);
+        sessionManager.commit();
 
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
@@ -106,6 +97,7 @@ public class AbstractModifyRealVehicle
      */
     protected void checkAreaOfOperation()
     {
+        // TODO check
         //        if (sensor.getParameters() != null)
         //        {
         //            try

@@ -19,17 +19,14 @@
  */
 package at.uni_salzburg.cs.cpcc.commons.pages.rv;
 
-import static org.apache.tapestry5.EventConstants.ACTIVATE;
-
 import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
 import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
 import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
@@ -42,8 +39,8 @@ import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 public class RvList
 {
     @Inject
-    private Session session;
-    
+    private HibernateSessionManager sessionManager;
+
     @Inject
     private QueryManager qm;
 
@@ -52,60 +49,39 @@ public class RvList
 
     @Inject
     protected ConfigurationSynchronizer confSync;
-    
+
     @Property
     private List<RealVehicle> realVehicleList;
 
     @Property
     private RealVehicle realVehicle;
 
-    @OnEvent(ACTIVATE)
-    void loadSensorList()
+    void onActivate()
     {
         realVehicleList = qm.findAllRealVehiclesOrderByName();
     }
 
-    @OnEvent("activateRealVehicle")
-    void activateRealVehicle(Integer id)
+    @CommitAfter
+    void onActivateRealVehicle(Integer id)
     {
-        Session newSession = session.getSessionFactory().openSession();
-        try
-        {
-            Transaction t = newSession.getTransaction();
-            t.begin();
-            RealVehicle rv = qm.findRealVehicleById(id);
-            rv.setDeleted(Boolean.FALSE);
-            rv.setLastUpdate(new Date());
-            newSession.saveOrUpdate(rv);
-            t.commit();
-        }
-        finally
-        {
-            newSession.close();
-        }
+        RealVehicle rv = qm.findRealVehicleById(id);
+        rv.setDeleted(Boolean.FALSE);
+        rv.setLastUpdate(new Date());
+        sessionManager.getSession().saveOrUpdate(rv);
+        sessionManager.commit();
 
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
     }
 
-    @OnEvent("deactivateRealVehicle")
-    void deactivateRealVehicle(Integer id)
+    @CommitAfter
+    void onDeactivateRealVehicle(Integer id)
     {
-        Session newSession = session.getSessionFactory().openSession();
-        try
-        {
-            Transaction t = newSession.getTransaction();
-            t.begin();
-            RealVehicle rv = qm.findRealVehicleById(id);
-            rv.setDeleted(Boolean.TRUE);
-            rv.setLastUpdate(new Date());
-            newSession.saveOrUpdate(rv);
-            t.commit();
-        }
-        finally
-        {
-            newSession.close();
-        }
+        RealVehicle rv = qm.findRealVehicleById(id);
+        rv.setDeleted(Boolean.TRUE);
+        rv.setLastUpdate(new Date());
+        sessionManager.getSession().saveOrUpdate(rv);
+        sessionManager.commit();
 
         rvss.notifyConfigurationChange();
         confSync.notifyConfigurationChange();
