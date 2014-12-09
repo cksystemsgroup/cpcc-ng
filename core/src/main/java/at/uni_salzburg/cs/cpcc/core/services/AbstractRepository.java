@@ -21,26 +21,26 @@ package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.util.Collection;
 
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * AbstractRepository
  */
 public abstract class AbstractRepository implements Repository
 {
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractRepository.class);
-
-    private Session session;
+    private Logger logger;
+    private HibernateSessionManager sessionManager;
 
     /**
      * @param session the session object {@link Session}
      */
-    public AbstractRepository(Session session)
+    public AbstractRepository(Logger logger, HibernateSessionManager sessionManager)
     {
-        this.session = session;
+        this.logger = logger;
+        this.sessionManager = sessionManager;
     }
 
     /**
@@ -54,7 +54,7 @@ public abstract class AbstractRepository implements Repository
         }
         for (Object o : list)
         {
-            session.saveOrUpdate(o);
+            sessionManager.getSession().saveOrUpdate(o);
         }
     }
 
@@ -65,7 +65,7 @@ public abstract class AbstractRepository implements Repository
     {
         if (o != null)
         {
-            session.saveOrUpdate(o);
+            sessionManager.getSession().saveOrUpdate(o);
         }
     }
 
@@ -76,11 +76,11 @@ public abstract class AbstractRepository implements Repository
     {
         try
         {
-            session.delete(o);
+            sessionManager.getSession().delete(o);
         }
         catch (HibernateException e)
         {
-            LOG.error(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
@@ -100,10 +100,18 @@ public abstract class AbstractRepository implements Repository
     }
 
     /**
-     * @return the session
+     * @return the session manager.
      */
-    protected Session getSession()
+    protected HibernateSessionManager getSessionManager()
     {
-        return session;
+        return sessionManager;
+    }
+    
+    /**
+     * @return the application logger.
+     */
+    protected Logger getLogger()
+    {
+        return logger;
     }
 }

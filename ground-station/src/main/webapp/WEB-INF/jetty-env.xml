@@ -8,7 +8,7 @@
 		<Arg>
 			<New class="com.mchange.v2.c3p0.ComboPooledDataSource">
 				<Set name="driverClass">org.h2.Driver</Set>
-				<Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/GS;MVCC=true;lock_timeout=1000;lock_mode=0;auto_reconnect=true;auto_server=true;AUTOCOMMIT=OFF</Set>
+				<Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/GS;MVCC=true;AUTOCOMMIT=OFF</Set>
 				<Set name="user">sa</Set>
 				<Set name="password"></Set>
 			</New>

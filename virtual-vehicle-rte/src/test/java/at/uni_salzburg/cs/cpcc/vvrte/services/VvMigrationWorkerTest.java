@@ -35,11 +35,11 @@ import java.util.List;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -60,11 +60,12 @@ public class VvMigrationWorkerTest
         {4, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0},
     };
 
+    private Logger logger;
     private List<byte[]> transferredChunks;
     private VvMigrationWorker worker;
     private VirtualVehicle virtualVehicle;
-    private Transaction transaction;
     private Session session;
+    private HibernateSessionManager sessionManager;
     private VvRteRepository vvRepository;
     private CommunicationService com;
     private VirtualVehicleMigrator migrator;
@@ -73,6 +74,8 @@ public class VvMigrationWorkerTest
     @BeforeMethod
     public void setUp() throws ClientProtocolException, IOException, ArchiveException
     {
+        logger = mock(Logger.class);
+
         transferredChunks = new ArrayList<byte[]>();
 
         realVehicle = mock(RealVehicle.class);
@@ -83,17 +86,11 @@ public class VvMigrationWorkerTest
         when(virtualVehicle.getMigrationDestination()).thenReturn(realVehicle);
         when(virtualVehicle.getState()).thenReturn(VirtualVehicleState.MIGRATION_AWAITED);
 
-        transaction = mock(Transaction.class);
-
         session = mock(Session.class);
-        when(session.beginTransaction()).thenReturn(transaction);
-
-        SessionFactory sessionFactory = mock(SessionFactory.class);
-        when(sessionFactory.openSession()).thenReturn(session);
-        when(session.getSessionFactory()).thenReturn(sessionFactory);
+        sessionManager = mock(HibernateSessionManager.class);
+        when(sessionManager.getSession()).thenReturn(session);
 
         vvRepository = mock(VvRteRepository.class);
-        // when(vvRepository.getSession()).thenReturn(session);
 
         com = mock(CommunicationService.class);
         when(com.transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class))).thenAnswer(
@@ -138,7 +135,7 @@ public class VvMigrationWorkerTest
                 }
             });
 
-        worker = new VvMigrationWorker(virtualVehicle, vvRepository, com, migrator, session);
+        worker = new VvMigrationWorker(virtualVehicle, vvRepository, com, migrator, sessionManager, logger);
     }
 
     @Test
@@ -165,9 +162,9 @@ public class VvMigrationWorkerTest
         }
 
         verify(virtualVehicle, times(1)).setState(VirtualVehicleState.MIGRATING);
-        verify(session, times(2)).beginTransaction();
-        verify(transaction, times(2)).commit();
-        verify(transaction, never()).rollback();
+        verify(session, never()).beginTransaction();
+        verify(sessionManager, times(2)).commit();
+        verify(sessionManager, never()).abort();
     }
 
     @Test
@@ -199,9 +196,9 @@ public class VvMigrationWorkerTest
         }
 
         verify(virtualVehicle, times(1)).setState(VirtualVehicleState.MIGRATING);
-        verify(session, times(2)).beginTransaction();
-        verify(transaction, times(2)).commit();
-        verify(transaction, never()).rollback();
+        verify(session, never()).beginTransaction();
+        verify(sessionManager, times(2)).commit();
+        verify(sessionManager, never()).abort();
     }
 
     @Test
@@ -228,9 +225,9 @@ public class VvMigrationWorkerTest
 
         verify(virtualVehicle).setState(VirtualVehicleState.MIGRATING);
         //TODO verify(virtualVehicle).setState(VirtualVehicleState.MIGRATION_COMPLETED);
-        verify(session, times(2)).beginTransaction();
-        verify(transaction, times(2)).commit();
-        verify(transaction, never()).rollback();
+        verify(session, never()).beginTransaction();
+        verify(sessionManager, times(2)).commit();
+        verify(sessionManager, never()).abort();
     }
 
     @Test
@@ -245,9 +242,9 @@ public class VvMigrationWorkerTest
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, never()).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
-        verify(session, times(2)).beginTransaction();
-        verify(transaction).commit();
-        verify(transaction).rollback();
+        verify(session, never()).beginTransaction();
+        verify(sessionManager).commit();
+        verify(sessionManager).abort();
     }
 
     @Test
@@ -263,9 +260,9 @@ public class VvMigrationWorkerTest
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, times(1)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
-        verify(session, times(2)).beginTransaction();
-        verify(transaction).commit();
-        verify(transaction).rollback();
+        verify(session, never()).beginTransaction();
+        verify(sessionManager).commit();
+        verify(sessionManager).abort();
     }
 
     @Test
@@ -281,8 +278,8 @@ public class VvMigrationWorkerTest
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, never()).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
         verify(session, never()).beginTransaction();
-        verify(transaction, never()).commit();
-        verify(transaction, never()).rollback();
+        verify(sessionManager, never()).commit();
+        verify(sessionManager, never()).abort();
     }
 
     @Test
@@ -300,9 +297,9 @@ public class VvMigrationWorkerTest
 
         verify(virtualVehicle, times(1)).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, times(1)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
-        verify(session, times(2)).beginTransaction();
-        verify(transaction, times(2)).commit();
-        verify(transaction, never()).rollback();
+        verify(session, never()).beginTransaction();
+        verify(sessionManager, times(2)).commit();
+        verify(sessionManager, never()).abort();
     }
 
     @Test
@@ -319,7 +316,7 @@ public class VvMigrationWorkerTest
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, never()).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
         verify(session, never()).beginTransaction();
-        verify(transaction, never()).commit();
-        verify(transaction, never()).rollback();
+        verify(sessionManager, never()).commit();
+        verify(sessionManager, never()).abort();
     }
 }

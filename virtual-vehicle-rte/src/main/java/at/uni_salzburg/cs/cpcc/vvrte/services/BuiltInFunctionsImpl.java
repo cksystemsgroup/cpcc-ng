@@ -25,15 +25,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorVisibility;
@@ -56,8 +54,6 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionService;
  */
 public class BuiltInFunctionsImpl implements BuiltInFunctions
 {
-    private static final Logger LOG = LoggerFactory.getLogger(BuiltInFunctionsImpl.class);
-
     private RosNodeService rns;
     private OptionsParserService opts;
     private MessageConverter conv;
@@ -66,7 +62,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private TaskAnalyzer taskAnalyzer;
     private VvRteRepository vvRteRepo;
     private QueryManager qm;
-    private Session session;
+    private HibernateSessionManager sessionManager;
+    private Logger logger;
 
     /**
      * @param rns the ROS node service.
@@ -79,7 +76,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      */
     public BuiltInFunctionsImpl(RosNodeService rns, OptionsParserService opts, MessageConverter conv,
         VirtualVehicleMapper mapper, TaskExecutionService taskExecutor, TaskAnalyzer taskAnalyzer,
-        VvRteRepository vvRteRepo, QueryManager qm, Session session)
+        VvRteRepository vvRteRepo, QueryManager qm, HibernateSessionManager sessionManager, Logger logger)
     {
         this.rns = rns;
         this.opts = opts;
@@ -89,7 +86,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         this.taskAnalyzer = taskAnalyzer;
         this.vvRteRepo = vvRteRepo;
         this.qm = qm; // vvRteRepo.getQueryManager();
-        this.session = session;
+        this.sessionManager = sessionManager;
+        this.logger = logger;
     }
 
     /**
@@ -98,7 +96,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public List<ScriptableObject> listSensors()
     {
-        LOG.info("listSensors start");
+        logger.info("listSensors start");
         List<SensorDefinition> asd = qm.findAllVisibleSensorDefinitions();
         return converToScriptableObjectList(asd);
     }
@@ -109,7 +107,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public List<ScriptableObject> listActiveSensors()
     {
-        LOG.info("listActiveSensors start");
+        logger.info("listActiveSensors start");
         List<SensorDefinition> asd = qm.findAllActiveSensorDefinitions();
         return converToScriptableObjectList(asd);
     }
@@ -161,7 +159,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             }
             catch (IOException | ParseException e)
             {
-                LOG.error("Parsing parameters of sensor definition " + sd.getId() + " failed!", e);
+                logger.error("Parsing parameters of sensor definition " + sd.getId() + " failed!", e);
             }
         }
         return sensor;
@@ -230,7 +228,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public void executeTask(ScriptableObject managementParameters, ScriptableObject taskParameters)
     {
-        LOG.info("executeTask1");
+        logger.info("executeTask1");
 
         managementParameters.put("repeat", managementParameters, Boolean.FALSE);
 
@@ -246,7 +244,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
 
         if (decision.isMigration())
         {
-            LOG.info("migration");
+            logger.info("migration");
             Context cx = Context.enter();
             try
             {
@@ -262,7 +260,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             }
         }
 
-        LOG.info("no migration");
+        logger.info("no migration");
 
         taskExecutor.addTask(task);
         task.awaitCompletion();
@@ -331,17 +329,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         item.setModificationTime(new Date());
         item.setContent(obj);
 
-        Session newSession = session.getSessionFactory().openSession();
-        try
-        {
-            Transaction t = newSession.beginTransaction();
-            newSession.saveOrUpdate(item);
-            t.commit();
-        }
-        finally
-        {
-            newSession.close();
-        }
+        sessionManager.getSession().saveOrUpdate(item);
+        sessionManager.commit();
     }
 
     /**
@@ -357,17 +346,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             return;
         }
 
-        Session newSession = session.getSessionFactory().openSession();
-        try
-        {
-            Transaction t = newSession.getTransaction();
-            newSession.delete(item);
-            t.commit();
-        }
-        finally
-        {
-            newSession.close();
-        }
+        sessionManager.getSession().delete(item);
+        sessionManager.commit();
     }
 
     /**

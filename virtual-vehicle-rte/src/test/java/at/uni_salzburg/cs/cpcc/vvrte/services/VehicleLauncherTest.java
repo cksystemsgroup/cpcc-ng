@@ -25,6 +25,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,9 +37,8 @@ import java.sql.SQLException;
 import javax.sql.rowset.serial.SerialException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeMethod;
@@ -59,8 +59,8 @@ public class VehicleLauncherTest
     JavascriptWorkerStateListener jobListener = null;
     private VirtualVehicle vehicle;
     private VirtualVehicleLauncherImpl launcher;
-    private Transaction transaction;
     private Session session;
+    private HibernateSessionManager sessionManager;
 
     @BeforeMethod
     public void setUp() throws IOException
@@ -97,23 +97,16 @@ public class VehicleLauncherTest
             }
         }).when(worker).start();
 
-        transaction = mock(Transaction.class);
-
         session = mock(Session.class);
-        when(session.beginTransaction()).thenReturn(transaction);
-        SessionFactory sessionFactory = mock(SessionFactory.class);
-        when(sessionFactory.openSession()).thenReturn(session);
-        when(session.getSessionFactory()).thenReturn(sessionFactory );
-
-        // QueryManager qm = mock(QueryManager.class);
-        // when(qm.getSession()).thenReturn(session);
+        sessionManager = mock(HibernateSessionManager.class);
+        when(sessionManager.getSession()).thenReturn(session);
 
         JavascriptService jss = mock(JavascriptService.class);
         when(jss.createWorker(anyString(), anyInt())).thenReturn(worker);
 
         VirtualVehicleMigrator migrator = mock(VirtualVehicleMigrator.class);
         
-        launcher = new VirtualVehicleLauncherImpl(session, jss, migrator);
+        launcher = new VirtualVehicleLauncherImpl(sessionManager, jss, migrator);
     }
 
     @Test
@@ -125,8 +118,8 @@ public class VehicleLauncherTest
         verify(vehicle).setState(VirtualVehicleState.RUNNING);
         assertThat(vehicle.getState()).isNotNull().isEqualTo(VirtualVehicleState.RUNNING);
 
-        verify(session).beginTransaction();
-        verify(transaction).commit();
+        verify(session, never()).beginTransaction();
+        verify(sessionManager).commit();
     }
 
     @Test(expectedExceptions = {VirtualVehicleLaunchException.class},

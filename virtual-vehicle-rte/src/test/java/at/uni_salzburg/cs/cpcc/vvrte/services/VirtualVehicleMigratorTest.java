@@ -44,12 +44,14 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.hibernate.Session;
 import org.hibernate.internal.util.SerializationHelper;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -67,10 +69,12 @@ public class VirtualVehicleMigratorTest
     private static final int VV_ID1 = 123456;
     private static final int VV_ID2 = 654321;
 
+    private Logger logger;
     private VvRteRepository repo;
     private VirtualVehicleMigrator migrator;
     private CommunicationService com;
     private Session session;
+    private HibernateSessionManager sessionManager;
     private QueryManager qm;
     private Parameter paramChunkSize;
 
@@ -82,9 +86,12 @@ public class VirtualVehicleMigratorTest
     @BeforeMethod
     public void setUp()
     {
+        logger = mock(Logger.class);
         paramChunkSize = mock(Parameter.class);
-        
+
         session = mock(Session.class);
+        sessionManager = mock(HibernateSessionManager.class);
+        when(sessionManager.getSession()).thenReturn(session);
 
         qm = mock(QueryManager.class);
         when(qm.findParameterByName(eq(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE), anyString()))
@@ -92,15 +99,13 @@ public class VirtualVehicleMigratorTest
 
         repo = mock(VvRteRepository.class);
 
-        // when(repo.getQueryManager()).thenReturn(qm);
-
         setUpVv1();
         setUpVv2();
         setUpDatabase();
 
         com = mock(CommunicationService.class);
 
-        migrator = new VirtualVehicleMigratorImpl(repo, com, qm, session);
+        migrator = new VirtualVehicleMigratorImpl(logger, sessionManager, repo, com, qm);
         assertThat(migrator).isNotNull();
     }
 

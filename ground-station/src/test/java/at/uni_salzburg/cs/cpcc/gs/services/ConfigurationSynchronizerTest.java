@@ -38,12 +38,14 @@ import java.util.List;
 import java.util.TimerTask;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.json.JSONArray;
 import org.hibernate.Session;
 import org.json.JSONException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -66,6 +68,7 @@ import at.uni_salzburg.cs.cpcc.core.services.TimerService;
 
 public class ConfigurationSynchronizerTest
 {
+    private Logger logger;
     private ConfigurationSynchronizerImpl sync;
     private TimerService timerService;
     private Long delay;
@@ -73,6 +76,7 @@ public class ConfigurationSynchronizerTest
     private QueryManager qm;
     private CommunicationService com;
     private Session session;
+    private HibernateSessionManager sessionManager;
 
     //    private RealVehicle syncRealVehicle;
     //    private Connector syncConnector;
@@ -143,6 +147,8 @@ public class ConfigurationSynchronizerTest
     @BeforeMethod
     public void setUp() throws ClientProtocolException, IOException
     {
+        logger = mock(Logger.class);
+
         sd1.setId(1);
         sd1.setDescription("Altimeter");
         sd1.setLastUpdate(new Date(1000));
@@ -278,8 +284,11 @@ public class ConfigurationSynchronizerTest
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(rvNameParam);
         when(qm.findRealVehicleByName(rvNameParam.getValue())).thenReturn(gs1);
         when(qm.findAllRealVehicles()).thenReturn(new ArrayList<RealVehicle>(Arrays.asList(gs1, rv1, rv2, rv3, rv4)));
+
         session = mock(Session.class);
         // when(qm.getSession()).thenReturn(session);
+        sessionManager = mock(HibernateSessionManager.class);
+        when(sessionManager.getSession()).thenReturn(session);
 
         response.setStatus(Status.OK);
         response.setContent(null);
@@ -305,7 +314,7 @@ public class ConfigurationSynchronizerTest
 
         RealVehicleStateService stateSrv = mock(RealVehicleStateService.class);
 
-        sync = new ConfigurationSynchronizerImpl(timerService, session, qm, com, jsonConv, stateSrv);
+        sync = new ConfigurationSynchronizerImpl(logger, sessionManager, timerService, qm, com, jsonConv, stateSrv);
     }
 
     @Test
@@ -355,7 +364,7 @@ public class ConfigurationSynchronizerTest
         setUpQmAllSensorDefinitions(db, in);
 
         JSONArray sensorDefs = jsonConv.toJsonArray(in.toArray(new SensorDefinition[0]));
-        JSONArray back = sync.syncSensorDefinitionConfig(session, sensorDefs);
+        JSONArray back = sync.syncSensorDefinitionConfig(sensorDefs);
 
         List<SensorDefinition> result = ConvUtils.toSensorDefinitionList(back);
 
@@ -408,7 +417,7 @@ public class ConfigurationSynchronizerTest
         setUpQmAllRealVehicles(db, in);
 
         JSONArray realVehicles = jsonConv.toJsonArray(true, in.toArray(new RealVehicle[0]));
-        JSONArray back = sync.syncRealVehicleConfig(session, realVehicles);
+        JSONArray back = sync.syncRealVehicleConfig(realVehicles);
 
         List<RealVehicle> result = ConvUtils.toRealVehicleList(back);
 
@@ -427,7 +436,7 @@ public class ConfigurationSynchronizerTest
         when(com.transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class)))
             .thenThrow(IOException.class);
 
-        sync.syncConfig(session, Arrays.asList(rv1));
+        sync.syncConfig(Arrays.asList(rv1));
     }
 
     @Test
@@ -435,7 +444,7 @@ public class ConfigurationSynchronizerTest
     {
         response.setStatus(Status.NOT_OK);
 
-        sync.syncConfig(session, Arrays.asList(rv1));
+        sync.syncConfig(Arrays.asList(rv1));
     }
 
     @Test
@@ -447,7 +456,7 @@ public class ConfigurationSynchronizerTest
         when(qm.findAllRealVehicles()).thenReturn(Arrays.asList(gs1, rv1, rv2, rv3, rv4));
         when(qm.findAllSensorDefinitions()).thenReturn(Arrays.asList(sd1, sd2, sd3, sd4));
 
-        sync.syncConfig(session, Arrays.asList(rv1));
+        sync.syncConfig(Arrays.asList(rv1));
 
         // System.out.println("### buggerit: " + new String(result1));
 
@@ -605,7 +614,7 @@ public class ConfigurationSynchronizerTest
         response.setContent(responseContent.getBytes());
         response.setStatus(Status.OK);
 
-        sync.syncConfig(session, Arrays.asList(targetRV));
+        sync.syncConfig(Arrays.asList(targetRV));
 
         System.out.println("### " + expectedResult);
         // verify(com).transfer(targetRV, Connector.CONFIGURATION_UPDATE, expectedResult.getBytes());
@@ -679,7 +688,7 @@ public class ConfigurationSynchronizerTest
         response.setContent(responseContent.getBytes());
         response.setStatus(Status.OK);
 
-        sync.syncConfig(session, Arrays.asList(targetRV));
+        sync.syncConfig(Arrays.asList(targetRV));
 
         verifyZeroInteractions(com);
     }

@@ -24,8 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +44,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
 {
     private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleLauncherImpl.class);
 
-    // private QueryManager qm;
-    private Session session;
+    private HibernateSessionManager sessionManager;
     private JavascriptService jss;
     private VirtualVehicleMigrator migrator;
     private Map<JavascriptWorker, VirtualVehicle> vehicleMap = new HashMap<JavascriptWorker, VirtualVehicle>();
@@ -56,9 +54,10 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      * @param jss the JavaScript service.
      * @param migrator the migration service.
      */
-    public VirtualVehicleLauncherImpl(Session session, JavascriptService jss, VirtualVehicleMigrator migrator)
+    public VirtualVehicleLauncherImpl(HibernateSessionManager sessionManager, JavascriptService jss
+        , VirtualVehicleMigrator migrator)
     {
-        this.session = session;
+        this.sessionManager = sessionManager;
         this.jss = jss;
         this.migrator = migrator;
 
@@ -86,7 +85,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         }
 
         vehicle.setStartTime(new Date());
-        session.saveOrUpdate(vehicle);
+        sessionManager.getSession().saveOrUpdate(vehicle);
+        sessionManager.commit();
 
         startVehicle(vehicle, false);
     }
@@ -126,7 +126,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
     private void startVehicle(VirtualVehicle vehicle, boolean useContinuation)
         throws VirtualVehicleLaunchException, IOException
     {
-        JavascriptWorker worker = useContinuation
+        JavascriptWorker worker = useContinuation && vehicle.getContinuation() != null
             ? jss.createWorker(vehicle.getContinuation())
             : jss.createWorker(vehicle.getCode(), vehicle.getApiVersion());
 
@@ -161,49 +161,40 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         {
             VirtualVehicleMappingDecision decision = null;
 
-            Session newSession = session.getSessionFactory().openSession();
-            try
+            vehicle.setState(vehicleState);
+
+            switch (state)
             {
-                Transaction t = newSession.beginTransaction();
-                vehicle.setState(vehicleState);
+                case INTERRUPTED:
+                    vehicle.setContinuation(worker.getSnapshot());
+                    decision = (VirtualVehicleMappingDecision) worker.getApplicationState();
 
-                switch (state)
-                {
-                    case INTERRUPTED:
-                        vehicle.setContinuation(worker.getSnapshot());
-                        decision = (VirtualVehicleMappingDecision) worker.getApplicationState();
-
-                        if (decision.isMigration() && decision.getRealVehicles().size() > 0)
-                        {
-                            // TODO select the best suitable RV instead of taking just the first.
-                            RealVehicle migrationDestination = decision.getRealVehicles().get(0);
-                            vehicle.setMigrationDestination(migrationDestination);
-                            vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
-                        }
-                        else
-                        {
-                            decision = null;
-                            vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-                            vehicle.setMigrationDestination(null);
-                        }
-                        break;
-                    case FINISHED:
-                        vehicle.setEndTime(new Date());
-                        break;
-                    case DEFECTIVE:
-                        LOG.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
-                        break;
-                    default:
-                        break;
-                }
-
-                newSession.saveOrUpdate(vehicle);
-                t.commit();
+                    if (decision.isMigration() && decision.getRealVehicles().size() > 0)
+                    {
+                        // TODO select the best suitable RV instead of taking just the first.
+                        RealVehicle migrationDestination = decision.getRealVehicles().get(0);
+                        vehicle.setMigrationDestination(migrationDestination);
+                        vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
+                    }
+                    else
+                    {
+                        decision = null;
+                        vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+                        vehicle.setMigrationDestination(null);
+                    }
+                    break;
+                case FINISHED:
+                    vehicle.setEndTime(new Date());
+                    break;
+                case DEFECTIVE:
+                    LOG.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
+                    break;
+                default:
+                    break;
             }
-            finally
-            {
-                newSession.close();
-            }
+
+            sessionManager.getSession().saveOrUpdate(vehicle);
+            sessionManager.commit();
 
             if (decision != null)
             {
