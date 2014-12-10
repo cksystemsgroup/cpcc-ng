@@ -27,6 +27,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -105,7 +106,7 @@ public class VehicleLauncherTest
         when(jss.createWorker(anyString(), anyInt())).thenReturn(worker);
 
         VirtualVehicleMigrator migrator = mock(VirtualVehicleMigrator.class);
-        
+
         launcher = new VirtualVehicleLauncherImpl(sessionManager, jss, migrator);
     }
 
@@ -119,7 +120,7 @@ public class VehicleLauncherTest
         assertThat(vehicle.getState()).isNotNull().isEqualTo(VirtualVehicleState.RUNNING);
 
         verify(session, never()).beginTransaction();
-        verify(sessionManager).commit();
+        verify(sessionManager, times(2)).commit();
     }
 
     @Test(expectedExceptions = {VirtualVehicleLaunchException.class},
@@ -128,7 +129,7 @@ public class VehicleLauncherTest
     {
         launcher.start(null);
     }
-    
+
     @Test(expectedExceptions = {VirtualVehicleLaunchException.class},
         expectedExceptionsMessageRegExp = "Expected vehicle in state INIT, but got RUNNING")
     public void shouldThrowVLEIfVirtualVehicleHasWrongState() throws VirtualVehicleLaunchException, IOException
