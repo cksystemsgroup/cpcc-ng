@@ -38,8 +38,8 @@
 
 			<p:migrationDestinationCell>
 				<t:if test="virtualVehicle.migrationDestination">
-							${virtualVehicle.migrationDestination.name}
-						</t:if>
+					${virtualVehicle.migrationDestination.name}
+				</t:if>
 			</p:migrationDestinationCell>
 
 			<p:vehicleActionsCell>

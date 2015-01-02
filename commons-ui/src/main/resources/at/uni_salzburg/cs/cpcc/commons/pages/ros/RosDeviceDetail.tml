@@ -7,8 +7,7 @@
 		<h4>
 			<t:pagelink page="index">${message:device.tree.label}</t:pagelink>
 		</h4>
-		<!-- TODO -->
-		<div t:id="deviceTree"></div>
+		<c:DeviceTree t:devices="deviceList" />
 	</div>
 
 	<t:Zone t:id="zone">
@@ -94,7 +93,7 @@
 								</tr>
 							</tbody>
 						</table>
-						
+
 						<p:else>
 							<div class="panel-body">
 								<div class="cpcc-panel-body">${message:noAdapterFound}</div>

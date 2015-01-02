@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.commons.services;
 
 import java.util.Collection;
@@ -27,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -40,12 +38,11 @@ import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse.Status;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.services.TimerService;
 
 /**
  * RealVehicleStateServiceImpl
  */
-public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicleStateService
+public class RealVehicleStateServiceImpl implements RealVehicleStateService
 {
     private static final int DB_CHANGE_TIMEOUT = 10;
 
@@ -61,9 +58,8 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
     /**
      * @param qm the query manager.
      * @param com the communication service.
-     * @param timer the timer service.
      */
-    public RealVehicleStateServiceImpl(QueryManager qm, CommunicationService com, TimerService timer)
+    public RealVehicleStateServiceImpl(QueryManager qm, CommunicationService com)
     {
         this.qm = qm;
         this.com = com;
@@ -71,7 +67,6 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
 
         // TODO move parameters to configuration.
         numberOfPoolThreads = 10;
-        timer.periodicSchedule(this, 1000, 100000);
     }
 
     /**
@@ -110,7 +105,7 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
      * {@inheritDoc}
      */
     @Override
-    public void run()
+    public void realVehicleStatusUpdate()
     {
         if (configurationChange)
         {
@@ -131,6 +126,8 @@ public class RealVehicleStateServiceImpl extends TimerTask implements RealVehicl
                 executor.execute(futureTask);
             }
         }
+        
+        executor.shutdown();
     }
 
     /**

@@ -1,25 +1,22 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
-package at.uni_salzburg.cs.cpcc.commons.pages.configuration;
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-import static org.apache.tapestry5.EventConstants.PREPARE;
+package at.uni_salzburg.cs.cpcc.commons.pages.configuration;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,7 +34,6 @@ import javax.inject.Inject;
 import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.InjectComponent;
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
@@ -80,20 +76,19 @@ public class ConfigurationEdit
 
     @InjectComponent
     private Zone realVehicleNameFormZone;
-    
-    
+
     @InjectComponent
-    private Zone  uriFormZone;
-    
+    private Zone uriFormZone;
+
     @InjectComponent
     private Zone coreFormZone;
-    
+
     @InjectComponent
     private Zone deviceFormZone;
-    
+
     @InjectComponent
     private Zone mappingFormZone;
-    
+
     @Inject
     private Session session;
 
@@ -139,8 +134,7 @@ public class ConfigurationEdit
         return messages.format(MSG_DELETE_DEVICE_CONFIRM, deviceConfig.getTopicRoot());
     }
 
-    @OnEvent(PREPARE)
-    void loadParameters()
+    void onPrepare()
     {
         masterServerURI = qm.findParameterByName(Parameter.MASTER_SERVER_URI, "");
         internalRosCore = qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE, "");
@@ -158,7 +152,7 @@ public class ConfigurationEdit
     private Collection<MappingAttributes> orderByTopic(Collection<MappingAttributes> attributeList)
     {
         Map<String, MappingAttributes> tree = new TreeMap<String, MappingAttributes>();
-        
+
         for (MappingAttributes attribute : attributeList)
         {
             StringBuilder b = new StringBuilder(attribute.getPk().getDevice().getTopicRoot());
@@ -171,26 +165,34 @@ public class ConfigurationEdit
             }
             tree.put(b.toString(), attribute);
         }
-        
+
         return tree.values();
     }
 
     @CommitAfter
     void onDeleteDevice(String topic)
     {
+        // TODO move to QueryManager?
         Device device = qm.findDeviceByTopicRoot(topic);
-        Collection<MappingAttributes> mappings = qm.findMappingAttributesByDevice(device);
-        nodeService.shutdownMappingAttributes(mappings);
+        Collection<MappingAttributes> mappingCollection = qm.findMappingAttributesByDevice(device);
+
+        nodeService.shutdownMappingAttributes(mappingCollection);
         nodeService.shutdownDevice(device);
-        qm.deleteAll(mappings);
+
+        for (MappingAttributes mapping : mappingCollection)
+        {
+            session.delete(mapping);
+        }
         session.delete(device);
-        
+
         handleXhrRequest(deviceFormZone);
     }
 
     @CommitAfter
     void onSuccessFromRealVehicleNameForm() throws JsonParseException, JsonMappingException, IOException
     {
+        // TODO check me!
+
         if (realVehicleName.getValue() == null)
         {
             handleXhrRequest(realVehicleNameFormZone);
@@ -204,7 +206,7 @@ public class ConfigurationEdit
             handleXhrRequest(realVehicleNameFormZone);
             return;
         }
-        
+
         realVehicle.setName(realVehicleName.getValue());
         session.saveOrUpdate(realVehicle);
         mapper.refresh();
@@ -249,7 +251,7 @@ public class ConfigurationEdit
         }
 
         nodeService.updateMappingAttributes(mappingList);
-        
+
         handleXhrRequest(mappingFormZone);
     }
 

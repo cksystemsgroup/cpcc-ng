@@ -1,7 +1,7 @@
 <html t:type="layout" title="${message:titleContact}"
-      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
-      xmlns:p="tapestry:parameter">
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
 
-    <p>Contact at.uni-salzburg.cs.cpcc ...</p>
+<p>${message:textContact}</p>
 
 </html>

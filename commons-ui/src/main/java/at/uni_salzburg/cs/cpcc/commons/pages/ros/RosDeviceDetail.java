@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.commons.pages.ros;
 
 import java.awt.Dimension;
@@ -29,13 +28,11 @@ import java.util.TreeMap;
 
 import javax.inject.Inject;
 
-import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.PageActivationContext;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
 
-import at.uni_salzburg.cs.cpcc.commons.components.DeviceTree;
 import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagService;
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
@@ -61,9 +58,6 @@ public class RosDeviceDetail
     @PageActivationContext
     @Property
     private String deviceDetailLinkContext;
-
-    @Component(parameters = {"devices=deviceList"})
-    private DeviceTree deviceTree;
 
     @Property
     private String deviceParameter;
@@ -91,11 +85,10 @@ public class RosDeviceDetail
     public String getDeviceTypeName()
     {
         Device device = qm.findDeviceByTopicRoot(deviceDetailLinkContext);
-        if (device == null)
-        {
-            return null;
-        }
-        return device.getType().getName();
+
+        return device != null
+            ? device.getType().getName()
+            : null;
     }
 
     /**
@@ -108,11 +101,13 @@ public class RosDeviceDetail
         {
             return Collections.emptySet();
         }
+
         RosNodeGroup group = nodeService.getDeviceNodes().get(device.getTopicRoot());
         if (group == null)
         {
             return Collections.emptySet();
         }
+
         return renderParameterList(group.getCurrentState());
     }
 
@@ -125,13 +120,14 @@ public class RosDeviceDetail
         {
             return Collections.emptySet();
         }
+
         Device device = qm.findDeviceByTopicRoot(deviceDetailLinkContext);
         if (device == null)
         {
             return Collections.emptySet();
         }
-        List<AbstractRosAdapter> l = nodeService.getAdapterNodes().get(device.getTopicRoot());
-        return l;
+
+        return nodeService.getAdapterNodes().get(device.getTopicRoot());
     }
 
     /**
@@ -139,23 +135,17 @@ public class RosDeviceDetail
      */
     public Collection<String> getAdapterParameterList()
     {
-        if (adapter == null)
-        {
-            return Collections.emptySet();
-        }
-        return renderParameterList(adapter.getCurrentState());
+        return adapter != null
+            ? renderParameterList(adapter.getCurrentState())
+            : Collections.<String> emptySet();
     }
 
     /**
      * @return true if the current adapter has image data.
      */
-    public Boolean getAdapterHasImage()
+    public boolean getAdapterHasImage()
     {
-        if (adapter == null)
-        {
-            return Boolean.FALSE;
-        }
-        return "sensor_msgs/Image".equals(adapter.getTopic().getType());
+        return adapter != null && "sensor_msgs/Image".equals(adapter.getTopic().getType());
     }
 
     /**
@@ -188,35 +178,47 @@ public class RosDeviceDetail
         Map<String, String> parameterMap = new TreeMap<String, String>();
         for (Entry<String, List<String>> entry : state.entrySet())
         {
-            StringBuilder b = new StringBuilder();
-            b.append(entry.getKey()).append(" = ");
-
-            List<String> valueList = entry.getValue();
-            boolean first = true;
-            if (valueList.size() > 1)
-            {
-                b.append("(");
-            }
-            for (String value : valueList)
-            {
-                if (first)
-                {
-                    first = false;
-                }
-                else
-                {
-                    b.append(",");
-                }
-                b.append(value);
-            }
-            if (valueList.size() > 1)
-            {
-                b.append(")");
-            }
-            parameterMap.put(entry.getKey(), b.toString());
+            parameterMap.put(entry.getKey(), getEntryString(entry.getKey(), entry.getValue()));
         }
 
         return parameterMap.values();
+    }
+
+    /**
+     * @param key the key.
+     * @param valueList the list of values.
+     * @return the key and values as one {@code String}.
+     */
+    private static String getEntryString(String key, List<String> valueList)
+    {
+        // TODO move to utility class!
+
+        StringBuilder b = new StringBuilder(key).append(" = ");
+
+        if (valueList.size() > 1)
+        {
+            b.append("(");
+        }
+
+        boolean first = true;
+        for (String value : valueList)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                b.append(",");
+            }
+            b.append(value);
+        }
+
+        if (valueList.size() > 1)
+        {
+            b.append(")");
+        }
+        return b.toString();
     }
 
 }

@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.commons.services;
 
 import java.io.IOException;
@@ -28,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimerTask;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
@@ -45,14 +43,12 @@ import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.services.CoreJsonConverter;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.services.TimerService;
 import at.uni_salzburg.cs.cpcc.core.utils.JSONUtils;
 
 /**
  * ConfigurationSynchronizerImpl
  */
-public class ConfigurationSynchronizerImpl extends TimerTask
-    implements ConfigurationSynchronizer, RealVehicleStateListener
+public class ConfigurationSynchronizerImpl implements ConfigurationSynchronizer, RealVehicleStateListener
 {
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
     private static final int DB_CHANGE_TIMEOUT = 10;
@@ -62,6 +58,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
     private QueryManager qm;
     private CommunicationService com;
     private CoreJsonConverter jsonConv;
+    private boolean synchronizationRunning = false;
     private boolean configurationChanged = false;
     private long configurationChangeTime = 0;
     private Map<Integer, Long> lastUpdateMap = new HashMap<Integer, Long>();
@@ -75,8 +72,7 @@ public class ConfigurationSynchronizerImpl extends TimerTask
      * @param jsonConv the core JSON converter service.
      * @param stateSrv the real vehicle state service.
      */
-    public ConfigurationSynchronizerImpl(Logger logger, HibernateSessionManager sessionManager,
-        TimerService timerService
+    public ConfigurationSynchronizerImpl(Logger logger, HibernateSessionManager sessionManager
         , QueryManager qm, CommunicationService com, CoreJsonConverter jsonConv, RealVehicleStateService stateSrv)
     {
         this.logger = logger;
@@ -85,10 +81,22 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         this.com = com;
         this.jsonConv = jsonConv;
         this.changeWaiter = new ConfigurationChangeWaiter(qm);
-        timerService.periodicSchedule(this, 10000, 1000);
         stateSrv.addRealVehicleStateListener(this);
 
         determineHostingRealVehicleId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void synchronizeConfiguration()
+    {
+        if (configurationChanged)
+        {
+            configurationChanged = false;
+            syncConfigWithTransaction(qm.findAllRealVehicles());
+        }
     }
 
     /**
@@ -193,45 +201,62 @@ public class ConfigurationSynchronizerImpl extends TimerTask
             return;
         }
 
-        byte[] data = prepareSyncData();
-        logger.info("Synchronizing " + data.length + " bytes to the RVs");
-
-        for (RealVehicle target : targetList)
+        synchronized (ConfigurationSynchronizer.class)
         {
-            Long lastSync = lastUpdateMap.get(target.getId());
-            if (lastSync != null && configurationChangeTime < lastSync.longValue())
+            if (synchronizationRunning)
             {
-                continue;
+                return;
             }
 
-            if (target.getName().equals(rvNameParam.getValue()))
-            {
-                logger.info("Not synchronizing to myself. " + target.getName());
-                continue;
-            }
+            synchronizationRunning = true;
+        }
 
-            try
-            {
-                long syncTime = new Date().getTime();
+        try
+        {
+            byte[] data = prepareSyncData();
+            logger.info("Synchronizing " + data.length + " bytes to the RVs");
 
-                CommunicationResponse res = com.transfer(target, Connector.CONFIGURATION_UPDATE, data);
-                if (res.getStatus() == Status.OK)
+            for (RealVehicle target : targetList)
+            {
+                Long lastSync = lastUpdateMap.get(target.getId());
+                if (lastSync != null && configurationChangeTime < lastSync.longValue())
                 {
-                    updateOwnConfig(res.getContent());
+                    continue;
                 }
 
-                lastUpdateMap.put(target.getId(), syncTime);
+                if (target.getName().equals(rvNameParam.getValue()))
+                {
+                    logger.info("Not synchronizing to myself. " + target.getName());
+                    continue;
+                }
+
+                try
+                {
+                    long syncTime = new Date().getTime();
+
+                    CommunicationResponse res = com.transfer(target, Connector.CONFIGURATION_UPDATE, data);
+                    if (res.getStatus() == Status.OK)
+                    {
+                        updateOwnConfig(res.getContent());
+                    }
+
+                    lastUpdateMap.put(target.getId(), syncTime);
+                }
+                catch (IOException e)
+                {
+                    logger.error("Can not synchronize RVs to " + target.getName() + " (" + target.getId() + ")");
+                }
             }
-            catch (IOException e)
-            {
-                logger.error("Can not synchronize RVs to " + target.getName() + " (" + target.getId() + ")");
-            }
+        }
+        finally
+        {
+            synchronizationRunning = false;
         }
     }
 
     /**
-     * @return
-     * @throws IOException
+     * @return the synchronization data.
+     * @throws IOException in case of errors.
      */
     private byte[] prepareSyncData() throws IOException
     {
@@ -262,8 +287,6 @@ public class ConfigurationSynchronizerImpl extends TimerTask
 
     /**
      * {@inheritDoc}
-     * 
-     * @throws IOException
      */
     @Override
     public synchronized byte[] updateOwnConfig(byte[] content) throws IOException
@@ -554,19 +577,6 @@ public class ConfigurationSynchronizerImpl extends TimerTask
         }
 
         dbRv.getSensors().removeAll(removedSds);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void run()
-    {
-        if (configurationChanged)
-        {
-            configurationChanged = false;
-            syncConfigWithTransaction(qm.findAllRealVehicles());
-        }
     }
 
 }

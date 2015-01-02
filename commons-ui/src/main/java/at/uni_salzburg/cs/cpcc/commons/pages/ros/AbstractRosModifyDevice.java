@@ -1,25 +1,22 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
-package at.uni_salzburg.cs.cpcc.commons.pages.ros;
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-import static org.apache.tapestry5.EventConstants.SUCCESS;
+package at.uni_salzburg.cs.cpcc.commons.pages.ros;
 
 import java.io.IOException;
 
@@ -29,7 +26,6 @@ import javax.validation.Valid;
 import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.Component;
-import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
@@ -57,7 +53,7 @@ public abstract class AbstractRosModifyDevice
 
     @Inject
     protected Session session;
-    
+
     @Inject
     protected QueryManager qm;
 
@@ -80,9 +76,8 @@ public abstract class AbstractRosModifyDevice
     /**
      * @return the page to show next.
      */
-    @OnEvent(SUCCESS)
     @CommitAfter
-    protected Object storeDevice()
+    protected Object onSuccessFromForm()
     {
         if (!device.getTopicRoot().startsWith("/"))
         {

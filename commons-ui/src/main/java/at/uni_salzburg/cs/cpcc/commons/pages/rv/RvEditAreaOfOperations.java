@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.commons.pages.rv;
 
 import java.io.IOException;
@@ -39,7 +38,7 @@ import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.utils.PngResourceStreamResponse;
+import at.uni_salzburg.cs.cpcc.core.utils.ResourceStreamResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -99,7 +98,7 @@ public class RvEditAreaOfOperations
     {
         System.out.println("### ALERT! onActivate " + folder + " " + imageName);
         String pngResourcePath = "at/uni_salzburg/cs/cpcc/commons/" + folder + "/" + imageName;
-        return new PngResourceStreamResponse(pngResourcePath);
+        return new ResourceStreamResponse("application/png", pngResourcePath);
     }
 
     @CommitAfter
@@ -155,6 +154,7 @@ public class RvEditAreaOfOperations
      */
     public String getMapCenter()
     {
+        // TODO implement
         return "[37.8085,-122.4265]";
     }
 
@@ -163,6 +163,7 @@ public class RvEditAreaOfOperations
      */
     public String getZoomLevel()
     {
+        // TODO implement
         return "11";
     }
 

@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.commons.services.image;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -28,15 +27,12 @@ import java.awt.Dimension;
 
 import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.services.Request;
-import org.apache.tapestry5.services.RequestGlobals;
 import org.ros.internal.message.Message;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import sensor_msgs.Image;
-import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagService;
-import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagServiceImpl;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
 import at.uni_salzburg.cs.cpcc.ros.base.RosTopic;
 import at.uni_salzburg.cs.cpcc.ros.sensors.GpsSensorAdapter;
@@ -45,7 +41,6 @@ import at.uni_salzburg.cs.cpcc.ros.sensors.ImageProvider;
 public class ImageTagServiceTest
 {
     Request request = mock(Request.class);
-    RequestGlobals requestGlobals = mock(RequestGlobals.class);
     Messages messages = mock(Messages.class);
     ImageTagService imageTagService;
     private AbstractRosAdapter abstracAdapter1 = mock(AbstractRosAdapter.class);
@@ -67,10 +62,6 @@ public class ImageTagServiceTest
 
         when(abstracAdapter1.getTopic()).thenReturn(topic1);
 
-        // when(request.getContextPath()).thenReturn("/test-context");
-
-        when(requestGlobals.getRequest()).thenReturn(request);
-
         when(image1.getHeight()).thenReturn(480);
         when(image1.getWidth()).thenReturn(640);
 
@@ -84,7 +75,7 @@ public class ImageTagServiceTest
         when(messages.get("camera.image.alt")).thenReturn("image-alt");
         when(messages.get("camera.image.title")).thenReturn("image-title");
 
-        imageTagService = new ImageTagServiceImpl(requestGlobals, messages, "/test-context");
+        imageTagService = new ImageTagServiceImpl(messages, "/test-context");
     }
 
     @DataProvider

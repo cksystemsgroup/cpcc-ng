@@ -51,11 +51,11 @@
 		class="table table-striped table-condensed topic-table">
 
 		<p:positionCell>
-			${scheduledTask.getPosition().toString()}
+			${scheduledTask.position.toString()}
 		</p:positionCell>
 
 		<p:creationTimeCell>
-			${getTime(scheduledTask.creationTime)}
+			<t:Output t:format="message:dateFormat" t:value="scheduledTask.creationTime" />
 		</p:creationTimeCell>
 
 		<p:lastInTaskGroupCell>
@@ -63,7 +63,7 @@
 		</p:lastInTaskGroupCell>
 
 		<p:sensorsCell>
-			${getSortedSensorList(scheduledTask)}
+			${sortedSensorList}
 		</p:sensorsCell>
 
 		<p:empty>

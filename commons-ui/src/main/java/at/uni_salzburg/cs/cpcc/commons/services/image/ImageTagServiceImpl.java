@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.commons.services.image;
 
 import java.awt.Dimension;
@@ -24,7 +23,6 @@ import java.awt.Dimension;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.apache.tapestry5.services.RequestGlobals;
 
 import sensor_msgs.Image;
 import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
@@ -46,13 +44,12 @@ public class ImageTagServiceImpl implements ImageTagService
     private Messages messages;
 
     /**
-     * @param requestGlobals the request globals.
      * @param messages the messages service.
+     * @param contextPath the context path of this web application.
      */
-    public ImageTagServiceImpl(RequestGlobals requestGlobals, Messages messages
-        , @Symbol(SymbolConstants.CONTEXT_PATH) String contextPath)
+    public ImageTagServiceImpl(Messages messages, @Symbol(SymbolConstants.CONTEXT_PATH) String contextPath)
     {
-        this.contextPath = contextPath; // requestGlobals.getRequest().getContextPath();
+        this.contextPath = contextPath;
         this.messages = messages;
     }
 

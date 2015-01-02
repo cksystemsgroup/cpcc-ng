@@ -1,35 +1,35 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.commons.pages.vehicle;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.nio.ByteOrder;
 
 import javax.inject.Inject;
 
 import org.apache.tapestry5.StreamResponse;
-import org.apache.tapestry5.annotations.PageActivationContext;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.mozilla.javascript.ScriptableObject;
 import org.ros.node.NodeConfiguration;
+import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.core.utils.PngImageStreamResponse;
 import at.uni_salzburg.cs.cpcc.ros.services.RosImageConverter;
@@ -42,18 +42,14 @@ import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
 public class VehicleStorageImage
 {
     @Inject
+    private Logger logger;
+
+    @Inject
     private VvRteRepository vvRteRepo;
 
     @Inject
     private RosImageConverter imageConverter;
 
-    @PageActivationContext
-    private String ctx;
-
-    /**
-     * @param rootTopicParam the root topic.
-     * @return the currently available camera snapshot as <code>StreamResponse</code> image.
-     */
     /**
      * @param time the time stamp of the stored item (ignored).
      * @param storageId the identification of the stored item.
@@ -82,6 +78,14 @@ public class VehicleStorageImage
 
         BufferedImage bufferedImage = imageConverter.messageToBufferedImage(image);
 
-        return PngImageStreamResponse.convertImageToStreamResponse("", bufferedImage);
+        try
+        {
+            return PngImageStreamResponse.convertImageToStreamResponse(bufferedImage);
+        }
+        catch (IOException e)
+        {
+            logger.error("Can not convert image to StreamResponse.", e);
+            return new PngImageStreamResponse();
+        }
     }
 }
