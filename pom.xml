@@ -195,6 +195,12 @@
 				<version>1.6.0</version>
 				<scope>test</scope>
 			</dependency>
+			<!-- <dependency> -->
+			<!-- <groupId>org.powermock</groupId> -->
+			<!-- <artifactId>powermock-mockito-release-full</artifactId> -->
+			<!-- <version>1.6.0</version> -->
+			<!-- <scope>test</scope> -->
+			<!-- </dependency> -->
 			<dependency>
 				<groupId>org.apache.tapestry</groupId>
 				<artifactId>tapestry-test</artifactId>
@@ -319,6 +325,11 @@
 					<version>2.18</version>
 				</plugin>
 				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.7.2.201409121644</version>
+				</plugin>
+				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>2.10.1</version>
@@ -330,6 +341,11 @@
 					<configuration>
 						<!-- <failBuildInCaseOfConflict>true</failBuildInCaseOfConflict> -->
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.jetty</groupId>
+					<artifactId>jetty-maven-plugin</artifactId>
+					<version>9.2.6.v20141205</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

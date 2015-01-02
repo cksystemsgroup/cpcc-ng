@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.core.entities;
 
 import javax.persistence.Entity;
@@ -27,10 +26,10 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import at.uni_salzburg.cs.cpcc.core.utils.StringUtilities;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -238,7 +237,7 @@ public class SensorDefinition
             return false;
         }
 
-        if (!StringUtilities.isEqual(getParameters(), other.getParameters()))
+        if (!StringUtils.equals(getParameters(), other.getParameters()))
         {
             return false;
         }
@@ -248,7 +247,7 @@ public class SensorDefinition
             return false;
         }
 
-        if (!StringUtilities.isEqual(getMessageType(), other.getMessageType()))
+        if (!StringUtils.equals(getMessageType(), other.getMessageType()))
         {
             return false;
         }
@@ -270,7 +269,8 @@ public class SensorDefinition
     @Override
     public String toString()
     {
-        return "(id=" + id + ", description=" + description + ", type=" + type + ", parameters=" + parameters
+        return "(id=" + id + ", description=" + description + ", type=" + type
+            + ", lastUpdate=" + lastUpdate.getTime() + ", parameters=" + parameters
             + ", visibility=" + visibility + ", messageType=" + messageType + ")";
     }
 }

@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.core.utils;
 
 import java.awt.image.BufferedImage;
@@ -32,17 +31,13 @@ import javax.imageio.ImageIO;
 
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.services.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * PngImageStreamResponse
  */
 public class PngImageStreamResponse implements StreamResponse
 {
-    private static final Logger LOG = LoggerFactory.getLogger(PngImageStreamResponse.class);
-
-    private static final byte[] ONE_PIXEL_EMPTY_PNG = {
+    static final byte[] ONE_PIXEL_EMPTY_PNG = {
         (byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00,
         0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, (byte) 0xc4, (byte) 0x89,
         0x00, 0x00, 0x00, 0x01, 0x73, 0x52, 0x47, 0x42, 0x00, (byte) 0xae, (byte) 0xce, 0x1c, (byte) 0xe9, 0x00, 0x00,
@@ -64,7 +59,7 @@ public class PngImageStreamResponse implements StreamResponse
      */
     public PngImageStreamResponse()
     {
-        stream = null;
+        stream = new ByteArrayInputStream(ONE_PIXEL_EMPTY_PNG);
     }
 
     /**
@@ -78,7 +73,7 @@ public class PngImageStreamResponse implements StreamResponse
         }
         catch (FileNotFoundException e)
         {
-            stream = null;
+            stream = new ByteArrayInputStream(ONE_PIXEL_EMPTY_PNG);
         }
     }
 
@@ -105,7 +100,7 @@ public class PngImageStreamResponse implements StreamResponse
     @Override
     public InputStream getStream() throws IOException
     {
-        return stream != null ? stream : new ByteArrayInputStream(ONE_PIXEL_EMPTY_PNG);
+        return stream;
     }
 
     /**
@@ -118,32 +113,32 @@ public class PngImageStreamResponse implements StreamResponse
     }
 
     /**
-     * @param message an additional text to be used in log messages.
      * @param image the buffered image object.
      * @return the image as a <code>StreamResponse</code> object.
+     * @throws IOException
      */
-    public static StreamResponse convertImageToStreamResponse(String message, BufferedImage image)
+    public static StreamResponse convertImageToStreamResponse(BufferedImage image) throws IOException
+    {
+        return convertImageToStreamResponse(image, "");
+    }
+
+    /**
+     * @param image the buffered image object.
+     * @param message an additional text to be used in log messages.
+     * @return the image as a <code>StreamResponse</code> object.
+     * @throws IOException
+     */
+    public static StreamResponse convertImageToStreamResponse(BufferedImage image, String message) throws IOException
     {
         if (image == null)
         {
-            LOG.error("Image is NULL " + message);
             return new PngImageStreamResponse();
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try
-        {
-            ImageIO.write(image, "png", baos);
-            baos.flush();
-            byte[] imageInByte = baos.toByteArray();
-            baos.close();
-            return new PngImageStreamResponse(imageInByte);
-        }
-        catch (IOException e)
-        {
-            LOG.error("Can not convert ROS image to PNG " + message, e);
-        }
-
-        return new PngImageStreamResponse();
+        ImageIO.write(image, "png", baos);
+        baos.flush();
+        baos.close();
+        return new PngImageStreamResponse(baos.toByteArray());
     }
 }

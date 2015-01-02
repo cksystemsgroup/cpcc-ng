@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.core.entities;
 
 import java.io.Serializable;
@@ -35,15 +34,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class MappingAttributesPK implements Serializable
 {
     private static final long serialVersionUID = -1018515034103162936L;
-    
+
     @ManyToOne
-    @JoinColumn(name = "DEVICE_ID", referencedColumnName="ID")
+    @JoinColumn(name = "DEVICE_ID", referencedColumnName = "ID")
     private Device device;
 
     @ManyToOne
-    @JoinColumn(name = "TOPIC_ID", referencedColumnName="ID")
+    @JoinColumn(name = "TOPIC_ID", referencedColumnName = "ID")
     private Topic topic;
-    
+
     /**
      * Constructor
      */
@@ -51,7 +50,7 @@ public class MappingAttributesPK implements Serializable
     {
         // intentionally empty
     }
-    
+
     /**
      * @param device the device.
      * @param topic the topic.
@@ -60,8 +59,8 @@ public class MappingAttributesPK implements Serializable
     {
         this.device = device;
         this.topic = topic;
-    }   
-    
+    }
+
     /**
      * @return the device
      */
@@ -77,7 +76,7 @@ public class MappingAttributesPK implements Serializable
     {
         this.device = device;
     }
-    
+
     /**
      * @return the topic
      */
@@ -85,7 +84,7 @@ public class MappingAttributesPK implements Serializable
     {
         return topic;
     }
-    
+
     /**
      * @param topic the topic to set
      */

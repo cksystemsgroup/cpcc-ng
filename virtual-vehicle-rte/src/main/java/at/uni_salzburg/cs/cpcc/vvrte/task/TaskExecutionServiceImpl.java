@@ -1,35 +1,32 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.vvrte.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sensor_msgs.NavSatFix;
-import at.uni_salzburg.cs.cpcc.core.services.TimerService;
 import at.uni_salzburg.cs.cpcc.core.utils.GeodeticSystem;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.core.utils.WGS84;
@@ -46,7 +43,7 @@ import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 /**
  * TaskExecutionServiceImpl
  */
-public class TaskExecutionServiceImpl extends TimerTask implements TaskExecutionService
+public class TaskExecutionServiceImpl implements TaskExecutionService
 {
     private static final Logger LOG = LoggerFactory.getLogger(TaskExecutionServiceImpl.class);
     
@@ -67,13 +64,11 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
      * @param rosNodeService the ROS node service.
      * @param timerService the timer service.
      */
-    public TaskExecutionServiceImpl(TaskSchedulerService scheduler, RosNodeService rosNodeService,
-        TimerService timerService)
+    public TaskExecutionServiceImpl(TaskSchedulerService scheduler, RosNodeService rosNodeService)
     {
         this.scheduler = scheduler;
         this.rosNodeService = rosNodeService;
         init();
-        timerService.periodicSchedule(this, 0, 1000);
     }
 
     /**
@@ -137,7 +132,7 @@ public class TaskExecutionServiceImpl extends TimerTask implements TaskExecution
      * {@inheritDoc}
      */
     @Override
-    public void run()
+    public void executeTasks()
     {
         if (currentRunningTask == null)
         {

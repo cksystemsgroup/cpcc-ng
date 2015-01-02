@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.core.entities;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -75,6 +74,16 @@ public class SensorDefinitionTest
         };
     }
 
+    @DataProvider
+    public Object[][] booleanDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{null},
+            new Object[]{Boolean.TRUE},
+            new Object[]{Boolean.FALSE},
+        };
+    }
+
     @Test(dataProvider = "stringDataProvider")
     public void shouldStoreDescription(String description)
     {
@@ -94,6 +103,13 @@ public class SensorDefinitionTest
     {
         sd.setMessageType(messageType);
         assertThat(sd.getMessageType()).isNotNull().isEqualTo(messageType);
+    }
+
+    @Test(dataProvider = "booleanDataProvider")
+    public void shouldStoreMessageType(Boolean deleted)
+    {
+        sd.setDeleted(deleted);
+        assertThat(sd.getDeleted()).isEqualTo(deleted);
     }
 
     @Test(dataProvider = "stringDataProvider")
@@ -233,7 +249,8 @@ public class SensorDefinitionTest
         sd1.setMessageType("std_msgs/String");
 
         assertThat(sd1.toString()).isNotNull().isEqualTo(
-            "(id=12, description=sd1, type=ALTIMETER, parameters=p1, visibility=ALL_VV, messageType=std_msgs/String)");
+            "(id=12, description=sd1, type=ALTIMETER, lastUpdate=12345678, parameters=p1, visibility=ALL_VV, "
+                + "messageType=std_msgs/String)");
 
         SensorDefinition sd2 = new SensorDefinition();
         sd2.setId(15);
@@ -245,6 +262,7 @@ public class SensorDefinitionTest
         sd2.setMessageType("std_msgs/Float32");
 
         assertThat(sd2.toString()).isNotNull().isEqualTo(
-            "(id=15, description=sd2, type=CO2, parameters=param2, visibility=NO_VV, messageType=std_msgs/Float32)");
+            "(id=15, description=sd2, type=CO2, lastUpdate=87654321, parameters=param2, visibility=NO_VV, "
+                + "messageType=std_msgs/Float32)");
     }
 }

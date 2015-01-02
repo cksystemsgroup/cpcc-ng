@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.io.IOException;
@@ -28,7 +27,6 @@ import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
 import org.geojson.Point;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
@@ -42,14 +40,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class CoreGeoJsonConverterImpl implements CoreGeoJsonConverter
 {
-    private static final Logger LOG = LoggerFactory.getLogger(CoreGeoJsonConverterImpl.class);
+    private Logger logger;
+
+    /**
+     * @param logger the application logger.
+     */
+    public CoreGeoJsonConverterImpl(Logger logger)
+    {
+        this.logger = logger;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Feature toFeature(RealVehicle rv)
-        throws JsonParseException, JsonMappingException, IOException
+    public Feature toFeature(RealVehicle rv) throws IOException
     {
         Feature feature = new Feature();
         feature.setId(Integer.toString(rv.getId()));
@@ -66,7 +71,8 @@ public class CoreGeoJsonConverterImpl implements CoreGeoJsonConverter
             }
             catch (Exception e)
             {
-                LOG.error("Can not parse area of operation of real vehicle " + rv.getName() + " (" + rv.getId() + ")");
+                logger.error("Can not parse area of operation of real vehicle " + rv.getName()
+                    + " (" + rv.getId() + ")");
             }
         }
 

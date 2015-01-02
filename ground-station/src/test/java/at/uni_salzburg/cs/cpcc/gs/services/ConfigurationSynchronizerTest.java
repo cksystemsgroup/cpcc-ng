@@ -1,27 +1,25 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.gs.services;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -35,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.TimerTask;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
@@ -64,15 +61,11 @@ import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorVisibility;
 import at.uni_salzburg.cs.cpcc.core.services.CoreJsonConverterImpl;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.services.TimerService;
 
 public class ConfigurationSynchronizerTest
 {
     private Logger logger;
     private ConfigurationSynchronizerImpl sync;
-    private TimerService timerService;
-    private Long delay;
-    private Long cycleTime;
     private QueryManager qm;
     private CommunicationService com;
     private Session session;
@@ -262,19 +255,6 @@ public class ConfigurationSynchronizerTest
         rv1new.setUrl("http://localhost:12345/rv01new");
         rv1new.setDeleted(false);
 
-        timerService = mock(TimerService.class);
-        doAnswer(new Answer<Object>()
-        {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable
-            {
-                Object[] args = invocation.getArguments();
-                delay = (Long) args[1];
-                cycleTime = (Long) args[2];
-                return null;
-            }
-        }).when(timerService).periodicSchedule(any(TimerTask.class), anyLong(), anyLong());
-
         Parameter rvNameParam = mock(Parameter.class);
         when(rvNameParam.getValue()).thenReturn("GS01");
 
@@ -314,13 +294,7 @@ public class ConfigurationSynchronizerTest
 
         RealVehicleStateService stateSrv = mock(RealVehicleStateService.class);
 
-        sync = new ConfigurationSynchronizerImpl(logger, sessionManager, timerService, qm, com, jsonConv, stateSrv);
-    }
-
-    @Test
-    public void shouldInitializeTimerService()
-    {
-        verify(timerService).periodicSchedule(sync, delay, cycleTime);
+        sync = new ConfigurationSynchronizerImpl(logger, sessionManager, qm, com, jsonConv, stateSrv);
     }
 
     @DataProvider

@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import org.apache.tapestry5.ioc.Configuration;
@@ -32,7 +31,7 @@ public final class CoreModule
 {
     private CoreModule()
     {
-        // intentionally empty.
+        // Intentionally empty.
     }
 
     /**
@@ -44,25 +43,8 @@ public final class CoreModule
         binder.bind(CoreJsonConverter.class, CoreJsonConverterImpl.class);
         binder.bind(CoreGeoJsonConverter.class, CoreGeoJsonConverterImpl.class);
         binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
-        binder.bind(TimerService.class, TimerServiceImpl.class);
     }
-    
-    /**
-     * @param configuration the IoC configuration.
-     */
-//    public static void contributeComponentClassResolver(Configuration<LibraryMapping> configuration)
-//    {
-//        configuration.add(new LibraryMapping("persistence", "at.uni_salzburg.cs.cpcc.persistence"));
-//    }
-    
-    /**
-     * @param configuration the IoC configuration.
-     */
-//    public static void contributeRegexAuthorizer(Configuration<String> configuration)
-//    {
-//        configuration.add("^at.uni_salzburg.cs.cpcc.persistence/.*\\.jpg$");
-//    }
-    
+
     /**
      * @param configuration the IoC configuration.
      */

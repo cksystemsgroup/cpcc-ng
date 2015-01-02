@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.util.Date;
@@ -38,8 +37,6 @@ import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
  */
 public class CoreJsonConverterImpl implements CoreJsonConverter
 {
-    // private static final Logger LOG = LoggerFactory.getLogger(CoreJsonConverterImpl.class);
-
     /**
      * PersistenceJsonConverterImpl
      */
@@ -67,7 +64,7 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         {
             o.put(REAL_VEHICLE_LAST_UPDATE, vehicle.getLastUpdate().getTime());
         }
-        
+
         if (sensorIdsOnly)
         {
             Integer[] ids = new Integer[vehicle.getSensors().size()];
@@ -116,7 +113,7 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
 
         if (sensor.getLastUpdate() != null)
         {
-            o.put(SENSOR_DEFINITION_LAST_UPDATE, sensor.getLastUpdate().getTime());            
+            o.put(SENSOR_DEFINITION_LAST_UPDATE, sensor.getLastUpdate().getTime());
         }
         o.put(SENSOR_DEFINITION_DELETED, sensor.getDeleted());
         return o;
@@ -176,6 +173,9 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         return a;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int fillInNewerRealVehicleFromJsonObject(RealVehicle rv, JSONObject rvObj)
     {
@@ -202,15 +202,15 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
             rvObj.isNull(REAL_VEHICLE_DELETED)
                 ? Boolean.FALSE
                 : rvObj.getBoolean(REAL_VEHICLE_DELETED));
+
+        // JSONArray sensors = (JSONArray) rvObj.get(REAL_VEHICLE_SENSORS);
         //
-        //        JSONArray sensors = (JSONArray) rvObj.get(REAL_VEHICLE_SENSORS);
-        //
-        //        for (int k = 0, l = sensors.length(); k < l; ++k)
-        //        {
-        //            SensorDefinition sd = new SensorDefinition();
-        //            sd.setId(sensors.getInt(k));
-        //            rv.getSensors().add(sd);
-        //        }
+        // for (int k = 0, l = sensors.length(); k < l; ++k)
+        // {
+        //     SensorDefinition sd = new SensorDefinition();
+        //     sd.setId(sensors.getInt(k));
+        //     rv.getSensors().add(sd);
+        // }
 
         return 1;
     }
@@ -222,7 +222,7 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
     public int fillInNewerSensorDefinitionFromJsonObject(SensorDefinition sd, JSONObject sensor)
     {
         Date lastUpdateNew = new Date(sensor.getLong(SENSOR_DEFINITION_LAST_UPDATE));
-        long lastUpdateDb = sd.getLastUpdate() != null ? sd.getLastUpdate().getTime() : 0;
+        long lastUpdateDb = sd.getLastUpdate().getTime();
 
         if (lastUpdateNew.getTime() < lastUpdateDb)
         {

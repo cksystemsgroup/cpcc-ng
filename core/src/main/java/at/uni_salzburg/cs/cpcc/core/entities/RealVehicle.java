@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.core.entities;
 
 import java.util.ArrayList;
@@ -78,7 +77,7 @@ public class RealVehicle
     private java.util.Date lastUpdate;
 
     @NotNull
-    private Boolean deleted;
+    private boolean deleted;
 
     /**
      * @return the id
@@ -197,7 +196,7 @@ public class RealVehicle
     /**
      * @return true if this record is to be considered as deleted.
      */
-    public Boolean getDeleted()
+    public boolean getDeleted()
     {
         return deleted;
     }
@@ -205,7 +204,7 @@ public class RealVehicle
     /**
      * @param deleted set to true if this record is to be considered as deleted.
      */
-    public void setDeleted(Boolean deleted)
+    public void setDeleted(boolean deleted)
     {
         this.deleted = deleted;
     }
@@ -257,16 +256,6 @@ public class RealVehicle
             return false;
         }
 
-        if (getSensors() == null && other.getSensors() != null)
-        {
-            return false;
-        }
-
-        if (getSensors() != null && other.getSensors() == null)
-        {
-            return false;
-        }
-
         return equalsHelper2(other);
     }
 
@@ -282,6 +271,16 @@ public class RealVehicle
         }
 
         if (!getName().equals(other.getName()))
+        {
+            return false;
+        }
+
+        if (getSensors() == null && other.getSensors() != null)
+        {
+            return false;
+        }
+
+        if (getSensors() != null && other.getSensors() == null)
         {
             return false;
         }
@@ -309,6 +308,9 @@ public class RealVehicle
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode()
     {
@@ -340,9 +342,10 @@ public class RealVehicle
             .append(", url=").append(url)
             .append(", areaOfOperation=").append(areaOfOperation)
             .append(", lastUpdate=").append(lastUpdate.getTime())
+            .append(", deleted=").append(deleted)
             .append(", sensors=[");
 
-        for (int k = 0, l = getSensors().size(); k < l; ++k)
+        for (int k = 0, l = getSensors() != null ? getSensors().size() : 0; k < l; ++k)
         {
             if (k > 0)
             {

@@ -1,22 +1,21 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.ros.services;
 
 import java.awt.Point;
@@ -50,7 +49,7 @@ import sensor_msgs.Image;
 public class RosImageConverterImpl implements RosImageConverter
 {
     private static final Logger LOG = LoggerFactory.getLogger(RosImageConverterImpl.class);
-    
+
     @SuppressWarnings("serial")
     private static final Map<String, ImageConverter> CONVERTER_MAP = new HashMap<String, ImageConverter>()
     {
@@ -74,7 +73,7 @@ public class RosImageConverterImpl implements RosImageConverter
     public BufferedImage messageToBufferedImage(sensor_msgs.Image message)
     {
         String encoding = message.getEncoding().toLowerCase();
-        
+
         if (CONVERTER_MAP.containsKey(encoding))
         {
             return CONVERTER_MAP.get(encoding).convert(message);
@@ -112,7 +111,7 @@ public class RosImageConverterImpl implements RosImageConverter
             int height = message.getHeight();
             int step = message.getStep();
             int arrayOffset = message.getData().arrayOffset();
-            int[] bandOffsets = new int[]{arrayOffset, arrayOffset+1, arrayOffset+2};
+            int[] bandOffsets = new int[]{arrayOffset, arrayOffset + 1, arrayOffset + 2};
             PixelInterleavedSampleModel sampleModel =
                 new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, width, height, 3, step, bandOffsets);
 
@@ -141,15 +140,15 @@ public class RosImageConverterImpl implements RosImageConverter
             if (message.getData().array().length <= 0)
             {
                 return new BufferedImage(message.getWidth(), message.getHeight(), BufferedImage.TYPE_INT_ARGB);
-            }            
-            
+            }
+
             DataBufferByte dataBuffer = new DataBufferByte(message.getData().array(), message.getData().array().length);
-            
+
             int width = message.getWidth();
             int height = message.getHeight();
             int step = message.getStep();
-            int arrayOffset = message.getData().arrayOffset(); 
-            int[] bandOffsets = new int[]{arrayOffset, arrayOffset+1, arrayOffset+2, arrayOffset+3};
+            int arrayOffset = message.getData().arrayOffset();
+            int[] bandOffsets = new int[]{arrayOffset, arrayOffset + 1, arrayOffset + 2, arrayOffset + 3};
             PixelInterleavedSampleModel sampleModel =
                 new PixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, width, height, 4, step, bandOffsets);
 
@@ -185,9 +184,8 @@ public class RosImageConverterImpl implements RosImageConverter
             catch (IOException e)
             {
                 LOG.error("Can not read image data.", e.getMessage());
+                return new BufferedImage(message.getWidth(), message.getHeight(), BufferedImage.TYPE_INT_ARGB);
             }
-
-            return new BufferedImage(message.getWidth(), message.getHeight(), BufferedImage.TYPE_INT_ARGB);
         }
     }
 

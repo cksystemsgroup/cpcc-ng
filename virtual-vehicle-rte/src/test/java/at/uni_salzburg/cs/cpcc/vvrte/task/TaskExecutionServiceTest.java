@@ -1,27 +1,25 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.vvrte.task;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -35,7 +33,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimerTask;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -45,7 +42,6 @@ import org.testng.annotations.Test;
 
 import sensor_msgs.NavSatFix;
 import std_msgs.Float32;
-import at.uni_salzburg.cs.cpcc.core.services.TimerService;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 import at.uni_salzburg.cs.cpcc.ros.actuators.AbstractActuatorAdapter;
 import at.uni_salzburg.cs.cpcc.ros.actuators.ActuatorType;
@@ -69,7 +65,6 @@ public class TaskExecutionServiceTest
     private TaskExecutionService executor;
     private TaskSchedulerService scheduler;
     private RosNodeService rosNodeService;
-    private TimerService timerService;
     private Map<String, List<AbstractRosAdapter>> adapterNodes;
     private SimpleWayPointControllerAdapter wpc;
     private AbstractGpsSensorAdapter gps;
@@ -78,7 +73,7 @@ public class TaskExecutionServiceTest
     private AbstractRosAdapter unknownAdapterB;
     private AbstractRosAdapter unknownAdapterC;
     private AbstractRosAdapter unknownAdapterD;
-    
+
     private NavSatFix position;
     private Float32 float32altitude;
 
@@ -167,9 +162,6 @@ public class TaskExecutionServiceTest
         rosNodeService = mock(RosNodeService.class);
         when(rosNodeService.getAdapterNodes()).thenReturn(adapterNodes);
 
-        timerService = mock(TimerService.class);
-        // when(timerService.periodicSchedule(timerTask, cycleTime));
-
         scheduler = mock(TaskSchedulerService.class);
 
         doAnswer(new Answer<Object>()
@@ -189,7 +181,7 @@ public class TaskExecutionServiceTest
             }
         }).when(scheduler).schedule(anyList(), anyList());
 
-        executor = new TaskExecutionServiceImpl(scheduler, rosNodeService, timerService);
+        executor = new TaskExecutionServiceImpl(scheduler, rosNodeService);
     }
 
     /**
@@ -265,8 +257,6 @@ public class TaskExecutionServiceTest
     @Test
     public void shouldExecuteASingleTask()
     {
-        verify(timerService).periodicSchedule((TimerTask) anyObject(), anyLong(), anyLong());
-
         executor.addTask(taskA);
 
         assertThat(executor.getScheduledTasks()).containsExactly(taskA);
@@ -274,7 +264,7 @@ public class TaskExecutionServiceTest
             .overridingErrorMessage("did not return expected task A")
             .isNull();
 
-        ((TimerTask) executor).run();
+        executor.executeTasks();
 
         verify(wpc).setPosition(taskA.getPosition());
 
@@ -290,7 +280,7 @@ public class TaskExecutionServiceTest
     public void shouldExecuteASingleTaskWithoutAltimeter()
     {
         adapterNodes.put("/mav01", Arrays.asList(wpc, gps));
-        executor = new TaskExecutionServiceImpl(scheduler, rosNodeService, timerService);
+        executor = new TaskExecutionServiceImpl(scheduler, rosNodeService);
         assertThat(executor.getAltimeter()).isNull();
 
         executor.addTask(taskA);
@@ -300,7 +290,7 @@ public class TaskExecutionServiceTest
             .overridingErrorMessage("did not return expected task A")
             .isNull();
 
-        ((TimerTask) executor).run();
+        executor.executeTasks();
 
         verify(wpc).setPosition(taskA.getPosition());
 
@@ -315,8 +305,6 @@ public class TaskExecutionServiceTest
     @Test
     public void shouldExecuteMultipleTask()
     {
-        verify(timerService).periodicSchedule((TimerTask) anyObject(), anyLong(), anyLong());
-
         executor.addTask(taskA);
         executor.addTask(taskB);
 
@@ -326,7 +314,7 @@ public class TaskExecutionServiceTest
             .overridingErrorMessage("should not return a current task")
             .isNull();
 
-        ((TimerTask) executor).run();
+        executor.executeTasks();
 
         verify(wpc).setPosition(taskA.getPosition());
 
@@ -336,7 +324,7 @@ public class TaskExecutionServiceTest
             .overridingErrorMessage("should not return a current task")
             .isNull();
 
-        ((TimerTask) executor).run();
+        executor.executeTasks();
 
         verify(wpc).setPosition(taskB.getPosition());
 
@@ -365,7 +353,7 @@ public class TaskExecutionServiceTest
             .overridingErrorMessage("should not return a current task")
             .isNull();
 
-        ((TimerTask) executor).run();
+        executor.executeTasks();
 
         verify(wpc).setPosition(taskB.getPosition());
 
@@ -376,7 +364,7 @@ public class TaskExecutionServiceTest
             .overridingErrorMessage("should not return a current task")
             .isNull();
 
-        ((TimerTask) executor).run();
+        executor.executeTasks();
 
         verify(wpc).setPosition(taskC.getPosition());
 
@@ -387,7 +375,7 @@ public class TaskExecutionServiceTest
             .overridingErrorMessage("should not return a current task")
             .isNull();
 
-        ((TimerTask) executor).run();
+        executor.executeTasks();
 
         verify(wpc).setPosition(taskD.getPosition());
 
@@ -397,7 +385,7 @@ public class TaskExecutionServiceTest
             .overridingErrorMessage("should not return a current task")
             .isNull();
 
-        ((TimerTask) executor).run();
+        executor.executeTasks();
 
         verify(wpc).setPosition(taskA.getPosition());
 
@@ -407,7 +395,7 @@ public class TaskExecutionServiceTest
             .overridingErrorMessage("should have processed all tasks")
             .isNull();
     }
-    
+
     /**
      * The task executor should do nothing, if there is nothing to do.
      */
@@ -419,16 +407,16 @@ public class TaskExecutionServiceTest
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("should not return a current task")
             .isNull();
-        
-        ((TimerTask) executor).run();
-        
+
+        executor.executeTasks();
+
         assertThat(executor.getPendingTasks()).isEmpty();
         assertThat(executor.getScheduledTasks()).isEmpty();
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("should not return a current task")
             .isNull();
     }
-    
+
     @Test
     public void shouldWaitForEndOfTravelling()
     {
@@ -447,19 +435,19 @@ public class TaskExecutionServiceTest
         assertThat(executor.getScheduledTasks()).containsExactly(taskA);
         assertThat(executor.getPendingTasks()).isEmpty();
 
-        ((TimerTask) executor).run();
+        executor.executeTasks();
         assertThat(executor.getCurrentRunningTask()).isNotNull();
         assertThat(executor.getScheduledTasks()).isEmpty();
         assertThat(executor.getPendingTasks()).isEmpty();
 
         when(gps.getPosition()).thenReturn(position);
-        
-        ((TimerTask) executor).run();
+
+        executor.executeTasks();
         assertThat(executor.getCurrentRunningTask()).isNull();
         assertThat(executor.getScheduledTasks()).isEmpty();
         assertThat(executor.getPendingTasks()).isEmpty();
     }
-    
+
     @Test
     public void shouldDoNothingIfGpsIsUnavailable()
     {
@@ -468,14 +456,14 @@ public class TaskExecutionServiceTest
         assertThat(executor.getPendingTasks()).isEmpty();
 
         when(gps.getPosition()).thenReturn(null);
-        
+
         executor.addTask(taskA);
         assertThat(executor.getCurrentRunningTask()).isNull();
         assertThat(executor.getScheduledTasks()).containsExactly(taskA);
         assertThat(executor.getPendingTasks()).isEmpty();
 
-        ((TimerTask) executor).run();
-        
+        executor.executeTasks();
+
         assertThat(executor.getCurrentRunningTask()).isNotNull();
         assertThat(executor.getScheduledTasks()).isEmpty();
         assertThat(executor.getPendingTasks()).isEmpty();

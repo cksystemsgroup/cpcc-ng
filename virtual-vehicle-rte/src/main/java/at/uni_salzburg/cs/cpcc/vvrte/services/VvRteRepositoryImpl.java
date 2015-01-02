@@ -1,33 +1,31 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.hibernate.Session;
 import org.hibernate.criterion.Property;
 import org.slf4j.Logger;
 
-import at.uni_salzburg.cs.cpcc.core.services.AbstractRepository;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
@@ -35,26 +33,32 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 /**
  * VvRteRepositoryImpl
  */
-public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepository
+public class VvRteRepositoryImpl implements VvRteRepository
 {
+    private Logger logger;
+    private Session session;
+
     /**
      * @param qm the query manager
      */
-    public VvRteRepositoryImpl(Logger logger, HibernateSessionManager sessionManager)
+    public VvRteRepositoryImpl(Logger logger, Session session)
     {
-        super(logger, sessionManager);
+        this.logger = logger;
+        this.session = session;
         resetVirtualVehicleStates();
     }
 
-    private void resetVirtualVehicleStates()
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void resetVirtualVehicleStates()
     {
-        getSessionManager().getSession()
+        session
             .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
             .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED)
             .setParameter("oldState", VirtualVehicleState.MIGRATING)
             .executeUpdate();
-
-        getSessionManager().commit();
     }
 
     /**
@@ -64,7 +68,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public List<VirtualVehicle> findAllVehicles()
     {
-        return (List<VirtualVehicle>) getSessionManager().getSession()
+        return (List<VirtualVehicle>) session
             .createCriteria(VirtualVehicle.class)
             .addOrder(Property.forName("id").asc())
             .list();
@@ -76,7 +80,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public VirtualVehicle findVirtualVehicleById(Integer id)
     {
-        return (VirtualVehicle) getSessionManager().getSession()
+        return (VirtualVehicle) session
             .createQuery("from VirtualVehicle where id = :id")
             .setInteger("id", id)
             .uniqueResult();
@@ -88,7 +92,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public VirtualVehicle findVirtualVehicleByName(String name)
     {
-        return (VirtualVehicle) getSessionManager().getSession()
+        return (VirtualVehicle) session
             .createQuery("from VirtualVehicle where name = :name")
             .setString("name", name)
             .uniqueResult();
@@ -100,7 +104,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public VirtualVehicle findVirtualVehicleByUUID(String uuid)
     {
-        return (VirtualVehicle) getSessionManager().getSession()
+        return (VirtualVehicle) session
             .createQuery("from VirtualVehicle where uuid = :uuid")
             .setString("uuid", uuid)
             .uniqueResult();
@@ -119,6 +123,9 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
         }
     };
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteVirtualVehicleById(VirtualVehicle vehicle)
     {
@@ -129,19 +136,19 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
 
         if (!ALLOWED_STATES_FOR_VV_DELETION.contains(vehicle.getState()))
         {
-            getLogger().warn("Not deleting virtual vehicle " + vehicle.getName()
+            logger.warn("Not deleting virtual vehicle " + vehicle.getName()
                 + " (" + vehicle.getUuid() + ") because of state " + vehicle.getState());
             return;
         }
 
-        getLogger().info("Deleting virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")");
+        logger.info("Deleting virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")");
 
-        getSessionManager().getSession()
+        session
             .createQuery("DELETE FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id")
             .setParameter("id", vehicle.getId())
             .executeUpdate();
 
-        delete(vehicle);
+        session.delete(vehicle);
     }
 
     /**
@@ -151,7 +158,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public List<String> findAllStorageItemNames()
     {
-        return (List<String>) getSessionManager().getSession()
+        return (List<String>) session
             .createQuery("select name from VirtualVehicleStorage")
             .list();
     }
@@ -162,7 +169,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public VirtualVehicleStorage findStorageItemByVirtualVehicleAndName(VirtualVehicle vehicle, String name)
     {
-        return (VirtualVehicleStorage) getSessionManager().getSession()
+        return (VirtualVehicleStorage) session
             .createQuery("from VirtualVehicleStorage where virtualVehicle.id = :id AND name = :name")
             .setInteger("id", vehicle.getId())
             .setString("name", name)
@@ -175,7 +182,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public VirtualVehicleStorage findStorageItemById(Integer id)
     {
-        return (VirtualVehicleStorage) getSessionManager().getSession()
+        return (VirtualVehicleStorage) session
             .createQuery("from VirtualVehicleStorage where id = :id")
             .setInteger("id", id)
             .uniqueResult();
@@ -188,7 +195,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     @Override
     public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id)
     {
-        return (List<VirtualVehicleStorage>) getSessionManager().getSession()
+        return (List<VirtualVehicleStorage>) session
             .createQuery("from VirtualVehicleStorage where virtualVehicle.id = :id")
             .setInteger("id", id)
             .list();
@@ -202,7 +209,7 @@ public class VvRteRepositoryImpl extends AbstractRepository implements VvRteRepo
     public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName,
         int maxEntries)
     {
-        return (List<VirtualVehicleStorage>) getSessionManager().getSession()
+        return (List<VirtualVehicleStorage>) session
             .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id AND name > :name ORDER BY name")
             .setInteger("id", id)
             .setString("name", startName)

@@ -1,27 +1,27 @@
-/*
- * This code is part of the CPCC-NG project.
- *
- * Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.offset;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -36,6 +36,7 @@ import org.geojson.Point;
 import org.geojson.Polygon;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -49,19 +50,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CoreGeoJsonConverterTest
 {
-    RealVehicle rv1 = mock(RealVehicle.class);
-    RealVehicle rv2 = mock(RealVehicle.class);
-    RealVehicle rv3 = mock(RealVehicle.class);
-
+    private RealVehicle rv1;
+    private RealVehicle rv2;
+    private RealVehicle rv3;
     private CoreGeoJsonConverterImpl conv;
+    private Logger logger;
 
     @BeforeMethod
     public void setUp()
     {
+        rv1 = mock(RealVehicle.class);
         when(rv1.getName()).thenReturn("rv1");
         when(rv1.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
         when(rv1.getId()).thenReturn(1);
 
+        rv2 = mock(RealVehicle.class);
         when(rv2.getName()).thenReturn("rv2");
         when(rv2.getAreaOfOperation()).thenReturn("{"
             + "\"type\":\"FeatureCollection\","
@@ -75,6 +78,7 @@ public class CoreGeoJsonConverterTest
         when(rv2.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
         when(rv2.getId()).thenReturn(2);
 
+        rv3 = mock(RealVehicle.class);
         when(rv3.getName()).thenReturn("rv3");
         when(rv3.getAreaOfOperation()).thenReturn("["
             + "{lat:37.80800,lng:-122.42400},{lat:37.80800,lng:-122.42500},{lat:37.80900,lng:-122.42500},"
@@ -82,7 +86,8 @@ public class CoreGeoJsonConverterTest
         when(rv3.getType()).thenReturn(RealVehicleType.GROUND_STATION);
         when(rv3.getId()).thenReturn(3);
 
-        conv = new CoreGeoJsonConverterImpl();
+        logger = mock(Logger.class);
+        conv = new CoreGeoJsonConverterImpl(logger);
     }
 
     @DataProvider
@@ -196,6 +201,22 @@ public class CoreGeoJsonConverterTest
 
         assertThat(actual).isNotNull();
         JSONAssert.assertEquals(expected, actual, false);
+    }
+
+    @Test
+    public void shouldLogUnparsableRealVehicle() throws IOException
+    {
+        RealVehicle brokenRv = mock(RealVehicle.class);
+        when(brokenRv.getName()).thenReturn("brokenRv");
+        when(brokenRv.getAreaOfOperation()).thenReturn("{"
+            + "\"type\":\"FeatureCollection\","
+            + "\"features\":[");
+        when(brokenRv.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
+        when(brokenRv.getId()).thenReturn(11);
+
+        conv.toFeature(brokenRv);
+
+        verify(logger).error("Can not parse area of operation of real vehicle brokenRv (11)");
     }
 
     @Test

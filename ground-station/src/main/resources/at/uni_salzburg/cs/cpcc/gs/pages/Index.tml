@@ -1,14 +1,14 @@
 <html t:type="layout" title="${message:groundStationIndex}"
 	t:sidebarTitle="Framework Version"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
-	xmlns:p="tapestry:parameter">
+	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
 <div class="row">
 	<div class="col-xs-6 col-md-3">
 		<h4>
 			<t:pagelink page="index">${message:device.tree.label}</t:pagelink>
 		</h4>
-		<div t:id="deviceTree"></div>
+		<c:DeviceTree t:devices="deviceList" />
 	</div>
 
 	<div class="col-xs-12 col-md-9">

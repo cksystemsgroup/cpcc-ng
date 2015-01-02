@@ -1,22 +1,14 @@
 <html t:type="layout" title="${message:realVehicleIndex}"
 	t:sidebarTitle="Framework Version"
 	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
-	xmlns:p="tapestry:parameter">
+	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
 <div class="row">
 	<div class="col-xs-6 col-md-3">
 		<h4>
-			<t:pagelink page="index">${message:device.tree.label}</t:pagelink>
+			<t:Pagelink page="index">${message:device.tree.label}</t:Pagelink>
 		</h4>
-		<div t:id="deviceTree"></div>
-	</div>
-
-	<div class="col-xs-12 col-md-9">
-		<t:zone t:id="zone" t:mixins='ZoneRefresh' ZoneRefresh.period="5">
-			<p>
-				The current time is: <strong>${currentTime}</strong>
-			</p>
-		</t:zone>
+		<c:DeviceTree t:devices="deviceList" />
 	</div>
 </div>
 
