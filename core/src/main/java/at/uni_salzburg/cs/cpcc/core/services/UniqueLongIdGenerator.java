@@ -21,7 +21,7 @@ package at.uni_salzburg.cs.cpcc.core.services;
 import java.io.Serializable;
 import java.util.Properties;
 
-import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.dialect.Dialect;
@@ -57,6 +57,6 @@ public class UniqueLongIdGenerator implements IdentifierGenerator, Configurable
     public Serializable generate(SessionImplementor session, Object obj) throws HibernateException
     {
         final Serializable id = session.getEntityPersister(entityName, obj).getIdentifier(obj, session);
-        return id != null ? id : RandomUtils.nextLong();
+        return id != null ? id : RandomUtils.nextLong(0, Long.MAX_VALUE);
     }
 }
