@@ -33,11 +33,17 @@ public class GsViewer
     @Inject
     private QueryManager qm;
 
+    /**
+     * @return the map center coordinates.
+     */
     public String getMapCenter()
     {
         return "[37.8085124939787,-122.42505311965941]";
     }
 
+    /**
+     * @return the map's zoom level.
+     */
     public String getZoomLevel()
     {
         return "17";
@@ -58,6 +64,9 @@ public class GsViewer
     //        return obj;
     //    }
 
+    /**
+     * @return the current regions.
+     */
     public String getRegions()
     {
         StringBuilder b = new StringBuilder();
@@ -83,6 +92,9 @@ public class GsViewer
         return b.toString();
     }
 
+    /**
+     * @return the currently active vehicles.
+     */
     public String getVehicles()
     {
         return "{}";

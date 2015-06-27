@@ -48,14 +48,15 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse.Status;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
 public class CommunicationServiceTest
 {
+    private static final String MIGRATE = "migrate";
+
     private static final String REASON_PHRASE = "this is the reason phrase.";
-    
+
     private RealVehicle realVehicle;
     private LocalTestServer server;
     private HttpRequestHandler handler;
@@ -76,7 +77,7 @@ public class CommunicationServiceTest
         {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable
-            {                
+            {
                 Object[] args = invocation.getArguments();
                 request = (BasicHttpEntityEnclosingRequest) args[0];
                 HttpResponse response = (HttpResponse) args[1];
@@ -100,8 +101,8 @@ public class CommunicationServiceTest
                     .setContentType(ContentType.TEXT_PLAIN)
                     .setText(REASON_PHRASE)
                     .build();
-                
-                response.setEntity(entity );
+
+                response.setEntity(entity);
                 return null;
             }
         }).when(handler).handle(any(HttpRequest.class), any(HttpResponse.class), any(HttpContext.class));
@@ -114,7 +115,7 @@ public class CommunicationServiceTest
 
         realVehicle = mock(RealVehicle.class);
         when(realVehicle.getUrl()).thenReturn(serverUrl + "/rv001");
-        
+
         com = new CommunicationServiceImpl();
     }
 
@@ -138,7 +139,7 @@ public class CommunicationServiceTest
     @Test(dataProvider = "byteArrayDataProvider")
     public void shouldTransferDataChunk(byte[] data) throws ClientProtocolException, IOException
     {
-        CommunicationResponse response = com.transfer(realVehicle, Connector.MIGRATE, data);
+        CommunicationResponse response = com.transfer(realVehicle, MIGRATE, data);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isNotNull().isEqualTo(Status.OK);
@@ -150,13 +151,13 @@ public class CommunicationServiceTest
         assertThat(request.getEntity().getContentEncoding()).isNull();
         assertThat(content).isEqualTo(data);
     }
-    
+
     @Test(dataProvider = "byteArrayDataProvider")
     public void shouldDetectTransferProblems(byte[] data) throws ClientProtocolException, IOException
     {
         throwHttpException = true;
-        
-        CommunicationResponse response = com.transfer(realVehicle, Connector.MIGRATE, data);
+
+        CommunicationResponse response = com.transfer(realVehicle, MIGRATE, data);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isNotNull().isEqualTo(Status.NOT_OK);

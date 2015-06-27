@@ -32,11 +32,10 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
 import at.uni_salzburg.cs.cpcc.commons.pages.Vehicle;
-import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
-import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
+import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * AbstractModifyVehicle
@@ -61,10 +60,7 @@ public class AbstractModifyVehicle
     protected Messages messages;
 
     @Inject
-    protected RealVehicleStateService rvss;
-
-    @Inject
-    protected ConfigurationSynchronizer confSync;
+    protected StateSynchronizer confSync;
 
     @Valid
     @Property
@@ -83,8 +79,9 @@ public class AbstractModifyVehicle
         sessionManager.getSession().saveOrUpdate(vehicle);
         sessionManager.commit();
 
-        rvss.notifyConfigurationChange();
-        confSync.notifyConfigurationChange();
+        // TODO
+        //        rvss.notifyConfigurationChange();
+        //        confSync.notifyConfigurationChange();
         return Vehicle.class;
     }
 

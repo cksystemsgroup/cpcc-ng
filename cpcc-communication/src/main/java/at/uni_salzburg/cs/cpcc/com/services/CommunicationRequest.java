@@ -23,14 +23,14 @@ package at.uni_salzburg.cs.cpcc.com.services;
  */
 public class CommunicationRequest
 {
-    /**
-     * Connector
-     */
-    public enum Connector
-    {
-        MIGRATE,
-        CONFIGURATION_UPDATE,
-        REAL_VEHICLE_STATUS
-    };
+//    /**
+//     * Connector
+//     */
+//    public enum Connector
+//    {
+//        MIGRATE,
+//        CONFIGURATION_UPDATE,
+//        REAL_VEHICLE_STATUS
+//    };
 
 }

@@ -46,7 +46,7 @@ import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
 public class TaskExecutionServiceImpl implements TaskExecutionService
 {
     private static final Logger LOG = LoggerFactory.getLogger(TaskExecutionServiceImpl.class);
-    
+
     private List<Task> pendingTasks = Collections.synchronizedList(new ArrayList<Task>());
     private List<Task> scheduledTasks = Collections.synchronizedList(new ArrayList<Task>());
     private Task currentRunningTask = null;
@@ -62,7 +62,6 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     /**
      * @param scheduler the task scheduler.
      * @param rosNodeService the ROS node service.
-     * @param timerService the timer service.
      */
     public TaskExecutionServiceImpl(TaskSchedulerService scheduler, RosNodeService rosNodeService)
     {
@@ -138,13 +137,13 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         {
             if (scheduledTasks.isEmpty())
             {
-            return;
+                return;
             }
-        
+
             currentRunningTask = scheduledTasks.get(0);
             scheduledTasks.remove(0);
         }
-        
+
         wayPointController.setPosition(currentRunningTask.getPosition());
 
         NavSatFix pos = gpsReceiver.getPosition();
@@ -152,7 +151,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         {
             return;
         }
-        
+
         PolarCoordinate vehiclePosition = new PolarCoordinate(pos.getLatitude(), pos.getLongitude(),
             altimeter != null ? altimeter.getValue().getData() : pos.getAltitude());
 

@@ -23,15 +23,8 @@ import org.apache.tapestry5.Translator;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.ThreadLocale;
-import org.apache.tapestry5.ioc.services.cron.CronSchedule;
-import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.services.LibraryMapping;
-
-import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagService;
-import at.uni_salzburg.cs.cpcc.commons.services.image.ImageTagServiceImpl;
-import at.uni_salzburg.cs.cpcc.commons.services.ros.GraphNameTranslator;
 
 /**
  * CommonsModule
@@ -40,7 +33,7 @@ public final class CommonsModule
 {
     private CommonsModule()
     {
-        // intentionally empty.
+        // Intentionally empty.
     }
 
     /**
@@ -50,8 +43,6 @@ public final class CommonsModule
     {
         binder.bind(ImageTagService.class, ImageTagServiceImpl.class);
         binder.bind(StorageContentTagService.class, StorageContentTagServiceImpl.class);
-        binder.bind(RealVehicleStateService.class, RealVehicleStateServiceImpl.class).eagerLoad();
-        binder.bind(ConfigurationSynchronizer.class, ConfigurationSynchronizerImpl.class).eagerLoad();
     }
 
     /**
@@ -82,31 +73,4 @@ public final class CommonsModule
         configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
     }
 
-    /**
-     * @param executor the periodic executor service.
-     * @param importService the data import service.
-     */
-    @Startup
-    public static void scheduleJobs(PeriodicExecutor executor, final RealVehicleStateService rvStateService
-        , final ConfigurationSynchronizer configSyncService)
-    {
-        executor.addJob(new CronSchedule("0 0/2 * * * ?"), "Real Vehicle status update", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                rvStateService.realVehicleStatusUpdate();
-            }
-        });
-
-        // TODO check cycle time!
-        executor.addJob(new CronSchedule("2 * * * * ?"), "Synchronize Configuration", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                configSyncService.synchronizeConfiguration();
-            }
-        });
-    }
 }

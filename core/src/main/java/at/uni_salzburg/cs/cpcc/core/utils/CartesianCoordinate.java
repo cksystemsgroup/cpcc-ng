@@ -83,11 +83,11 @@ public class CartesianCoordinate
     }
 
     /**
-     * @param x the new x coordinate
+     * @param newX the new x coordinate
      */
-    public void setX(double x)
+    public void setX(double newX)
     {
-        this.x = x;
+        this.x = newX;
     }
 
     /**
@@ -99,11 +99,11 @@ public class CartesianCoordinate
     }
 
     /**
-     * @param y the new y coordinate.
+     * @param newY the new y coordinate.
      */
-    public void setY(double y)
+    public void setY(double newY)
     {
-        this.y = y;
+        this.y = newY;
     }
 
     /**
@@ -115,11 +115,11 @@ public class CartesianCoordinate
     }
 
     /**
-     * @param z the new z coordinate
+     * @param newZ the new z coordinate
      */
-    public void setZ(double z)
+    public void setZ(double newZ)
     {
-        this.z = z;
+        this.z = newZ;
     }
 
     /**

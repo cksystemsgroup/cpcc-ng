@@ -155,41 +155,50 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
 
         if (migration)
         {
-            List<RealVehicle> destinationRealVehicles = new ArrayList<RealVehicle>();
-            for (Entry<String, RealVehicle> entry : realVehicleMap.entrySet())
-            {
-                PolygonZone areaOfOperation = areaOfOperationMap.get(entry.getKey());
-                if (areaOfOperation == null || !areaOfOperation.isInside(task.getPosition()))
-                {
-                    LOG.info("Migrate not to " + entry.getValue().getName()
-                        + " because of position " + task.getPosition());
-                    continue;
-                }
-
-                if (!entry.getValue().getSensors().containsAll(task.getSensors()))
-                {
-
-                    StringBuilder b = new StringBuilder("required: ");
-                    for (SensorDefinition s : task.getSensors())
-                    {
-                        b.append(s.getDescription()).append(", ");
-                    }
-                    b.append("available: ");
-                    for (SensorDefinition s : entry.getValue().getSensors())
-                    {
-                        b.append(s.getDescription()).append(", ");
-                    }
-                    LOG.info("Migrate not to " + entry.getValue().getName() + " because of sensors " + b.toString());
-                    continue;
-                }
-
-                destinationRealVehicles.add(entry.getValue());
-            }
-
-            decision.setRealVehicles(destinationRealVehicles);
+            migrateTask(task, decision);
         }
 
         return decision;
+    }
+
+    /**
+     * @param task the task to be migrated.
+     * @param decision the migration decision.
+     */
+    private void migrateTask(Task task, VirtualVehicleMappingDecision decision)
+    {
+        List<RealVehicle> destinationRealVehicles = new ArrayList<RealVehicle>();
+        for (Entry<String, RealVehicle> entry : realVehicleMap.entrySet())
+        {
+            PolygonZone areaOfOperation = areaOfOperationMap.get(entry.getKey());
+            if (areaOfOperation == null || !areaOfOperation.isInside(task.getPosition()))
+            {
+                LOG.info("Migrate not to " + entry.getValue().getName()
+                    + " because of position " + task.getPosition());
+                continue;
+            }
+
+            if (!entry.getValue().getSensors().containsAll(task.getSensors()))
+            {
+
+                StringBuilder b = new StringBuilder("required: ");
+                for (SensorDefinition s : task.getSensors())
+                {
+                    b.append(s.getDescription()).append(", ");
+                }
+                b.append("available: ");
+                for (SensorDefinition s : entry.getValue().getSensors())
+                {
+                    b.append(s.getDescription()).append(", ");
+                }
+                LOG.info("Migrate not to " + entry.getValue().getName() + " because of sensors " + b.toString());
+                continue;
+            }
+
+            destinationRealVehicles.add(entry.getValue());
+        }
+
+        decision.setRealVehicles(destinationRealVehicles);
     }
 
 }

@@ -48,6 +48,7 @@ public class StorageContentTagServiceImpl implements StorageContentTagService
     /**
      * @param requestGlobals the request globals.
      * @param messages the messages service.
+     * @param contextPath the context path.
      */
     public StorageContentTagServiceImpl(RequestGlobals requestGlobals, Messages messages
         , @Symbol(SymbolConstants.CONTEXT_PATH) String contextPath)

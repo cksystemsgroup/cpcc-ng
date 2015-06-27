@@ -20,29 +20,21 @@ package at.uni_salzburg.cs.cpcc.gs.pages;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
 import org.apache.tapestry5.StreamResponse;
-import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 
-import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleState;
-import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
-import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
 import at.uni_salzburg.cs.cpcc.core.utils.GeoJsonStreamResponse;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * JsonState
  */
 public class JsonState
 {
-    @Inject
-    private RealVehicleStateService rvs;
+    //    @Inject
+    //    private RealVehicleStateService rvs;
 
-    @Inject
-    private CoreGeoJsonConverter conf;
+    //    @Inject
+    //    private CoreGeoJsonConverter conf;
 
     /**
      * @return the GeoJSON stream response.
@@ -60,37 +52,38 @@ public class JsonState
      */
     public StreamResponse onActivate(final String what) throws IOException
     {
-        if ("rvZones".equals(what))
-        {
-            return new GeoJsonStreamResponse(conf.toFeatureCollection(rvs.getRealVehicles()));
-        }
-
-        if ("rvPositions".equals(what))
-        {
-            FeatureCollection rvPositions = new FeatureCollection();
-            for (RealVehicleState status : rvs.getRealVehicleStatus())
-            {
-                byte[] s = status.getStatus();
-                if (s.length == 0)
-                {
-                    continue;
-                }
-                
-                FeatureCollection rvFeatures = new ObjectMapper().readValue(s, 0, s.length, FeatureCollection.class);
-
-                for (Feature feature : rvFeatures.getFeatures())
-                {
-                    String type = feature.getProperty("type");
-                    if (type != null && "rvPosition".equals(type))
-                    {
-                        feature.setProperty("rvId", status.getRealVehicle().getId());
-                        feature.setProperty("rvName", status.getRealVehicle().getName());
-                        rvPositions.add(feature);
-                    }
-                }
-            }
-            return new GeoJsonStreamResponse(rvPositions);
-        }
+        // TODO
+        //if ("rvZones".equals(what))
+        //{
+        //    return new GeoJsonStreamResponse(conf.toFeatureCollection(rvs.getRealVehicles()));
+        //}
+        //
+        //if ("rvPositions".equals(what))
+        //{
+        //    FeatureCollection rvPositions = new FeatureCollection();
+        //    for (RealVehicleState status : rvs.getRealVehicleStatus())
+        //    {
+        //        byte[] s = status.getStatus();
+        //        if (s.length == 0)
+        //        {
+        //            continue;
+        //        }
+        //        
+        //        FeatureCollection rvFeatures = new ObjectMapper().readValue(s, 0, s.length, FeatureCollection.class);
+        //
+        //        for (Feature feature : rvFeatures.getFeatures())
+        //        {
+        //            String type = feature.getProperty("type");
+        //            if (type != null && "rvPosition".equals(type))
+        //            {
+        //                feature.setProperty("rvId", status.getRealVehicle().getId());
+        //                feature.setProperty("rvName", status.getRealVehicle().getName());
+        //                rvPositions.add(feature);
+        //            }
+        //        }
+        //    }
+        //    return new GeoJsonStreamResponse(rvPositions);
+        //}
 
         FeatureCollection emptyCollection = new FeatureCollection();
         return new GeoJsonStreamResponse(emptyCollection);

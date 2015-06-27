@@ -25,7 +25,6 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.slf4j.Logger;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse.Status;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
@@ -51,6 +50,8 @@ public class VvMigrationWorker extends Thread
      * @param vvRepository the virtual vehicle repository.
      * @param com the communication service.
      * @param migrator the migration service.
+     * @param sessionManager the Hibernate session manager.
+     * @param logger the application logger.
      */
     public VvMigrationWorker(VirtualVehicle vehicle, VvRteRepository vvRepository, CommunicationService com,
         VirtualVehicleMigrator migrator, HibernateSessionManager sessionManager, Logger logger)
@@ -89,8 +90,8 @@ public class VvMigrationWorker extends Thread
                 throw new IOException("Can not find first chunk of virtual vehicle");
             }
 
-            CommunicationResponse response =
-                com.transfer(vehicle.getMigrationDestination(), Connector.MIGRATE, chunk);
+            CommunicationResponse response = com.transfer(
+                vehicle.getMigrationDestination(), VvRteConstants.MIGRATION_CONNECTOR, chunk);
 
             int chunkNumber = 1;
             while (response.getStatus() == Status.OK)
@@ -104,7 +105,10 @@ public class VvMigrationWorker extends Thread
                     }
                     break;
                 }
-                response = com.transfer(vehicle.getMigrationDestination(), Connector.MIGRATE, chunk);
+
+                response = com.transfer(
+                    vehicle.getMigrationDestination(), VvRteConstants.MIGRATION_CONNECTOR, chunk);
+
                 ++chunkNumber;
             }
 

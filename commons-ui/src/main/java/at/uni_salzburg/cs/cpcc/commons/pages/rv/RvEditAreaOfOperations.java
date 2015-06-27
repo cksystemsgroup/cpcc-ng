@@ -33,14 +33,14 @@ import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
 import org.geojson.Polygon;
 
-import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
-import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.utils.ResourceStreamResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * RvEditAreaOfOperations
@@ -57,10 +57,7 @@ public class RvEditAreaOfOperations
     private CoreGeoJsonConverter geoConv;
 
     @Inject
-    protected RealVehicleStateService rvss;
-
-    @Inject
-    protected ConfigurationSynchronizer confSync;
+    protected StateSynchronizer confSync;
 
     @Valid
     @Property
@@ -108,9 +105,9 @@ public class RvEditAreaOfOperations
         realVehicle.setLastUpdate(new Date());
         sessionManager.getSession().saveOrUpdate(realVehicle);
         sessionManager.commit();
-
-        rvss.notifyConfigurationChange();
-        confSync.notifyConfigurationChange();
+        // TODO 
+        //        rvss.notifyConfigurationChange();
+        //        confSync.notifyConfigurationChange();
     }
 
     /**

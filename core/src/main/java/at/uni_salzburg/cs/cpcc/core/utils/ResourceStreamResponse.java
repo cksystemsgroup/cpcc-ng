@@ -34,6 +34,7 @@ public class ResourceStreamResponse implements StreamResponse
     private String contentType;
 
     /**
+     * @param contentType the content type.
      * @param pngResourcePath the resource path to the PNG image.
      */
     public ResourceStreamResponse(String contentType, String pngResourcePath)

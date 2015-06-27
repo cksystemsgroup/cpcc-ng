@@ -72,6 +72,9 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      * @param taskExecutor the task executor.
      * @param taskAnalyzer the task analyzer.
      * @param vvRteRepo the virtual vehicle repository.
+     * @param qm the query manager.
+     * @param sessionManager the Hibernate session manager.
+     * @param logger the application logger.
      */
     public BuiltInFunctionsImpl(RosNodeService rns, OptionsParserService opts, MessageConverter conv,
         VirtualVehicleMapper mapper, TaskExecutionService taskExecutor, TaskAnalyzer taskAnalyzer,

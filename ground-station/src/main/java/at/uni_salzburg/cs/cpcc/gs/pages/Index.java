@@ -19,16 +19,16 @@
 package at.uni_salzburg.cs.cpcc.gs.pages;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.Property;
 
-import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleState;
-import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import cpcc.rv.base.services.RealVehicleState;
 
 /**
  * Index
@@ -46,9 +46,9 @@ public class Index
         return qm.findAllDevices();
     }
 
-    @Property
-    @Inject
-    private RealVehicleStateService state;
+    //    @Property
+    //    @Inject
+    //    private RealVehicleStateService state;
 
     @Property
     private RealVehicleState stateString;
@@ -59,6 +59,8 @@ public class Index
     public Collection<RealVehicleState> getStateList()
     {
 
-        return state.getRealVehicleStatus();
+        // return state.getRealVehicleStatus();
+        // TODO
+        return Collections.emptyList();
     }
 }

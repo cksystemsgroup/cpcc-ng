@@ -232,14 +232,14 @@ public class RealVehicle
             return true;
         }
 
-        return equalsHelper1(other);
+        return equalsHelperOne(other);
     }
 
     /**
      * @param obj the other object
      * @return true on equality, false otherwise.
      */
-    private boolean equalsHelper1(RealVehicle other)
+    private boolean equalsHelperOne(RealVehicle other)
     {
         if (getId().intValue() != other.getId().intValue())
         {
@@ -256,14 +256,14 @@ public class RealVehicle
             return false;
         }
 
-        return equalsHelper2(other);
+        return equalsHelperTwo(other);
     }
 
     /**
      * @param other the other
      * @return true on equality, false otherwise.
      */
-    private boolean equalsHelper2(RealVehicle other)
+    private boolean equalsHelperTwo(RealVehicle other)
     {
         if (getSensors() != null && other.getSensors() != null && getSensors().size() != other.getSensors().size())
         {
@@ -285,6 +285,15 @@ public class RealVehicle
             return false;
         }
 
+        return equalsHelperThree(other);
+    }
+
+    /**
+     * @param other the other
+     * @return true on equality, false otherwise.
+     */
+    private boolean equalsHelperThree(RealVehicle other)
+    {
         if (!getUrl().equals(other.getUrl()))
         {
             return false;

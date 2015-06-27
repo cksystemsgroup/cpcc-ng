@@ -28,8 +28,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleState;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
+import cpcc.rv.base.services.RealVehicleState;
 
 /**
  * RealVehicleStatusTest

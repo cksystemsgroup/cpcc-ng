@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+	<changeSet author="ckrainer" id="2015-02-06-01">
+		<createTable tableName="JOBS">
+			<column autoIncrement="true" name="ID" type="INT(10)">
+				<constraints primaryKey="true" primaryKeyName="PK_JOBS" />
+			</column>
+			<column name="QUEUE_NAME" type="VARCHAR(20)">
+				<constraints nullable="false" />
+			</column>
+			<column name="STATUS" type="VARCHAR(20)">
+				<constraints nullable="false" />
+			</column>
+			<column name="PARAMETERS" type="VARCHAR(512)">
+				<constraints nullable="false" />
+			</column>
+			<column name="CREATED_TIME" type="TIMESTAMP">
+				<constraints nullable="false" />
+			</column>
+			<column name="QUEUED_TIME" type="TIMESTAMP" />
+			<column name="START_TIME" type="TIMESTAMP" />
+			<column name="END_TIME" type="TIMESTAMP" />
+		</createTable>
+
+	</changeSet>
+
+</databaseChangeLog>

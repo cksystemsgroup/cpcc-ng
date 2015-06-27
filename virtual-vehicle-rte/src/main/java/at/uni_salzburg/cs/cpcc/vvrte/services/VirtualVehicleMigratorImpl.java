@@ -58,8 +58,11 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private QueryManager qm;
 
     /**
+     * @param logger the application logger.
+     * @param sessionManager the Hibernate session manager.
      * @param vvRepository the virtual vehicle repository.
      * @param com the communication service.
+     * @param qm the query manager.
      */
     public VirtualVehicleMigratorImpl(Logger logger, HibernateSessionManager sessionManager
         , VvRteRepository vvRepository, CommunicationService com, QueryManager qm)
@@ -71,6 +74,9 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         this.qm = qm;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initiateMigration(VirtualVehicle vehicle)
     {

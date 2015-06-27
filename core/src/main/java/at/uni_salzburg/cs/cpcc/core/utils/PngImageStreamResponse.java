@@ -115,7 +115,7 @@ public class PngImageStreamResponse implements StreamResponse
     /**
      * @param image the buffered image object.
      * @return the image as a <code>StreamResponse</code> object.
-     * @throws IOException
+     * @throws IOException in case of errors.
      */
     public static StreamResponse convertImageToStreamResponse(BufferedImage image) throws IOException
     {
@@ -126,7 +126,7 @@ public class PngImageStreamResponse implements StreamResponse
      * @param image the buffered image object.
      * @param message an additional text to be used in log messages.
      * @return the image as a <code>StreamResponse</code> object.
-     * @throws IOException
+     * @throws IOException in case of errors.
      */
     public static StreamResponse convertImageToStreamResponse(BufferedImage image, String message) throws IOException
     {

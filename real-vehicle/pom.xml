@@ -76,16 +76,16 @@
 			<artifactId>commons-ui</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>ros-service</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>virtual-vehicle-rte</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>at.uni-salzburg.cs.cpcc</groupId> -->
+<!-- 			<artifactId>ros-service</artifactId> -->
+<!-- 			<version>${project.parent.version}</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>at.uni-salzburg.cs.cpcc</groupId> -->
+<!-- 			<artifactId>virtual-vehicle-rte</artifactId> -->
+<!-- 			<version>${project.parent.version}</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>at.uni-salzburg.cs</groupId>
 			<artifactId>tapestry-ace-editor</artifactId>

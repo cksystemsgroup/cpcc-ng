@@ -33,7 +33,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse.Status;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
@@ -42,32 +41,38 @@ import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
  */
 public class CommunicationServiceImpl implements CommunicationService
 {
-    @SuppressWarnings("serial")
-    private static final Map<Connector, String> CONNECTOR_MAP = new HashMap<Connector, String>()
-    {
-        {
-            put(Connector.MIGRATE, "/commons/vehicle/migration");
-            put(Connector.CONFIGURATION_UPDATE, "/commons/configuration/update");
-            put(Connector.REAL_VEHICLE_STATUS, "/commons/status");
-        }
-    };
+    private Map<String, String> connectorMap = new HashMap<>();
 
     /**
      * CommunicationServiceImpl
      */
     public CommunicationServiceImpl()
     {
-        // intentionally empty.
+        // Intentionally empty.
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public CommunicationResponse transfer(RealVehicle realVehicle, Connector connector, byte[] data)
+    public void addConnector(String connector, String path) throws IllegalStateException
+    {
+        if (connectorMap.containsKey(connector))
+        {
+            throw new IllegalStateException("Connector " + connector + " is already registered!");
+        }
+
+        connectorMap.put(connector, path);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CommunicationResponse transfer(RealVehicle realVehicle, String connector, byte[] data)
         throws ClientProtocolException, IOException
     {
-        HttpPost request = new HttpPost(realVehicle.getUrl() + CONNECTOR_MAP.get(connector));
+        HttpPost request = new HttpPost(realVehicle.getUrl() + connectorMap.get(connector));
 
         HttpEntity entity = EntityBuilder.create().setBinary(data).build();
         request.setEntity(entity);

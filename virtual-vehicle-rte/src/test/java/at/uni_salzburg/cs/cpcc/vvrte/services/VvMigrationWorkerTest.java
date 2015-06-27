@@ -21,6 +21,7 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -42,7 +43,6 @@ import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse.Status;
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
@@ -92,7 +92,7 @@ public class VvMigrationWorkerTest
         vvRepository = mock(VvRteRepository.class);
 
         com = mock(CommunicationService.class);
-        when(com.transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class))).thenAnswer(
+        when(com.transfer(any(RealVehicle.class), anyString(), any(byte[].class))).thenAnswer(
             new Answer<CommunicationResponse>()
             {
                 @Override
@@ -146,7 +146,7 @@ public class VvMigrationWorkerTest
             "MIG-" + virtualVehicle.getName() + "-" + virtualVehicle.getMigrationDestination().getName());
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        verify(com, times(4)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(com, times(4)).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
 
         assertThat(transferredChunks.size())
             .overridingErrorMessage("The number of transferred chunks must be %d but is %d",
@@ -180,7 +180,7 @@ public class VvMigrationWorkerTest
             "MIG-" + virtualVehicle.getName() + "-" + virtualVehicle.getMigrationDestination().getName());
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        verify(com, times(4)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(com, times(4)).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
 
         assertThat(transferredChunks.size())
             .overridingErrorMessage("The number of transferred chunks must be %d but is %d",
@@ -208,7 +208,7 @@ public class VvMigrationWorkerTest
         worker.awaitCompetion();
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        verify(com, times(4)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(com, times(4)).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
 
         assertThat(transferredChunks.size())
             .overridingErrorMessage("The number of transferred chunks must be %d but is %d",
@@ -240,7 +240,7 @@ public class VvMigrationWorkerTest
         worker.awaitCompetion();
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        verify(com, never()).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(com, never()).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
         verify(session, never()).beginTransaction();
         verify(sessionManager).commit();
         verify(sessionManager).abort();
@@ -258,7 +258,7 @@ public class VvMigrationWorkerTest
         worker.awaitCompetion();
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        verify(com, times(1)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(com, times(1)).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
         verify(session, never()).beginTransaction();
         verify(sessionManager).commit();
         verify(sessionManager).abort();
@@ -275,7 +275,7 @@ public class VvMigrationWorkerTest
         worker.run();
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        verify(com, never()).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(com, never()).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
         verify(session, never()).beginTransaction();
         verify(sessionManager, never()).commit();
         verify(sessionManager, never()).abort();
@@ -289,13 +289,13 @@ public class VvMigrationWorkerTest
         when(response.getStatus()).thenReturn(Status.NOT_OK);
 
         reset(com);
-        when(com.transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class))).thenReturn(response);
+        when(com.transfer(any(RealVehicle.class), anyString(), any(byte[].class))).thenReturn(response);
 
         worker.start();
         worker.awaitCompetion();
 
         verify(virtualVehicle, times(1)).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        verify(com, times(1)).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(com, times(1)).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
         verify(session, never()).beginTransaction();
         verify(sessionManager, times(2)).commit();
         verify(sessionManager, never()).abort();
@@ -313,7 +313,7 @@ public class VvMigrationWorkerTest
         worker.run();
 
         verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        verify(com, never()).transfer(any(RealVehicle.class), any(Connector.class), any(byte[].class));
+        verify(com, never()).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
         verify(session, never()).beginTransaction();
         verify(sessionManager, never()).commit();
         verify(sessionManager, never()).abort();

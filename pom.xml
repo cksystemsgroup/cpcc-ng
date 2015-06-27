@@ -45,6 +45,7 @@
 		<module>virtual-vehicle-rte</module>
 		<module>commons-ui</module>
 		<module>core</module>
+		<module>cpcc-real-vehicle</module>
 	</modules>
 
 	<scm>
@@ -64,6 +65,7 @@
 		<javax.mail.version>1.4.7</javax.mail.version>
 		<tomcat7Version>7.0.57</tomcat7Version>
 		<liquibase-version>3.3.0</liquibase-version>
+		<argLine>-XX:-UseSplitVerifier</argLine>
 	</properties>
 
 	<dependencyManagement>
@@ -104,6 +106,11 @@
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
 				<version>2.6</version>
+			</dependency>
+			<dependency>
+				<groupId>com.owlike</groupId>
+				<artifactId>genson</artifactId>
+				<version>1.2</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -157,6 +164,12 @@
 				<groupId>org.easytesting</groupId>
 				<artifactId>fest-assert-core</artifactId>
 				<version>2.0M10</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>eu.codearte.catch-exception</groupId>
+				<artifactId>catch-exception</artifactId>
+				<version>1.3.3</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -252,7 +265,7 @@
 			<dependency>
 				<groupId>at.uni-salzburg.cs</groupId>
 				<artifactId>tapestry-ace-editor</artifactId>
-				<version>0.0.1</version>
+				<version>0.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>at.uni-salzburg.cs</groupId>

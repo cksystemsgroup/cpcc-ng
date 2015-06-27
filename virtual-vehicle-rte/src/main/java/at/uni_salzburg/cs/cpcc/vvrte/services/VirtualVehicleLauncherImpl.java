@@ -49,7 +49,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
     private Map<JavascriptWorker, VirtualVehicle> vehicleMap = new HashMap<JavascriptWorker, VirtualVehicle>();
 
     /**
-     * @param qm the query manager.
+     * @param sessionManager the Hibernate session manager.
      * @param jss the JavaScript service.
      * @param migrator the migration service.
      */

@@ -27,10 +27,9 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
-import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
-import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * Real Vehicle List
@@ -44,10 +43,7 @@ public class RvList
     private QueryManager qm;
 
     @Inject
-    protected RealVehicleStateService rvss;
-
-    @Inject
-    protected ConfigurationSynchronizer confSync;
+    protected StateSynchronizer confSync;
 
     @Property
     private List<RealVehicle> realVehicleList;
@@ -69,8 +65,9 @@ public class RvList
         sessionManager.getSession().saveOrUpdate(rv);
         sessionManager.commit();
 
-        rvss.notifyConfigurationChange();
-        confSync.notifyConfigurationChange();
+        // TODO
+        //        rvss.notifyConfigurationChange();
+        //        confSync.notifyConfigurationChange();
     }
 
     @CommitAfter
@@ -82,7 +79,8 @@ public class RvList
         sessionManager.getSession().saveOrUpdate(rv);
         sessionManager.commit();
 
-        rvss.notifyConfigurationChange();
-        confSync.notifyConfigurationChange();
+        // TODO
+        //        rvss.notifyConfigurationChange();
+        //        confSync.notifyConfigurationChange();
     }
 }

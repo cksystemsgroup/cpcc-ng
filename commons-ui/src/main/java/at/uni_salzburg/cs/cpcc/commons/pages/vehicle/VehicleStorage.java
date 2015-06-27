@@ -52,13 +52,13 @@ public class VehicleStorage
     @Property
     private VirtualVehicleStorage storageItem;
 
-    Integer vvId;
+    private Integer vvId;
 
-    void onActivate(Integer vvId)
+    void onActivate(Integer id)
     {
-        this.vvId = vvId;
-        virtualVehicle = vvRteRepo.findVirtualVehicleById(vvId);
-        storageList = vvRteRepo.findStorageItemsByVirtualVehicle(vvId);
+        this.vvId = id;
+        virtualVehicle = vvRteRepo.findVirtualVehicleById(id);
+        storageList = vvRteRepo.findStorageItemsByVirtualVehicle(id);
     }
 
     Integer onPassivate()

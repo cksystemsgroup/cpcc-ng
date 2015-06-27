@@ -11,18 +11,13 @@
 	<artifactId>commons-ui</artifactId>
 	<packaging>jar</packaging>
 
-	<name>User Interface Common Components</name>
-	<description>User Interface Common Components</description>
+	<name>CPCC - User Interface Common Components</name>
+	<description>CPCC - User Interface Common Components</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>ros-service</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>virtual-vehicle-rte</artifactId>
+			<artifactId>cpcc-real-vehicle</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>

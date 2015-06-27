@@ -23,6 +23,8 @@ import org.ros.namespace.GraphName;
 
 /**
  * GraphNameHelpers
+ * 
+ * @deprecated obsolete now.
  */
 @Deprecated
 public final class GraphNameHelpers

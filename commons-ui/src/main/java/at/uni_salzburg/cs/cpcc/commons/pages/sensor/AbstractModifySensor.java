@@ -31,12 +31,11 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
-import at.uni_salzburg.cs.cpcc.commons.services.ConfigurationSynchronizer;
-import at.uni_salzburg.cs.cpcc.commons.services.RealVehicleStateService;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.core.services.opts.ParseException;
+import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * AbstractModifySensor
@@ -56,10 +55,7 @@ public class AbstractModifySensor
     protected OptionsParserService parserService;
 
     @Inject
-    protected RealVehicleStateService rvss;
-
-    @Inject
-    protected ConfigurationSynchronizer confSync;
+    protected StateSynchronizer confSync;
 
     @Inject
     protected Messages messages;
@@ -81,8 +77,9 @@ public class AbstractModifySensor
         sessionManager.getSession().saveOrUpdate(sensor);
         sessionManager.commit();
 
-        rvss.notifyConfigurationChange();
-        confSync.notifyConfigurationChange();
+        // TODO
+        //        rvss.notifyConfigurationChange();
+        //        confSync.notifyConfigurationChange();
         return SensorList.class;
     }
 

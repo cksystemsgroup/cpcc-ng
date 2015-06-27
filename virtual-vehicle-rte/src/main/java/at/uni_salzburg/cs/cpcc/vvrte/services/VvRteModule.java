@@ -27,6 +27,7 @@ import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 
+import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.BuiltInFunctions;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceImpl;
@@ -74,6 +75,10 @@ public final class VvRteModule
         configuration.add("at.uni_salzburg.cs.cpcc.vvrte.entities");
     }
 
+    /**
+     * @param advisor the Hibernate transaction advisor.
+     * @param receiver the method adviser reveiver.
+     */
     @Match({"*Repository", "*Service"})
     public static void adviseTransactions(HibernateTransactionAdvisor advisor, MethodAdviceReceiver receiver)
     {
@@ -82,7 +87,7 @@ public final class VvRteModule
 
     /**
      * @param executor the periodic executor service.
-     * @param importService the data import service.
+     * @param taskExecutionService the task executor service.
      */
     @Startup
     public static void scheduleJobs(PeriodicExecutor executor, final TaskExecutionService taskExecutionService)
@@ -99,11 +104,21 @@ public final class VvRteModule
 
     /**
      * @param vvRteRepo the virtual vehicle repository.
-     * @param sessionManager the database session manager.
      */
     @Startup
     public static void resetVirtualVehicleStates(VvRteRepository vvRteRepo)
     {
         vvRteRepo.resetVirtualVehicleStates();
+    }
+
+    /**
+     * @param communicationService the communication service instance.
+     */
+    @Startup
+    public static void setupCommunicationService(CommunicationService communicationService)
+    {
+        communicationService.addConnector(
+            VvRteConstants.MIGRATION_CONNECTOR,
+            VvRteConstants.MIGRATION_PATH);
     }
 }

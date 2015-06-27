@@ -31,7 +31,7 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleStorage;
 
 /**
- * VvRteRepositoryImpl
+ * VvRteRepository implementation.
  */
 public class VvRteRepositoryImpl implements VvRteRepository
 {
@@ -39,7 +39,8 @@ public class VvRteRepositoryImpl implements VvRteRepository
     private Session session;
 
     /**
-     * @param qm the query manager
+     * @param logger the application logger.
+     * @param session the Hibernate session.
      */
     public VvRteRepositoryImpl(Logger logger, Session session)
     {

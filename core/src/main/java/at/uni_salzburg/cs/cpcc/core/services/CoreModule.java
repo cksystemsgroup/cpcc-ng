@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,12 @@ package at.uni_salzburg.cs.cpcc.core.services;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 
+import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRepository;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRepositoryImpl;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.JobService;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.JobServiceImpl;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.TimeService;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.TimeServiceImpl;
 import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserServiceImpl;
 
@@ -43,6 +49,9 @@ public final class CoreModule
         binder.bind(CoreJsonConverter.class, CoreJsonConverterImpl.class);
         binder.bind(CoreGeoJsonConverter.class, CoreGeoJsonConverterImpl.class);
         binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
+        binder.bind(JobService.class, JobServiceImpl.class);
+        binder.bind(JobRepository.class, JobRepositoryImpl.class);
+        binder.bind(TimeService.class, TimeServiceImpl.class);
     }
 
     /**

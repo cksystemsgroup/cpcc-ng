@@ -22,7 +22,6 @@ import java.io.IOException;
 
 import org.apache.http.client.ClientProtocolException;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationRequest.Connector;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
 /**
@@ -31,6 +30,14 @@ import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 public interface CommunicationService
 {
     /**
+     * @param connector the connector to add.
+     * @param path the connector's path.
+     * @throws IllegalStateException in case of errors.
+     */
+    void addConnector(String connector, String path)
+        throws IllegalStateException;
+
+    /**
      * @param realVehicle the real vehicle to communicate with.
      * @param connector the connector to be used.
      * @param data the data chunk to be transferred.
@@ -38,6 +45,6 @@ public interface CommunicationService
      * @throws ClientProtocolException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    CommunicationResponse transfer(RealVehicle realVehicle, Connector connector, byte[] data)
+    CommunicationResponse transfer(RealVehicle realVehicle, String connector, byte[] data)
         throws ClientProtocolException, IOException;
 }
