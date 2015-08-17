@@ -18,6 +18,7 @@
 
 package at.uni_salzburg.cs.cpcc.core.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,8 +47,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"url"})})
-public class RealVehicle
+public class RealVehicle implements Serializable
 {
+    private static final long serialVersionUID = 1765647234477466288L;
+
     @GeneratedValue(generator = "UniqueIntegerIdGenerator")
     @GenericGenerator(name = "UniqueIntegerIdGenerator",
         strategy = "at.uni_salzburg.cs.cpcc.core.services.UniqueIntegerIdGenerator")
@@ -69,7 +72,7 @@ public class RealVehicle
     @Lob
     private String areaOfOperation;
 
-    @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SensorDefinition> sensors = new ArrayList<SensorDefinition>();
 
     @NotNull

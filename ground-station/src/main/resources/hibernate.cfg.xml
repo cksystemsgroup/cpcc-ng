@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE hibernate-configuration PUBLIC
           "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+          "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
 <hibernate-configuration>
 	<session-factory>
 		<!-- Data Source -->
@@ -14,6 +15,10 @@
 
 		<!-- Cache settings -->
 		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+		<!-- <property name="cache.use_second_level_cache">false</property> -->
+		<!-- <property name="cache.use_query_cache">false</property> -->
+		<!-- <property name="hibernate.connection.isolation">2</property> -->
+		<!-- <property name="hibernate.connection.isolation">8</property> -->
 
 		<!-- Other settings -->
 		<property name="current_session_context_class">thread</property>

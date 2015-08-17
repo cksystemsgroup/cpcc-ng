@@ -18,6 +18,7 @@
 
 package at.uni_salzburg.cs.cpcc.commons.pages;
 
+import java.text.Format;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +27,11 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.ioc.Messages;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import at.uni_salzburg.cs.cpcc.commons.services.MillisecondTimeFormat;
+import at.uni_salzburg.cs.cpcc.commons.services.SensorDescriptionListFormat;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionService;
 
@@ -35,6 +40,11 @@ import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionService;
  */
 public class Tasks
 {
+    private static final String DATE_FORMAT = "dateFormat";
+
+    @Inject
+    private Messages messages;
+
     @Property
     @Inject
     private TaskExecutionService tes;
@@ -48,6 +58,20 @@ public class Tasks
     @Property
     private Task pendingTask;
 
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Tasks.tml uses this formatter.")
+    @Property
+    private Format timeFormat;
+
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Tasks.tml uses this formatter.")
+    @Property
+    private Format sensorFormat;
+    
+    void onActivate()
+    {
+        timeFormat = new MillisecondTimeFormat(messages.get(DATE_FORMAT));
+        sensorFormat = new SensorDescriptionListFormat();
+    }
+
     /**
      * @return the current active task as a list.
      */
@@ -59,19 +83,20 @@ public class Tasks
     }
 
     /**
+     * @param task the task.
      * @return the sensor descriptions as a string.
      */
-    public String getSortedSensorList()
+    public String getSortedSensorList(Task task)
     {
-        if (scheduledTask == null || scheduledTask.getSensors().isEmpty())
+        if (task == null || task.getSensors().isEmpty())
         {
             return "";
         }
 
-        String[] a = new String[scheduledTask.getSensors().size()];
-        for (int k = 0, l = scheduledTask.getSensors().size(); k < l; ++k)
+        String[] a = new String[task.getSensors().size()];
+        for (int k = 0, l = task.getSensors().size(); k < l; ++k)
         {
-            a[k] = scheduledTask.getSensors().get(k).getDescription();
+            a[k] = task.getSensors().get(k).getDescription();
         }
 
         Arrays.sort(a);

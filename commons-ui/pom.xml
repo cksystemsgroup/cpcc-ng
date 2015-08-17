@@ -29,8 +29,13 @@
 			<artifactId>tapestry-beanvalidator</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>at.uni-salzburg.cs</groupId>
+			<artifactId>tapestry-leaflet</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>

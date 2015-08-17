@@ -21,6 +21,8 @@ package at.uni_salzburg.cs.cpcc.core.services.jobs;
 import java.util.List;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
+import org.apache.tapestry5.ioc.services.PerthreadManager;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Job;
 import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
@@ -30,24 +32,20 @@ import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
  */
 public class JobExecutor implements Runnable
 {
-    private HibernateSessionManager sessionManager;
-    private TimeService timeService;
+    private ServiceResources serviceResources;
     private List<JobRunnableFactory> factoryList;
-    private Job job;
+    private int jobNumber;
 
     /**
-     * @param sessionManager the Hibernate session manager.
-     * @param timeService the time service.
+     * @param serviceResources the service resources.
      * @param factoryList the factory list.
-     * @param job the job to be executed.
+     * @param jobNumber the id of the job to be executed.
      */
-    public JobExecutor(HibernateSessionManager sessionManager, TimeService timeService
-        , List<JobRunnableFactory> factoryList, Job job)
+    public JobExecutor(ServiceResources serviceResources, List<JobRunnableFactory> factoryList, int jobNumber)
     {
-        this.sessionManager = sessionManager;
-        this.timeService = timeService;
+        this.serviceResources = serviceResources;
         this.factoryList = factoryList;
-        this.job = job;
+        this.jobNumber = jobNumber;
     }
 
     /**
@@ -56,6 +54,12 @@ public class JobExecutor implements Runnable
     @Override
     public void run()
     {
+        PerthreadManager tm = serviceResources.getService(PerthreadManager.class);
+        HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
+        TimeService timeService = serviceResources.getService(TimeService.class);
+        JobRepository jobRepository = serviceResources.getService(JobRepository.class);
+
+        Job job = jobRepository.findJobById(jobNumber);
         job.setStart(timeService.newDate());
         job.setStatus(JobStatus.RUNNING);
         sessionManager.getSession().update(job);
@@ -65,7 +69,7 @@ public class JobExecutor implements Runnable
 
         for (JobRunnableFactory factory : factoryList)
         {
-            JobRunnable runnable = factory.createRunnable(job);
+            JobRunnable runnable = factory.createRunnable(serviceResources, job);
             if (runnable != null)
             {
                 try
@@ -73,9 +77,10 @@ public class JobExecutor implements Runnable
                     runnable.run();
                     job.setStatus(JobStatus.OK);
                 }
-                catch (Exception e)
+                catch (Throwable e)
                 {
                     sessionManager.abort();
+                    job.setResultText(e.getMessage());
                     job.setStatus(JobStatus.FAILED);
                 }
                 break;
@@ -85,6 +90,8 @@ public class JobExecutor implements Runnable
         job.setEnd(timeService.newDate());
         sessionManager.getSession().update(job);
         sessionManager.commit();
+
+        tm.cleanup();
     }
 
 }

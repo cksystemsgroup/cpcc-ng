@@ -18,6 +18,7 @@
 
 package at.uni_salzburg.cs.cpcc.core.entities;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,8 +36,10 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"topicRoot"})})
-public class Device implements ITreeNode
+public class Device implements ITreeNode, Serializable
 {
+    private static final long serialVersionUID = 459696306908391949L;
+
     @Id
     @GeneratedValue
     private Integer id;

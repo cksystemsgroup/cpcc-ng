@@ -19,10 +19,7 @@
 package at.uni_salzburg.cs.cpcc.gs.services;
 
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.Translator;
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.services.ThreadLocale;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to configure and extend
@@ -33,14 +30,6 @@ public final class AppModule
     private AppModule()
     {
         // intentionally empty.
-    }
-
-    /**
-     * @param binder the service binder
-     */
-    public static void bind(ServiceBinder binder)
-    {
-        // Intentional empty.
     }
 
     /**
@@ -66,31 +55,4 @@ public final class AppModule
         configuration.add(SymbolConstants.MINIFICATION_ENABLED, "false");
         configuration.add(SymbolConstants.HMAC_PASSPHRASE, "Eith6Du9reeSa7aiaiweaM7oaCh6quae");
     }
-    
-//    /**
-//     * @param configuration the mapped configuration
-//     */
-//    public static void contributeJavaScriptStackSource(MappedConfiguration<String, JavaScriptStack> configuration)
-//    {
-//        configuration.addInstance("RealVehicle", RealVehicleStack.class);
-//    }
-    
-    /**
-     * @param configuration the configuration
-     * @param threadLocale the locale
-     */
-    @SuppressWarnings("rawtypes")
-    public static void contributeTranslatorAlternatesSource(MappedConfiguration<String, Translator> configuration,
-        ThreadLocale threadLocale)
-    {
-    }
-
-//    /**
-//     * @param configuration the application configuration.
-//     */
-//    @Contribute(EnvironmentSetup.class)
-//    public static void provideEnvironmentSetup(MappedConfiguration<Class<?>, Object> configuration)
-//    {
-//        configuration.override(TableEnvironment.class, new TableValues(null).withType("table"));
-//    }
 }

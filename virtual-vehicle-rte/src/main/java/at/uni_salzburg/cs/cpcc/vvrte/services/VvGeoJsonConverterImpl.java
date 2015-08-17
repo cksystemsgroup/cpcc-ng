@@ -56,6 +56,7 @@ public class VvGeoJsonConverterImpl implements VvGeoJsonConverter
     public Feature toFeature(VirtualVehicle vv)
     {
         Feature f = new Feature();
+        f.setId(vv.getUuid());
         f.setProperty("type", "vv");
         f.setProperty("name", vv.getName());
         f.setProperty("state", VV_COLOR_MAP.get(vv.getState()));

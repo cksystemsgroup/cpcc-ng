@@ -18,11 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
-import org.apache.tapestry5.hibernate.HibernateTransactionAdvisor;
 import org.apache.tapestry5.ioc.Configuration;
-import org.apache.tapestry5.ioc.MethodAdviceReceiver;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.Match;
 import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
@@ -73,16 +70,6 @@ public final class VvRteModule
     public static void contributeHibernateEntityPackageManager(Configuration<String> configuration)
     {
         configuration.add("at.uni_salzburg.cs.cpcc.vvrte.entities");
-    }
-
-    /**
-     * @param advisor the Hibernate transaction advisor.
-     * @param receiver the method adviser reveiver.
-     */
-    @Match({"*Repository", "*Service"})
-    public static void adviseTransactions(HibernateTransactionAdvisor advisor, MethodAdviceReceiver receiver)
-    {
-        advisor.addTransactionCommitAdvice(receiver);
     }
 
     /**

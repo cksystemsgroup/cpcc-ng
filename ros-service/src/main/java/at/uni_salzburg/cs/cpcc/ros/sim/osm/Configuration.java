@@ -81,7 +81,8 @@ public class Configuration
     // https://mts0.google.com/vt/lyrs=h@231053698&hl=de&src=app&opts=o&deg=0&x=70278&s=&y=51482&z=17&s=Gali&deg=0
     // https://mts0.google.com/vt/lyrs=h@231017399&hl=de&src=app&opts=o&deg=0&x=70282&s=&y=51482&z=17&s=&deg=0
     // https://khms0.google.com/kh?v=81&src=app&x=140560&y=102961&z=18&s=G&deg=0
-
+    // http://khm0.googleapis.com/kh?v=177&hl=en-US&x={x}&y={y}&z={z}&token=15420
+    
     private String topicRoot;
     private PolarCoordinate originPosition = null;
     private String gpsTopic;

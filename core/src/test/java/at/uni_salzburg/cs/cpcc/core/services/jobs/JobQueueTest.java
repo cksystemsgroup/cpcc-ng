@@ -32,6 +32,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
+import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.hibernate.Session;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -45,8 +47,12 @@ import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
 
 public class JobQueueTest
 {
+    private static final int QUICK_JOB_ID = 101;
+    private static final int SLOW_JOB_ID = 202;
+    private static final int REUSABLE_JOB_ID = 31337;
+
     private HibernateSessionManager sessionManager;
-    private Job job;
+    private Job quickJob;
     private Job slowJob;
     private boolean jobEnded;
     private JobQueue sut;
@@ -56,9 +62,12 @@ public class JobQueueTest
     private TimeService timeService;
     private Session session;
     private JobRunnableFactory factory;
-    private JobRunnable jobRunnable;
+    private JobRunnable quickJobRunnable;
     private JobRunnable slowJobRunnable;
     private int numberOfPoolThreads;
+    private ServiceResources serviceResources;
+    private PerthreadManager perthreadManager;
+    private JobRepository jobRepository;
 
     @BeforeMethod
     public void setUp() throws Exception
@@ -88,7 +97,12 @@ public class JobQueueTest
         sessionManager = mock(HibernateSessionManager.class);
         when(sessionManager.getSession()).thenReturn(session);
 
-        job = mock(Job.class);
+        perthreadManager = mock(PerthreadManager.class);
+
+        quickJob = mock(Job.class);
+        when(quickJob.getId()).thenReturn(QUICK_JOB_ID);
+
+        quickJobRunnable = mock(JobRunnable.class);
         doAnswer(new Answer<Void>()
         {
             @Override
@@ -97,10 +111,11 @@ public class JobQueueTest
                 jobEnded = true;
                 return null;
             }
-        }).when(job).setEnd(any(Date.class));
-        slowJob = mock(Job.class);
+        }).when(quickJob).setEnd(any(Date.class));
 
-        jobRunnable = mock(JobRunnable.class);
+        slowJob = mock(Job.class);
+        when(slowJob.getId()).thenReturn(SLOW_JOB_ID);
+
         slowJobRunnable = mock(JobRunnable.class);
         doAnswer(new Answer<Void>()
         {
@@ -112,17 +127,28 @@ public class JobQueueTest
             }
         }).when(slowJobRunnable).run();
 
-        factory = mock(JobRunnableFactory.class);
-        when(factory.createRunnable(job)).thenReturn(jobRunnable);
-        when(factory.createRunnable(slowJob)).thenReturn(slowJobRunnable);
+        jobRepository = mock(JobRepository.class);
+        when(jobRepository.findJobById(QUICK_JOB_ID)).thenReturn(quickJob);
+        when(jobRepository.findJobById(SLOW_JOB_ID)).thenReturn(slowJob);
 
-        sut = new JobQueue(sessionManager, timeService, Arrays.asList(factory), numberOfPoolThreads);
+        serviceResources = mock(ServiceResources.class);
+        when(serviceResources.getService(PerthreadManager.class)).thenReturn(perthreadManager);
+        when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
+        when(serviceResources.getService(TimeService.class)).thenReturn(timeService);
+        when(serviceResources.getService(JobRepository.class)).thenReturn(jobRepository);
+
+        factory = mock(JobRunnableFactory.class);
+        when(factory.createRunnable(serviceResources, quickJob)).thenReturn(quickJobRunnable);
+        when(factory.createRunnable(serviceResources, slowJob)).thenReturn(slowJobRunnable);
+
+        sut = new JobQueue(sessionManager, timeService, jobRepository, Arrays.asList(factory), numberOfPoolThreads);
+        sut.setServiceResources(serviceResources);
     }
 
     @Test
     public void shouldExecuteJob() throws JobExecutionException, InterruptedException
     {
-        sut.execute(job);
+        sut.execute(quickJob);
 
         int counter = 0;
         while (counter++ < 10 && !jobEnded)
@@ -134,20 +160,20 @@ public class JobQueueTest
             .overridingErrorMessage("Job did not terminate within %.1f seconds!", counter / 10.0)
             .isTrue();
 
-        final InOrder inOrder = Mockito.inOrder(session, sessionManager, factory, job);
-        inOrder.verify(job).setQueued(queuedDate);
-        inOrder.verify(job).setStatus(JobStatus.QUEUED);
-        inOrder.verify(session).update(job);
+        final InOrder inOrder = Mockito.inOrder(session, sessionManager, factory, quickJob);
+        inOrder.verify(quickJob).setQueued(queuedDate);
+        inOrder.verify(quickJob).setStatus(JobStatus.QUEUED);
+        inOrder.verify(session).update(quickJob);
         inOrder.verify(sessionManager).commit();
 
-        inOrder.verify(job).setStart(startDate);
-        inOrder.verify(job).setStatus(JobStatus.RUNNING);
-        inOrder.verify(session).update(job);
+        inOrder.verify(quickJob).setStart(startDate);
+        inOrder.verify(quickJob).setStatus(JobStatus.RUNNING);
+        inOrder.verify(session).update(quickJob);
         inOrder.verify(sessionManager).commit();
 
-        inOrder.verify(job).setStatus(JobStatus.OK);
-        inOrder.verify(job).setEnd(endDate);
-        inOrder.verify(session).update(job);
+        inOrder.verify(quickJob).setStatus(JobStatus.OK);
+        inOrder.verify(quickJob).setEnd(endDate);
+        inOrder.verify(session).update(quickJob);
         inOrder.verify(sessionManager).commit();
     }
 
@@ -168,11 +194,13 @@ public class JobQueueTest
     public void shouldReExecuteAnAlreadyFinishedJob() throws Exception
     {
         Job reusableJob = new Job();
-        reusableJob.setId(31337);
+        reusableJob.setId(REUSABLE_JOB_ID);
+
+        when(jobRepository.findJobById(REUSABLE_JOB_ID)).thenReturn(reusableJob);
 
         JobRunnable reusableJobRunnable = mock(JobRunnable.class);
 
-        when(factory.createRunnable(reusableJob)).thenReturn(reusableJobRunnable);
+        when(factory.createRunnable(serviceResources, reusableJob)).thenReturn(reusableJobRunnable);
 
         sut.execute(reusableJob);
 

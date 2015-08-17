@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+	<changeSet author="ckrainer" id="2015-07-17-01">
+		<createTable tableName="REAL_VEHICLE_STATE">
+			<column autoIncrement="true" name="ID" type="INT(10)">
+				<constraints primaryKey="true" primaryKeyName="PK_REAL_VEHICLE_STATE" />
+			</column>
+			<column name="STATE" type="CLOB" />
+			<column name="LASTUPDATE" type="TIMESTAMP" />
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="ID"
+			baseTableName="REAL_VEHICLE_STATE" constraintName="FK_STATE_REAL_VEHICLE"
+			deferrable="false" initiallyDeferred="false" onDelete="RESTRICT"
+			onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="REALVEHICLE" />
+	</changeSet>
+
+	<changeSet author="ckrainer" id="2015-07-17-02">
+		<delete tableName="REAL_VEHICLE_STATE" />
+		<modifyDataType tableName="REAL_VEHICLE_STATE"
+			columnName="STATE" newDataType="BLOB" />
+	</changeSet>
+
+
+</databaseChangeLog>

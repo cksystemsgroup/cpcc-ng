@@ -18,6 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.core.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -28,8 +30,10 @@ import javax.validation.constraints.Size;
  * Parameter
  */
 @Entity
-public class Parameter
+public class Parameter implements Serializable
 {
+    private static final long serialVersionUID = -3149631712982577428L;
+
     public static final String MASTER_SERVER_URI = "masterServerURI";
     public static final String USE_INTERNAL_ROS_CORE = "useInternalRosCore";
     public static final String REAL_VEHICLE_NAME = "realVehicleName";

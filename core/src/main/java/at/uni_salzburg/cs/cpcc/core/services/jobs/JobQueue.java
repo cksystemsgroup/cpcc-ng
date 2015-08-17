@@ -19,6 +19,7 @@
 package at.uni_salzburg.cs.cpcc.core.services.jobs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Job;
 import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
@@ -49,25 +51,37 @@ public class JobQueue
 
     private HibernateSessionManager sessionManager;
     private TimeService timeService;
+    private JobRepository jobRepository;
     private List<JobRunnableFactory> factoryList;
     private ExecutorService executorService;
+    private ServiceResources serviceResources;
 
-    private Map<Job, Runnable> taskMap = new HashMap<Job, Runnable>();
+    private Map<Integer, Runnable> taskMap = Collections.synchronizedMap(new HashMap<Integer, Runnable>());
 
     /**
      * @param sessionManager the Hibernate session manager.
      * @param timeService the time service.
+     * @param jobRepository the job repository.
      * @param factoryList the factory list.
      * @param numberOfPoolThreads the number of pool threads to be used.
      */
-    public JobQueue(HibernateSessionManager sessionManager, TimeService timeService
+    public JobQueue(HibernateSessionManager sessionManager, TimeService timeService, JobRepository jobRepository
         , List<JobRunnableFactory> factoryList, int numberOfPoolThreads)
     {
         this.sessionManager = sessionManager;
         this.timeService = timeService;
+        this.jobRepository = jobRepository;
         this.factoryList = factoryList;
 
         executorService = Executors.newFixedThreadPool(numberOfPoolThreads);
+    }
+
+    /**
+     * @param serviceResources the services resources instance.
+     */
+    public void setServiceResources(ServiceResources serviceResources)
+    {
+        this.serviceResources = serviceResources;
     }
 
     /**
@@ -78,7 +92,7 @@ public class JobQueue
     {
         cleanupTaskMap();
 
-        if (taskMap.containsKey(job))
+        if (taskMap.containsKey(job.getId()))
         {
             throw new JobExecutionException("Job " + job.getId() + " is already executing! "
                 + "Status is " + job.getStatus());
@@ -89,11 +103,11 @@ public class JobQueue
         sessionManager.getSession().update(job);
         sessionManager.commit();
 
-        JobExecutor executor = new JobExecutor(sessionManager, timeService, factoryList, job);
+        JobExecutor executor = new JobExecutor(serviceResources, factoryList, job.getId());
 
         synchronized (taskMap)
         {
-            taskMap.put(job, executor);
+            taskMap.put(job.getId(), executor);
         }
 
         executorService.execute(executor);
@@ -108,8 +122,10 @@ public class JobQueue
         {
             List<Job> toBeDeleted = new ArrayList<>();
 
-            for (Job job : taskMap.keySet())
+            for (Integer jobNumber : taskMap.keySet())
             {
+                Job job = jobRepository.findJobById(jobNumber);
+
                 if (ENDED_JOB_STATUS.contains(job.getStatus()))
                 {
                     toBeDeleted.add(job);
@@ -118,7 +134,7 @@ public class JobQueue
 
             for (Job job : toBeDeleted)
             {
-                taskMap.remove(job);
+                taskMap.remove(job.getId());
             }
         }
     }

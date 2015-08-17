@@ -16,14 +16,18 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package at.uni_salzburg.cs.cpcc.gs.services;
+package at.uni_salzburg.cs.cpcc.core.base;
 
 /**
- * RealVehicleStateServiceTest
+ * Core constant definitions.
  */
-public class RealVehicleStateServiceTest
+public final class CoreConstants
 {
+    public static final String PROP_MAX_JOB_AGE = "core.max.job.age";
+    public static final String DEFAULT_MAX_JOB_AGE = "3600000";
 
-    
-    
+    private CoreConstants()
+    {
+        // Intentionally left empty.
+    }
 }

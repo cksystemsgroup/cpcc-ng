@@ -1,112 +1,97 @@
 <html t:type="layout" title="${message:taskOverview}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
-	xmlns:p="tapestry:parameter">
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
 
-<!-- <div class="row"> -->
-<!-- 	<div class="col-md-12"> -->
-<h4>${message:currentRunningTask}</h4>
+	<h4>${message:currentRunningTask}</h4>
+	<t:Zone t:id="zone1" t:mixins="ZoneRefresh" ZoneRefresh.period="1">
+		<t:Grid t:source="getCurrentActiveTaskList()" t:row="currentRunningTask"
+			t:exclude="completed,lastInTaskGroup" t:reorder="creationTime,position,tolerance,sensors"
+			t:add="position,sensors" class="table table-striped table-condensed topic-table">
 
-<t:Zone t:id="zone1" t:mixins="ZoneRefresh" ZoneRefresh.period="1">
-	<!-- ZoneRefresh.context="'show'" -->
-	<t:Grid t:source="getCurrentActiveTaskList()"
-		t:row="currentRunningTask" t:exclude="completed,lastInTaskGroup"
-		t:reorder="creationTime,position,tolerance,sensors"
-		t:add="position,sensors"
-		class="table table-striped table-condensed topic-table">
+			<p:positionCell>
+				${currentRunningTask.getPosition().toString()}
+			</p:positionCell>
 
-		<p:positionCell>
-			${currentRunningTask.getPosition().toString()}
-		</p:positionCell>
+			<p:creationTimeCell>
+				<t:Output t:id="creationTimeO" t:format="timeFormat"
+					t:value="currentRunningTask?.creationTime" />
+				<!-- ${getTime(currentRunningTask.creationTime)} -->
+			</p:creationTimeCell>
 
-		<p:creationTimeCell>
-			${getTime(currentRunningTask.creationTime)}
-		</p:creationTimeCell>
+			<p:lastInTaskGroupCell>
+				${currentRunningTask?.lastInTaskGroup}
+			</p:lastInTaskGroupCell>
 
-		<p:lastInTaskGroupCell>
-			${currentRunningTask.lastInTaskGroup}
-		</p:lastInTaskGroupCell>
+			<p:sensorsCell>
+				<t:Output t:id="sensorsO" t:format="sensorFormat"
+					t:value="currentRunningTask?.sensors" />
+				<!-- ${getSortedSensorList(currentRunningTask)} -->
+			</p:sensorsCell>
 
-		<p:sensorsCell>
-			${getSortedSensorList(currentRunningTask)}
-		</p:sensorsCell>
+			<p:empty>
+				<p>${message:noCurrentRunningTaskFound}</p>
+			</p:empty>
+		</t:Grid>
 
-		<p:empty>
-			<p>${message:noCurrentRunningTaskFound}</p>
-		</p:empty>
-	</t:Grid>
-	<!-- </t:Zone> -->
-	<!-- 	</div> -->
-	<!-- </div> -->
 
-	<!-- <div class="row"> -->
-	<!-- 	<div class="col-md-12"> -->
-	<h4>${message:scheduledTaskList}</h4>
+		<h4>${message:scheduledTaskList}</h4>
+		<t:Grid t:source="tes.getScheduledTasks()" t:row="scheduledTask"
+			t:exclude="completed,lastInTaskGroup" t:reorder="creationTime,position,tolerance,sensors"
+			t:add="position,sensors" class="table table-striped table-condensed topic-table">
 
-	<!-- <t:Zone t:id="zone2" t:mixins="ZoneRefresh" ZoneRefresh.period="1"> -->
-	<!-- ZoneRefresh.context="'show'" -->
-	<t:Grid t:source="tes.getScheduledTasks()" t:row="scheduledTask"
-		t:exclude="completed,lastInTaskGroup"
-		t:reorder="creationTime,position,tolerance,sensors"
-		t:add="position,sensors"
-		class="table table-striped table-condensed topic-table">
+			<p:positionCell>
+				${scheduledTask.position.toString()}
+			</p:positionCell>
 
-		<p:positionCell>
-			${scheduledTask.position.toString()}
-		</p:positionCell>
+			<p:creationTimeCell>
+				<t:Output t:id="creationTime11" t:format="message:dateFormat"
+					t:value="scheduledTask.creationTime" />
+				or
+				<t:Output t:id="creationTime12" t:format="timeFormat"
+					t:value="scheduledTask?.creationTime" />
+			</p:creationTimeCell>
 
-		<p:creationTimeCell>
-			<t:Output t:format="message:dateFormat" t:value="scheduledTask.creationTime" />
-		</p:creationTimeCell>
+			<p:lastInTaskGroupCell>
+				${scheduledTask.lastInTaskGroup}
+			</p:lastInTaskGroupCell>
 
-		<p:lastInTaskGroupCell>
-			${scheduledTask.lastInTaskGroup}
-		</p:lastInTaskGroupCell>
+			<p:sensorsCell>
+				<t:Output t:id="sensors1" t:format="sensorFormat" t:value="scheduledTask?.sensors" />
+				<!-- ${getSortedSensorList(scheduledTask)} -->
+			</p:sensorsCell>
 
-		<p:sensorsCell>
-			${sortedSensorList}
-		</p:sensorsCell>
+			<p:empty>
+				<p>${message:noScheduledTaskFound}</p>
+			</p:empty>
+		</t:Grid>
 
-		<p:empty>
-			<p>${message:noScheduledTaskFound}</p>
-		</p:empty>
-	</t:Grid>
-	<!-- </t:Zone> -->
-	<!-- 	</div> -->
-	<!-- </div> -->
 
-	<!-- <div class="row"> -->
-	<!-- 	<div class="col-md-12"> -->
-	<h4>${message:pendingTaskList}</h4>
+		<h4>${message:pendingTaskList}</h4>
+		<t:Grid t:source="tes.getPendingTasks()" t:row="pendingTask"
+			t:exclude="completed,lastInTaskGroup" t:reorder="creationTime,position,tolerance,sensors"
+			t:add="position,sensors" class="table table-striped table-condensed topic-table">
 
-	<!-- <t:Zone t:id="zone3" t:mixins='ZoneRefresh' ZoneRefresh.period='1'> -->
-	<!-- ZoneRefresh.context="'show'" -->
-	<t:Grid t:source="tes.getPendingTasks()" t:row="pendingTask"
-		t:exclude="completed,lastInTaskGroup"
-		t:reorder="creationTime,position,tolerance,sensors"
-		t:add="position,sensors"
-		class="table table-striped table-condensed topic-table">
+			<p:positionCell>
+				${pendingTask.getPosition().toString()}
+			</p:positionCell>
 
-		<p:positionCell>
-			${pendingTask.getPosition().toString()}
-		</p:positionCell>
+			<p:creationTimeCell>
+				<t:Output t:id="creationTime2" t:format="timeFormat"
+					t:value="pendingTask?.creationTime" />
+				<!-- ${getTime(pendingTask.creationTime)} -->
+			</p:creationTimeCell>
 
-		<p:creationTimeCell>
-			${getTime(pendingTask.creationTime)}
-		</p:creationTimeCell>
+			<p:lastInTaskGroupCell>
+				${pendingTask.lastInTaskGroup}
+			</p:lastInTaskGroupCell>
 
-		<p:lastInTaskGroupCell>
-			${pendingTask.lastInTaskGroup}
-		</p:lastInTaskGroupCell>
+			<p:sensorsCell>
+				<t:Output t:id="sensors2" t:format="sensorFormat" t:value="pendingTask?.sensors" />
+				<!-- ${getSortedSensorList(pendingTask)} -->
+			</p:sensorsCell>
 
-		<p:sensorsCell>
-			${getSortedSensorList(pendingTask)}
-		</p:sensorsCell>
-
-		<p:empty>
-			<p>${message:noPendingTaskFound}</p>
-		</p:empty>
-	</t:Grid>
-</t:Zone>
-<!-- 	</div> -->
-<!-- </div> -->
+			<p:empty>
+				<p>${message:noPendingTaskFound}</p>
+			</p:empty>
+		</t:Grid>
+	</t:Zone>
 </html>

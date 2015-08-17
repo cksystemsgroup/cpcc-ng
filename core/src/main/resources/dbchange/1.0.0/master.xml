@@ -5,4 +5,9 @@
 
 	<include file="ChangeLog-initial.xml" relativeToChangelogFile="true" />
 	<include file="2014-03-02.xml" relativeToChangelogFile="true" />
+	<include file="2015-01-06.xml" relativeToChangelogFile="true" />
+	<include file="2015-07-17.xml" relativeToChangelogFile="true" />
+	<include file="2015-07-29.xml" relativeToChangelogFile="true" />
+	<include file="2015-08-08.xml" relativeToChangelogFile="true" />
+
 </databaseChangeLog>

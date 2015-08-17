@@ -31,7 +31,12 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<!-- <scope>provided</scope> -->
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -81,26 +86,26 @@
 			<artifactId>commons-ui</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>at.uni-salzburg.cs.cpcc</groupId> -->
-<!-- 			<artifactId>core</artifactId> -->
-<!-- 			<version>${project.parent.version}</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>at.uni-salzburg.cs.cpcc</groupId> -->
-<!-- 			<artifactId>ros-service</artifactId> -->
-<!-- 			<version>${project.parent.version}</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>at.uni-salzburg.cs.cpcc</groupId> -->
-<!-- 			<artifactId>virtual-vehicle-rte</artifactId> -->
-<!-- 			<version>${project.parent.version}</version> -->
-<!-- 		</dependency> -->
-		<dependency>
-			<groupId>org.tynamo</groupId>
-			<artifactId>tapestry-ckeditor</artifactId>
-			<version>0.0.1-MOD</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>at.uni-salzburg.cs.cpcc</groupId> -->
+		<!-- <artifactId>core</artifactId> -->
+		<!-- <version>${project.parent.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>at.uni-salzburg.cs.cpcc</groupId> -->
+		<!-- <artifactId>ros-service</artifactId> -->
+		<!-- <version>${project.parent.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>at.uni-salzburg.cs.cpcc</groupId> -->
+		<!-- <artifactId>virtual-vehicle-rte</artifactId> -->
+		<!-- <version>${project.parent.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.tynamo</groupId> -->
+		<!-- <artifactId>tapestry-ckeditor</artifactId> -->
+		<!-- <version>0.0.1-MOD</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>at.uni-salzburg.cs</groupId>
 			<artifactId>tapestry-ace-editor</artifactId>
@@ -144,6 +149,16 @@
 						<groupId>com.h2database</groupId>
 						<artifactId>h2</artifactId>
 						<version>${com.h2database.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.hsqldb</groupId>
+						<artifactId>hsqldb</artifactId>
+						<version>${com.hsqldb.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>com.mchange</groupId>
+						<artifactId>c3p0</artifactId>
+						<version>${c3p0.version}</version>
 					</dependency>
 					<dependency>
 						<groupId>javax.mail</groupId>

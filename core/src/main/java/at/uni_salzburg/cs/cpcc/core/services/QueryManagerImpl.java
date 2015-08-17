@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
 import at.uni_salzburg.cs.cpcc.core.entities.DeviceType;
@@ -36,9 +37,11 @@ import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributesPK;
 import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleState;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorVisibility;
 import at.uni_salzburg.cs.cpcc.core.entities.Topic;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.TimeService;
 
 /**
  * QueryManager implementation.
@@ -47,20 +50,25 @@ public class QueryManagerImpl implements QueryManager
 {
     private static final String DEVICE_ID = "deviceId";
     private static final String SENSOR_DESCRIPTION = "description";
-    private static final String SENSOR_MESSAGETYPE = "messagetype";
+    private static final String SENSOR_MESSAGETYPE = "messageType";
     private static final String DEVICE_NAME = "name";
     private static final String TOPIC_ROOT = "topicRoot";
     private static final String REAL_VEHICLE_NAME = "name";
     private static final String REAL_VEHICLE_URL = "url";
 
     private Session session;
+    private TimeService timeService;
+    private long connectionTimeout;
 
     /**
-     * @param session {@link Session}
+     * @param session the Hibernate {@link Session}
+     * @param timeService the time service instance.
      */
-    public QueryManagerImpl(Session session)
+    public QueryManagerImpl(Session session, TimeService timeService)
     {
         this.session = session;
+        this.timeService = timeService;
+        this.connectionTimeout = 10000L;
     }
 
     /**
@@ -70,8 +78,8 @@ public class QueryManagerImpl implements QueryManager
     public Device findDeviceByTopicRoot(String topicRoot)
     {
         return (Device) session
-            .createQuery("from Device where topicRoot = :topicRoot")
-            .setString(TOPIC_ROOT, topicRoot)
+            .createCriteria(Device.class)
+            .add(Restrictions.eq(TOPIC_ROOT, topicRoot))
             .uniqueResult();
     }
 
@@ -95,8 +103,8 @@ public class QueryManagerImpl implements QueryManager
     public DeviceType findDeviceTypeByName(String name)
     {
         return (DeviceType) session
-            .createQuery("from DeviceType where name = :name")
-            .setString(DEVICE_NAME, name)
+            .createCriteria(DeviceType.class)
+            .add(Restrictions.eq(DEVICE_NAME, name))
             .uniqueResult();
     }
 
@@ -107,7 +115,8 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<DeviceType> findAllDeviceTypes()
     {
-        return (List<DeviceType>) session.createCriteria(DeviceType.class)
+        return (List<DeviceType>) session
+            .createCriteria(DeviceType.class)
             .addOrder(Property.forName(DEVICE_NAME).asc())
             .list();
     }
@@ -119,8 +128,8 @@ public class QueryManagerImpl implements QueryManager
     public Parameter findParameterByName(String name)
     {
         return (Parameter) session
-            .createQuery("from Parameter where name = :name")
-            .setString(DEVICE_NAME, name)
+            .createCriteria(Parameter.class)
+            .add(Restrictions.eq(DEVICE_NAME, name))
             .uniqueResult();
     }
 
@@ -149,11 +158,10 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public SensorDefinition findSensorDefinitionById(Integer id)
     {
-        SensorDefinition x = (SensorDefinition) session
-            .createQuery("FROM SensorDefinition WHERE id = :id")
-            .setInteger("id", id)
+        return (SensorDefinition) session
+            .createCriteria(SensorDefinition.class)
+            .add(Restrictions.eq("id", id))
             .uniqueResult();
-        return x;
     }
 
     /**
@@ -163,11 +171,10 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<SensorDefinition> findSensorDefinitionsByMessageType(String messagetype)
     {
-        List<SensorDefinition> x = (List<SensorDefinition>) session
-            .createQuery("from SensorDefinition where messagetype = :messagetype")
-            .setString(SENSOR_MESSAGETYPE, messagetype)
+        return (List<SensorDefinition>) session
+            .createCriteria(SensorDefinition.class)
+            .add(Restrictions.eq(SENSOR_MESSAGETYPE, messagetype))
             .list();
-        return x;
     }
 
     /**
@@ -176,11 +183,10 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public SensorDefinition findSensorDefinitionByDescription(String description)
     {
-        SensorDefinition x = (SensorDefinition) session
-            .createQuery("from SensorDefinition where description = :description")
-            .setString(SENSOR_DESCRIPTION, description)
+        return (SensorDefinition) session
+            .createCriteria(SensorDefinition.class)
+            .add(Restrictions.eq(SENSOR_DESCRIPTION, description))
             .uniqueResult();
-        return x;
     }
 
     /**
@@ -224,7 +230,8 @@ public class QueryManagerImpl implements QueryManager
     public List<RealVehicle> findAllRealVehicles()
     {
         return (List<RealVehicle>) session
-            .createQuery("FROM RealVehicle")
+            .createCriteria(RealVehicle.class)
+            .addOrder(Property.forName("id").asc())
             .list();
     }
 
@@ -236,7 +243,8 @@ public class QueryManagerImpl implements QueryManager
     public List<RealVehicle> findAllRealVehiclesOrderByName()
     {
         return (List<RealVehicle>) session
-            .createQuery("FROM RealVehicle ORDER BY name")
+            .createCriteria(RealVehicle.class)
+            .addOrder(Property.forName("name").asc())
             .list();
     }
 
@@ -247,8 +255,8 @@ public class QueryManagerImpl implements QueryManager
     public RealVehicle findRealVehicleByName(String name)
     {
         return (RealVehicle) session
-            .createQuery("FROM RealVehicle WHERE name = :name")
-            .setString(REAL_VEHICLE_NAME, name)
+            .createCriteria(RealVehicle.class)
+            .add(Restrictions.eq(REAL_VEHICLE_NAME, name))
             .uniqueResult();
     }
 
@@ -256,8 +264,8 @@ public class QueryManagerImpl implements QueryManager
     public RealVehicle findRealVehicleByUrl(String url)
     {
         return (RealVehicle) session
-            .createQuery("FROM RealVehicle WHERE url = :url")
-            .setString(REAL_VEHICLE_URL, url)
+            .createCriteria(RealVehicle.class)
+            .add(Restrictions.eq(REAL_VEHICLE_URL, url))
             .uniqueResult();
     }
 
@@ -267,11 +275,46 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public RealVehicle findRealVehicleById(Integer id)
     {
-        RealVehicle x = (RealVehicle) session
-            .createQuery("FROM RealVehicle WHERE id = :id")
-            .setInteger("id", id)
+        return (RealVehicle) session
+            .createCriteria(RealVehicle.class)
+            .add(Restrictions.eq("id", id))
             .uniqueResult();
-        return x;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<RealVehicleState> findAllRealVehicleStates()
+    {
+        return (List<RealVehicleState>) session
+            .createCriteria(RealVehicleState.class)
+            .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RealVehicleState findRealVehicleStateById(int id)
+    {
+        return (RealVehicleState) session
+            .createCriteria(RealVehicleState.class)
+            .add(Restrictions.eq("id", id))
+            .uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isRealVehicleConnected(int id)
+    {
+        RealVehicleState state = findRealVehicleStateById(id);
+        return state != null
+            ? timeService.currentTimeMillis() - state.getLastUpdate().getTime() < connectionTimeout
+            : false;
     }
 
     /**
@@ -295,10 +338,8 @@ public class QueryManagerImpl implements QueryManager
     public List<SensorDefinition> findAllVisibleSensorDefinitions()
     {
         return (List<SensorDefinition>) session
-            .createQuery("SELECT d "
-                + "FROM SensorDefinition d "
-                + "WHERE d.visibility != :visibility")
-            .setString("visibility", SensorVisibility.NO_VV.toString())
+            .createCriteria(SensorDefinition.class)
+            .add(Restrictions.ne("visibility", SensorVisibility.NO_VV))
             .list();
     }
 
@@ -363,7 +404,8 @@ public class QueryManagerImpl implements QueryManager
     public List<MappingAttributes> findAllVvVisibleMappingAttributes()
     {
         return (List<MappingAttributes>) session
-            .createQuery("from MappingAttributes where vvVisible = true")
+            .createCriteria(MappingAttributes.class)
+            .add(Restrictions.eq("vvVisible", Boolean.TRUE))
             .list();
     }
 

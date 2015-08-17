@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,15 +16,15 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.rv.base.services;
+package at.uni_salzburg.cs.cpcc.core.services;
 
 /**
- * RealVehicleStateListener
+ * LiquibaseService
  */
-public interface RealVehicleStateListener
+public interface LiquibaseService
 {
     /**
-     * @param realVehicleState the real vehicle state.
+     * Update the database.
      */
-    void notify(RealVehicleState realVehicleState);
+    void update();
 }

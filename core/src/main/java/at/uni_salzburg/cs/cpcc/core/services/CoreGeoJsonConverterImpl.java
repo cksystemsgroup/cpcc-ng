@@ -19,37 +19,21 @@
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.geojson.Feature;
-import org.geojson.FeatureCollection;
-import org.geojson.GeoJsonObject;
 import org.geojson.Point;
 import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
  * CoreGeoJsonConverterImpl
  */
 public class CoreGeoJsonConverterImpl implements CoreGeoJsonConverter
 {
-    private Logger logger;
-
-    /**
-     * @param logger the application logger.
-     */
-    public CoreGeoJsonConverterImpl(Logger logger)
-    {
-        this.logger = logger;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -59,41 +43,10 @@ public class CoreGeoJsonConverterImpl implements CoreGeoJsonConverter
         Feature feature = new Feature();
         feature.setId(Integer.toString(rv.getId()));
         feature.setProperty("type", "rv");
-        feature.setProperty("rvtype", rv.getType().toString());
+        feature.setProperty("rvtype", rv.getType().name());
         feature.setProperty("name", rv.getName());
 
-        if (!StringUtils.isEmpty(rv.getAreaOfOperation()))
-        {
-            try
-            {
-                GeoJsonObject aoo = new ObjectMapper().readValue(rv.getAreaOfOperation(), GeoJsonObject.class);
-                feature.setGeometry(aoo);
-            }
-            catch (Exception e)
-            {
-                logger.error("Can not parse area of operation of real vehicle " + rv.getName()
-                    + " (" + rv.getId() + ")");
-            }
-        }
-
         return feature;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public FeatureCollection toFeatureCollection(Collection<RealVehicle> rvList)
-        throws JsonParseException, JsonMappingException, IOException
-    {
-        FeatureCollection fc = new FeatureCollection();
-
-        for (RealVehicle rv : rvList)
-        {
-            fc.add(toFeature(rv));
-        }
-
-        return fc;
     }
 
     /**
@@ -103,5 +56,22 @@ public class CoreGeoJsonConverterImpl implements CoreGeoJsonConverter
     public Point toPoint(PolarCoordinate position)
     {
         return new Point(position.getLongitude(), position.getLatitude(), position.getAltitude());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("serial")
+    @Override
+    public Map<String, Double> toPosition(final PolarCoordinate position)
+    {
+        return new HashMap<String, Double>()
+        {
+            {
+                put("lat", position.getLatitude());
+                put("lon", position.getLongitude());
+                put("alt", position.getAltitude());
+            }
+        };
     }
 }

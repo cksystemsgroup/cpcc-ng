@@ -18,27 +18,39 @@
 
 package cpcc.rv.base.pages.update;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.inject.Inject;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.apache.tapestry5.json.JSONObject;
+import org.apache.tapestry5.services.RequestGlobals;
+
+import at.uni_salzburg.cs.cpcc.core.utils.JsonStreamResponse;
+import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * ConfigurationUpdate
  */
 public class UpdateConfiguration
 {
-    //    @Inject
-    //    private RequestGlobals requestGlobals;
+    @Inject
+    private RequestGlobals requestGlobals;
 
-    //    @Inject
-    //    private StateSynchronizer synchronizer;
+    @Inject
+    private StateSynchronizer synchronizer;
 
     @CommitAfter
-    Object onActivate() throws Exception
+    Object onActivate() throws IOException
     {
-        //        InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();
-        //        byte[] requestData = IOUtils.toByteArray(inputStream);
-        //        byte[] responseData = synchronizer.updateOwnConfig(requestData);
-        //        return new ByteArrayStreamResponse("text/plain", responseData);
+        InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();
+        byte[] requestData = IOUtils.toByteArray(inputStream);
 
-        throw new Exception("not implemented!");
+        synchronizer.importConfiguration(requestData);
+
+        JSONObject jsonObject = new JSONObject("result", "OK");
+        return new JsonStreamResponse(jsonObject);
     }
 }

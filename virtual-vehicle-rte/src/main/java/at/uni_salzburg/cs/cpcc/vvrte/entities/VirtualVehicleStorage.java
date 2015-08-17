@@ -18,6 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.vvrte.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,8 +38,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * VirtualVehicleStorage
  */
 @Entity
-public class VirtualVehicleStorage
+public class VirtualVehicleStorage implements Serializable
 {
+    private static final long serialVersionUID = -5013965520648254955L;
+
     @Id
     @GeneratedValue
     private Integer id;
@@ -136,7 +140,7 @@ public class VirtualVehicleStorage
     {
         this.content = SerializationHelper.serialize(content);
     }
-    
+
     /**
      * @return the content as an array of bytes.
      */
@@ -145,7 +149,7 @@ public class VirtualVehicleStorage
     {
         return content;
     }
-    
+
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
     public void setContentAsByteArray(byte[] newContent)
     {

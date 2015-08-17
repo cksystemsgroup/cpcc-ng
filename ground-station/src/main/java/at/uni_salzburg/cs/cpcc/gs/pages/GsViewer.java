@@ -18,12 +18,16 @@
 
 package at.uni_salzburg.cs.cpcc.gs.pages;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleState;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import at.uni_salzburg.cs.cpcc.core.utils.JSONUtils;
 
 /**
  * GsViewer
@@ -38,6 +42,7 @@ public class GsViewer
      */
     public String getMapCenter()
     {
+        // TODO fix me!
         return "[37.8085124939787,-122.42505311965941]";
     }
 
@@ -46,50 +51,24 @@ public class GsViewer
      */
     public String getZoomLevel()
     {
+        // TODO fix me!
         return "17";
     }
-
-    //    public JSONObject getRegions()
-    //    {
-    //        JSONObject obj = new JSONObject();
-    //
-    //        List<RealVehicle> rvList = qm.findAllRealVehicles();
-    //        for (RealVehicle rv : rvList)
-    //        {
-    //            obj.put(rv.getName(), new JSONObject(rv.getAreaOfOperation()));
-    //        }
-    //        
-    //        System.out.println("getRegions: " + obj.toCompactString());
-    //
-    //        return obj;
-    //    }
 
     /**
      * @return the current regions.
      */
     public String getRegions()
     {
-        StringBuilder b = new StringBuilder();
-
         List<RealVehicle> rvList = qm.findAllRealVehicles();
-        boolean first = true;
 
-        b.append("{");
+        Map<String, String> rvMap = new HashMap<String, String>();
         for (RealVehicle rv : rvList)
         {
-            if (first)
-            {
-                first = false;
-            }
-            else
-            {
-                b.append(",");
-            }
-            b.append("\"").append(rv.getName()).append("\":").append(rv.getAreaOfOperation());
+            rvMap.put(rv.getName(), rv.getAreaOfOperation());
         }
-        b.append("}");
 
-        return b.toString();
+        return JSONUtils.toJsonString(rvMap);
     }
 
     /**
@@ -97,6 +76,13 @@ public class GsViewer
      */
     public String getVehicles()
     {
-        return "{}";
+        Map<String, String> stateMap = new HashMap<String, String>();
+
+        for (RealVehicleState state : qm.findAllRealVehicleStates())
+        {
+            stateMap.put(state.getId().toString(), state.getState());
+        }
+
+        return JSONUtils.toJsonString(stateMap);
     }
 }

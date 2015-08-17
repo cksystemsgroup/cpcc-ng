@@ -21,7 +21,6 @@ package at.uni_salzburg.cs.cpcc.core.services;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Assertions.offset;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -36,7 +35,6 @@ import org.geojson.Point;
 import org.geojson.Polygon;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -54,7 +52,6 @@ public class CoreGeoJsonConverterTest
     private RealVehicle rv2;
     private RealVehicle rv3;
     private CoreGeoJsonConverterImpl conv;
-    private Logger logger;
 
     @BeforeMethod
     public void setUp()
@@ -86,8 +83,7 @@ public class CoreGeoJsonConverterTest
         when(rv3.getType()).thenReturn(RealVehicleType.GROUND_STATION);
         when(rv3.getId()).thenReturn(3);
 
-        logger = mock(Logger.class);
-        conv = new CoreGeoJsonConverterImpl(logger);
+        conv = new CoreGeoJsonConverterImpl();
     }
 
     @DataProvider
@@ -141,13 +137,13 @@ public class CoreGeoJsonConverterTest
             new Object[]{rv2, "{"
                 + "\"type\":\"Feature\","
                 + "\"properties\":{\"name\":\"rv2\",\"rvtype\":\"FIXED_WING_AIRCRAFT\",\"type\":\"rv\"},"
-                + "\"geometry\":{\"type\":\"FeatureCollection\",\"features\":["
-                + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},"
-                + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[-122.4255,37.8085]}},"
-                + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
-                + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":["
-                + "[[-122.425,37.808],[-122.426,37.808],[-122.426,37.809],[-122.425,37.809],[-122.425,37.808]]]}"
-                + "}]},"
+                // + "\"geometry\":{\"type\":\"FeatureCollection\",\"features\":["
+                // + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},"
+                // + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[-122.4255,37.8085]}},"
+                // + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
+                // + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":["
+                // + "[[-122.425,37.808],[-122.426,37.808],[-122.426,37.809],[-122.425,37.809],[-122.425,37.808]]]}"
+                // + "}]},"
                 + "\"id\":\"2\"}"
             },
         };
@@ -191,70 +187,9 @@ public class CoreGeoJsonConverterTest
         };
     }
 
-    @Test(dataProvider = "realVehicleListDataProvider")
-    public void shouldConvertRealVehicleListToFeatureCollection(List<RealVehicle> rv, String expected)
-        throws IOException, JSONException
-    {
-        FeatureCollection fc = conv.toFeatureCollection(rv);
-
-        String actual = new ObjectMapper().writeValueAsString(fc);
-
-        assertThat(actual).isNotNull();
-        JSONAssert.assertEquals(expected, actual, false);
-    }
-
-    @Test
-    public void shouldLogUnparsableRealVehicle() throws IOException
-    {
-        RealVehicle brokenRv = mock(RealVehicle.class);
-        when(brokenRv.getName()).thenReturn("brokenRv");
-        when(brokenRv.getAreaOfOperation()).thenReturn("{"
-            + "\"type\":\"FeatureCollection\","
-            + "\"features\":[");
-        when(brokenRv.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
-        when(brokenRv.getId()).thenReturn(11);
-
-        conv.toFeature(brokenRv);
-
-        verify(logger).error("Can not parse area of operation of real vehicle brokenRv (11)");
-    }
-
     @Test
     public void buggeritRV() throws JsonProcessingException
     {
-        // rv01
-        // double[][] pos = {{37.80800, -122.42600}, {37.80800, -122.42700}, {37.80900, -122.42700}, {37.80900, -122.42600}, {37.80800, -122.42600}};
-        // double[] depot = {37.80850, -122.42650};
-
-        // rv02
-        // double[][] pos = {{37.80800, -122.42500},{37.80800, -122.42600},{37.80900, -122.42600},{37.80900, -122.42500},{37.80800, -122.42500}};
-        // double[] depot = {37.80850, -122.42550};
-
-        // rv03
-        // double[][] pos = {{37.80800, -122.42400},{37.80800, -122.42500},{37.80900, -122.42500},{37.80900, -122.42400},{37.80800, -122.42400}};
-        // double[] depot = {37.80850, -122.42450};
-
-        // rv04
-        // double[][] pos = {{37.80900, -122.42600},{37.80900, -122.42700},{37.81000, -122.42700},{37.81000, -122.42600},{37.80900, -122.42600}};
-        // double[] depot = {37.80950, -122.42650};
-
-        // rv05
-        // double[][] pos = {{37.80900, -122.42500},{37.80900, -122.42600},{37.81000, -122.42600},{37.81000, -122.42500},{37.80900, -122.42500}};
-        // double[] depot = {37.80950, -122.42550};
-
-        // rv06        
-        // double[][] pos = {{37.80900, -122.42400},{37.80900, -122.42500},{37.81000, -122.42500},{37.81000, -122.42400},{37.80900, -122.42400}};
-        // double[] depot = {37.80950, -122.42450};
-
-        // rv07
-        // double[][] pos = {{37.80700, -122.42600},{37.80700, -122.42700},{37.80800, -122.42700},{37.80800, -122.42600},{37.80700, -122.42600}};
-        // double[] depot = {37.80750,  -122.42650};
-
-        // rv08
-        // double[][] pos = {{37.80700, -122.42500},{37.80700, -122.42600},{37.80800, -122.42600},{37.80800, -122.42500},{37.80700, -122.42500}};
-        // double[] depot = {37.80750, -122.42550};
-
-        // rv09
         double[][] pos =
         {{37.80700, -122.42400}, {37.80700, -122.42500}, {37.80800, -122.42500}, {37.80800, -122.42400},
             {37.80700, -122.42400}};
@@ -291,8 +226,6 @@ public class CoreGeoJsonConverterTest
     @Test
     public void buggeritGS() throws JsonProcessingException
     {
-        //        [{lat: 37.80800,lng: -122.42600}]
-
         Point point = new Point(-122.42600, 37.80800);
 
         Feature pointFeature = new Feature();

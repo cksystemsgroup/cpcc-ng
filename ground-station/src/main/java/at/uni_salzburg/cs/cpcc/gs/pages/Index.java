@@ -25,10 +25,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleState;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import cpcc.rv.base.services.RealVehicleState;
+import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * Index
@@ -38,6 +41,12 @@ public class Index
     @Inject
     private QueryManager qm;
 
+    @Inject
+    private StateSynchronizer stateSyncService;
+
+    @Inject
+    private Logger logger;
+
     /**
      * @return the list of devices.
      */
@@ -45,10 +54,6 @@ public class Index
     {
         return qm.findAllDevices();
     }
-
-    //    @Property
-    //    @Inject
-    //    private RealVehicleStateService state;
 
     @Property
     private RealVehicleState stateString;
@@ -58,9 +63,25 @@ public class Index
      */
     public Collection<RealVehicleState> getStateList()
     {
-
-        // return state.getRealVehicleStatus();
-        // TODO
         return Collections.emptyList();
+    }
+
+    /**
+     * Event RvSync received.
+     */
+    public void onRvSync()
+    {
+        logger.info("onRvSync");
+        stateSyncService.realVehicleStatusUpdate();
+    }
+
+    /**
+     * Event ConfigSync received.
+     */
+    @CommitAfter
+    public void onConfigSync()
+    {
+        logger.info("onConfigSync");
+        stateSyncService.pushConfiguration();
     }
 }

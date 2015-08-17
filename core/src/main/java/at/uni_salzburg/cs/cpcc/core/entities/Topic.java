@@ -18,6 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.core.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,8 +32,10 @@ import javax.validation.constraints.Size;
  * Topic
  */
 @Entity
-public class Topic
+public class Topic implements Serializable
 {
+    private static final long serialVersionUID = -195728103332481446L;
+
     @Id
     @GeneratedValue
     private Integer id;

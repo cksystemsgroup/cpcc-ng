@@ -31,10 +31,12 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -58,6 +60,8 @@ public class JobServiceTest
     private String parameters02;
     private JobQueue jobQueue01;
     private JobQueue jobQueue02;
+    private ServiceResources serviceResources;
+    private Logger logger;
 
     @BeforeMethod
     public void setUp() throws JobExecutionException
@@ -73,7 +77,10 @@ public class JobServiceTest
         when(sessionManager.getSession()).thenReturn(session);
 
         timeService = mock(TimeService.class);
+
         jobRepository = mock(JobRepository.class);
+
+        logger = mock(Logger.class);
 
         existingJob = mock(Job.class);
         when(existingJob.getQueueName()).thenReturn(QUEUE_NAME_01);
@@ -89,7 +96,7 @@ public class JobServiceTest
         jobQueue02 = mock(JobQueue.class);
         doThrow(JobExecutionException.class).when(jobQueue02).execute(failingJob);
 
-        sut = new JobServiceImpl(sessionManager, jobRepository, timeService);
+        sut = new JobServiceImpl(serviceResources, sessionManager, jobRepository, timeService, logger);
     }
 
     @Test
@@ -135,9 +142,82 @@ public class JobServiceTest
     }
 
     @Test
+    public void shouldAddJobIfNotExists() throws JobCreationException
+    {
+        when(timeService.newDate()).thenAnswer(new Answer<Date>()
+        {
+            int counter = 0;
+            Date[] dateList = new Date[]{createdDate};
+
+            @Override
+            public Date answer(InvocationOnMock invocation) throws Throwable
+            {
+                return counter < dateList.length ? dateList[counter++] : null;
+            }
+        });
+
+        sut.addJobQueue(QUEUE_NAME_01, jobQueue01);
+
+        sut.addJobIfNotExists(QUEUE_NAME_01, parameters01);
+
+        verify(jobRepository).findOtherRunningJob(QUEUE_NAME_01, parameters01);
+
+        ArgumentCaptor<Job> argument = ArgumentCaptor.forClass(Job.class);
+        verify(session).save(argument.capture());
+        Job actual = argument.getValue();
+
+        assertThat(actual.getCreated())
+            .describedAs("Job queued time")
+            .isEqualTo(createdDate);
+
+        assertThat(actual.getStatus())
+            .describedAs("Job status")
+            .isEqualTo(JobStatus.CREATED);
+
+        assertThat(actual.getParameters())
+            .describedAs("Job parameters")
+            .isEqualTo(parameters01);
+
+        assertThat(actual.getQueueName())
+            .describedAs("Job queue name")
+            .isEqualTo(QUEUE_NAME_01);
+
+        verifyZeroInteractions(logger);
+    }
+
+    @Test
+    public void shouldNotAddJobIfExists() throws JobCreationException
+    {
+        Job existingJob = mock(Job.class);
+
+        when(jobRepository.findOtherRunningJob(QUEUE_NAME_01, parameters01)).thenReturn(Arrays.asList(existingJob));
+
+        when(timeService.newDate()).thenAnswer(new Answer<Date>()
+        {
+            int counter = 0;
+            Date[] dateList = new Date[]{createdDate};
+
+            @Override
+            public Date answer(InvocationOnMock invocation) throws Throwable
+            {
+                return counter < dateList.length ? dateList[counter++] : null;
+            }
+        });
+
+        sut.addJobQueue(QUEUE_NAME_01, jobQueue01);
+
+        sut.addJobIfNotExists(QUEUE_NAME_01, parameters01);
+
+        verify(jobRepository).findOtherRunningJob(QUEUE_NAME_01, parameters01);
+
+        verify(logger)
+            .info("Job already executing in queue '" + QUEUE_NAME_01 + "', parameters='" + parameters01 + "'");
+    }
+
+    @Test
     public void shouldThrowJobCreationExceptionIfJobIsAlreadyActive() throws JobCreationException
     {
-        when(jobRepository.findOtherRunningJob(QUEUE_NAME_01, parameters01)).thenReturn(existingJob);
+        when(jobRepository.findOtherRunningJob(QUEUE_NAME_01, parameters01)).thenReturn(Arrays.asList(existingJob));
 
         sut.addJobQueue(QUEUE_NAME_01, jobQueue01);
 
@@ -172,10 +252,12 @@ public class JobServiceTest
 
         sut.executeJobs();
 
+        verify(jobQueue01).setServiceResources(serviceResources);
+        verify(jobQueue02).setServiceResources(serviceResources);
+
         verify(existingJob).getQueueName();
         verify(jobQueue01).execute(existingJob);
         verifyZeroInteractions(jobQueue02);
-
     }
 
     @Test

@@ -20,26 +20,19 @@ package at.uni_salzburg.cs.cpcc.commons.pages.rv;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
 
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
-import org.geojson.Feature;
-import org.geojson.FeatureCollection;
-import org.geojson.GeoJsonObject;
-import org.geojson.Polygon;
+import org.hibernate.Session;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.utils.ResourceStreamResponse;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import cpcc.rv.base.services.StateSynchronizer;
 
 /**
@@ -48,13 +41,10 @@ import cpcc.rv.base.services.StateSynchronizer;
 public class RvEditAreaOfOperations
 {
     @Inject
-    protected HibernateSessionManager sessionManager;
+    protected Session session;
 
     @Inject
     protected QueryManager qm;
-
-    @Inject
-    private CoreGeoJsonConverter geoConv;
 
     @Inject
     protected StateSynchronizer confSync;
@@ -62,9 +52,6 @@ public class RvEditAreaOfOperations
     @Valid
     @Property
     protected RealVehicle realVehicle;
-
-    @Property
-    private String realVehicleRegions;
 
     private Integer realVehicelId;
 
@@ -75,7 +62,25 @@ public class RvEditAreaOfOperations
     {
         this.realVehicelId = id;
         realVehicle = qm.findRealVehicleById(id);
-        realVehicleRegions = realVehicle.getAreaOfOperation();
+    }
+
+    /**
+     * @return the real vehicle regions.
+     */
+    public String getRealVehicleRegions()
+    {
+        String regions = realVehicle.getAreaOfOperation();
+        regions = regions.replaceAll("\\\\n\\s*", "");
+        return regions;
+    }
+
+    /**
+     * @param areaOfOperation the real vehicle regions to set.
+     */
+    public void setRealVehicleRegions(String areaOfOperation)
+    {
+        String regions = areaOfOperation.replaceAll("\\\\n\\s*", "");
+        realVehicle.setAreaOfOperation(regions);
     }
 
     /**
@@ -93,7 +98,6 @@ public class RvEditAreaOfOperations
      */
     StreamResponse onActivate(String folder, String imageName)
     {
-        System.out.println("### ALERT! onActivate " + folder + " " + imageName);
         String pngResourcePath = "at/uni_salzburg/cs/cpcc/commons/" + folder + "/" + imageName;
         return new ResourceStreamResponse("application/png", pngResourcePath);
     }
@@ -101,13 +105,8 @@ public class RvEditAreaOfOperations
     @CommitAfter
     void onSuccess()
     {
-        realVehicle.setAreaOfOperation(realVehicleRegions);
         realVehicle.setLastUpdate(new Date());
-        sessionManager.getSession().saveOrUpdate(realVehicle);
-        sessionManager.commit();
-        // TODO 
-        //        rvss.notifyConfigurationChange();
-        //        confSync.notifyConfigurationChange();
+        session.saveOrUpdate(realVehicle);
     }
 
     /**
@@ -116,34 +115,37 @@ public class RvEditAreaOfOperations
      */
     public String getOtherRealVehicleRegions() throws IOException
     {
-        FeatureCollection fc = new FeatureCollection();
+        StringBuilder buff = new StringBuilder();
 
-        for (RealVehicle rv : qm.findAllRealVehicles())
+        List<RealVehicle> rvList = qm.findAllRealVehicles();
+        boolean first = true;
+
+        buff.append("{");
+        for (RealVehicle rv : rvList)
         {
             if (rv.getId().intValue() == realVehicle.getId().intValue())
             {
                 continue;
             }
 
-            Feature feature = geoConv.toFeature(rv);
-
-            GeoJsonObject geometry = feature.getGeometry();
-            if (geometry == null || !(geometry instanceof FeatureCollection))
+            if (first)
             {
-                continue;
+                first = false;
+            }
+            else
+            {
+                buff.append(",");
             }
 
-            FeatureCollection fc2 = (FeatureCollection) geometry;
-            for (Feature f : fc2.getFeatures())
-            {
-                if (f.getGeometry() instanceof Polygon)
-                {
-                    fc.add(f);
-                }
-            }
+            buff.append("\"")
+                .append(rv.getName())
+                .append("\":")
+                .append(rv.getAreaOfOperation().replaceAll("\\\\n\\s*", ""));
         }
 
-        return new ObjectMapper().writeValueAsString(fc);
+        buff.append("}");
+
+        return buff.toString();
     }
 
     /**
@@ -152,7 +154,7 @@ public class RvEditAreaOfOperations
     public String getMapCenter()
     {
         // TODO implement
-        return "[37.8085,-122.4265]";
+        return "[37.8085124939787,-122.42505311965941]";
     }
 
     /**
@@ -161,7 +163,7 @@ public class RvEditAreaOfOperations
     public String getZoomLevel()
     {
         // TODO implement
-        return "11";
+        return "17";
     }
 
 }

@@ -21,20 +21,16 @@ package cpcc.rv.base.services;
 import java.util.Arrays;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
-import org.apache.tapestry5.hibernate.HibernateTransactionAdvisor;
 import org.apache.tapestry5.ioc.Configuration;
-import org.apache.tapestry5.ioc.MethodAdviceReceiver;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.ioc.annotations.Match;
 import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.services.LibraryMapping;
 
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
-import at.uni_salzburg.cs.cpcc.core.entities.Job;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobQueue;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRepository;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnableFactory;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobService;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.TimeService;
@@ -55,7 +51,7 @@ public final class RealVehicleBaseModule
     public static void bind(ServiceBinder binder)
     {
         binder.bind(StateSynchronizer.class, StateSynchronizerImpl.class).eagerLoad();
-
+        binder.bind(StateService.class, StateServiceImpl.class);
     }
 
     /**
@@ -67,23 +63,14 @@ public final class RealVehicleBaseModule
     }
 
     /**
-     * @param advisor the transaction adviser.
-     * @param receiver the advice receiver.
-     */
-    @Match("*Service")
-    public static void adviseTransactions(HibernateTransactionAdvisor advisor, MethodAdviceReceiver receiver)
-    {
-        advisor.addTransactionCommitAdvice(receiver);
-    }
-
-    /**
      * @param executor the periodic executor service.
      * @param stateSyncService the state synchronization service.
      */
     @Startup
     public static void scheduleJobs(PeriodicExecutor executor, final StateSynchronizer stateSyncService)
     {
-        executor.addJob(new CronSchedule("0 0/2 * * * ?"), "Real Vehicle status update", new Runnable()
+        // TODO check cycle time!
+        executor.addJob(new CronSchedule("*/5 * * * * ?"), "Real Vehicle status update", new Runnable()
         {
             @Override
             public void run()
@@ -93,12 +80,12 @@ public final class RealVehicleBaseModule
         });
 
         // TODO check cycle time!
-        executor.addJob(new CronSchedule("0 * * * * ?"), "Synchronize Configuration", new Runnable()
+        executor.addJob(new CronSchedule("0 * * * * ?"), "Push Configuration", new Runnable()
         {
             @Override
             public void run()
             {
-                stateSyncService.synchronizeConfiguration();
+                stateSyncService.pushConfiguration();
             }
         });
     }
@@ -122,24 +109,21 @@ public final class RealVehicleBaseModule
      * @param jobService the job service instance.
      * @param sessionManager the session manager instance.
      * @param timeService the time service.
+     * @param jobRepository the job repository
      */
     @Startup
     public static void setupJobQueues(JobService jobService, HibernateSessionManager sessionManager
-        , TimeService timeService)
+        , TimeService timeService, JobRepository jobRepository)
     {
-        JobRunnableFactory factory = new JobRunnableFactory()
-        {
-            @Override
-            public JobRunnable createRunnable(Job job)
-            {
-                return null;
-            }
-        };
+        JobRunnableFactory factory = new RealVehicleJobRunnableFactory();
 
         jobService.addJobQueue(RealVehicleBaseConstants.JOB_QUEUE_NAME
             , new JobQueue(sessionManager
                 , timeService
+                , jobRepository
                 , Arrays.asList(factory)
                 , RealVehicleBaseConstants.NUMBER_OF_POOL_THREADS));
+
+        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=init");
     }
 }

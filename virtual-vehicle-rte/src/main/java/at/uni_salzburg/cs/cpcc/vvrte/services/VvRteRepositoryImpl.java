@@ -60,6 +60,12 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED)
             .setParameter("oldState", VirtualVehicleState.MIGRATING)
             .executeUpdate();
+
+        session
+            .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
+            .setParameter("newState", VirtualVehicleState.INTERRUPTED)
+            .setParameter("oldState", VirtualVehicleState.RUNNING)
+            .executeUpdate();
     }
 
     /**

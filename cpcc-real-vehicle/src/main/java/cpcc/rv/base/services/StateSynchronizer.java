@@ -20,6 +20,8 @@ package cpcc.rv.base.services;
 
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
+import at.uni_salzburg.cs.cpcc.core.services.jobs.JobCreationException;
+
 /**
  * ConfigurationSynchronizer interface.
  */
@@ -29,11 +31,19 @@ public interface StateSynchronizer
      * Synchronize the configuration to all real vehicles.
      */
     @CommitAfter
-    void synchronizeConfiguration();
+    void pushConfiguration();
+
+    /**
+     * @param data the data to be imported.
+     * @throws JobCreationException in case of errors.
+     */
+    @CommitAfter
+    void importConfiguration(byte[] data) throws JobCreationException;
 
     /**
      * Update the state of the active real vehicles.
      */
     @CommitAfter
     void realVehicleStatusUpdate();
+
 }

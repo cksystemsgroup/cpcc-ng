@@ -34,7 +34,6 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleLaunchException;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleLauncher;
-import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleMapper;
 import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
 
 /**
@@ -79,6 +78,7 @@ public class Vehicle
         {
             add(VirtualVehicleState.DEFECTIVE);
             add(VirtualVehicleState.FINISHED);
+            add(VirtualVehicleState.INTERRUPTED);
             add(VirtualVehicleState.MIGRATION_COMPLETED);
             add(VirtualVehicleState.MIGRATION_INTERRUPTED);
         }
@@ -101,9 +101,6 @@ public class Vehicle
 
     @Inject
     private VirtualVehicleLauncher launcher;
-
-    @Inject
-    private VirtualVehicleMapper mapper;
 
     @Property
     private Collection<VirtualVehicle> virtualVehicleList;
@@ -159,7 +156,6 @@ public class Vehicle
 
         try
         {
-            mapper.refresh();
             launcher.resume(vehicle);
         }
         catch (VirtualVehicleLaunchException | IOException e)

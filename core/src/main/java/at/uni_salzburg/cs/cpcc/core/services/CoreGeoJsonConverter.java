@@ -19,10 +19,9 @@
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Map;
 
 import org.geojson.Feature;
-import org.geojson.FeatureCollection;
 import org.geojson.Point;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
@@ -41,16 +40,14 @@ public interface CoreGeoJsonConverter
     Feature toFeature(RealVehicle rv) throws IOException;
 
     /**
-     * @param rvList the list of real vehicles to be converted.
-     * @return the real vehicles as GeoJSON FeatureCollection object.
-     * @throws IOException thrown in case of errors.
-     */
-    FeatureCollection toFeatureCollection(Collection<RealVehicle> rvList) throws IOException;
-
-    /**
      * @param position the position.
      * @return the position as a GeoJSON Point object.
      */
     Point toPoint(PolarCoordinate position);
 
+    /**
+     * @param position the position.
+     * @return the position as a Map object.
+     */
+    Map<String, Double> toPosition(PolarCoordinate position);
 }

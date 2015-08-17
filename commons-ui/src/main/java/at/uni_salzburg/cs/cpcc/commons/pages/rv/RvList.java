@@ -64,10 +64,6 @@ public class RvList
         rv.setLastUpdate(new Date());
         sessionManager.getSession().saveOrUpdate(rv);
         sessionManager.commit();
-
-        // TODO
-        //        rvss.notifyConfigurationChange();
-        //        confSync.notifyConfigurationChange();
     }
 
     @CommitAfter
@@ -78,9 +74,10 @@ public class RvList
         rv.setLastUpdate(new Date());
         sessionManager.getSession().saveOrUpdate(rv);
         sessionManager.commit();
+    }
 
-        // TODO
-        //        rvss.notifyConfigurationChange();
-        //        confSync.notifyConfigurationChange();
+    public boolean getConnected()
+    {
+        return realVehicle != null ? qm.isRealVehicleConnected(realVehicle.getId()) : false;
     }
 }

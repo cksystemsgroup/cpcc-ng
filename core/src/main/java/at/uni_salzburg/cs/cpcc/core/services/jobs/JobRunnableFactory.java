@@ -18,6 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.core.services.jobs;
 
+import org.apache.tapestry5.ioc.ServiceResources;
+
 import at.uni_salzburg.cs.cpcc.core.entities.Job;
 
 /**
@@ -26,8 +28,9 @@ import at.uni_salzburg.cs.cpcc.core.entities.Job;
 public interface JobRunnableFactory
 {
     /**
+     * @param serviceResources the service resources.
      * @param job the job entry in the database.
-     * @return a newly created runnable
+     * @return a newly created {@code JobRunnable}.
      */
-    JobRunnable createRunnable(Job job);
+    JobRunnable createRunnable(ServiceResources serviceResources, Job job);
 }

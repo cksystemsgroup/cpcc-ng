@@ -30,9 +30,4 @@ public interface VirtualVehicleMapper
      * @return the mapping decision.
      */
     VirtualVehicleMappingDecision findMappingDecision(Task task);
-
-    /**
-     * Refresh the mapper internal variables.
-     */
-    void refresh();
 }

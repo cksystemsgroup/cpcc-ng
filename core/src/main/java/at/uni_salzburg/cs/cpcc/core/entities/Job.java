@@ -26,6 +26,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -72,6 +73,14 @@ public class Job
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "end_time")
     private Date end;
+
+    @Lob
+    @Column(name = "result_text")
+    private String resultText;
+
+    @Lob
+    @Column(name = "data")
+    private byte[] data;
 
     /**
      * @param id the id to set.
@@ -207,6 +216,40 @@ public class Job
     public void setEnd(Date end)
     {
         this.end = end;
+    }
+
+    /**
+     * @return the result text, or null.
+     */
+    public String getResultText()
+    {
+        return resultText;
+    }
+
+    /**
+     * @param resultText the result text to set.
+     */
+    public void setResultText(String resultText)
+    {
+        this.resultText = resultText;
+    }
+
+    /**
+     * @return the job's data
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Exposed on purpose")
+    public byte[] getData()
+    {
+        return data;
+    }
+
+    /**
+     * @param data the job's data to set
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposed on purpose")
+    public void setData(byte[] data)
+    {
+        this.data = data;
     }
 
 }

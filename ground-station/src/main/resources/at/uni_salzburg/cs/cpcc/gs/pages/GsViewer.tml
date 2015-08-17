@@ -19,9 +19,9 @@
 <l:LeafletRegionLayer t:mapId="map" t:name="message:regionLayer.name"
 	t:value="prop:regions" t:frequencySecs="30" />
 
-<!-- <l:LeafletVehicleLayer t:mapId="map" -->
-<!-- 	t:name="message:vehicleLayer.name" t:value="prop:vehicles" -->
-<!-- 	t:frequencySecs="1" /> -->
+<l:LeafletVehicleLayer t:mapId="map"
+	t:name="message:vehicleLayer.name" t:value="prop:vehicles"
+	t:frequencySecs="1" />
 
 <l:LeafletLayerControl t:id="layerControl" t:mapId="map" />
 

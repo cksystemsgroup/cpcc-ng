@@ -80,7 +80,7 @@ public class StateSynchronizerTest
     {
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(hostRvName);
 
-        sut.synchronizeConfiguration();
+        sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
         verify(qm).findAllRealVehicles();
@@ -108,7 +108,7 @@ public class StateSynchronizerTest
     {
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(null);
 
-        sut.synchronizeConfiguration();
+        sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
 
@@ -124,7 +124,7 @@ public class StateSynchronizerTest
 
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(emptyRvName);
 
-        sut.synchronizeConfiguration();
+        sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
 
@@ -137,13 +137,17 @@ public class StateSynchronizerTest
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(hostRvName);
 
         JobCreationException toBeThrown = mock(JobCreationException.class);
-        doThrow(toBeThrown).when(jobService)
-            .addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS);
+        when(toBeThrown.getMessage())
+            .thenReturn("Thrown on purpose!");
 
-        sut.synchronizeConfiguration();
+        doThrow(toBeThrown)
+            .when(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS);
+
+        sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
 
-        verify(logger).error("Can not create config sync job for real vehicle RV02 (2002), mode=config", toBeThrown);
+        verify(logger)
+            .error("Can not create config sync job for real vehicle RV02 (2002), mode=config Thrown on purpose!");
     }
 }

@@ -31,5 +31,7 @@ public enum RealVehicleType
     UNMANNED_SURFACE_VEHICLE,
     UNMANNED_UNDERWATER_VEHICLE,
     MOBILE_PHONE,
-    TABLET
+    TABLET,
+    DRIFTER,
+    BOAT
 }

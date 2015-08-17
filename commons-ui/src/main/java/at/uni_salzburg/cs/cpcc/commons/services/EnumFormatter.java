@@ -27,9 +27,10 @@ import org.apache.tapestry5.ioc.Messages;
 /**
  * EnumFormatter
  */
-@SuppressWarnings("serial")
 public class EnumFormatter extends Format
 {
+    private static final long serialVersionUID = 1037066501117905253L;
+
     private Messages messages;
 
     /**

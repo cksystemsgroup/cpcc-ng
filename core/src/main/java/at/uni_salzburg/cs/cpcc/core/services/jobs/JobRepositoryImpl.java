@@ -18,11 +18,17 @@
 
 package at.uni_salzburg.cs.cpcc.core.services.jobs;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
 
+import at.uni_salzburg.cs.cpcc.core.base.CoreConstants;
 import at.uni_salzburg.cs.cpcc.core.entities.Job;
 import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
 
@@ -31,41 +37,124 @@ import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
  */
 public class JobRepositoryImpl implements JobRepository
 {
-    private static final String[] ACTIVE_JOB_STATES = {
-        JobStatus.CREATED.name(), JobStatus.QUEUED.name(), JobStatus.RUNNING.name()
-    };
+    private static final JobStatus[] ACTIVE_JOB_STATES = {JobStatus.CREATED, JobStatus.QUEUED, JobStatus.RUNNING};
 
+    private Logger logger;
     private Session session;
+    private long maxJobAge;
 
     /**
+     * @param logger the application logger.
      * @param session the database session.
+     * @param maxJobAgeString the maximum job age as a string.
      */
-    public JobRepositoryImpl(Session session)
+    public JobRepositoryImpl(Logger logger, Session session
+        , @Symbol(CoreConstants.PROP_MAX_JOB_AGE) String maxJobAgeString)
     {
+        this.logger = logger;
         this.session = session;
+        this.maxJobAge = Long.parseLong(maxJobAgeString);
     }
 
     /**
-     * @param queueName
-     * @param parameters
-     * @return
+     * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public Job findOtherRunningJob(String queueName, String parameters)
+    public List<Job> findAllJobs()
     {
-        return (Job) session.createCriteria(Job.class)
-            .add(Restrictions.not(Restrictions.in("status", ACTIVE_JOB_STATES)))
-            .add(Restrictions.eq("queueName", queueName))
-            .add(Restrictions.ne("parameters", parameters))
-            .uniqueResult();
+        return (List<Job>) session.createCriteria(Job.class)
+            .addOrder(Order.desc("created"))
+            .setMaxResults(100)
+            .list();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    public Job findJobById(int id)
+    {
+        return (Job) session.createCriteria(Job.class)
+            .add(Restrictions.eq("id", id))
+            .uniqueResult();
+    }
+
+    /**
+     * @param queueName the
+     * @param parameters
+     * @return
+     */
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Job> findOtherRunningJob(String queueName, String parameters)
+    {
+        return (List<Job>) session.createCriteria(Job.class)
+            .add(Restrictions.in("status", ACTIVE_JOB_STATES))
+            .add(Restrictions.eq("queueName", queueName))
+            .add(Restrictions.eq("parameters", parameters))
+            .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
     public List<Job> findNextScheduledJobs()
     {
-        throw new IllegalArgumentException("not implemented!");
+        return (List<Job>) session.createCriteria(Job.class)
+            .add(Restrictions.eq("status", JobStatus.CREATED))
+            .addOrder(Order.asc("created"))
+            .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void resetJobs()
+    {
+        List<Job> activeJobs = (List<Job>) session.createCriteria(Job.class)
+            .add(Restrictions.in("status", Arrays.asList(JobStatus.QUEUED, JobStatus.RUNNING)))
+            .list();
+
+        for (Job job : activeJobs)
+        {
+            logger.info("Resetting job " + job.getId()
+                + " " + job.getQueued()
+                + " " + job.getQueueName() + " " + job.getParameters());
+
+            job.setStatus(JobStatus.CREATED);
+            job.setStart(null);
+            job.setEnd(null);
+            job.setResultText(null);
+            session.update(job);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removeOldJobs()
+    {
+        List<Job> oldJobs = (List<Job>) session.createCriteria(Job.class)
+            .add(Restrictions.le("end", new Date(System.currentTimeMillis() - maxJobAge)))
+            .list();
+
+        for (Job job : oldJobs)
+        {
+            logger.debug("Removing old job " + job.getId()
+                + " " + job.getQueued()
+                + " " + job.getQueueName() + " " + job.getParameters());
+
+            session.delete(job);
+        }
     }
 }

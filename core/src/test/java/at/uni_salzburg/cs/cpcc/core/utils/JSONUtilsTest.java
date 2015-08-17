@@ -22,6 +22,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.tapestry5.json.JSONObject;
 import org.testng.annotations.DataProvider;
@@ -63,4 +65,27 @@ public class JSONUtilsTest
 
         assertThat(ba).isNotNull().isEqualTo(jsonString.getBytes());
     }
+
+    @DataProvider
+    public Object[][] mapDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{
+                new String[][]{{"a", "1"}, {"b", "2"}, {"c", "\"3\""}}, "{\"a\":1,\"b\":2,\"c\":\"3\"}"
+            }
+        };
+    }
+
+    @Test(dataProvider = "mapDataProvider")
+    public void shouldConvertMapToJsonObject(String[][] data, String expected)
+    {
+        Map<String, String> actual = new TreeMap<String, String>();
+        for (String[] entry : data)
+        {
+            actual.put(entry[0], entry[1]);
+        }
+
+        assertThat(JSONUtils.toJsonString(actual)).isEqualTo(expected);
+    }
+
 }

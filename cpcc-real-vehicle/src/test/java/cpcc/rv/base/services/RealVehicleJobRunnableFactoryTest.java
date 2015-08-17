@@ -22,36 +22,24 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.hibernate.Session;
-import org.slf4j.Logger;
+import org.apache.tapestry5.ioc.ServiceResources;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
 import at.uni_salzburg.cs.cpcc.core.entities.Job;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.TimeService;
 
 public class RealVehicleJobRunnableFactoryTest
 {
-    private Session session;
-    private QueryManager qm;
-    private CommunicationService com;
-    private TimeService timeService;
     private RealVehicleJobRunnableFactory sut;
-    private Logger logger;
+    private ServiceResources serviceResources;
 
     @BeforeMethod
     public void setUp()
     {
-        session = mock(Session.class);
-        qm = mock(QueryManager.class);
-        com = mock(CommunicationService.class);
-        timeService = mock(TimeService.class);
-        logger = mock(Logger.class);
+        serviceResources = mock(ServiceResources.class);
 
-        sut = new RealVehicleJobRunnableFactory(session, qm, com, timeService, logger);
+        sut = new RealVehicleJobRunnableFactory();
     }
 
     @Test
@@ -60,7 +48,7 @@ public class RealVehicleJobRunnableFactoryTest
         Job job = mock(Job.class);
         when(job.getParameters()).thenReturn("mode=status,rv=2002");
 
-        JobRunnable actual = sut.createRunnable(job);
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
 
         assertThat(actual).isNotNull().isInstanceOf(RealVehicleStateJobRunnable.class);
     }
@@ -71,9 +59,31 @@ public class RealVehicleJobRunnableFactoryTest
         Job job = mock(Job.class);
         when(job.getParameters()).thenReturn("mode=config,rv=2002");
 
-        JobRunnable actual = sut.createRunnable(job);
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
 
-        assertThat(actual).isNotNull().isInstanceOf(ConfigSyncJobRunnable.class);
+        assertThat(actual).isNotNull().isInstanceOf(ConfigPushJobRunnable.class);
+    }
+
+    @Test
+    public void shouldCreateRealVehicleInitJobRunnable()
+    {
+        Job job = mock(Job.class);
+        when(job.getParameters()).thenReturn("mode=init");
+
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
+
+        assertThat(actual).isNotNull().isInstanceOf(RealVehicleInitJobRunnable.class);
+    }
+
+    @Test
+    public void shouldCreateConfigImportJobRunnable()
+    {
+        Job job = mock(Job.class);
+        when(job.getParameters()).thenReturn("mode=import");
+
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
+
+        assertThat(actual).isNotNull().isInstanceOf(ConfigImportJobRunnable.class);
     }
 
     @Test
@@ -82,7 +92,7 @@ public class RealVehicleJobRunnableFactoryTest
         Job job = mock(Job.class);
         when(job.getParameters()).thenReturn("mode=unknown,rv=2002");
 
-        JobRunnable actual = sut.createRunnable(job);
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
 
         assertThat(actual).isNull();
     }

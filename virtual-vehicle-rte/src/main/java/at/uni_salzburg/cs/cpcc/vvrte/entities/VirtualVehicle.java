@@ -18,6 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.vvrte.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -38,8 +40,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Vehicle
  */
 @Entity
-public class VirtualVehicle
+public class VirtualVehicle implements Serializable
 {
+    private static final long serialVersionUID = 8974799441897681454L;
+
     @Id
     @GeneratedValue
     private Integer id;

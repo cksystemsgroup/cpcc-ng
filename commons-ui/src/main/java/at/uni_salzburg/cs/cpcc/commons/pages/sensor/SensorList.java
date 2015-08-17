@@ -24,12 +24,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.hibernate.Session;
 
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * SensorList
@@ -37,14 +36,10 @@ import cpcc.rv.base.services.StateSynchronizer;
 public class SensorList
 {
     @Inject
-    private HibernateSessionManager sessionManager;
+    private Session session;
 
     @Inject
     private QueryManager qm;
-
-
-    @Inject
-    protected StateSynchronizer confSync;
 
     @Property
     private SensorDefinition sensor;
@@ -69,16 +64,12 @@ public class SensorList
         updateSensorDefinition(id, Boolean.TRUE);
     }
 
+    @CommitAfter
     private void updateSensorDefinition(Integer id, Boolean deleted)
     {
         SensorDefinition sd = qm.findSensorDefinitionById(id);
         sd.setLastUpdate(new Date());
         sd.setDeleted(deleted);
-        sessionManager.getSession().saveOrUpdate(sd);
-        sessionManager.commit();
-
-        // TODO
-        //        rvss.notifyConfigurationChange();
-        //        confSync.notifyConfigurationChange();
+        session.saveOrUpdate(sd);
     }
 }

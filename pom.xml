@@ -39,7 +39,6 @@
 
 	<modules>
 		<module>cpcc-communication</module>
-		<module>ground-station</module>
 		<module>real-vehicle</module>
 		<module>ros-service</module>
 		<module>virtual-vehicle-rte</module>
@@ -60,12 +59,14 @@
 		<testng-release-version>6.9.4</testng-release-version>
 		<rosjava-version>0.0.6</rosjava-version>
 		<mockito-all-version>1.10.19</mockito-all-version>
-		<com.h2database.version>1.4.187</com.h2database.version>
+		<com.h2database.version>1.3.176</com.h2database.version>
+		<com.hsqldb.version>2.3.3</com.hsqldb.version>
 		<c3p0.version>0.9.5.1</c3p0.version>
 		<javax.mail.version>1.4.7</javax.mail.version>
 		<tomcat7Version>8.0.23</tomcat7Version>
 		<liquibase-version>3.4.0</liquibase-version>
 		<argLine>-XX:-UseSplitVerifier</argLine>
+		<hibernate-version>4.3.10.Final</hibernate-version>
 	</properties>
 
 	<dependencyManagement>
@@ -270,12 +271,18 @@
 			<dependency>
 				<groupId>at.uni-salzburg.cs</groupId>
 				<artifactId>tapestry-leaflet</artifactId>
-				<version>0.0.3</version>
+				<!-- <version>0.0.3</version> -->
+				<version>0.0.4-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>ros.rosjava_core</groupId>
 				<artifactId>rosjava</artifactId>
 				<version>${rosjava-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>4.3.10.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>com.mchange</groupId>
@@ -286,6 +293,11 @@
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
 				<version>${com.h2database.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>${com.hsqldb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>

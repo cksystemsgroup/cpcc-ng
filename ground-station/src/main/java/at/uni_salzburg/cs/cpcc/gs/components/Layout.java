@@ -80,8 +80,16 @@ public class Layout
      */
     public Collection<String> getPageNames()
     {
-        return Arrays.asList("commons/configuration/edit", "commons/contact", "gsviewer", "commons/sensor/list",
-            "commons/rv/list");
+        return Arrays.asList(
+            "commons/configuration/edit",
+            "commons/contact",
+            "commons/ros/Overview",
+            "commons/sensor/list",
+            "commons/rv/list",
+            "commons/vehicle",
+            "commons/tasks",
+            "commons/jobs/List",
+            "gsviewer");
     }
 
     /**

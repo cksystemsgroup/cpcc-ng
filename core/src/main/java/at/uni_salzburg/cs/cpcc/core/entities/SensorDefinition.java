@@ -18,6 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.core.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -36,8 +38,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * SensorDefinition
  */
 @Entity
-public class SensorDefinition
+public class SensorDefinition implements Serializable
 {
+    private static final long serialVersionUID = -1329539207093921742L;
+
     @GeneratedValue(generator = "UniqueIntegerIdGenerator")
     @GenericGenerator(name = "UniqueIntegerIdGenerator",
         strategy = "at.uni_salzburg.cs.cpcc.core.services.UniqueIntegerIdGenerator")

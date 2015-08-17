@@ -18,6 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.core.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -29,8 +31,10 @@ import javax.validation.constraints.NotNull;
  * MappingAttributes
  */
 @Entity
-public class MappingAttributes
+public class MappingAttributes implements Serializable
 {
+    private static final long serialVersionUID = -1681551157732297163L;
+
     @EmbeddedId
     private MappingAttributesPK pk;
 

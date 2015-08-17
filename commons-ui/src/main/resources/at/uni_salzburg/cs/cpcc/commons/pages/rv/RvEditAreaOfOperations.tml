@@ -1,57 +1,27 @@
-<html t:type="layout"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
-	xmlns:p="tapestry:parameter">
+<html t:type="layout" title="${message:rvEditAoO.pageTitle}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter"
+	xmlns:l="tapestry-library:leaflet">
 
-<!-- <t:jquery.dialog t:clientId="dialog"> -->
-<!-- 	<t:Form t:id="jsForm"> -->
-<!-- 		<t:errors /> -->
+	<l:LeafletMap t:id="rvMap" t:drawControl="true" t:center="prop:mapCenter"
+		t:zoom="prop:zoomLevel" t:height="500" />
 
-<!-- 		<div class="control-group"> -->
-<!-- 			<label class="control-label" for="minAltitude">${message:minAltitude}</label> -->
-<!-- 			<div class="controls"> -->
-<!-- 				<t:textfield t:size="6" t:id="minAltitude" /> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
+	<l:LeafletTileLayer t:mapId="rvMap"
+		t:name="message:tile.layerOne.name" t:urlTemplate="message:tile.layerOne.urlTemplate"
+		t:options="message:tile.layerOne.options" />
 
-<!-- 		<div class="control-group"> -->
-<!-- 			<label class="control-label" for="maxAltitude">${message:maxAltitude}</label> -->
-<!-- 			<div class="controls"> -->
-<!-- 				<t:textfield t:size="6" t:id="maxAltitude" /> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
+	<l:LeafletTileLayer t:mapId="rvMap"
+		t:name="message:tile.layerTwo.name" t:urlTemplate="message:tile.layerTwo.urlTemplate"
+		t:options="message:tile.layerTwo.options" />
 
-<!-- 		<div class="control-group"> -->
-<!-- 			<a href="javascript:dialogOk()" class="btn btn-primary">${message:btn.commit}</a> -->
-<!-- 			<a href="javascript:dialogCancel()" class="btn">${message:btn.cancel}</a> -->
-<!-- 		</div> -->
-<!-- 	</t:Form> -->
-<!-- </t:jquery.dialog> -->
+	<l:LeafletDrawControl t:id="drawControl" t:mapId="rvMap"
+		t:data="prop:realVehicleRegions" t:position="topleft"
+		t:polygonEnabled="true" t:rectangleEnabled="false" t:polylineEnabled="false"
+		t:circleEnabled="false" />
 
-<!-- <t:Zone t:id="rvZone"> -->
-<!-- 	<t:Form t:id="rvForm" t:zone="^"> -->
-<!-- 		<t:errors /> -->
-<!-- 		<t:TextField t:id="realVehicleZones" t:value="realVehicleZones" -->
-<!-- 			style="display:none" /> -->
-<!-- 	</t:Form> -->
-<!-- </t:Zone> -->
+	<l:LeafletRegionLayer t:mapId="rvMap"
+		t:name="message:otherRealVehicles.name" t:value="prop:otherRealVehicleRegions"
+		t:frequencySecs="30" />
 
-<!-- <form t:type="form" t:id="invisibleForm"> -->
-<!-- 	<t:textfield t:id="otherRealVehicleZones" -->
-<!-- 		t:value="otherRealVehicleZones" style="display:none" /> -->
-<!-- </form> -->
-
-<!-- <div id="map" class="map"></div> -->
-
-<l:LeafletMap t:id="map" t:drawControl="true" t:center="prop:mapCenter"
-	t:zoom="prop:zoomLevel" t:height="500" />
-
-<l:LeafletRegionLayer t:mapId="map"
-	t:name="message:otherRealVehicles.name"
-	t:value="prop:otherRealVehicleRegions" t:frequencySecs="15" />
-
-<l:LeafletDrawControl t:id="drawControl" t:mapId="map"
-	t:data="prop:realVehicleRegions" t:position="topleft"
-	t:polygonEnabled="true" t:rectangleEnabled="false"
-	t:polylineEnabled="false" t:circleEnabled="false" />
+	<l:LeafletLayerControl t:mapId="rvMap" t:id="layerControl" />
 
 </html>

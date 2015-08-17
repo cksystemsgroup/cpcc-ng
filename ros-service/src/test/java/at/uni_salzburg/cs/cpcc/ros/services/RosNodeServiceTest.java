@@ -67,6 +67,7 @@ public class RosNodeServiceTest
     private Topic topic10;
     private MappingAttributes mappingAttribute;
 
+    @SuppressWarnings("serial")
     @BeforeMethod
     public void setupTest() throws URISyntaxException, IOException, ParseException
     {
@@ -136,7 +137,6 @@ public class RosNodeServiceTest
         when(qm.findAllDevices()).thenReturn(Arrays.asList(device21));
         when(qm.findMappingAttribute(device21, topic10)).thenReturn(mappingAttribute);
 
-        @SuppressWarnings("serial")
         Map<String, List<String>> options = new HashMap<String, List<String>>()
         {
             {

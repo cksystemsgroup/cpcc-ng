@@ -33,13 +33,6 @@ public final class AppModule
     }
 
     /**
-     * @param binder the service binder
-     */
-    //    public static void bind(ServiceBinder binder)
-    //    {
-    //    }
-
-    /**
      * @param configuration the application configuration.
      */
     public static void contributeFactoryDefaults(MappedConfiguration<String, Object> configuration)
@@ -62,25 +55,4 @@ public final class AppModule
         configuration.add(SymbolConstants.MINIFICATION_ENABLED, "false");
         configuration.add(SymbolConstants.HMAC_PASSPHRASE, "Eith6Du9reeSa7aiaiweaM7oaCh6quae");
     }
-
-    //    /**
-    //     * @param configuration the configuration
-    //     * @param threadLocale the locale
-    //     */
-    //    @SuppressWarnings("rawtypes")
-    //    public static void contributeTranslatorAlternatesSource(MappedConfiguration<String, Translator> configuration,
-    //        ThreadLocale threadLocale)
-    //    {
-    //        configuration.add("graphName", new GraphNameTranslator("graphName"));
-    //        configuration.add("uri", new UriTranslator("uri"));
-    //    }
-
-    /**
-     * @param configuration the application configuration.
-     */
-//    @Contribute(EnvironmentSetup.class)
-//    public static void provideEnvironmentSetup(MappedConfiguration<Class<?>, Object> configuration)
-//    {
-//        configuration.override(TableEnvironment.class, new TableValues(null).withType("table"));
-//    }
 }

@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.tapestry5.json.JSONObject;
 
@@ -51,5 +53,34 @@ public final class JSONUtils
         osw.close();
         bos.close();
         return bos.toByteArray();
+    }
+
+    /**
+     * @param map the map to be converted.
+     * @return the map as a JSON array.
+     */
+    public static String toJsonString(Map<String, String> map)
+    {
+        boolean first = true;
+        
+        StringBuilder sb = new StringBuilder("{");
+
+        for (Entry<String, String> e : map.entrySet())
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                sb.append(',');
+            }
+
+            sb.append("\"").append(e.getKey()).append("\":").append(e.getValue());
+        }
+        
+        sb.append("}");
+        
+        return sb.toString();
     }
 }

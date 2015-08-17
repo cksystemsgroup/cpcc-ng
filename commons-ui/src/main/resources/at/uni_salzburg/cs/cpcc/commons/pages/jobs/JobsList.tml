@@ -1,0 +1,30 @@
+<html t:type="layout" title="${message:jobsList.pageTitle}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
+
+	<h4>${message:jobsList.Headline}</h4>
+
+	<t:Grid t:source="jobList" t:row="currentJob"
+		class="table table-striped table-condensed">
+
+		<p:createdCell>
+			<t:Output t:format="message:dateFormat" t:value="currentJob.created" />
+		</p:createdCell>
+
+		<p:queuedCell>
+			<t:Output t:format="message:dateFormat" t:value="currentJob.queued" />
+		</p:queuedCell>
+
+		<p:startCell>
+			<t:Output t:format="message:dateFormat" t:value="currentJob.start" />
+		</p:startCell>
+
+		<p:endCell>
+			<t:Output t:format="message:dateFormat" t:value="currentJob.end" />
+		</p:endCell>
+
+		<p:empty>
+			<p>${message:jobsList.noJobsFound}</p>
+		</p:empty>
+	</t:Grid>
+
+</html>

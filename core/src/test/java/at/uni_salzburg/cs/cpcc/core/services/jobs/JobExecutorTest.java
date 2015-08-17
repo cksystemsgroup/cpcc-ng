@@ -20,14 +20,14 @@ package at.uni_salzburg.cs.cpcc.core.services.jobs;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
+import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.hibernate.Session;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -41,11 +41,18 @@ import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
 
 public class JobExecutorTest
 {
+    private static final Integer SUCCEEDING_JOB_ID = 1001;
+    private static final Integer FAILING_JOB_ID = 2002;
+    private static final Integer HAS_NO_FACTORY_JOB_ID = 3003;
+
     private Date startDate;
     private Date endDate;
     private TimeService timeService;
-    private Session session;
+    private ServiceResources serviceResources;
+    private PerthreadManager perthreadManager;
     private HibernateSessionManager sessionManager;
+    private JobRepository jobRepository;
+    private Session session;
     private Job succeedingJob;
     private Job failingJob;
     private Job hasNoFactoryJob;
@@ -74,64 +81,86 @@ public class JobExecutorTest
 
         session = mock(Session.class);
 
-        sessionManager = mock(HibernateSessionManager.class);
-        when(sessionManager.getSession()).thenReturn(session);
-
         succeedingJob = mock(Job.class);
+        when(succeedingJob.getId()).thenReturn(SUCCEEDING_JOB_ID);
+
         failingJob = mock(Job.class);
+        when(failingJob.getId()).thenReturn(FAILING_JOB_ID);
+
         hasNoFactoryJob = mock(Job.class);
+        when(hasNoFactoryJob.getId()).thenReturn(HAS_NO_FACTORY_JOB_ID);
 
         succeedingRunnable = mock(JobRunnable.class);
 
         failingRunnable = mock(JobRunnable.class);
         doThrow(JobExecutionException.class).when(failingRunnable).run();
 
+        perthreadManager = mock(PerthreadManager.class);
+
+        sessionManager = mock(HibernateSessionManager.class);
+        when(sessionManager.getSession()).thenReturn(session);
+
+        jobRepository = mock(JobRepository.class);
+        when(jobRepository.findJobById(SUCCEEDING_JOB_ID)).thenReturn(succeedingJob);
+        when(jobRepository.findJobById(FAILING_JOB_ID)).thenReturn(failingJob);
+        when(jobRepository.findJobById(HAS_NO_FACTORY_JOB_ID)).thenReturn(hasNoFactoryJob);
+
+        serviceResources = mock(ServiceResources.class);
+        when(serviceResources.getService(PerthreadManager.class)).thenReturn(perthreadManager);
+        when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
+        when(serviceResources.getService(TimeService.class)).thenReturn(timeService);
+        when(serviceResources.getService(JobRepository.class)).thenReturn(jobRepository);
+
         factory = mock(JobRunnableFactory.class);
-        when(factory.createRunnable(succeedingJob)).thenReturn(succeedingRunnable);
-        when(factory.createRunnable(failingJob)).thenReturn(failingRunnable);
-        when(factory.createRunnable(hasNoFactoryJob)).thenReturn(null);
+        when(factory.createRunnable(serviceResources, succeedingJob)).thenReturn(succeedingRunnable);
+        when(factory.createRunnable(serviceResources, failingJob)).thenReturn(failingRunnable);
+        when(factory.createRunnable(serviceResources, hasNoFactoryJob)).thenReturn(null);
     }
 
     @Test
     public void shouldExecuteSucceedingRunnable() throws Exception
     {
-        JobExecutor sut = new JobExecutor(sessionManager, timeService, Arrays.asList(factory), succeedingJob);
+        JobExecutor sut = new JobExecutor(serviceResources, Arrays.asList(factory), SUCCEEDING_JOB_ID);
 
         sut.run();
 
-        final InOrder inOrder = Mockito.inOrder(session, sessionManager, factory, succeedingJob, succeedingRunnable);
+        final InOrder inOrder =
+            Mockito.inOrder(jobRepository, session, sessionManager, factory, succeedingJob, succeedingRunnable);
+
+        inOrder.verify(jobRepository).findJobById(SUCCEEDING_JOB_ID);
+
         inOrder.verify(succeedingJob).setStart(startDate);
         inOrder.verify(succeedingJob).setStatus(JobStatus.RUNNING);
         inOrder.verify(session).update(succeedingJob);
         inOrder.verify(sessionManager).commit();
+
         inOrder.verify(succeedingJob).setStatus(JobStatus.NO_FACTORY);
 
-        inOrder.verify(factory).createRunnable(succeedingJob);
+        inOrder.verify(factory).createRunnable(serviceResources, succeedingJob);
         inOrder.verify(succeedingRunnable).run();
-
         inOrder.verify(succeedingJob).setStatus(JobStatus.OK);
+
         inOrder.verify(succeedingJob).setEnd(endDate);
         inOrder.verify(session).update(succeedingJob);
         inOrder.verify(sessionManager).commit();
-
-        verify(sessionManager, times(2)).getSession();
     }
 
     @Test
     public void shouldExecuteFailingRunnable() throws Exception
     {
-        JobExecutor sut = new JobExecutor(sessionManager, timeService, Arrays.asList(factory), failingJob);
+        JobExecutor sut = new JobExecutor(serviceResources, Arrays.asList(factory), FAILING_JOB_ID);
 
         sut.run();
 
-        final InOrder inOrder = Mockito.inOrder(session, sessionManager, factory, failingJob, failingRunnable);
+        final InOrder inOrder =
+            Mockito.inOrder(session, sessionManager, factory, failingJob, failingRunnable);
         inOrder.verify(failingJob).setStart(startDate);
         inOrder.verify(failingJob).setStatus(JobStatus.RUNNING);
         inOrder.verify(session).update(failingJob);
         inOrder.verify(sessionManager).commit();
         inOrder.verify(failingJob).setStatus(JobStatus.NO_FACTORY);
 
-        inOrder.verify(factory).createRunnable(failingJob);
+        inOrder.verify(factory).createRunnable(serviceResources, failingJob);
         inOrder.verify(failingRunnable).run();
 
         inOrder.verify(sessionManager).abort();
@@ -140,14 +169,12 @@ public class JobExecutorTest
         inOrder.verify(failingJob).setEnd(endDate);
         inOrder.verify(session).update(failingJob);
         inOrder.verify(sessionManager).commit();
-
-        verify(sessionManager, times(2)).getSession();
     }
 
     @Test
     public void shouldHandleFactoriesThatDoNotCreateJob() throws Exception
     {
-        JobExecutor sut = new JobExecutor(sessionManager, timeService, Arrays.asList(factory), hasNoFactoryJob);
+        JobExecutor sut = new JobExecutor(serviceResources, Arrays.asList(factory), HAS_NO_FACTORY_JOB_ID);
 
         sut.run();
 
@@ -158,13 +185,11 @@ public class JobExecutorTest
         inOrder.verify(sessionManager).commit();
         inOrder.verify(hasNoFactoryJob).setStatus(JobStatus.NO_FACTORY);
 
-        inOrder.verify(factory).createRunnable(hasNoFactoryJob);
+        inOrder.verify(factory).createRunnable(serviceResources, hasNoFactoryJob);
 
         inOrder.verify(hasNoFactoryJob).setEnd(endDate);
         inOrder.verify(session).update(hasNoFactoryJob);
         inOrder.verify(sessionManager).commit();
-
-        verify(sessionManager, times(2)).getSession();
     }
 
 }

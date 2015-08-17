@@ -28,6 +28,7 @@ import at.uni_salzburg.cs.cpcc.core.entities.DeviceType;
 import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
 import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleState;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.entities.Topic;
 
@@ -180,4 +181,22 @@ public interface QueryManager
      * @return the real vehicle or null if not found.
      */
     RealVehicle findRealVehicleById(Integer id);
+
+    /**
+     * @return the list of real vehicle state entries for each real vehicle.
+     */
+    List<RealVehicleState> findAllRealVehicleStates();
+
+    /**
+     * @param id the real vehicle identification.
+     * @return the real vehicle state or null if not found.
+     */
+    RealVehicleState findRealVehicleStateById(int id);
+
+    /**
+     * @param id the real vehicle identification.
+     * @return true, if a connection to the real vehicle is possible. 
+     */
+    boolean isRealVehicleConnected(int id);
+
 }

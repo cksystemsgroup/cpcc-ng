@@ -52,9 +52,18 @@ public class StateSynchronizerImpl implements StateSynchronizer
      * {@inheritDoc}
      */
     @Override
-    public void synchronizeConfiguration()
+    public void pushConfiguration()
     {
         queueSateSyncJobs("config");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void importConfiguration(byte[] data) throws JobCreationException
+    {
+        jobService.addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=import", data);
     }
 
     /**
@@ -78,11 +87,9 @@ public class StateSynchronizerImpl implements StateSynchronizer
             return;
         }
 
-        String hostingRvName = param.getValue();
-
         for (RealVehicle rv : qm.findAllRealVehicles())
         {
-            if (hostingRvName.equals(rv.getName()))
+            if (rv.getDeleted())
             {
                 continue;
             }
@@ -96,7 +103,7 @@ public class StateSynchronizerImpl implements StateSynchronizer
             {
                 String msg = String.format("Can not create config sync job for real vehicle %s (%d), mode=%s"
                     , rv.getName(), rv.getId(), mode);
-                logger.error(msg, e);
+                logger.error(msg + " " + e.getMessage());
             }
         }
     }

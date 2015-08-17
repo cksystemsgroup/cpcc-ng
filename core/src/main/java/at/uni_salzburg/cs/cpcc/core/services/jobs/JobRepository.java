@@ -28,15 +28,36 @@ import at.uni_salzburg.cs.cpcc.core.entities.Job;
 public interface JobRepository
 {
     /**
+     * @return the list of all jobs.
+     */
+    List<Job> findAllJobs();
+
+    /**
+     * @param id the job identification.
+     * @return the job or null, if not found.
+     */
+    Job findJobById(int id);
+
+    /**
      * @param queueName the execution queue name.
      * @param parameters the job parameters.
-     * @return an existing job matching queue name and parameters or null, if not found.
+     * @return a list of existing jobs matching queue name and parameters.
      */
-    Job findOtherRunningJob(String queueName, String parameters);
+    List<Job> findOtherRunningJob(String queueName, String parameters);
 
     /**
      * @return the next job for execution.
      */
     List<Job> findNextScheduledJobs();
+
+    /**
+     * Reset all jobs when starting up the service.
+     */
+    void resetJobs();
+
+    /**
+     * Remove old jobs from the history.
+     */
+    void removeOldJobs();
 
 }

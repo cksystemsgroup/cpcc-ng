@@ -18,10 +18,18 @@
 
 package cpcc.rv.base.services;
 
+import java.util.Date;
 import java.util.Map;
 
-import org.hibernate.Session;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
 
+import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse;
+import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleState;
+import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
 
 /**
@@ -29,13 +37,18 @@ import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
  */
 public class RealVehicleStateJobRunnable implements JobRunnable
 {
+    private int id;
+    private ServiceResources serviceResources;
+
     /**
-     * @param parameters the map of parameters.
-     * @param session the Hibernate database session.
+     * @param serviceResources the service resources.
+     * @param parameters the job parameters.
      */
-    public RealVehicleStateJobRunnable(Map<String, String> parameters, Session session)
+    public RealVehicleStateJobRunnable(ServiceResources serviceResources, Map<String, String> parameters)
     {
-        // TODO Auto-generated constructor stub
+        this.serviceResources = serviceResources;
+
+        id = Integer.parseInt(parameters.get("rv"));
     }
 
     /**
@@ -44,7 +57,26 @@ public class RealVehicleStateJobRunnable implements JobRunnable
     @Override
     public void run() throws Exception
     {
-        // TODO Auto-generated method stub
+        HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
+        QueryManager qm = serviceResources.getService(QueryManager.class);
+        CommunicationService com = serviceResources.getService(CommunicationService.class);
 
+        RealVehicle target = qm.findRealVehicleById(id);
+
+        CommunicationResponse result = com
+            .transfer(target, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY);
+
+        RealVehicleState rvState = qm.findRealVehicleStateById(id);
+        if (rvState == null)
+        {
+            rvState = new RealVehicleState();
+            rvState.setId(id);
+        }
+
+        rvState.setLastUpdate(new Date());
+        rvState.setRealVehicleName(target.getName());
+        rvState.setState(new String(result.getContent(), "UTF-8"));
+
+        sessionManager.getSession().saveOrUpdate(rvState);
     }
 }

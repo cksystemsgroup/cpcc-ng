@@ -18,9 +18,21 @@
 
 package at.uni_salzburg.cs.cpcc.core.services;
 
+import org.apache.tapestry5.hibernate.HibernateConfigurer;
+import org.apache.tapestry5.hibernate.HibernateTransactionAdvisor;
 import org.apache.tapestry5.ioc.Configuration;
+import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.ioc.MethodAdviceReceiver;
+import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.annotations.Match;
+import org.apache.tapestry5.ioc.annotations.Startup;
+import org.apache.tapestry5.ioc.services.cron.CronSchedule;
+import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
+import org.slf4j.Logger;
 
+import at.uni_salzburg.cs.cpcc.core.base.CoreConstants;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.JobExecutionException;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRepository;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRepositoryImpl;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobService;
@@ -31,7 +43,7 @@ import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserServiceImpl;
 
 /**
- * PersistenceModule
+ * CoreModule
  */
 public final class CoreModule
 {
@@ -45,6 +57,7 @@ public final class CoreModule
      */
     public static void bind(ServiceBinder binder)
     {
+        binder.bind(LiquibaseService.class, LiquibaseServiceImpl.class);
         binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
         binder.bind(CoreJsonConverter.class, CoreJsonConverterImpl.class);
         binder.bind(CoreGeoJsonConverter.class, CoreGeoJsonConverterImpl.class);
@@ -57,8 +70,88 @@ public final class CoreModule
     /**
      * @param configuration the IoC configuration.
      */
+    public static void contributeApplicationDefaults(MappedConfiguration<String, String> configuration)
+    {
+        configuration.add(
+            CoreConstants.PROP_MAX_JOB_AGE, System.getProperty(
+                CoreConstants.PROP_MAX_JOB_AGE,
+                CoreConstants.DEFAULT_MAX_JOB_AGE));
+    }
+
+    /**
+     * @param configuration the IoC configuration.
+     */
     public static void contributeHibernateEntityPackageManager(Configuration<String> configuration)
     {
         configuration.add("at.uni_salzburg.cs.cpcc.core.entities");
     }
+
+    /**
+     * @param config the current configuration.
+     * @param logger the current logger.
+     * @param liquibaseService the Liquibase service.
+     */
+    public static void contributeHibernateSessionSource(OrderedConfiguration<HibernateConfigurer> config
+        , final Logger logger, final LiquibaseService liquibaseService)
+    {
+        config.add("EventListener", new HibernateConfigurer()
+        {
+            @Override
+            public void configure(org.hibernate.cfg.Configuration configuration)
+            {
+                logger.info("Updating database by liquibase service...");
+                liquibaseService.update();
+                logger.info("Updating database done.");
+            }
+        });
+    }
+
+    /**
+     * @param advisor the transaction adviser.
+     * @param receiver the advice receiver.
+     */
+    @Match({"*Repository", "*Service", "*Synchronizer"})
+    public static void adviseTransactions(HibernateTransactionAdvisor advisor, MethodAdviceReceiver receiver)
+    {
+        advisor.addTransactionCommitAdvice(receiver);
+        System.out.println("### CoreModule.adviseTransactions for " +        receiver.getInterface());
+    }
+
+    /**
+     * @param executor the periodic executor service.
+     * @param logger the application logger.
+     * @param jobService the job service.
+     */
+    @Startup
+    public static void scheduleJobs(PeriodicExecutor executor, final Logger logger, final JobService jobService)
+    {
+        jobService.resetJobs();
+        jobService.removeOldJobs();
+
+        executor.addJob(new CronSchedule("* * * * * ?"), "JobService periodical execution", new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    jobService.executeJobs();
+                }
+                catch (JobExecutionException e)
+                {
+                    logger.error("Job execution failed.", e);
+                }
+            }
+        });
+
+        executor.addJob(new CronSchedule("0 0 * * * ?"), "Cleanup job history periodical execution", new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                jobService.removeOldJobs();
+            }
+        });
+    }
+
 }

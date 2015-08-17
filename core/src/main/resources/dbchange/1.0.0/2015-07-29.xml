@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+	<changeSet author="ckrainer" id="2015-07-29-01">
+		<!-- TOPICs -->
+		<insert tableName="TOPIC">
+			<column name="ID">1</column>
+			<column name="MESSAGETYPE">sensor_msgs/Image</column>
+			<column name="NODETYPE">PUBLISHER</column>
+			<column name="SUBPATH">image</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.sensors.ImageSensorAdapter
+			</column>
+			<column name="CATEGORY">CAMERA</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">2</column>
+			<column name="MESSAGETYPE">sensor_msgs/CameraInfo</column>
+			<column name="NODETYPE">PUBLISHER</column>
+			<column name="SUBPATH">camera_info</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.sensors.CameraInfoSensorAdapter
+			</column>
+			<column name="CATEGORY">CAMERA_INFO</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">3</column>
+			<column name="MESSAGETYPE">sensor_msgs/NavSatFix</column>
+			<column name="NODETYPE">PUBLISHER</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.sensors.GpsSensorAdapter
+			</column>
+			<column name="CATEGORY">GPS_POSITION_PROVIDER</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">4</column>
+			<column name="MESSAGETYPE">big_actor_msgs/LatLngAlt</column>
+			<column name="NODETYPE">SUBSCRIBER</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.actuators.SimpleWayPointControllerAdapter
+			</column>
+			<column name="CATEGORY">WAYPOINT_CONTROLLER</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">5</column>
+			<column name="MESSAGETYPE">sensor_msgs/NavSatFix</column>
+			<column name="NODETYPE">PUBLISHER</column>
+			<column name="SUBPATH">gps</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.sensors.GpsSensorAdapter
+			</column>
+			<column name="CATEGORY">GPS_POSITION_PROVIDER</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">6</column>
+			<column name="MESSAGETYPE">big_actor_msgs/LatLngAlt</column>
+			<column name="NODETYPE">SUBSCRIBER</column>
+			<column name="SUBPATH">waypoint</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.actuators.SimpleWayPointControllerAdapter
+			</column>
+			<column name="CATEGORY">WAYPOINT_CONTROLLER</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">7</column>
+			<column name="MESSAGETYPE">std_msgs/Float32</column>
+			<column name="NODETYPE">PUBLISHER</column>
+			<column name="SUBPATH">sonar</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.sensors.AltimeterAdapter
+			</column>
+			<column name="CATEGORY">ALTITUDE_OVER_GROUND</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">8</column>
+			<column name="MESSAGETYPE">big_actor_msgs/LatLngAlt</column>
+			<column name="NODETYPE">SUBSCRIBER</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.actuators.MorseWayPointControllerAdapter
+			</column>
+			<column name="CATEGORY">WAYPOINT_CONTROLLER</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">9</column>
+			<column name="MESSAGETYPE">sensor_msgs/NavSatFix</column>
+			<column name="NODETYPE">PUBLISHER</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.sensors.MorseGpsSensorAdapter
+			</column>
+			<column name="CATEGORY">GPS_POSITION_PROVIDER</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">10</column>
+			<column name="MESSAGETYPE">std_msgs/Float32</column>
+			<column name="NODETYPE">PUBLISHER</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.sensors.AltimeterAdapter
+			</column>
+			<column name="CATEGORY">ALTITUDE_OVER_GROUND</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">11</column>
+			<column name="MESSAGETYPE">sensor_msgs/Image</column>
+			<column name="NODETYPE">PUBLISHER</column>
+			<column name="SUBPATH">image_raw</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.sensors.ImageSensorAdapter
+			</column>
+			<column name="CATEGORY">CAMERA</column>
+		</insert>
+		<insert tableName="TOPIC">
+			<column name="ID">12</column>
+			<column name="MESSAGETYPE">sensor_msgs/NavSatFix</column>
+			<column name="NODETYPE">PUBLISHER</column>
+			<column name="ADAPTERCLASSNAME">at.uni_salzburg.cs.cpcc.ros.sensors.GroundStationGpsPositionAdapter
+			</column>
+			<column name="CATEGORY">GPS_POSITION_PROVIDER</column>
+		</insert>
+
+		<!-- DEVICETYPE -->
+		<insert tableName="DEVICETYPE">
+			<column name="ID">1</column>
+			<column name="CLASSNAME">at.uni_salzburg.cs.cpcc.ros.sim.osm.NodeGroup
+			</column>
+			<column name="NAME">Simulated Belly Mounted Camera</column>
+			<column name="MAINTOPIC_ID">1</column>
+		</insert>
+		<insert tableName="DEVICETYPE">
+			<column name="ID">2</column>
+			<column name="NAME">GPS Receiver</column>
+			<column name="MAINTOPIC_ID">3</column>
+		</insert>
+		<insert tableName="DEVICETYPE">
+			<column name="ID">3</column>
+			<column name="NAME">Simple Waypoint Controller</column>
+			<column name="MAINTOPIC_ID">4</column>
+		</insert>
+		<insert tableName="DEVICETYPE">
+			<column name="ID">4</column>
+			<column name="CLASSNAME">at.uni_salzburg.cs.cpcc.ros.sim.quadrotor.NodeGroup
+			</column>
+			<column name="NAME">Simulated Quadrotor</column>
+			<column name="MAINTOPIC_ID">6</column>
+		</insert>
+		<insert tableName="DEVICETYPE">
+			<column name="ID">5</column>
+			<column name="NAME">Generic Camera</column>
+			<column name="MAINTOPIC_ID">1</column>
+		</insert>
+		<insert tableName="DEVICETYPE">
+			<column name="ID">6</column>
+			<column name="NAME">MORSE Waypoint Controller</column>
+			<column name="MAINTOPIC_ID">8</column>
+		</insert>
+		<insert tableName="DEVICETYPE">
+			<column name="ID">7</column>
+			<column name="NAME">MORSE GPS Receiver</column>
+			<column name="MAINTOPIC_ID">9</column>
+		</insert>
+		<insert tableName="DEVICETYPE">
+			<column name="ID">8</column>
+			<column name="CLASSNAME">at.uni_salzburg.cs.cpcc.ros.sim.SonarEmulator
+			</column>
+			<column name="NAME">Sonar Emulator</column>
+			<column name="MAINTOPIC_ID">10</column>
+		</insert>
+		<insert tableName="DEVICETYPE">
+			<column name="ID">9</column>
+			<column name="NAME">Generic RAW Camera</column>
+			<column name="MAINTOPIC_ID">11</column>
+		</insert>
+		<insert tableName="DEVICETYPE">
+			<column name="ID">10</column>
+			<column name="NAME">Ground Station GPS Position</column>
+			<column name="MAINTOPIC_ID">12</column>
+		</insert>
+
+		<!-- DEVICETYPE_TOPIC -->
+		<insert tableName="DEVICETYPE_TOPIC">
+			<column name="DEVICETYPE_ID">1</column>
+			<column name="SUBTOPICS_ID">2</column>
+		</insert>
+		<insert tableName="DEVICETYPE_TOPIC">
+			<column name="DEVICETYPE_ID">4</column>
+			<column name="SUBTOPICS_ID">5</column>
+		</insert>
+		<insert tableName="DEVICETYPE_TOPIC">
+			<column name="DEVICETYPE_ID">4</column>
+			<column name="SUBTOPICS_ID">7</column>
+		</insert>
+		<insert tableName="DEVICETYPE_TOPIC">
+			<column name="DEVICETYPE_ID">5</column>
+			<column name="SUBTOPICS_ID">2</column>
+		</insert>
+		<insert tableName="DEVICETYPE_TOPIC">
+			<column name="DEVICETYPE_ID">9</column>
+			<column name="SUBTOPICS_ID">2</column>
+		</insert>
+	</changeSet>
+
+</databaseChangeLog>

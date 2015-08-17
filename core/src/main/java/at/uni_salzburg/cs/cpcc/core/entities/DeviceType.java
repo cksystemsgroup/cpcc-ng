@@ -18,6 +18,7 @@
 
 package at.uni_salzburg.cs.cpcc.core.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +38,10 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
-public class DeviceType
+public class DeviceType implements Serializable
 {
+    private static final long serialVersionUID = -3688447694342721194L;
+
     @Id
     @GeneratedValue
     private Integer id;

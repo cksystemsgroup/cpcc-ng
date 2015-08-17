@@ -51,6 +51,7 @@ public class VirtualVehicleMapperTest
     private static final String REAL_VEHICLE_ONE_NAME = "rv001";
     private static final String REAL_VEHICLE_TWO_NAME = "rv002";
 
+    @SuppressWarnings("serial")
     private static final SensorDefinition altimeter = new SensorDefinition()
     {
         {
@@ -64,6 +65,7 @@ public class VirtualVehicleMapperTest
         }
     };
 
+    @SuppressWarnings("serial")
     private static final SensorDefinition barometer = new SensorDefinition()
     {
         {
@@ -77,6 +79,7 @@ public class VirtualVehicleMapperTest
         }
     };
 
+    @SuppressWarnings("serial")
     private static final SensorDefinition co2Sensor = new SensorDefinition()
     {
         {
@@ -90,6 +93,7 @@ public class VirtualVehicleMapperTest
         }
     };
 
+    @SuppressWarnings("serial")
     private static final SensorDefinition gpsReceiver = new SensorDefinition()
     {
         {
@@ -105,21 +109,21 @@ public class VirtualVehicleMapperTest
 
     private static final String AREA_OF_OPERATION_RV1 =
         "{\"type\":\"FeatureCollection\",\"features\":["
-        + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},"
-        + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[47.5,13.5]}},"
-        + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
-        + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[13,47],[14,47],[14,48],[13,48],[13,48]]]}}]}";
-        
-// "[{lat: 47.0, lng: 13}, {lat: 47.0, lng: 14}, {lat: 48.0, lng: 14}, {lat: 48.0, lng: 13},{lat: 47.0, lng: 13}]"
-    
+            + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},"
+            + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[47.5,13.5]}},"
+            + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
+            + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[13,47],[14,47],[14,48],[13,48],[13,48]]]}}]}";
+
+    // "[{lat: 47.0, lng: 13}, {lat: 47.0, lng: 14}, {lat: 48.0, lng: 14}, {lat: 48.0, lng: 13},{lat: 47.0, lng: 13}]"
+
     private static final String AREA_OF_OPERATION_RV2 =
         "{\"type\":\"FeatureCollection\",\"features\":["
             + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},"
             + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[47.5,14.5]}},"
             + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
             + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[14,47],[15,47],[15,48],[14,48],[14,47]]]}}]}";
-    
-// "[{lat: 47.0, lng: 14}, {lat: 47.0, lng: 15}, {lat: 48.0, lng: 15}, {lat: 48.0, lng: 14},{lat: 47.0, lng: 14}]"
+
+    // "[{lat: 47.0, lng: 14}, {lat: 47.0, lng: 15}, {lat: 48.0, lng: 15}, {lat: 48.0, lng: 14},{lat: 47.0, lng: 14}]"
 
     private Parameter rvName1;
     private RealVehicle realVehicle1;

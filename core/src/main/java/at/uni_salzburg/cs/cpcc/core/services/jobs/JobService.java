@@ -18,6 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.core.services.jobs;
 
+import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+
 /**
  * JobService interface.
  */
@@ -31,10 +33,27 @@ public interface JobService
     void addJob(String queueName, String parameters) throws JobCreationException;
 
     /**
+     * Add a job if it is not already queued.
+     * 
+     * @param queueName the name of the queue for executing the job.
+     * @param parameters the job parameters.
+     */
+    void addJobIfNotExists(String queueName, String parameters);
+
+    /**
+     * @param queueName the name of the queue for executing the job.
+     * @param parameters the job parameters.
+     * @param data the job data.
+     * @throws JobCreationException in case of errors.
+     */
+    void addJob(String queueName, String parameters, byte[] data) throws JobCreationException;
+
+    /**
      * Execute pending jobs. This method should be invoked periodically by the {@code PeriodicExecutor}.
      * 
      * @throws JobExecutionException in case of errors.
      */
+    @CommitAfter
     void executeJobs() throws JobExecutionException;
 
     /**
@@ -42,4 +61,21 @@ public interface JobService
      * @param jobQueue the job queue to add.
      */
     void addJobQueue(String name, JobQueue jobQueue);
+
+    /**
+     * Reset all jobs when starting up the service.
+     * 
+     * @see {@code JobRepository}
+     */
+    @CommitAfter
+    void resetJobs();
+
+    /**
+     * Remove inactive jobs from the history.
+     * 
+     * @see {@code JobRepository}
+     */
+    @CommitAfter
+    void removeOldJobs();
+
 }

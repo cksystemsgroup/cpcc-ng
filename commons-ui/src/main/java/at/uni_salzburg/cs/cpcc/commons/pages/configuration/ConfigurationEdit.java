@@ -51,7 +51,6 @@ import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.core.services.SensorDefinitionSelectHelpers;
 import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
-import at.uni_salzburg.cs.cpcc.vvrte.services.VirtualVehicleMapper;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -97,9 +96,6 @@ public class ConfigurationEdit
 
     @Inject
     private RosNodeService nodeService;
-
-    @Inject
-    private VirtualVehicleMapper mapper;
 
     @Property
     private Parameter internalRosCore;
@@ -209,7 +205,6 @@ public class ConfigurationEdit
 
         realVehicle.setName(realVehicleName.getValue());
         session.saveOrUpdate(realVehicle);
-        mapper.refresh();
         handleXhrRequest(realVehicleNameFormZone);
     }
 

@@ -20,10 +20,13 @@ package at.uni_salzburg.cs.cpcc.rv.pages;
 
 import java.util.List;
 
+import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.annotations.Inject;
+import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Device;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * Start page of real-vehicle web application.
@@ -33,11 +36,36 @@ public class Index
     @Inject
     private QueryManager qm;
 
+    @Inject
+    private StateSynchronizer stateSyncService;
+
+    @Inject
+    private Logger logger;
+
     /**
      * @return the list of devices.
      */
     public List<Device> getDeviceList()
     {
         return qm.findAllDevices();
+    }
+
+    /**
+     * Event RvSync received.
+     */
+    public void onRvSync()
+    {
+        logger.info("onRvSync");
+        stateSyncService.realVehicleStatusUpdate();
+    }
+
+    /**
+     * Event ConfigSync received.
+     */
+    @CommitAfter
+    public void onConfigSync()
+    {
+        logger.info("onConfigSync");
+        stateSyncService.pushConfiguration();
     }
 }
