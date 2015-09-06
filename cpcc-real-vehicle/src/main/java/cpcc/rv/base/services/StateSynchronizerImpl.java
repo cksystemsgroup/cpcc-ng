@@ -103,7 +103,7 @@ public class StateSynchronizerImpl implements StateSynchronizer
             {
                 String msg = String.format("Can not create config sync job for real vehicle %s (%d), mode=%s"
                     , rv.getName(), rv.getId(), mode);
-                logger.error(msg + " " + e.getMessage());
+                logger.debug(msg + " " + e.getMessage());
             }
         }
     }

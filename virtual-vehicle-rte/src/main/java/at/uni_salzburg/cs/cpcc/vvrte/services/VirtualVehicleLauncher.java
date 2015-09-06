@@ -20,7 +20,7 @@ package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import java.io.IOException;
 
-import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 
 /**
  * VirtualVehicleLauncher
@@ -28,23 +28,22 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 public interface VirtualVehicleLauncher
 {
     /**
-     * @param vehicle the vehicle to launch.
+     * @param vehicleId the ID of the vehicle to launch.
      * @throws VirtualVehicleLaunchException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    void start(VirtualVehicle vehicle) throws VirtualVehicleLaunchException, IOException;
-    
+    void start(int vehicleId) throws VirtualVehicleLaunchException, IOException;
+
     /**
-     * @param vehicle the vehicle to launch.
+     * @param vehicleId the ID of the vehicle to launch.
      * @throws VirtualVehicleLaunchException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    void resume(VirtualVehicle vehicle) throws VirtualVehicleLaunchException, IOException;
+    void resume(int vehicleId) throws VirtualVehicleLaunchException, IOException;
 
     /**
-     * @param id the virtual vehicle ID
-     * @return the associated worker, or null.
+     * @param vehicleId the ID of the vehicle.
+     * @param newState the new vehicle state.
      */
-//    JavascriptWorker findWorkerByVirtualVehicleId(Integer id);
-
+    void stateChange(int vehicleId, VirtualVehicleState newState);
 }

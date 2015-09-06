@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
@@ -51,7 +52,7 @@ public class CoreGeoJsonConverterTest
     private RealVehicle rv1;
     private RealVehicle rv2;
     private RealVehicle rv3;
-    private CoreGeoJsonConverterImpl conv;
+    private CoreGeoJsonConverterImpl sut;
 
     @BeforeMethod
     public void setUp()
@@ -83,7 +84,7 @@ public class CoreGeoJsonConverterTest
         when(rv3.getType()).thenReturn(RealVehicleType.GROUND_STATION);
         when(rv3.getId()).thenReturn(3);
 
-        conv = new CoreGeoJsonConverterImpl();
+        sut = new CoreGeoJsonConverterImpl();
     }
 
     @DataProvider
@@ -108,7 +109,7 @@ public class CoreGeoJsonConverterTest
     @Test(dataProvider = "polarCoordinatesDataProvider")
     public void shouldConvertPolarCoordinateToPoint(PolarCoordinate position, LngLatAlt expected)
     {
-        Point point = conv.toPoint(position);
+        Point point = sut.toPoint(position);
         LngLatAlt coord = point.getCoordinates();
 
         assertThat(coord.getLongitude())
@@ -122,6 +123,32 @@ public class CoreGeoJsonConverterTest
         assertThat(coord.getAltitude())
             .overridingErrorMessage("Altitude differs %.3f != %.3f", coord.getAltitude(), expected.getAltitude())
             .isEqualTo(expected.getAltitude(), offset(1E-3));
+    }
+
+    @DataProvider
+    public Object[][] positionDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{
+                new PolarCoordinate(0, 0, 0),
+            },
+            new Object[]{
+                new PolarCoordinate(47.12345678, 13.12345678, 50.1),
+            },
+            new Object[]{
+                new PolarCoordinate(-47.12345678, -13.12345678, -50.1),
+            },
+        };
+    }
+
+    @Test(dataProvider = "positionDataProvider")
+    public void shouldConvertPolarCoordinateToPositionMap(PolarCoordinate position)
+    {
+        Map<String, Double> actual = sut.toPosition(position);
+
+        assertThat(actual.get("lat")).isEqualTo(position.getLatitude(), offset(1E-9));
+        assertThat(actual.get("lon")).isEqualTo(position.getLongitude(), offset(1E-9));
+        assertThat(actual.get("alt")).isEqualTo(position.getAltitude(), offset(1E-9));
     }
 
     @DataProvider
@@ -152,7 +179,7 @@ public class CoreGeoJsonConverterTest
     @Test(dataProvider = "realVehicleDataProvider")
     public void shouldConvertRealVehicleToFeature(RealVehicle rv, String expected) throws IOException, JSONException
     {
-        Feature feature = conv.toFeature(rv);
+        Feature feature = sut.toFeature(rv);
 
         String actual = new ObjectMapper().writeValueAsString(feature);
 

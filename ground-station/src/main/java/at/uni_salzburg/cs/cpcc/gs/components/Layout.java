@@ -36,7 +36,7 @@ import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 /**
  * Layout component for pages of application real vehicle web application.
  */
-@Import(module = "bootstrap/collapse", stylesheet = "layout.css")
+@Import(module = {"jquery", "bootstrap/collapse", "jquery"}, stylesheet = "layout.css")
 public class Layout
 {
     /**

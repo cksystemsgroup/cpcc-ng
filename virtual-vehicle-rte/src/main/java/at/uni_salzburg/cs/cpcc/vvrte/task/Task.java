@@ -37,6 +37,7 @@ public class Task
 
     private PolarCoordinate position;
     private double tolerance = 5.0;
+    private Double distanceToTarget = null;
     private long creationTime = System.currentTimeMillis();
     private boolean lastInTaskGroup = true;
     private List<SensorDefinition> sensors;
@@ -74,6 +75,22 @@ public class Task
     public void setTolerance(double tolerance)
     {
         this.tolerance = tolerance >= MIN_TOLERANCE_DISTANCE ? tolerance : MIN_TOLERANCE_DISTANCE;
+    }
+    
+    /**
+     * @return the distance to the target position.
+     */
+    public Double getDistanceToTarget()
+    {
+        return distanceToTarget;
+    }
+    
+    /**
+     * @param distanceToTarget the distance to the target position to set.
+     */
+    public void setDistanceToTarget(Double distanceToTarget)
+    {
+        this.distanceToTarget = distanceToTarget;
     }
 
     /**

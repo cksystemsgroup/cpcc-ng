@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.geojson.Feature;
 import org.geojson.Point;
-import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;

@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
+import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Job;
 import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
@@ -32,17 +33,21 @@ import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
  */
 public class JobExecutor implements Runnable
 {
+    private Logger logger;
     private ServiceResources serviceResources;
     private List<JobRunnableFactory> factoryList;
     private int jobNumber;
 
     /**
+     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param factoryList the factory list.
      * @param jobNumber the id of the job to be executed.
      */
-    public JobExecutor(ServiceResources serviceResources, List<JobRunnableFactory> factoryList, int jobNumber)
+    public JobExecutor(Logger logger, ServiceResources serviceResources, List<JobRunnableFactory> factoryList
+        , int jobNumber)
     {
+        this.logger = logger;
         this.serviceResources = serviceResources;
         this.factoryList = factoryList;
         this.jobNumber = jobNumber;
@@ -69,7 +74,7 @@ public class JobExecutor implements Runnable
 
         for (JobRunnableFactory factory : factoryList)
         {
-            JobRunnable runnable = factory.createRunnable(serviceResources, job);
+            JobRunnable runnable = factory.createRunnable(logger, serviceResources, job);
             if (runnable != null)
             {
                 try

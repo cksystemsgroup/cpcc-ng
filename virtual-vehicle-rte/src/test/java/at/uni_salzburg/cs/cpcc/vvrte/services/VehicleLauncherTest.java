@@ -41,6 +41,7 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.hibernate.Session;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -48,7 +49,6 @@ import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker;
-import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker.WorkerState;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorkerStateListener;
 
 /**
@@ -61,15 +61,19 @@ public class VehicleLauncherTest
     private VirtualVehicleLauncherImpl launcher;
     private Session session;
     private HibernateSessionManager sessionManager;
+    private Logger logger;
 
     @BeforeMethod
     public void setUp() throws IOException
     {
+        logger = mock(Logger.class);
+
         String vvProgramFileName = "simple-vv.js";
         InputStream scriptStream = VehicleLauncherTest.class.getResourceAsStream(vvProgramFileName);
         String program = IOUtils.toString(scriptStream, "UTF-8");
 
         vehicle = spy(new VirtualVehicle());
+        vehicle.setId(1001);
         vehicle.setApiVersion(1);
         vehicle.setCode(program);
         vehicle.setState(VirtualVehicleState.INIT);
@@ -92,7 +96,7 @@ public class VehicleLauncherTest
         {
             public Object answer(InvocationOnMock invocation)
             {
-                jobListener.notify(worker, WorkerState.RUNNING);
+                jobListener.notify(worker, VirtualVehicleState.RUNNING);
                 return null;
             }
         }).when(worker).start();
@@ -106,14 +110,17 @@ public class VehicleLauncherTest
 
         VirtualVehicleMigrator migrator = mock(VirtualVehicleMigrator.class);
 
-        launcher = new VirtualVehicleLauncherImpl(sessionManager, jss, migrator);
+        VvRteRepository vvRteRepository = mock(VvRteRepository.class);
+        when(vvRteRepository.findVirtualVehicleById(1001)).thenReturn(vehicle);
+
+        launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository);
     }
 
     @Test
     public void shouldLaunchSimpleVirtualVehicle()
         throws SerialException, SQLException, IOException, VirtualVehicleLaunchException
     {
-        launcher.start(vehicle);
+        launcher.start(vehicle.getId());
 
         verify(vehicle).setState(VirtualVehicleState.RUNNING);
         assertThat(vehicle.getState()).isNotNull().isEqualTo(VirtualVehicleState.RUNNING);
@@ -126,7 +133,7 @@ public class VehicleLauncherTest
         expectedExceptionsMessageRegExp = "Invalid virtual vehicle 'null'")
     public void shouldThrowVLEIfVirtualVehicleIsNull() throws VirtualVehicleLaunchException, IOException
     {
-        launcher.start(null);
+        launcher.start(-1);
     }
 
     @Test(expectedExceptions = {VirtualVehicleLaunchException.class},
@@ -134,6 +141,6 @@ public class VehicleLauncherTest
     public void shouldThrowVLEIfVirtualVehicleHasWrongState() throws VirtualVehicleLaunchException, IOException
     {
         vehicle.setState(VirtualVehicleState.RUNNING);
-        launcher.start(vehicle);
+        launcher.start(vehicle.getId());
     }
 }

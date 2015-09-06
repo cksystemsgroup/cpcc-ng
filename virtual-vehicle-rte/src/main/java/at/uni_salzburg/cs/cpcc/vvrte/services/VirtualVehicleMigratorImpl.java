@@ -22,10 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -34,9 +32,9 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
 import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
 import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
@@ -53,25 +51,29 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private Logger logger;
     private HibernateSessionManager sessionManager;
     private VvRteRepository vvRepository;
-    private CommunicationService com;
-    private Set<VirtualVehicleListener> listenerSet = new HashSet<VirtualVehicleListener>();
+    // private Set<VirtualVehicleListener> listenerSet = new HashSet<VirtualVehicleListener>();
     private QueryManager qm;
+    private VirtualVehicleLauncher launcher;
+    private ServiceResources serviceResources;
 
     /**
      * @param logger the application logger.
+     * @param serviceResources the service resources.
      * @param sessionManager the Hibernate session manager.
      * @param vvRepository the virtual vehicle repository.
-     * @param com the communication service.
      * @param qm the query manager.
+     * @param launcher the virtual vehicle launcher.
      */
-    public VirtualVehicleMigratorImpl(Logger logger, HibernateSessionManager sessionManager
-        , VvRteRepository vvRepository, CommunicationService com, QueryManager qm)
+    public VirtualVehicleMigratorImpl(Logger logger, ServiceResources serviceResources
+        , HibernateSessionManager sessionManager, VvRteRepository vvRepository, QueryManager qm
+        , VirtualVehicleLauncher launcher)
     {
         this.logger = logger;
+        this.serviceResources = serviceResources;
         this.sessionManager = sessionManager;
         this.vvRepository = vvRepository;
-        this.com = com;
         this.qm = qm;
+        this.launcher = launcher;
     }
 
     /**
@@ -80,7 +82,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     @Override
     public void initiateMigration(VirtualVehicle vehicle)
     {
-        VvMigrationWorker worker = new VvMigrationWorker(vehicle, vvRepository, com, this, sessionManager, logger);
+        VvMigrationWorker worker = new VvMigrationWorker(logger, serviceResources, vehicle.getId());
         worker.start();
     }
 
@@ -289,7 +291,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     public String storeChunk(InputStream inStream) throws ArchiveException, IOException
     {
         boolean lastChunk = false;
-        String chunkName = null;
+        String chunkName = "unknown-" + System.currentTimeMillis();
         ArchiveStreamFactory f = new ArchiveStreamFactory();
         ArchiveInputStream ais = f.createArchiveInputStream("tar", inStream);
         VirtualVehicleHolder virtualVehicleHolder = new VirtualVehicleHolder();
@@ -302,16 +304,12 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             if (chunkName.startsWith("vv/"))
             {
                 lastChunk |= storeVirtualVehicleEntry(ais, entry, virtualVehicleHolder);
-                String name = virtualVehicleHolder.getVirtualVehicle() != null
-                    ? " name=" + virtualVehicleHolder.getVirtualVehicle().getName() : "";
-                logger.info("Migration of " + chunkName + name);
+                logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle());
             }
             else if (chunkName.startsWith("storage/"))
             {
                 storeStorageEntry(ais, entry, virtualVehicleHolder.getVirtualVehicle());
-                String name = virtualVehicleHolder.getVirtualVehicle() != null
-                    ? " name=" + virtualVehicleHolder.getVirtualVehicle().getName() : "";
-                logger.info("Migration of " + chunkName + name);
+                logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle());
             }
             // TODO message queue
             else
@@ -320,12 +318,25 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             }
         }
 
+        sessionManager.commit();
+
         if (lastChunk)
         {
-            notifyListeners(virtualVehicleHolder.getVirtualVehicle());
+            VirtualVehicle vv = virtualVehicleHolder.getVirtualVehicle();
+            launcher.stateChange(vv.getId(), vv.getState());
         }
 
         return chunkName;
+    }
+
+    /**
+     * @param chunkName the name of the migrated chunk.
+     * @param virtualVehicleHolder the virtual vehicle.
+     */
+    private void logMigratedChunk(String chunkName, VirtualVehicle virtualVehicle)
+    {
+        String name = virtualVehicle != null ? " name=" + virtualVehicle.getName() : "";
+        logger.info("Migration of " + chunkName + name);
     }
 
     /**
@@ -357,6 +368,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             }
 
             virtualVehicleHolder.setVirtualVehicle(vv);
+            sessionManager.getSession().saveOrUpdate(vv);
         }
         else if ("vv/vv-continuation.js".equals(entry.getName()))
         {
@@ -460,19 +472,20 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         sessionManager.getSession().saveOrUpdate(item);
     }
 
-    @Override
-    public void addListener(VirtualVehicleListener listener)
-    {
-        listenerSet.add(listener);
-    }
-
-    private void notifyListeners(VirtualVehicle vehicle)
-    {
-        for (VirtualVehicleListener listener : listenerSet)
-        {
-            listener.notify(vehicle);
-        }
-    }
+    //    @Override
+    //    public void addListener(VirtualVehicleListener listener)
+    //    {
+    //        listenerSet.add(listener);
+    //    }
+    //
+    //    private void notifyListeners(VirtualVehicle vehicle)
+    //    {
+    //        for (VirtualVehicleListener listener : listenerSet)
+    //        {
+    //            logger.info("Notifying listener " + listener.getClass());
+    //            listener.notify(vehicle);
+    //        }
+    //    }
 
     /**
      * VirtualVehicleHolder

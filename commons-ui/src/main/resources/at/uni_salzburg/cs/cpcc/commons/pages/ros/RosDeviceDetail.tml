@@ -10,10 +10,7 @@
 		<c:DeviceTree t:devices="deviceList" />
 	</div>
 
-	<t:Zone t:id="zone">
-		<!--  t:mixins='jquery/zonerefresh' t:period='1'
-				t:update="show" t:context="deviceDetailLinkContext"  -->
-
+	<t:Zone t:id="zone" t:mixins="ZoneRefresh" ZoneRefresh.period="1">
 		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 			<div class="panel panel-default">
 				<div class="panel-heading">

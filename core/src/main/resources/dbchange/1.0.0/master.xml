@@ -9,5 +9,6 @@
 	<include file="2015-07-17.xml" relativeToChangelogFile="true" />
 	<include file="2015-07-29.xml" relativeToChangelogFile="true" />
 	<include file="2015-08-08.xml" relativeToChangelogFile="true" />
+	<include file="2015-09-01.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

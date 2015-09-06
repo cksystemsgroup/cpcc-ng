@@ -45,5 +45,4 @@ public interface StateSynchronizer
      */
     @CommitAfter
     void realVehicleStatusUpdate();
-
 }

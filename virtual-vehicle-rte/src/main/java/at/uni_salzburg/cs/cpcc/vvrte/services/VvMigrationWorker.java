@@ -23,6 +23,8 @@ import java.util.Date;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
+import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse;
@@ -38,30 +40,20 @@ public class VvMigrationWorker extends Thread
 {
     private boolean running = true;
     private Thread waiter = null;
-    private VirtualVehicle vehicle;
-    private VvRteRepository vvRepository;
-    private CommunicationService com;
-    private VirtualVehicleMigrator migrator;
-    private HibernateSessionManager sessionManager;
+    private ServiceResources serviceResources;
     private Logger logger;
+    private int vvId;
 
     /**
-     * @param vehicle the virtual vehicle to be migrated.
-     * @param vvRepository the virtual vehicle repository.
-     * @param com the communication service.
-     * @param migrator the migration service.
-     * @param sessionManager the Hibernate session manager.
      * @param logger the application logger.
+     * @param serviceResources the service resources.
+     * @param vvId the virtual vehicle's identification.
      */
-    public VvMigrationWorker(VirtualVehicle vehicle, VvRteRepository vvRepository, CommunicationService com,
-        VirtualVehicleMigrator migrator, HibernateSessionManager sessionManager, Logger logger)
+    public VvMigrationWorker(Logger logger, ServiceResources serviceResources, int vvId)
     {
-        this.vehicle = vehicle;
-        this.vvRepository = vvRepository;
-        this.com = com;
-        this.migrator = migrator;
-        this.sessionManager = sessionManager;
+        this.serviceResources = serviceResources;
         this.logger = logger;
+        this.vvId = vvId;
     }
 
     /**
@@ -70,7 +62,15 @@ public class VvMigrationWorker extends Thread
     @Override
     public void run()
     {
-        if (!verifyVehicleStatus())
+        PerthreadManager perthreadManager = serviceResources.getService(PerthreadManager.class);
+        VvRteRepository vvRepository = serviceResources.getService(VvRteRepository.class);
+        CommunicationService com = serviceResources.getService(CommunicationService.class);
+        VirtualVehicleMigrator migrator = serviceResources.getService(VirtualVehicleMigrator.class);
+        HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
+
+        VirtualVehicle vehicle = vvRepository.findVirtualVehicleById(vvId);
+
+        if (!verifyVehicleStatus(vehicle))
         {
             return;
         }
@@ -109,6 +109,11 @@ public class VvMigrationWorker extends Thread
                 response = com.transfer(
                     vehicle.getMigrationDestination(), VvRteConstants.MIGRATION_CONNECTOR, chunk);
 
+                if (vehicle.getState() == VirtualVehicleState.MIGRATION_COMPLETED)
+                {
+                    break;
+                }
+
                 ++chunkNumber;
             }
 
@@ -133,6 +138,8 @@ public class VvMigrationWorker extends Thread
             sessionManager.abort();
         }
 
+        perthreadManager.cleanup();
+
         running = false;
 
         if (waiter != null)
@@ -144,7 +151,7 @@ public class VvMigrationWorker extends Thread
     /**
      * @return true if a migration may take place, false otherwise.
      */
-    private boolean verifyVehicleStatus()
+    private boolean verifyVehicleStatus(VirtualVehicle vehicle)
     {
         if (vehicle.getMigrationDestination() == null)
         {

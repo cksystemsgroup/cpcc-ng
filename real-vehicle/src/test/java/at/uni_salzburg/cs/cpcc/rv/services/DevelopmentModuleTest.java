@@ -19,9 +19,15 @@
 package at.uni_salzburg.cs.cpcc.rv.services;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Constructor;
 
+import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.testng.annotations.Test;
 
 /**
@@ -36,5 +42,17 @@ public class DevelopmentModuleTest
         assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
+    }
+
+    @Test
+    public void shouldContributreApplicationDefaults()
+    {
+        @SuppressWarnings("unchecked")
+        MappedConfiguration<String, Object> configuration = mock(MappedConfiguration.class);
+
+        DevelopmentModule.contributeApplicationDefaults(configuration);
+
+        verify(configuration).add(eq(SymbolConstants.PRODUCTION_MODE), any());
+        verify(configuration).add(eq(SymbolConstants.APPLICATION_VERSION), any());
     }
 }

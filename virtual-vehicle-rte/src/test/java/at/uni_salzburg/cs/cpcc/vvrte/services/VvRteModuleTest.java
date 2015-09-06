@@ -60,7 +60,7 @@ public class VvRteModuleTest
     {
         ServiceBindingOptions options = mock(ServiceBindingOptions.class);
         ServiceBinder binder = mock(ServiceBinder.class);
-        
+
         when(binder.bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class)).thenReturn(options);
         when(binder.bind(MessageConverter.class, MessageConverterImpl.class)).thenReturn(options);
         when(binder.bind(VirtualVehicleLauncher.class, VirtualVehicleLauncherImpl.class)).thenReturn(options);
@@ -71,10 +71,10 @@ public class VvRteModuleTest
         when(binder.bind(TaskExecutionService.class, TaskExecutionServiceImpl.class)).thenReturn(options);
         when(binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class)).thenReturn(options);
         when(binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class)).thenReturn(options);
-        when(binder.bind(VvJsonConverter.class,VvJsonConverterImpl.class)).thenReturn(options);
-        
+        when(binder.bind(VvJsonConverter.class, VvJsonConverterImpl.class)).thenReturn(options);
+
         VvRteModule.bind(binder);
-        
+
         verify(binder).bind(BuiltInFunctions.class, BuiltInFunctionsImpl.class);
         verify(binder).bind(MessageConverter.class, MessageConverterImpl.class);
         verify(binder).bind(VirtualVehicleLauncher.class, VirtualVehicleLauncherImpl.class);
@@ -85,8 +85,8 @@ public class VvRteModuleTest
         verify(binder).bind(TaskExecutionService.class, TaskExecutionServiceImpl.class);
         verify(binder).bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class);
         verify(binder).bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class);
-        verify(binder).bind(VvJsonConverter.class,VvJsonConverterImpl.class);
-        verify(options, times(10)).eagerLoad();
+        verify(binder).bind(VvJsonConverter.class, VvJsonConverterImpl.class);
+        verify(options, times(9)).eagerLoad();
     }
 
     @Test

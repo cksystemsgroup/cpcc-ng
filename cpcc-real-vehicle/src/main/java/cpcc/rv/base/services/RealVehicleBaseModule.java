@@ -22,11 +22,13 @@ import java.util.Arrays;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.Configuration;
+import org.apache.tapestry5.ioc.ScopeConstants;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.services.LibraryMapping;
+import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobQueue;
@@ -50,7 +52,7 @@ public final class RealVehicleBaseModule
      */
     public static void bind(ServiceBinder binder)
     {
-        binder.bind(StateSynchronizer.class, StateSynchronizerImpl.class).eagerLoad();
+        binder.bind(StateSynchronizer.class, StateSynchronizerImpl.class).scope(ScopeConstants.PERTHREAD);
         binder.bind(StateService.class, StateServiceImpl.class);
     }
 
@@ -106,22 +108,20 @@ public final class RealVehicleBaseModule
     }
 
     /**
+     * @param logger the application logger.
      * @param jobService the job service instance.
      * @param sessionManager the session manager instance.
      * @param timeService the time service.
      * @param jobRepository the job repository
      */
     @Startup
-    public static void setupJobQueues(JobService jobService, HibernateSessionManager sessionManager
+    public static void setupJobQueues(Logger logger, JobService jobService, HibernateSessionManager sessionManager
         , TimeService timeService, JobRepository jobRepository)
     {
         JobRunnableFactory factory = new RealVehicleJobRunnableFactory();
 
         jobService.addJobQueue(RealVehicleBaseConstants.JOB_QUEUE_NAME
-            , new JobQueue(sessionManager
-                , timeService
-                , jobRepository
-                , Arrays.asList(factory)
+            , new JobQueue(logger, sessionManager, timeService, jobRepository, Arrays.asList(factory)
                 , RealVehicleBaseConstants.NUMBER_OF_POOL_THREADS));
 
         jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=init");

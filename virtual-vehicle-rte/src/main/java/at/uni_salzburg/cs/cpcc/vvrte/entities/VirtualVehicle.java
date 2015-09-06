@@ -80,6 +80,10 @@ public class VirtualVehicle implements Serializable
     @Type(type = "timestamp")
     private java.util.Date endTime;
 
+    @Column(name = "state_info")
+    @Lob
+    private String stateInfo;
+
     /**
      * @return the id
      */
@@ -262,5 +266,21 @@ public class VirtualVehicle implements Serializable
     public void setEndTime(java.util.Date endTime)
     {
         this.endTime = endTime;
+    }
+
+    /**
+     * @return the state info.
+     */
+    public String getStateInfo()
+    {
+        return stateInfo;
+    }
+
+    /**
+     * @param stateInfo the state info to set.
+     */
+    public void setStateInfo(String stateInfo)
+    {
+        this.stateInfo = stateInfo;
     }
 }

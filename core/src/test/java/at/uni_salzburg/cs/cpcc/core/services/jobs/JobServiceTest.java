@@ -273,4 +273,20 @@ public class JobServiceTest
             .describedAs("Exception message")
             .isEqualTo("Queue " + QUEUE_NAME_01 + " not registered!");
     }
+
+    @Test
+    public void shouldResetJobs()
+    {
+        sut.resetJobs();
+
+        verify(jobRepository).resetJobs();
+    }
+
+    @Test
+    public void shouldRemoveOldJobs()
+    {
+        sut.removeOldJobs();
+
+        verify(jobRepository).removeOldJobs();
+    }
 }

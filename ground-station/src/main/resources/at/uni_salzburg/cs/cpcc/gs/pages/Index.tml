@@ -1,48 +1,45 @@
 <html t:type="layout" title="${message:groundStationIndex}"
-	t:sidebarTitle="Framework Version"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	t:sidebarTitle="Framework Version" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
-<div class="row">
-	<div class="col-xs-6 col-md-3">
-		<h4>
-			<t:pagelink page="index">${message:device.tree.label}</t:pagelink>
-		</h4>
-		<c:DeviceTree t:devices="deviceList" />
+	<div class="row">
+		<div class="col-xs-6 col-md-3">
+			<h4>
+				<t:pagelink page="index">${message:device.tree.label}
+				</t:pagelink>
+			</h4>
+			<c:DeviceTree t:devices="deviceList" />
+		</div>
+
+		<!-- <div class="col-xs-12 col-md-9"> <t:EventLink event="rvSync" class="btn 
+			btn-success" >RV Sync</t:EventLink>&nbsp;&nbsp; <t:EventLink event="configSync" 
+			class="btn btn-success" >Config Sync</t:EventLink> </div> -->
+
+		<div class="col-xs-12 col-md-9">
+			<h4>${message:rvStateList}</h4>
+
+			<t:zone t:id="zone3">
+				<!-- t:mixins="ZoneRefresh" ZoneRefresh.period="5" -->
+				<table t:type="grid" t:source="rvStateList" 
+					t:row="rvState"
+					t:reorder="realVehicleName,lastUpdate"
+					class="table table-striped table-condensed topic-table">
+
+					<p:realVehicleNameCell>
+						<!-- <a href="${rvState.RealVehicle.url}" target="_blank">${rvState.RealVehicle.Name}</a> -->
+						${rvState.realVehicleName}
+					</p:realVehicleNameCell>
+
+					<p:lastUpdateCell>
+						<t:output t:format="${message:dateFormat}" t:value="rvState.LastUpdate" />
+					</p:lastUpdateCell>
+
+					<p:empty>
+						<p>${message:noRealVehicleConnected}</p>
+					</p:empty>
+				</table>
+			</t:zone>
+		</div>
 	</div>
-	
-	<!--
-	<div class="col-xs-12 col-md-9">
-		<t:EventLink event="rvSync" class="btn btn-success" >RV Sync</t:EventLink>&nbsp;&nbsp;
-		<t:EventLink event="configSync" class="btn btn-success" >Config Sync</t:EventLink>
-	</div>
-	-->
-	
-	<div class="col-xs-12 col-md-9">
-		<h4>${message:rvStateList}</h4>
-
-		<t:zone t:id="zone3">
-			<!--  t:mixins="ZoneRefresh" ZoneRefresh.period="5"  -->
-			<table t:type="grid" t:source="getStateList()" t:add="rvName"
-				t:row="stateString"
-				t:reorder="rvName,connected,statusUpdateRunning,lastUpdate,statusString"
-				class="table table-striped table-condensed topic-table">
-
-				<p:rvNameCell>
-					<a href="${stateString.RealVehicle.url}" target="_blank">${stateString.RealVehicle.Name}</a>
-				</p:rvNameCell>
-
-				<p:lastUpdateCell>
-					<t:output t:format="${message:dateFormat}"
-						t:value="stateString.LastUpdate" />
-				</p:lastUpdateCell>
-
-				<p:empty>
-					<p>${message:noRealVehicleConnected}</p>
-				</p:empty>
-			</table>
-		</t:zone>
-	</div>
-</div>
 
 </html>

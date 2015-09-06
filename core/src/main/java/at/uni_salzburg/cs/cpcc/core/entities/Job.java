@@ -18,6 +18,7 @@
 
 package at.uni_salzburg.cs.cpcc.core.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -38,8 +39,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 @Entity
 @Table(name = "jobs")
-public class Job
+public class Job implements Serializable
 {
+    private static final long serialVersionUID = -3182376008058062557L;
+
     private static final int MAX_QUEUE_LENGTH = 20;
     private static final int MAX_STATUS_LENGTH = 20;
     private static final int MAX_PARAMETERS_LENGTH = 512;

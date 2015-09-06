@@ -36,6 +36,8 @@ import java.util.List;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
+import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.hibernate.Session;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -70,6 +72,10 @@ public class VvMigrationWorkerTest
     private VirtualVehicleMigrator migrator;
     private RealVehicle realVehicle;
 
+    private ServiceResources serviceResources;
+
+    private PerthreadManager perthreadManager;
+
     @BeforeMethod
     public void setUp() throws ClientProtocolException, IOException, ArchiveException
     {
@@ -81,15 +87,19 @@ public class VvMigrationWorkerTest
         when(realVehicle.getName()).thenReturn("rv01");
 
         virtualVehicle = mock(VirtualVehicle.class);
+        when(virtualVehicle.getId()).thenReturn(1001);
         when(virtualVehicle.getName()).thenReturn("vv01");
         when(virtualVehicle.getMigrationDestination()).thenReturn(realVehicle);
         when(virtualVehicle.getState()).thenReturn(VirtualVehicleState.MIGRATION_AWAITED);
+
+        perthreadManager = mock(PerthreadManager.class);
 
         session = mock(Session.class);
         sessionManager = mock(HibernateSessionManager.class);
         when(sessionManager.getSession()).thenReturn(session);
 
         vvRepository = mock(VvRteRepository.class);
+        when(vvRepository.findVirtualVehicleById(1001)).thenReturn(virtualVehicle);
 
         com = mock(CommunicationService.class);
         when(com.transfer(any(RealVehicle.class), anyString(), any(byte[].class))).thenAnswer(
@@ -134,7 +144,14 @@ public class VvMigrationWorkerTest
                 }
             });
 
-        worker = new VvMigrationWorker(virtualVehicle, vvRepository, com, migrator, sessionManager, logger);
+        serviceResources = mock(ServiceResources.class);
+        when(serviceResources.getService(PerthreadManager.class)).thenReturn(perthreadManager);
+        when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
+        when(serviceResources.getService(VvRteRepository.class)).thenReturn(vvRepository);
+        when(serviceResources.getService(CommunicationService.class)).thenReturn(com);
+        when(serviceResources.getService(VirtualVehicleMigrator.class)).thenReturn(migrator);
+
+        worker = new VvMigrationWorker(logger, serviceResources, virtualVehicle.getId());
     }
 
     @Test
@@ -164,6 +181,7 @@ public class VvMigrationWorkerTest
         verify(session, never()).beginTransaction();
         verify(sessionManager, times(2)).commit();
         verify(sessionManager, never()).abort();
+        verify(perthreadManager).cleanup();
     }
 
     @Test
@@ -198,6 +216,7 @@ public class VvMigrationWorkerTest
         verify(session, never()).beginTransaction();
         verify(sessionManager, times(2)).commit();
         verify(sessionManager, never()).abort();
+        verify(perthreadManager).cleanup();
     }
 
     @Test
@@ -227,6 +246,7 @@ public class VvMigrationWorkerTest
         verify(session, never()).beginTransaction();
         verify(sessionManager, times(2)).commit();
         verify(sessionManager, never()).abort();
+        verify(perthreadManager).cleanup();
     }
 
     @Test
@@ -244,6 +264,7 @@ public class VvMigrationWorkerTest
         verify(session, never()).beginTransaction();
         verify(sessionManager).commit();
         verify(sessionManager).abort();
+        verify(perthreadManager).cleanup();
     }
 
     @Test
@@ -262,6 +283,7 @@ public class VvMigrationWorkerTest
         verify(session, never()).beginTransaction();
         verify(sessionManager).commit();
         verify(sessionManager).abort();
+        verify(perthreadManager).cleanup();
     }
 
     @Test
@@ -279,6 +301,7 @@ public class VvMigrationWorkerTest
         verify(session, never()).beginTransaction();
         verify(sessionManager, never()).commit();
         verify(sessionManager, never()).abort();
+        verify(perthreadManager, never()).cleanup();
     }
 
     @Test
@@ -299,6 +322,7 @@ public class VvMigrationWorkerTest
         verify(session, never()).beginTransaction();
         verify(sessionManager, times(2)).commit();
         verify(sessionManager, never()).abort();
+        verify(perthreadManager).cleanup();
     }
 
     @Test
@@ -317,5 +341,6 @@ public class VvMigrationWorkerTest
         verify(session, never()).beginTransaction();
         verify(sessionManager, never()).commit();
         verify(sessionManager, never()).abort();
+        verify(perthreadManager, never()).cleanup();
     }
 }

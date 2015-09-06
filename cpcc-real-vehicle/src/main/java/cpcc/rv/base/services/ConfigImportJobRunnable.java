@@ -53,12 +53,14 @@ public class ConfigImportJobRunnable implements JobRunnable
     private QueryManager queryManager;
 
     /**
+     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param data the data to import.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposed on purpose.")
-    public ConfigImportJobRunnable(ServiceResources serviceResources, byte[] data)
+    public ConfigImportJobRunnable(Logger logger, ServiceResources serviceResources, byte[] data)
     {
+        this.logger = logger;
         this.serviceResources = serviceResources;
         this.data = data;
         genson = new Genson();
@@ -70,7 +72,6 @@ public class ConfigImportJobRunnable implements JobRunnable
     @Override
     public void run() throws Exception
     {
-        logger = serviceResources.getService(Logger.class);
         queryManager = serviceResources.getService(QueryManager.class);
         sessionManager = serviceResources.getService(HibernateSessionManager.class);
 

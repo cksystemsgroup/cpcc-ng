@@ -255,6 +255,8 @@ public class RealVehicleTest
                 , Arrays.asList(sen1), RealVehicleType.GROUND_STATION, "http://localhost:8080/rv01")},
             new Object[]{rvA, setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
                 , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv02")},
+            new Object[]{setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
+                , Arrays.asList(sen1, sen2), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"), rvA},
             new Object[]{rvA, rvB},
             new Object[]{rvB, rvA},
             new Object[]{rvA, rvC},

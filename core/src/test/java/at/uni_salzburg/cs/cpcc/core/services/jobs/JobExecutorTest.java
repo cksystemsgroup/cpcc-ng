@@ -33,6 +33,7 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -59,10 +60,12 @@ public class JobExecutorTest
     private JobRunnable succeedingRunnable;
     private JobRunnable failingRunnable;
     private JobRunnableFactory factory;
+    private Logger logger;
 
     @BeforeMethod
     public void setUp() throws Exception
     {
+        logger = mock(Logger.class);
         startDate = mock(Date.class);
         endDate = mock(Date.class);
 
@@ -112,15 +115,15 @@ public class JobExecutorTest
         when(serviceResources.getService(JobRepository.class)).thenReturn(jobRepository);
 
         factory = mock(JobRunnableFactory.class);
-        when(factory.createRunnable(serviceResources, succeedingJob)).thenReturn(succeedingRunnable);
-        when(factory.createRunnable(serviceResources, failingJob)).thenReturn(failingRunnable);
-        when(factory.createRunnable(serviceResources, hasNoFactoryJob)).thenReturn(null);
+        when(factory.createRunnable(logger, serviceResources, succeedingJob)).thenReturn(succeedingRunnable);
+        when(factory.createRunnable(logger, serviceResources, failingJob)).thenReturn(failingRunnable);
+        when(factory.createRunnable(logger, serviceResources, hasNoFactoryJob)).thenReturn(null);
     }
 
     @Test
     public void shouldExecuteSucceedingRunnable() throws Exception
     {
-        JobExecutor sut = new JobExecutor(serviceResources, Arrays.asList(factory), SUCCEEDING_JOB_ID);
+        JobExecutor sut = new JobExecutor(logger, serviceResources, Arrays.asList(factory), SUCCEEDING_JOB_ID);
 
         sut.run();
 
@@ -136,7 +139,7 @@ public class JobExecutorTest
 
         inOrder.verify(succeedingJob).setStatus(JobStatus.NO_FACTORY);
 
-        inOrder.verify(factory).createRunnable(serviceResources, succeedingJob);
+        inOrder.verify(factory).createRunnable(logger, serviceResources, succeedingJob);
         inOrder.verify(succeedingRunnable).run();
         inOrder.verify(succeedingJob).setStatus(JobStatus.OK);
 
@@ -148,7 +151,7 @@ public class JobExecutorTest
     @Test
     public void shouldExecuteFailingRunnable() throws Exception
     {
-        JobExecutor sut = new JobExecutor(serviceResources, Arrays.asList(factory), FAILING_JOB_ID);
+        JobExecutor sut = new JobExecutor(logger, serviceResources, Arrays.asList(factory), FAILING_JOB_ID);
 
         sut.run();
 
@@ -160,7 +163,7 @@ public class JobExecutorTest
         inOrder.verify(sessionManager).commit();
         inOrder.verify(failingJob).setStatus(JobStatus.NO_FACTORY);
 
-        inOrder.verify(factory).createRunnable(serviceResources, failingJob);
+        inOrder.verify(factory).createRunnable(logger, serviceResources, failingJob);
         inOrder.verify(failingRunnable).run();
 
         inOrder.verify(sessionManager).abort();
@@ -174,7 +177,7 @@ public class JobExecutorTest
     @Test
     public void shouldHandleFactoriesThatDoNotCreateJob() throws Exception
     {
-        JobExecutor sut = new JobExecutor(serviceResources, Arrays.asList(factory), HAS_NO_FACTORY_JOB_ID);
+        JobExecutor sut = new JobExecutor(logger, serviceResources, Arrays.asList(factory), HAS_NO_FACTORY_JOB_ID);
 
         sut.run();
 
@@ -185,7 +188,7 @@ public class JobExecutorTest
         inOrder.verify(sessionManager).commit();
         inOrder.verify(hasNoFactoryJob).setStatus(JobStatus.NO_FACTORY);
 
-        inOrder.verify(factory).createRunnable(serviceResources, hasNoFactoryJob);
+        inOrder.verify(factory).createRunnable(logger, serviceResources, hasNoFactoryJob);
 
         inOrder.verify(hasNoFactoryJob).setEnd(endDate);
         inOrder.verify(session).update(hasNoFactoryJob);

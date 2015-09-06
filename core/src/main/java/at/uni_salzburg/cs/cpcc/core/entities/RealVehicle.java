@@ -312,11 +312,6 @@ public class RealVehicle implements Serializable
             return false;
         }
 
-        if (!other.getSensors().containsAll(getSensors()))
-        {
-            return false;
-        }
-
         return true;
     }
 

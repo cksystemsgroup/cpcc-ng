@@ -62,8 +62,8 @@ public interface VirtualVehicleMigrator
      */
     String storeChunk(InputStream inStream) throws ArchiveException, IOException;
 
-    /**
-     * @param listener the virtual vehicle listener.
-     */
-    void addListener(VirtualVehicleListener listener);
+//    /**
+//     * @param listener the virtual vehicle listener.
+//     */
+//    void addListener(VirtualVehicleListener listener);
 }

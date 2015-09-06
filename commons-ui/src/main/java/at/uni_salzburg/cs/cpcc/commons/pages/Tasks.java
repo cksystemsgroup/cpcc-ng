@@ -18,6 +18,7 @@
 
 package at.uni_salzburg.cs.cpcc.commons.pages;
 
+import java.text.DecimalFormat;
 import java.text.Format;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,11 +30,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.Messages;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import at.uni_salzburg.cs.cpcc.commons.services.MillisecondTimeFormat;
 import at.uni_salzburg.cs.cpcc.commons.services.SensorDescriptionListFormat;
 import at.uni_salzburg.cs.cpcc.vvrte.task.Task;
 import at.uni_salzburg.cs.cpcc.vvrte.task.TaskExecutionService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Tasks page
@@ -66,10 +67,16 @@ public class Tasks
     @Property
     private Format sensorFormat;
     
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Tasks.tml uses this formatter.")
+    @Property
+    private Format distanceFormat;
+    
+    
     void onActivate()
     {
         timeFormat = new MillisecondTimeFormat(messages.get(DATE_FORMAT));
         sensorFormat = new SensorDescriptionListFormat();
+        distanceFormat = new DecimalFormat("0.0  m");
     }
 
     /**

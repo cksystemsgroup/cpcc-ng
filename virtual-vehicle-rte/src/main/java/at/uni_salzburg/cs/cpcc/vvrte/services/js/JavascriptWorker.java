@@ -27,6 +27,9 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
+import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.RhinoException;
@@ -38,6 +41,8 @@ import org.mozilla.javascript.serialize.ScriptableOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.uni_salzburg.cs.cpcc.core.utils.ExceptionFormatter;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -49,19 +54,8 @@ public class JavascriptWorker extends Thread
 
     private static final String VVRTE_API_FORMAT = "vvrte-api-%1$03d.js";
 
-    /**
-     * The worker state.
-     */
-    public enum WorkerState
-    {
-        INITIALIZED,
-        RUNNING,
-        DEFECTIVE,
-        INTERRUPTED,
-        FINISHED
-    };
-
-    private WorkerState workerState;
+    private ServiceResources serviceResources;
+    private VirtualVehicleState workerState;
     private String script;
     private Set<String> allowedClasses;
     private Set<String> allowedClassesRegex;
@@ -72,35 +66,42 @@ public class JavascriptWorker extends Thread
     private Object applicationState;
 
     /**
+     * @param serviceResources the service resources.
      * @param scriptSource the script source code.
      * @param apiVersion the used API version.
      * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
      * @param allowedClassesRegex additionally allowed class names defined by regular expressions.
      * @throws IOException thrown in case of errors.
      */
-    public JavascriptWorker(String scriptSource, int apiVersion, Set<String> allowedClasses,
-        Set<String> allowedClassesRegex) throws IOException
+    public JavascriptWorker(ServiceResources serviceResources, String scriptSource, int apiVersion
+        , Set<String> allowedClasses, Set<String> allowedClassesRegex) throws IOException
     {
+        this.serviceResources = serviceResources;
         this.allowedClasses = allowedClasses;
         this.allowedClassesRegex = allowedClassesRegex;
+
         String apiScript = loadApiScript(apiVersion);
         scriptStartLine = StringUtils.countMatches(apiScript, "\n") + 1;
         script = "(function(){ " + apiScript + "\n" + scriptSource + "\n})();";
-        workerState = WorkerState.INITIALIZED;
+        workerState = VirtualVehicleState.INIT;
     }
 
     /**
+     * @param serviceResources the service resources.
      * @param snapshot the frozen program.
      * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
      * @param allowedClassesRegex additionally allowed class names defined by regular expressions.
      */
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public JavascriptWorker(byte[] snapshot, Set<String> allowedClasses, Set<String> allowedClassesRegex)
+    public JavascriptWorker(ServiceResources serviceResources, byte[] snapshot, Set<String> allowedClasses
+        , Set<String> allowedClassesRegex)
     {
+        this.serviceResources = serviceResources;
         this.snapshot = snapshot;
         this.allowedClasses = allowedClasses;
         this.allowedClassesRegex = allowedClassesRegex;
-        workerState = WorkerState.INITIALIZED;
+
+        workerState = VirtualVehicleState.INIT;
     }
 
     /**
@@ -111,11 +112,11 @@ public class JavascriptWorker extends Thread
     {
         applicationState = null;
 
-        changeState(WorkerState.RUNNING);
+        changeState(VirtualVehicleState.RUNNING);
 
         if (snapshot == null && script == null)
         {
-            changeState(WorkerState.DEFECTIVE);
+            changeState(VirtualVehicleState.DEFECTIVE);
             return;
         }
 
@@ -146,7 +147,7 @@ public class JavascriptWorker extends Thread
 
             LOG.info("Result obj: " + Context.toString(resultObj));
             result = Context.toString(resultObj);
-            changeState(WorkerState.FINISHED);
+            changeState(VirtualVehicleState.FINISHED);
         }
         catch (ContinuationPending cp)
         {
@@ -163,42 +164,32 @@ public class JavascriptWorker extends Thread
                 baos.close();
                 snapshot = baos.toByteArray();
 
-                changeState(WorkerState.INTERRUPTED);
+                changeState(VirtualVehicleState.INTERRUPTED);
                 LOG.info("snapshot is " + snapshot.length + " bytes long.");
             }
             catch (IOException e)
             {
-                e.printStackTrace();
-                result = e.getMessage();
+                result = ExceptionFormatter.toString(e);
                 snapshot = null;
-                changeState(WorkerState.DEFECTIVE);
+                changeState(VirtualVehicleState.DEFECTIVE);
             }
         }
         catch (RhinoException e)
         {
             result = e.getMessage() + ", line=" + (e.lineNumber() - scriptStartLine) + ":" + e.columnNumber()
                 + ", source='" + e.lineSource() + "'";
-            changeState(WorkerState.DEFECTIVE);
+            changeState(VirtualVehicleState.DEFECTIVE);
         }
-        catch (ClassNotFoundException e)
+        catch (ClassNotFoundException | IOException | NoSuchMethodError e)
         {
-            result = e.getMessage();
-            changeState(WorkerState.DEFECTIVE);
-        }
-        catch (IOException e)
-        {
-            result = e.getMessage();
-            changeState(WorkerState.DEFECTIVE);
-        }
-        catch (NoSuchMethodError e)
-        {
-            e.printStackTrace(); // TODO remove
-            result = e.getMessage();
-            changeState(WorkerState.DEFECTIVE);
+            result = ExceptionFormatter.toString(e);
+            changeState(VirtualVehicleState.DEFECTIVE);
         }
         finally
         {
             Context.exit();
+            serviceResources.getService(HibernateSessionManager.class).commit();
+            serviceResources.getService(PerthreadManager.class).cleanup();
         }
     }
 
@@ -253,7 +244,7 @@ public class JavascriptWorker extends Thread
     /**
      * @return the state
      */
-    public WorkerState getWorkerState()
+    public VirtualVehicleState getWorkerState()
     {
         return workerState;
     }
@@ -269,7 +260,7 @@ public class JavascriptWorker extends Thread
     /**
      * @param newState the new state.
      */
-    private void changeState(WorkerState newState)
+    private void changeState(VirtualVehicleState newState)
     {
         if (workerState != newState)
         {
@@ -277,6 +268,7 @@ public class JavascriptWorker extends Thread
             {
                 listener.notify(this, newState);
             }
+
             workerState = newState;
         }
     }

@@ -19,6 +19,11 @@
 package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,6 +35,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
+import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.fest.assertions.api.Fail;
 import org.hibernate.internal.util.SerializationHelper;
 import org.mozilla.javascript.Context;
@@ -37,10 +45,11 @@ import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker.WorkerState;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 
 /**
  * JavascriptServiceTest
@@ -48,36 +57,58 @@ import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker.WorkerState;
 @Test(singleThreaded = true)
 public class JavascriptServiceTest
 {
+    private PerthreadManager perthreadManager;
+    private HibernateSessionManager sessionManager;
+    private ServiceResources serviceResources;
+
+    @BeforeMethod
+    public void setUp()
+    {
+        perthreadManager = mock(PerthreadManager.class);
+        sessionManager = mock(HibernateSessionManager.class);
+
+        serviceResources = mock(ServiceResources.class);
+        when(serviceResources.getService(PerthreadManager.class)).thenReturn(perthreadManager);
+        when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
+    }
+
     @Test
     public void shouldExecuteSimpleJS() throws InterruptedException, IOException
     {
-        JavascriptService jss = new JavascriptServiceImpl(null);
-        JavascriptWorker worker = jss.createWorker("function f(x){return x+1} f(7)", 1);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
+        JavascriptWorker sut = jss.createWorker("function f(x){return x+1} f(7)", 1);
         MyWorkerStateListener workerListener = new MyWorkerStateListener();
-        worker.addStateListener(workerListener);
-        worker.run();
+        sut.addStateListener(workerListener);
+        sut.run();
 
-        assertThat(worker.getResult()).isNotNull().isEqualTo("undefined");
-        assertThat(worker.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
-        assertThat(workerListener.getWorker()).isNotNull().isEqualTo(worker);
-        assertThat(workerListener.getState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
+        assertThat(sut.getResult()).isNotNull().isEqualTo("undefined");
+        assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.FINISHED);
+        assertThat(workerListener.getWorker()).isNotNull().isEqualTo(sut);
+        assertThat(workerListener.getState()).isNotNull().isEqualTo(VirtualVehicleState.FINISHED);
+
+        verify(sessionManager).commit();
+        verify(perthreadManager).cleanup();
     }
 
     @Test
     public void shouldNotExecuteNaughtyScript() throws InterruptedException, IOException
     {
-        JavascriptService jss = new JavascriptServiceImpl(null);
-        JavascriptWorker x = jss.createWorker("java.lang.System.currentTimeMillis()", 1);
-        x.run();
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
+        JavascriptWorker sut = jss.createWorker("java.lang.System.currentTimeMillis()", 1);
+        sut.run();
 
-        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.DEFECTIVE);
-        assertThat(x.getResult()).isNotNull().startsWith("TypeError: Cannot call property currentTimeMillis in object");
+        assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.DEFECTIVE);
+        assertThat(sut.getResult()).isNotNull().startsWith(
+            "TypeError: Cannot call property currentTimeMillis in object");
+
+        verify(sessionManager).commit();
+        verify(perthreadManager).cleanup();
     }
 
     @Test
     public void shouldDenyWrongApiVersion() throws InterruptedException, IOException
     {
-        JavascriptService jss = new JavascriptServiceImpl(null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
 
         try
         {
@@ -88,13 +119,16 @@ public class JavascriptServiceTest
         {
             assertThat(e.getMessage()).isEqualTo("Can not handle API version 1000");
         }
+
+        verifyZeroInteractions(sessionManager);
+        verifyZeroInteractions(perthreadManager);
     }
 
     @Test
     public void shouldHandleVvRte() throws IOException, InterruptedException
     {
         MyBuiltInFunctions functions = new MyBuiltInFunctions();
-        JavascriptService jss = new JavascriptServiceImpl(functions);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, functions);
         jss.addAllowedClass("at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceTest$MyBuiltInFunctions");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -106,35 +140,38 @@ public class JavascriptServiceTest
         assertThat(script).isNotNull().isNotEmpty();
 
         functions.setMigrate(true);
-        JavascriptWorker x = jss.createWorker(script, 1);
-        x.run();
+        JavascriptWorker sut = jss.createWorker(script, 1);
+        sut.run();
 
-        System.out.println("shouldHandleVvRte() result1: '" + x.getResult() + "'");
+        System.out.println("shouldHandleVvRte() result1: '" + sut.getResult() + "'");
         System.out.println("shouldHandleVvRte() output1: '" + out.toString("UTF-8") + "'");
-        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.INTERRUPTED);
+        assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.INTERRUPTED);
         InputStream resultStream = this.getClass().getResourceAsStream("simple-vv-expected-result-1.txt");
         String expectedResult = IOUtils.toString(resultStream, "UTF-8");
         assertThat(out.toString("UTF-8")).isNotNull().isEqualTo(expectedResult);
 
         functions.setMigrate(false);
-        byte[] snapshot = x.getSnapshot();
-        x = jss.createWorker(snapshot);
-        x.run();
+        byte[] snapshot = sut.getSnapshot();
+        sut = jss.createWorker(snapshot);
+        sut.run();
         stdOut.flush();
-        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
+        assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.FINISHED);
 
         // System.out.println("shouldHandleVvRte() result2: '" + x.getResult() + "'");
         // System.out.println("shouldHandleVvRte() output2: '" + out.toString("UTF-8") + "'");
         resultStream = this.getClass().getResourceAsStream("simple-vv-expected-result-2.txt");
         expectedResult = IOUtils.toString(resultStream, "UTF-8");
         assertThat(out.toString("UTF-8")).isNotNull().isEqualTo(expectedResult);
+
+        verify(sessionManager, times(2)).commit();
+        verify(perthreadManager, times(2)).cleanup();
     }
 
     @Test
     public void shouldHandleVvStorage() throws IOException
     {
         MyBuiltInFunctions functions = new MyBuiltInFunctions();
-        JavascriptService jss = new JavascriptServiceImpl(functions);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, functions);
         jss.addAllowedClass("at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceTest$MyBuiltInFunctions");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -146,18 +183,21 @@ public class JavascriptServiceTest
         assertThat(script).isNotNull().isNotEmpty();
 
         functions.setMigrate(false);
-        JavascriptWorker x = jss.createWorker(script, 1);
-        x.run();
+        JavascriptWorker sut = jss.createWorker(script, 1);
+        sut.run();
         stdOut.flush();
 
         // System.out.println("shouldHandleVvRte() result: '" + x.getResult() + "'");
         // System.out.println("shouldHandleVvRte() output: '" + out.toString("UTF-8") + "'");
-        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
+        assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.FINISHED);
 
         InputStream resultStream = this.getClass().getResourceAsStream("storage-test-expected-result.txt");
         String expectedResult = IOUtils.toString(resultStream, "UTF-8");
 
         assertThat(out.toString("UTF-8")).isNotNull().isEqualTo(expectedResult);
+
+        verify(sessionManager).commit();
+        verify(perthreadManager).cleanup();
     }
 
     @DataProvider
@@ -174,16 +214,19 @@ public class JavascriptServiceTest
     @Test(dataProvider = "emptyScriptDataProvider")
     public void shouldHandleEmptyScript(String script) throws IOException, InterruptedException
     {
-        JavascriptService jss = new JavascriptServiceImpl(null);
-        JavascriptWorker x = jss.createWorker(script, 1);
-        x.run();
-        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.FINISHED);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
+        JavascriptWorker sut = jss.createWorker(script, 1);
+        sut.run();
+        assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.FINISHED);
+
+        verify(sessionManager).commit();
+        verify(perthreadManager).cleanup();
     }
 
     @Test(dataProvider = "emptyScriptDataProvider")
     public void shouldCompileEmptyScript(String script) throws IOException
     {
-        JavascriptService jss = new JavascriptServiceImpl(null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
         Object[] result = jss.codeVerification(script, 1);
         assertThat(result).isNotNull().hasSize(0);
     }
@@ -191,26 +234,32 @@ public class JavascriptServiceTest
     @Test
     public void shouldHandleNullContinuation() throws InterruptedException
     {
-        JavascriptService jss = new JavascriptServiceImpl(null);
-        JavascriptWorker x = jss.createWorker(null);
-        x.run();
-        assertThat(x.getWorkerState()).isNotNull().isEqualTo(JavascriptWorker.WorkerState.DEFECTIVE);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
+        JavascriptWorker sut = jss.createWorker(null);
+        sut.run();
+        assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.DEFECTIVE);
+
+        verifyZeroInteractions(sessionManager);
+        verifyZeroInteractions(perthreadManager);
     }
 
     @Test
     public void shouldReturnScriptWithApiPrefix() throws IOException
     {
         String script = "function f(x){return x+1} f(7)";
-        JavascriptService jss = new JavascriptServiceImpl(null);
-        JavascriptWorker x = jss.createWorker(script, 1);
-        assertThat(x.getScript()).isNotNull().endsWith(script + "\n})();");
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
+        JavascriptWorker sut = jss.createWorker(script, 1);
+        assertThat(sut.getScript()).isNotNull().endsWith(script + "\n})();");
+
+        verifyZeroInteractions(sessionManager);
+        verifyZeroInteractions(perthreadManager);
     }
 
     @Test
     public void shouldNotCompileErroneousScript() throws IOException
     {
         String script = "var x = 0;\nx x x";
-        JavascriptService jss = new JavascriptServiceImpl(null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
         Object[] result = jss.codeVerification(script, 1);
         assertThat(result).isNotNull().hasSize(4);
 
@@ -223,15 +272,20 @@ public class JavascriptServiceTest
         assertThat(line).isNotNull().isEqualTo(2);
         assertThat(errorMessage).isNotNull().isEqualTo("missing ; before statement");
         assertThat(sourceLine).isNotNull().isEqualTo("x x x");
+
+        verifyZeroInteractions(sessionManager);
+        verifyZeroInteractions(perthreadManager);
     }
 
     @Test
     public void shouldCompileProperScript() throws IOException
     {
         String script = "function f(x){return x+1} f(7)";
-        JavascriptService jss = new JavascriptServiceImpl(null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
         Object[] result = jss.codeVerification(script, 1);
         assertThat(result).isNotNull().hasSize(0);
+
+        verifyZeroInteractions(perthreadManager);
     }
 
     /**
@@ -449,13 +503,13 @@ public class JavascriptServiceTest
     private static class MyWorkerStateListener implements JavascriptWorkerStateListener
     {
         private JavascriptWorker worker = null;
-        private WorkerState state = null;
+        private VirtualVehicleState state = null;
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void notify(JavascriptWorker worker, WorkerState state)
+        public void notify(JavascriptWorker worker, VirtualVehicleState state)
         {
             this.worker = worker;
             this.state = state;
@@ -472,7 +526,7 @@ public class JavascriptServiceTest
         /**
          * @return the state
          */
-        public WorkerState getState()
+        public VirtualVehicleState getState()
         {
             return state;
         }

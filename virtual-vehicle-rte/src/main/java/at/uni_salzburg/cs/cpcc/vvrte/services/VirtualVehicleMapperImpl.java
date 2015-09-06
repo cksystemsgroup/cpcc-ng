@@ -204,9 +204,13 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
             {
                 if (rv.getSensors().containsAll(task.getSensors()))
                 {
-                    LOG.info("Migrate not to " + rv.getName() + " because of sensors "
-                        + getSensorString(task.getSensors(), rv.getSensors()));
+                    LOG.info("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
                     destinationRealVehicles.add(rv);
+                }
+                else
+                {
+                    LOG.info("Migrate not to " + rv.getName() + " because of sensors "
+                        + getSensorString(task.getSensors(), rv.getSensors()));                    
                 }
             }
             else
@@ -222,7 +226,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
     {
         StringBuilder b = new StringBuilder("required: ");
         sd(b, requiredSensors);
-        b.append("available: ");
+        b.append(" available: ");
         sd(b, availableSensors);
         return b.toString();
     }

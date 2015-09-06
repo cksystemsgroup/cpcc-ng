@@ -19,6 +19,11 @@
 package at.uni_salzburg.cs.cpcc.core.services;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.matches;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,11 +31,25 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Constructor;
 
+import org.apache.tapestry5.hibernate.HibernateConfigurer;
+import org.apache.tapestry5.hibernate.HibernateTransactionAdvisor;
 import org.apache.tapestry5.ioc.Configuration;
+import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.ioc.MethodAdviceReceiver;
+import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.ServiceBindingOptions;
+import org.apache.tapestry5.ioc.services.cron.CronSchedule;
+import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
 import org.testng.annotations.Test;
 
+import at.uni_salzburg.cs.cpcc.core.base.CoreConstants;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.JobExecutionException;
+import at.uni_salzburg.cs.cpcc.core.services.jobs.JobService;
 import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserService;
 import at.uni_salzburg.cs.cpcc.core.services.opts.OptionsParserServiceImpl;
 
@@ -68,6 +87,17 @@ public class CoreModuleTest
     }
 
     @Test
+    public void shouldContributeApplicationDefaults()
+    {
+        @SuppressWarnings("unchecked")
+        MappedConfiguration<String, String> configuration = mock(MappedConfiguration.class);
+
+        CoreModule.contributeApplicationDefaults(configuration);
+
+        verify(configuration).add(eq(CoreConstants.PROP_MAX_JOB_AGE), anyString());
+    }
+
+    @Test
     public void shouldContributeToHibernateEntityPackageManager()
     {
         @SuppressWarnings("unchecked")
@@ -76,5 +106,66 @@ public class CoreModuleTest
         CoreModule.contributeHibernateEntityPackageManager(configuration);
 
         verify(configuration).add("at.uni_salzburg.cs.cpcc.core.entities");
+    }
+
+    @Test
+    public void shouldContributeHibernateSessionSource()
+    {
+        @SuppressWarnings("unchecked")
+        OrderedConfiguration<HibernateConfigurer> configuration = mock(OrderedConfiguration.class);
+        Logger logger = mock(Logger.class);
+        LiquibaseService liquibaseService = mock(LiquibaseService.class);
+
+        CoreModule.contributeHibernateSessionSource(configuration, logger, liquibaseService);
+
+        ArgumentCaptor<HibernateConfigurer> argument = ArgumentCaptor.forClass(HibernateConfigurer.class);
+
+        verify(configuration).add(eq("EventListener"), argument.capture());
+
+        org.hibernate.cfg.Configuration confMock = mock(org.hibernate.cfg.Configuration.class);
+
+        argument.getValue().configure(confMock);
+
+        verify(liquibaseService).update();
+    }
+
+    @Test
+    public void shouldAdviseTransactions()
+    {
+        HibernateTransactionAdvisor advisor = mock(HibernateTransactionAdvisor.class);
+        MethodAdviceReceiver receiver = mock(MethodAdviceReceiver.class);
+
+        CoreModule.adviseTransactions(advisor, receiver);
+
+        verify(advisor).addTransactionCommitAdvice(receiver);
+    }
+
+    @Test
+    public void shouldScheduleJobs() throws JobExecutionException
+    {
+        PeriodicExecutor executor = mock(PeriodicExecutor.class);
+        Logger logger = mock(Logger.class);
+        JobService jobService = mock(JobService.class);
+
+        CoreModule.scheduleJobs(executor, logger, jobService);
+
+        InOrder inOrder = Mockito.inOrder(executor, logger, jobService);
+
+        ArgumentCaptor<Runnable> argument1 = ArgumentCaptor.forClass(Runnable.class);
+        ArgumentCaptor<Runnable> argument2 = ArgumentCaptor.forClass(Runnable.class);
+
+        inOrder.verify(executor).addJob(any(CronSchedule.class), matches(".*JobService.*"), argument1.capture());
+        inOrder.verify(executor).addJob(any(CronSchedule.class), matches(".*Cleanup.*"), argument2.capture());
+
+        argument1.getValue().run();
+        inOrder.verify(jobService).executeJobs();
+        
+        doThrow(JobExecutionException.class).when(jobService).executeJobs();
+        argument1.getValue().run();
+        inOrder.verify(jobService).executeJobs();
+        inOrder.verify(logger).error(anyString(), any(JobExecutionException.class));
+
+        argument2.getValue().run();
+        inOrder.verify(jobService).removeOldJobs();
     }
 }

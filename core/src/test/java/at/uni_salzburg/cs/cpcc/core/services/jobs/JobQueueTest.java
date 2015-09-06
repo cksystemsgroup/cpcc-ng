@@ -39,6 +39,7 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -68,10 +69,13 @@ public class JobQueueTest
     private ServiceResources serviceResources;
     private PerthreadManager perthreadManager;
     private JobRepository jobRepository;
+    private Logger logger;
 
     @BeforeMethod
     public void setUp() throws Exception
     {
+        logger = mock(Logger.class);
+
         jobEnded = false;
         numberOfPoolThreads = 3;
 
@@ -138,10 +142,12 @@ public class JobQueueTest
         when(serviceResources.getService(JobRepository.class)).thenReturn(jobRepository);
 
         factory = mock(JobRunnableFactory.class);
-        when(factory.createRunnable(serviceResources, quickJob)).thenReturn(quickJobRunnable);
-        when(factory.createRunnable(serviceResources, slowJob)).thenReturn(slowJobRunnable);
+        when(factory.createRunnable(logger, serviceResources, quickJob)).thenReturn(quickJobRunnable);
+        when(factory.createRunnable(logger, serviceResources, slowJob)).thenReturn(slowJobRunnable);
 
-        sut = new JobQueue(sessionManager, timeService, jobRepository, Arrays.asList(factory), numberOfPoolThreads);
+        sut =
+            new JobQueue(logger, sessionManager, timeService, jobRepository, Arrays.asList(factory),
+                numberOfPoolThreads);
         sut.setServiceResources(serviceResources);
     }
 
@@ -200,7 +206,7 @@ public class JobQueueTest
 
         JobRunnable reusableJobRunnable = mock(JobRunnable.class);
 
-        when(factory.createRunnable(serviceResources, reusableJob)).thenReturn(reusableJobRunnable);
+        when(factory.createRunnable(logger, serviceResources, reusableJob)).thenReturn(reusableJobRunnable);
 
         sut.execute(reusableJob);
 

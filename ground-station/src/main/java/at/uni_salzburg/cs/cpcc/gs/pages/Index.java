@@ -56,12 +56,12 @@ public class Index
     }
 
     @Property
-    private RealVehicleState stateString;
+    private RealVehicleState rvState;
 
     /**
      * @return the state list.
      */
-    public Collection<RealVehicleState> getStateList()
+    public Collection<RealVehicleState> getRvStateList()
     {
         return Collections.emptyList();
     }

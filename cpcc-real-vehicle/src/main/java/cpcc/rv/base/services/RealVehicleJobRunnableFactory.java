@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.tapestry5.ioc.ServiceResources;
+import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Job;
 import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
@@ -36,7 +37,7 @@ public class RealVehicleJobRunnableFactory implements JobRunnableFactory
      * {@inheritDoc}
      */
     @Override
-    public JobRunnable createRunnable(ServiceResources serviceResources, Job job)
+    public JobRunnable createRunnable(Logger logger, ServiceResources serviceResources, Job job)
     {
         Map<String, String> parameters = new HashMap<>();
 
@@ -55,7 +56,7 @@ public class RealVehicleJobRunnableFactory implements JobRunnableFactory
         }
         else if ("import".equals(mode))
         {
-            return new ConfigImportJobRunnable(serviceResources, job.getData());
+            return new ConfigImportJobRunnable(logger, serviceResources, job.getData());
         }
         else if ("status".equals(mode))
         {
@@ -63,7 +64,7 @@ public class RealVehicleJobRunnableFactory implements JobRunnableFactory
         }
         else if ("init".equals(mode))
         {
-            return new RealVehicleInitJobRunnable(serviceResources);
+            return new RealVehicleInitJobRunnable(logger, serviceResources);
         }
 
         return null;

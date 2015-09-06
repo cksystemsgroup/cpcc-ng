@@ -30,6 +30,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
+import org.slf4j.Logger;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Job;
 import at.uni_salzburg.cs.cpcc.core.entities.JobStatus;
@@ -49,6 +50,7 @@ public class JobQueue
         }
     };
 
+    private Logger logger;
     private HibernateSessionManager sessionManager;
     private TimeService timeService;
     private JobRepository jobRepository;
@@ -59,15 +61,17 @@ public class JobQueue
     private Map<Integer, Runnable> taskMap = Collections.synchronizedMap(new HashMap<Integer, Runnable>());
 
     /**
+     * @param logger the application logger.
      * @param sessionManager the Hibernate session manager.
      * @param timeService the time service.
      * @param jobRepository the job repository.
      * @param factoryList the factory list.
      * @param numberOfPoolThreads the number of pool threads to be used.
      */
-    public JobQueue(HibernateSessionManager sessionManager, TimeService timeService, JobRepository jobRepository
-        , List<JobRunnableFactory> factoryList, int numberOfPoolThreads)
+    public JobQueue(Logger logger, HibernateSessionManager sessionManager, TimeService timeService
+        , JobRepository jobRepository, List<JobRunnableFactory> factoryList, int numberOfPoolThreads)
     {
+        this.logger = logger;
         this.sessionManager = sessionManager;
         this.timeService = timeService;
         this.jobRepository = jobRepository;
@@ -103,7 +107,7 @@ public class JobQueue
         sessionManager.getSession().update(job);
         sessionManager.commit();
 
-        JobExecutor executor = new JobExecutor(serviceResources, factoryList, job.getId());
+        JobExecutor executor = new JobExecutor(logger, serviceResources, factoryList, job.getId());
 
         synchronized (taskMap)
         {

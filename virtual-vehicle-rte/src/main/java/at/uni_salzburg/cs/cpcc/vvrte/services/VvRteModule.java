@@ -19,6 +19,7 @@
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
 import org.apache.tapestry5.ioc.Configuration;
+import org.apache.tapestry5.ioc.ScopeConstants;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
@@ -59,7 +60,7 @@ public final class VvRteModule
         binder.bind(TaskAnalyzer.class, TaskAnalyzerImpl.class).eagerLoad();
         binder.bind(TaskExecutionService.class, TaskExecutionServiceImpl.class).eagerLoad();
         binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class).eagerLoad();
-        binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class).eagerLoad();
+        binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class).scope(ScopeConstants.PERTHREAD);
         binder.bind(VvJsonConverter.class, VvJsonConverterImpl.class);
         binder.bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class);
     }
@@ -79,7 +80,8 @@ public final class VvRteModule
     @Startup
     public static void scheduleJobs(PeriodicExecutor executor, final TaskExecutionService taskExecutionService)
     {
-        executor.addJob(new CronSchedule("1 * * * * ?"), "Real Vehicle status update", new Runnable()
+        // TODO check cycle
+        executor.addJob(new CronSchedule("*/5 * * * * ?"), "Real Vehicle status update", new Runnable()
         {
             @Override
             public void run()

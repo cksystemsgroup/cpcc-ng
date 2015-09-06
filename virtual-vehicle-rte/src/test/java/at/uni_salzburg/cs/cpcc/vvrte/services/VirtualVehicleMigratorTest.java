@@ -44,6 +44,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
 import org.hibernate.internal.util.SerializationHelper;
 import org.mockito.invocation.InvocationOnMock;
@@ -81,6 +82,9 @@ public class VirtualVehicleMigratorTest
     private HashMap<String, VirtualVehicleStorage> virtualVehicleStorageMap;
     private VirtualVehicle vv1;
     private VirtualVehicle vv2;
+    private ServiceResources serviceResources;
+    private VirtualVehicleLauncher launcher;
+    private int vvIds = 1000;
 
     @BeforeMethod
     public void setUp()
@@ -104,7 +108,15 @@ public class VirtualVehicleMigratorTest
 
         com = mock(CommunicationService.class);
 
-        migrator = new VirtualVehicleMigratorImpl(logger, sessionManager, repo, com, qm);
+        serviceResources = mock(ServiceResources.class);
+        when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
+        when(serviceResources.getService(VvRteRepository.class)).thenReturn(repo);
+        when(serviceResources.getService(CommunicationService.class)).thenReturn(com);
+        when(serviceResources.getService(VirtualVehicleMigrator.class)).thenReturn(migrator);
+
+        launcher = mock(VirtualVehicleLauncher.class);
+
+        migrator = new VirtualVehicleMigratorImpl(logger, serviceResources, sessionManager, repo, qm, launcher);
         assertThat(migrator).isNotNull();
     }
 
@@ -367,6 +379,10 @@ public class VirtualVehicleMigratorTest
                 {
                     VirtualVehicle vv = (VirtualVehicle) o;
                     virtualVehicleMap.put(vv.getUuid(), vv);
+                    if (vv.getId() == null)
+                    {
+                        vv.setId(vvIds++);
+                    }
                 }
                 else if (o instanceof VirtualVehicleStorage)
                 {

@@ -1,0 +1,21 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+
+	<!-- Based on http://readyareyou.blogspot.com.au/2012/11/tapestry5-bootstrap-modal-dialog.html . -->
+
+	<t:content>
+		<div class="eg">
+			<div id="${clientId}" class="modal simple-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-body">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<t:body />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</t:content>
+
+</html>

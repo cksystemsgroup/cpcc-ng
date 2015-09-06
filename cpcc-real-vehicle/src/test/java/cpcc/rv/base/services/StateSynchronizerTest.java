@@ -28,6 +28,7 @@ import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
@@ -38,14 +39,17 @@ import at.uni_salzburg.cs.cpcc.core.services.jobs.JobService;
 
 public class StateSynchronizerTest
 {
-    private static final String EXPECTED_CONFIG_PARAMETERS = "mode=config,rv=2002";
-    private static final String EXPECTED_RV_PARAMETERS = "mode=status,rv=2002";
+    private static final String EXPECTED_CONFIG_PARAMETERS_1 = "mode=config,rv=1001";
+    private static final String EXPECTED_CONFIG_PARAMETERS_2 = "mode=config,rv=2002";
+    private static final String EXPECTED_RV_PARAMETERS = "mode=status,rv=1001";
 
     private Logger logger;
     private QueryManager qm;
     private JobService jobService;
     private StateSynchronizerImpl sut;
     private Parameter hostRvName;
+    private RealVehicle rv01;
+    private RealVehicle rv02;
 
     @BeforeMethod
     public void setUp()
@@ -57,11 +61,11 @@ public class StateSynchronizerTest
         when(hostRvName.getName()).thenReturn(Parameter.REAL_VEHICLE_NAME);
         when(hostRvName.getValue()).thenReturn(rv01Name);
 
-        RealVehicle rv01 = mock(RealVehicle.class);
+        rv01 = mock(RealVehicle.class);
         when(rv01.getId()).thenReturn(1001);
         when(rv01.getName()).thenReturn(rv01Name);
 
-        RealVehicle rv02 = mock(RealVehicle.class);
+        rv02 = mock(RealVehicle.class);
         when(rv02.getName()).thenReturn(rv02Name);
         when(rv02.getId()).thenReturn(2002);
 
@@ -85,13 +89,32 @@ public class StateSynchronizerTest
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
         verify(qm).findAllRealVehicles();
 
-        verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS);
+        verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_1);
+        verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_2);
         verifyZeroInteractions(logger);
+    }
+
+    @DataProvider
+    public Object[][] importConfigDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{new byte[]{11, 12, 13, 14}},
+            new Object[]{new byte[]{21, 22, 23, 24}},
+        };
+    }
+
+    @Test(dataProvider = "importConfigDataProvider")
+    public void shouldImportConfiguratin(byte[] data) throws JobCreationException
+    {
+        sut.importConfiguration(data);
+
+        verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=import", data);
     }
 
     @Test
     public void shouldSynchronizeRealVehicleState() throws JobCreationException
     {
+        when(rv02.getDeleted()).thenReturn(true);
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(hostRvName);
 
         sut.realVehicleStatusUpdate();
@@ -141,13 +164,13 @@ public class StateSynchronizerTest
             .thenReturn("Thrown on purpose!");
 
         doThrow(toBeThrown)
-            .when(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS);
+            .when(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_2);
 
         sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
 
         verify(logger)
-            .error("Can not create config sync job for real vehicle RV02 (2002), mode=config Thrown on purpose!");
+            .debug("Can not create config sync job for real vehicle RV02 (2002), mode=config Thrown on purpose!");
     }
 }

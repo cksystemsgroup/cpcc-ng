@@ -18,7 +18,7 @@
 
 package at.uni_salzburg.cs.cpcc.vvrte.services.js;
 
-import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptWorker.WorkerState;
+import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
 
 /**
  * JavascriptWorkerStateListener
@@ -29,5 +29,5 @@ public interface JavascriptWorkerStateListener
      * @param worker the worker that changed its state.
      * @param state the worker state.
      */
-    void notify(JavascriptWorker worker, WorkerState state);
+    void notify(JavascriptWorker worker, VirtualVehicleState state);
 }

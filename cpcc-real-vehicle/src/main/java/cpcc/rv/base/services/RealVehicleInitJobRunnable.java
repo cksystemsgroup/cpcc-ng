@@ -31,13 +31,16 @@ import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
  */
 public class RealVehicleInitJobRunnable implements JobRunnable
 {
+    private Logger logger;
     private ServiceResources serviceResources;
 
     /**
+     * @param logger the application logger.
      * @param serviceResources the service resources.
      */
-    public RealVehicleInitJobRunnable(ServiceResources serviceResources)
+    public RealVehicleInitJobRunnable(Logger logger, ServiceResources serviceResources)
     {
+        this.logger = logger;
         this.serviceResources = serviceResources;
     }
 
@@ -47,7 +50,6 @@ public class RealVehicleInitJobRunnable implements JobRunnable
     @Override
     public void run() throws Exception
     {
-        Logger logger = serviceResources.getService(Logger.class);
         QueryManager qm = serviceResources.getService(QueryManager.class);
 
         Parameter rvName = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME, "");

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.tapestry5.ioc.ServiceResources;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.RhinoException;
@@ -41,11 +42,16 @@ public class JavascriptServiceImpl implements JavascriptService
     private Set<String> allowedClasses = new HashSet<String>();
     private Set<String> allowedClassesRegex = new HashSet<String>();
 
+    private ServiceResources serviceResources;
+
     /**
+     * @param serviceResources the service resources.
      * @param functions the built-in functions to use.
      */
-    public JavascriptServiceImpl(BuiltInFunctions functions)
+    public JavascriptServiceImpl(ServiceResources serviceResources, BuiltInFunctions functions)
     {
+        this.serviceResources = serviceResources;
+        
         VvRteFunctions.setVvRte(functions);
         // VvRteFunctions.setStdOut(System.out);
         
@@ -68,7 +74,7 @@ public class JavascriptServiceImpl implements JavascriptService
     @Override
     public JavascriptWorker createWorker(String script, int apiVersion) throws IOException
     {
-        return new JavascriptWorker(script, apiVersion, allowedClasses, allowedClassesRegex);
+        return new JavascriptWorker(serviceResources, script, apiVersion, allowedClasses, allowedClassesRegex);
     }
 
     /**
@@ -77,7 +83,7 @@ public class JavascriptServiceImpl implements JavascriptService
     @Override
     public JavascriptWorker createWorker(byte[] continuation)
     {
-        return new JavascriptWorker(continuation, allowedClasses, allowedClassesRegex);
+        return new JavascriptWorker(serviceResources, continuation, allowedClasses, allowedClassesRegex);
     }
 
     /**
@@ -104,7 +110,8 @@ public class JavascriptServiceImpl implements JavascriptService
     @Override
     public Object[] codeVerification(String script, int apiVersion) throws IOException
     {
-        JavascriptWorker w = new JavascriptWorker(script, apiVersion, allowedClasses, allowedClassesRegex);
+        JavascriptWorker w = 
+            new JavascriptWorker(serviceResources, script, apiVersion, allowedClasses, allowedClassesRegex);
         String completedScript = w.getScript();
 
         Context cx = Context.enter();
