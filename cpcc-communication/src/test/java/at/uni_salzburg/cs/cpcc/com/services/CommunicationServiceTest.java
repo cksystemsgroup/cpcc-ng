@@ -18,6 +18,8 @@
 
 package at.uni_salzburg.cs.cpcc.com.services;
 
+import static com.googlecode.catchexception.CatchException.catchException;
+import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -162,5 +164,15 @@ public class CommunicationServiceTest
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isNotNull().isEqualTo(Status.NOT_OK);
         assertThat(response.getContent()).isNotNull().isEqualTo("HttpException thrown on purpose!".getBytes());
+    }
+
+    @Test
+    public void shouldThrowExeptionWhenAddingConnectorsTwice()
+    {
+        com.addConnector("connector", "path");
+
+        catchException(com).addConnector("connector", "path");
+
+        assertThat(caughtException()).isInstanceOf(IllegalStateException.class);
     }
 }
