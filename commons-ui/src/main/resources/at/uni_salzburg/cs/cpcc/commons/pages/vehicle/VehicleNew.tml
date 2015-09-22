@@ -8,7 +8,7 @@
 	<t:Errors />
 
 	<t:BeanEditor t:object="vehicle"
-		t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime"
+		t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime,stateInfo"
 		t:reorder="name,code">
 
 		<p:name>

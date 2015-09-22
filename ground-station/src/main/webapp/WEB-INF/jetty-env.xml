@@ -39,7 +39,7 @@
 		<Arg>
 			<New class="com.mchange.v2.c3p0.ComboPooledDataSource">
 				<Set name="driverClass">org.h2.Driver</Set>
-				<Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/GS;MVCC=true;AUTOCOMMIT=OFF</Set>
+				<Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/GS01;MVCC=true;AUTOCOMMIT=OFF</Set>
 				<Set name="user">sa</Set>
 				<Set name="password"></Set>
 				<Set name="maxPoolSize">30</Set>
@@ -53,7 +53,7 @@
 		<Arg>
 			<New class="com.mchange.v2.c3p0.ComboPooledDataSource">
 				<Set name="driverClass">org.h2.Driver</Set>
-				<Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/GS;MVCC=true;AUTOCOMMIT=OFF</Set>
+				<Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/GS01;MVCC=true;AUTOCOMMIT=OFF</Set>
 				<Set name="user">sa</Set>
 				<Set name="password"></Set>
 			</New>
@@ -66,7 +66,7 @@
 	<!-- <Arg>jdbc/GS</Arg> -->
 	<!-- <Arg> -->
 	<!-- <New class="org.h2.jdbcx.JdbcDataSource"> -->
-	<!-- <Set name="URL">jdbc:h2:file:../h2db/RV;create=true</Set> -->
+	<!-- <Set name="URL">jdbc:h2:file:../h2db/GS01;create=true</Set> -->
 	<!-- <Set name="User">sa</Set> -->
 	<!-- <Set name="Password">sa</Set> -->
 	<!-- </New> -->

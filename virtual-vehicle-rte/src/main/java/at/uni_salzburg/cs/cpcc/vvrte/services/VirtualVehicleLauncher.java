@@ -39,6 +39,13 @@ public interface VirtualVehicleLauncher
      * @throws VirtualVehicleLaunchException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
+    void stop(int vehicleId) throws VirtualVehicleLaunchException, IOException;
+
+    /**
+     * @param vehicleId the ID of the vehicle to launch.
+     * @throws VirtualVehicleLaunchException thrown in case of errors.
+     * @throws IOException thrown in case of errors.
+     */
     void resume(int vehicleId) throws VirtualVehicleLaunchException, IOException;
 
     /**
@@ -46,4 +53,5 @@ public interface VirtualVehicleLauncher
      * @param newState the new vehicle state.
      */
     void stateChange(int vehicleId, VirtualVehicleState newState);
+
 }

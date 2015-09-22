@@ -343,12 +343,12 @@ public class RealVehicle implements Serializable
     public String toString()
     {
         StringBuilder b = new StringBuilder();
-        b.append("(id=").append(id)
+        b.append("(id=").append(id != null ? id : -1)
             .append(", name=").append(name)
             .append(", type=").append(type)
             .append(", url=").append(url)
             .append(", areaOfOperation=").append(areaOfOperation)
-            .append(", lastUpdate=").append(lastUpdate.getTime())
+            .append(", lastUpdate=").append(lastUpdate != null ? lastUpdate.getTime() : -1L)
             .append(", deleted=").append(deleted)
             .append(", sensors=[");
 

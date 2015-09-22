@@ -18,6 +18,9 @@
 
 package at.uni_salzburg.cs.cpcc.vvrte.services;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,8 +32,11 @@ import java.lang.reflect.Constructor;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.ServiceBindingOptions;
+import org.apache.tapestry5.ioc.services.cron.CronSchedule;
+import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.testng.annotations.Test;
 
+import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.BuiltInFunctions;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptService;
 import at.uni_salzburg.cs.cpcc.vvrte.services.js.JavascriptServiceImpl;
@@ -98,5 +104,36 @@ public class VvRteModuleTest
         VvRteModule.contributeHibernateEntityPackageManager(configuration);
 
         verify(configuration).add("at.uni_salzburg.cs.cpcc.vvrte.entities");
+    }
+
+    @Test
+    public void shouldSchedulePeriodicJobs()
+    {
+        PeriodicExecutor executor = mock(PeriodicExecutor.class);
+        TaskExecutionService taskExecutionService = mock(TaskExecutionService.class);
+
+        VvRteModule.scheduleJobs(executor, taskExecutionService);
+
+        verify(executor).addJob(any(CronSchedule.class), anyString(), any(Runnable.class));
+    }
+
+    @Test
+    public void shouldResetVirtualVehicleStates()
+    {
+        VvRteRepository vvRteRepo = mock(VvRteRepository.class);
+
+        VvRteModule.resetVirtualVehicleStates(vvRteRepo);
+
+        verify(vvRteRepo).resetVirtualVehicleStates();
+    }
+
+    @Test
+    public void shouldAddMigrationConnectorToCommunicationService()
+    {
+        CommunicationService communicationService = mock(CommunicationService.class);
+
+        VvRteModule.setupCommunicationService(communicationService);
+
+        verify(communicationService).addConnector(eq(VvRteConstants.MIGRATION_CONNECTOR), anyString());
     }
 }

@@ -76,13 +76,21 @@ public class GsViewer
      */
     public String getVehicles()
     {
-        Map<String, String> stateMap = new HashMap<String, String>();
-
-        for (RealVehicleState state : qm.findAllRealVehicleStates())
+        try
         {
-            stateMap.put(state.getId().toString(), state.getState());
-        }
+            Map<String, String> stateMap = new HashMap<String, String>();
 
-        return JSONUtils.toJsonString(stateMap);
+            for (RealVehicleState state : qm.findAllRealVehicleStates())
+            {
+                stateMap.put(state.getId().toString(), state.getState());
+            }
+
+            return JSONUtils.toJsonString(stateMap);
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            return "{}";
+        }
     }
 }

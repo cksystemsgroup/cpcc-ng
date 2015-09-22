@@ -31,7 +31,6 @@ import org.geojson.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
 import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
 import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
@@ -50,7 +49,6 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
     private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleMapperImpl.class);
 
     private QueryManager qm;
-    private String rvName;
 
     /**
      * @param qm the query manager.
@@ -61,13 +59,71 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
     public VirtualVehicleMapperImpl(QueryManager qm) throws JsonParseException, JsonMappingException, IOException
     {
         this.qm = qm;
-
-        Parameter rvNameParam = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME);
-        rvName = rvNameParam != null ? rvNameParam.getValue() : null;
-
     }
 
-    private List<PolygonZone> getPolygons(String areaOfOperationString) throws IOException
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public VirtualVehicleMappingDecision findMappingDecision(Task task)
+    {
+        VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision();
+        decision.setTask(task);
+        decision.setMigration(true);
+
+        RealVehicle rv = qm.findOwnRealVehicle();
+        if (rv == null)
+        {
+            migrateTask(task, decision);
+            return decision;
+        }
+
+        boolean migration = !isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition());
+
+        if (migration || !rv.getSensors().containsAll(task.getSensors()))
+        {
+            migrateTask(task, decision);
+            return decision;
+        }
+
+        decision.setMigration(false);
+
+        return decision;
+    }
+
+    /**
+     * @param task the task to be migrated.
+     * @param decision the migration decision.
+     */
+    private void migrateTask(Task task, VirtualVehicleMappingDecision decision)
+    {
+        List<RealVehicle> destinationRealVehicles = new ArrayList<RealVehicle>();
+
+        for (RealVehicle rv : qm.findAllRealVehicles())
+        {
+            if (isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition()))
+            {
+                if (rv.getSensors().containsAll(task.getSensors()))
+                {
+                    LOG.info("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
+                    destinationRealVehicles.add(rv);
+                }
+                else
+                {
+                    LOG.info("Migrate not to " + rv.getName() + " because of sensors "
+                        + getSensorString(task.getSensors(), rv.getSensors()));
+                }
+            }
+            else
+            {
+                LOG.info("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
+            }
+        }
+
+        decision.setRealVehicles(destinationRealVehicles);
+    }
+
+    private static List<PolygonZone> getPolygons(String areaOfOperationString) throws IOException
     {
         List<PolygonZone> list = new ArrayList<PolygonZone>();
         FeatureCollection fc = new ObjectMapper().readValue(areaOfOperationString, FeatureCollection.class);
@@ -85,7 +141,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         return list;
     }
 
-    private boolean isInsideAreasOfOperation(String areasOfOperation, PolarCoordinate position)
+    private static boolean isInsideAreasOfOperation(String areasOfOperation, PolarCoordinate position)
     {
         if (StringUtils.isBlank(areasOfOperation))
         {
@@ -111,118 +167,8 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public VirtualVehicleMappingDecision findMappingDecision(Task task)
-    {
-        VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision();
-        decision.setTask(task);
-        decision.setMigration(true);
-
-        //        boolean migration = true;
-
-        RealVehicle rv = qm.findRealVehicleByName(rvName);
-
-        if (rv == null)
-        {
-            migrateTask(task, decision);
-            return decision;
-        }
-
-        boolean migration = !isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition());
-
-        if (migration || !rv.getSensors().containsAll(task.getSensors()))
-        {
-            migrateTask(task, decision);
-            return decision;
-        }
-
-        //        if (areaOfOperationMap.containsKey(rvName))
-        //        {
-        //            migration = !areaOfOperationMap.get(rvName).isInside(task.getPosition());
-        //        }
-        //
-        //        if (!migration && realVehicleMap.containsKey(rvName))
-        //        {
-        //            RealVehicle realVehicle = realVehicleMap.get(rvName);  // TODO
-        //            migration = !realVehicle.getSensors().containsAll(task.getSensors());
-        //        }
-
-        decision.setMigration(false);
-
-        //        if (migration)
-        //        {
-        //            migrateTask(task, decision);
-        //        }
-
-        return decision;
-    }
-
-    /**
-     * @param task the task to be migrated.
-     * @param decision the migration decision.
-     */
-    private void migrateTask(Task task, VirtualVehicleMappingDecision decision)
-    {
-        List<RealVehicle> destinationRealVehicles = new ArrayList<RealVehicle>();
-        //        for (Entry<String, RealVehicle> entry : realVehicleMap.entrySet())
-        //        {
-        //            PolygonZone areaOfOperation = areaOfOperationMap.get(entry.getKey());
-        //            if (areaOfOperation == null || !areaOfOperation.isInside(task.getPosition()))
-        //            {
-        //                LOG.info("Migrate not to " + entry.getValue().getName()
-        //                    + " because of position " + task.getPosition());
-        //                continue;
-        //            }
-        //
-        //            if (!entry.getValue().getSensors().containsAll(task.getSensors()))
-        //            {
-        //
-        //                StringBuilder b = new StringBuilder("required: ");
-        //                for (SensorDefinition s : task.getSensors())
-        //                {
-        //                    b.append(s.getDescription()).append(", ");
-        //                }
-        //                b.append("available: ");
-        //                for (SensorDefinition s : entry.getValue().getSensors())
-        //                {
-        //                    b.append(s.getDescription()).append(", ");
-        //                }
-        //                LOG.info("Migrate not to " + entry.getValue().getName()
-        //                    + " because of sensors " + b.toString());
-        //                continue;
-        //            }
-        //
-        //            destinationRealVehicles.add(entry.getValue());
-        //        }
-
-        for (RealVehicle rv : qm.findAllRealVehicles())
-        {
-            if (isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition()))
-            {
-                if (rv.getSensors().containsAll(task.getSensors()))
-                {
-                    LOG.info("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
-                    destinationRealVehicles.add(rv);
-                }
-                else
-                {
-                    LOG.info("Migrate not to " + rv.getName() + " because of sensors "
-                        + getSensorString(task.getSensors(), rv.getSensors()));                    
-                }
-            }
-            else
-            {
-                LOG.info("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
-            }
-        }
-
-        decision.setRealVehicles(destinationRealVehicles);
-    }
-
-    private String getSensorString(List<SensorDefinition> requiredSensors, List<SensorDefinition> availableSensors)
+    private static String getSensorString(List<SensorDefinition> requiredSensors,
+        List<SensorDefinition> availableSensors)
     {
         StringBuilder b = new StringBuilder("required: ");
         sd(b, requiredSensors);
@@ -231,7 +177,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         return b.toString();
     }
 
-    private void sd(StringBuilder toAppendTo, List<SensorDefinition> sensors)
+    private static void sd(StringBuilder toAppendTo, List<SensorDefinition> sensors)
     {
         boolean first = true;
 

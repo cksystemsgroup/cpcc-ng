@@ -34,6 +34,8 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
@@ -50,7 +52,8 @@ public class JobServiceTest
 
     private TimeService timeService;
     private JobRepository jobRepository;
-    private Date createdDate;
+    private Date createdDate1;
+    private Date createdDate2;
     private Session session;
     private HibernateSessionManager sessionManager;
     private Job existingJob;
@@ -69,7 +72,8 @@ public class JobServiceTest
         parameters01 = "parameters01";
         parameters02 = "parameters02";
 
-        createdDate = mock(Date.class);
+        createdDate1 = mock(Date.class);
+        createdDate2 = mock(Date.class);
 
         session = mock(Session.class);
 
@@ -105,7 +109,7 @@ public class JobServiceTest
         when(timeService.newDate()).thenAnswer(new Answer<Date>()
         {
             int counter = 0;
-            Date[] dateList = new Date[]{createdDate};
+            Date[] dateList = new Date[]{createdDate1};
 
             @Override
             public Date answer(InvocationOnMock invocation) throws Throwable
@@ -126,7 +130,7 @@ public class JobServiceTest
 
         assertThat(actual.getCreated())
             .describedAs("Job queued time")
-            .isEqualTo(createdDate);
+            .isEqualTo(createdDate1);
 
         assertThat(actual.getStatus())
             .describedAs("Job status")
@@ -142,12 +146,88 @@ public class JobServiceTest
     }
 
     @Test
+    public void shouldAddJobWithData() throws JobCreationException
+    {
+        when(timeService.newDate()).thenAnswer(new Answer<Date>()
+        {
+            int counter = 0;
+            Date[] dateList = new Date[]{createdDate1, createdDate2};
+
+            @Override
+            public Date answer(InvocationOnMock invocation) throws Throwable
+            {
+                return counter < dateList.length ? dateList[counter++] : null;
+            }
+        });
+
+        sut.addJobQueue(QUEUE_NAME_01, jobQueue01);
+
+        byte[] data1 = new byte[]{1, 2, 3};
+        byte[] data2 = new byte[]{3, 2, 1};
+
+        sut.addJob(QUEUE_NAME_01, parameters01, data1);
+        sut.addJob(QUEUE_NAME_01, parameters01, data2);
+
+        InOrder inOrder = Mockito.inOrder(timeService, jobQueue01, jobRepository, session);
+
+        inOrder.verify(jobRepository).findOtherRunningJob(QUEUE_NAME_01, parameters01);
+
+        ArgumentCaptor<Job> argument1 = ArgumentCaptor.forClass(Job.class);
+        inOrder.verify(session).save(argument1.capture());
+        Job actual1 = argument1.getValue();
+
+        assertThat(actual1.getCreated())
+            .describedAs("Job queued time")
+            .isEqualTo(createdDate1);
+
+        assertThat(actual1.getStatus())
+            .describedAs("Job status")
+            .isEqualTo(JobStatus.CREATED);
+
+        assertThat(actual1.getParameters())
+            .describedAs("Job parameters")
+            .isEqualTo(parameters01);
+
+        assertThat(actual1.getQueueName())
+            .describedAs("Job queue name")
+            .isEqualTo(QUEUE_NAME_01);
+
+        assertThat(actual1.getData())
+            .describedAs("Data One")
+            .isEqualTo(data1);
+
+        ArgumentCaptor<Job> argument2 = ArgumentCaptor.forClass(Job.class);
+        inOrder.verify(session).save(argument2.capture());
+        Job actual2 = argument2.getValue();
+
+        assertThat(actual2.getCreated())
+            .describedAs("Job queued time")
+            .isEqualTo(createdDate2);
+
+        assertThat(actual2.getStatus())
+            .describedAs("Job status")
+            .isEqualTo(JobStatus.CREATED);
+
+        assertThat(actual2.getParameters())
+            .describedAs("Job parameters")
+            .isEqualTo(parameters01);
+
+        assertThat(actual2.getQueueName())
+            .describedAs("Job queue name")
+            .isEqualTo(QUEUE_NAME_01);
+
+        assertThat(actual2.getData())
+            .describedAs("Data Two")
+            .isEqualTo(data2);
+    }
+
+    @Test
     public void shouldAddJobIfNotExists() throws JobCreationException
     {
         when(timeService.newDate()).thenAnswer(new Answer<Date>()
         {
             int counter = 0;
-            Date[] dateList = new Date[]{createdDate};
+            Date[] dateList = new Date[]{createdDate1};
 
             @Override
             public Date answer(InvocationOnMock invocation) throws Throwable
@@ -168,7 +248,7 @@ public class JobServiceTest
 
         assertThat(actual.getCreated())
             .describedAs("Job queued time")
-            .isEqualTo(createdDate);
+            .isEqualTo(createdDate1);
 
         assertThat(actual.getStatus())
             .describedAs("Job status")
@@ -195,7 +275,7 @@ public class JobServiceTest
         when(timeService.newDate()).thenAnswer(new Answer<Date>()
         {
             int counter = 0;
-            Date[] dateList = new Date[]{createdDate};
+            Date[] dateList = new Date[]{createdDate1};
 
             @Override
             public Date answer(InvocationOnMock invocation) throws Throwable

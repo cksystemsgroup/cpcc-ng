@@ -36,12 +36,12 @@ import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
  */
 public class TaskTest
 {
-    Task task;
+    Task sut;
 
     @BeforeMethod
     public void setUp()
     {
-        task = new Task();
+        sut = new Task();
     }
 
     @DataProvider
@@ -58,15 +58,34 @@ public class TaskTest
     @Test(dataProvider = "positionDataProvider")
     public void shouldStorePosition(PolarCoordinate position)
     {
-        task.setPosition(position);
-        assertThat(task.getPosition()).isEqualTo(position);
+        sut.setPosition(position);
+        assertThat(sut.getPosition()).isEqualTo(position);
+    }
+
+    @DataProvider
+    public Object[][] distanceDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{3.9},
+            new Object[]{null},
+            new Object[]{3.333},
+            new Object[]{7.1111},
+            new Object[]{8.3},
+        };
+    };
+
+    @Test(dataProvider = "distanceDataProvider")
+    public void shouldStoreDistanceToTarget(Double expected)
+    {
+        sut.setDistanceToTarget(expected);
+        assertThat(sut.getDistanceToTarget()).isEqualTo(expected);
     }
 
     @Test
     public void shouldHaveDefaultCreationTime()
     {
         long now = System.currentTimeMillis();
-        assertThat(now - task.getCreationTime()).isGreaterThanOrEqualTo(0).isLessThan(1000);
+        assertThat(now - sut.getCreationTime()).isGreaterThanOrEqualTo(0).isLessThan(1000);
     }
 
     @DataProvider
@@ -84,8 +103,8 @@ public class TaskTest
     @Test(dataProvider = "timeDataProvider")
     public void shouldStoreCreationTime(long time)
     {
-        task.setCreationTime(time);
-        assertThat(task.getCreationTime()).isEqualTo(time);
+        sut.setCreationTime(time);
+        assertThat(sut.getCreationTime()).isEqualTo(time);
     }
 
     @DataProvider
@@ -105,14 +124,14 @@ public class TaskTest
     @Test(dataProvider = "toleranceDistanceDataProvider")
     public void shouldStoreTolerance(double tolerance, double expectedTolerance)
     {
-        task.setTolerance(tolerance);
-        assertThat(task.getTolerance()).isEqualTo(expectedTolerance);
+        sut.setTolerance(tolerance);
+        assertThat(sut.getTolerance()).isEqualTo(expectedTolerance);
     }
 
     @Test
     public void shouldHaveDefaultForLastInTaskGroup()
     {
-        assertThat(task.isLastInTaskGroup()).isTrue();
+        assertThat(sut.isLastInTaskGroup()).isTrue();
     }
 
     @DataProvider
@@ -127,8 +146,8 @@ public class TaskTest
     @Test(dataProvider = "booleanDataProvider")
     public void shouldStoreIsLastInTaskGroup(boolean lastInTaskGroup)
     {
-        task.setLastInTaskGroup(lastInTaskGroup);
-        assertThat(task.isLastInTaskGroup()).isEqualTo(lastInTaskGroup);
+        sut.setLastInTaskGroup(lastInTaskGroup);
+        assertThat(sut.isLastInTaskGroup()).isEqualTo(lastInTaskGroup);
     }
 
     @DataProvider
@@ -147,19 +166,19 @@ public class TaskTest
     @Test(dataProvider = "sensorListDataProvider")
     public void shouldStoreSensorList(List<SensorDefinition> sensorList)
     {
-        task.setSensors(sensorList);
-        assertThat(task.getSensors()).isNotNull().hasSize(sensorList.size());
-        assertThat(task.getSensors()).containsExactly(sensorList.toArray(new SensorDefinition[0]));
+        sut.setSensors(sensorList);
+        assertThat(sut.getSensors()).isNotNull().hasSize(sensorList.size());
+        assertThat(sut.getSensors()).containsExactly(sensorList.toArray(new SensorDefinition[0]));
     }
 
     @Test
     public void shouldWaitForCompletion()
     {
-        TaskFinisher finisher = new TaskFinisher(task, 1000);
+        TaskFinisher finisher = new TaskFinisher(sut, 1000);
         finisher.start();
 
         long start = System.nanoTime();
-        task.awaitCompletion();
+        sut.awaitCompletion();
         long end = System.nanoTime();
 
         assertThat(end - start).isGreaterThan(900000000);
@@ -169,16 +188,16 @@ public class TaskTest
     @Test
     public void shouldNotWaitForCompletionOfFinishedTask()
     {
-        task.setCompleted();
+        sut.setCompleted();
 
-        TaskFinisher finisher = new TaskFinisher(task, 1000);
+        TaskFinisher finisher = new TaskFinisher(sut, 1000);
         finisher.start();
 
         long start = System.nanoTime();
-        task.awaitCompletion();
+        sut.awaitCompletion();
         long end = System.nanoTime();
 
-        assertThat(task.isCompleted()).isTrue();
+        assertThat(sut.isCompleted()).isTrue();
         assertThat(end - start).isLessThanOrEqualTo(100000000);
     }
 

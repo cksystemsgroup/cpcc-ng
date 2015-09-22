@@ -19,11 +19,14 @@
 package at.uni_salzburg.cs.cpcc.vvrte.entities;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.Date;
 import java.util.UUID;
 
 import org.testng.annotations.Test;
+
+import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
 
 /**
  * VehicleTest
@@ -38,35 +41,40 @@ public class VirtualVehicleTest
         UUID uuid = UUID.randomUUID();
         String vehicleName = "veh01";
         String clob = "bugger that!";
+        RealVehicle migrationDestination = mock(RealVehicle.class);
         Date migStart = new Date(12345678);
         byte[] blob = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         int apiVersion = 33;
         VirtualVehicleState state = VirtualVehicleState.MIGRATING;
         Date startTime = new Date(1385063517000L);
         Date endTime = new Date(1385069517000L);
+        String stateInfo = "The State Info";
 
         VirtualVehicle v = new VirtualVehicle();
         v.setId(id);
         v.setUuid(uuid.toString());
         v.setName(vehicleName);
         v.setCode(clob);
+        v.setMigrationDestination(migrationDestination);
         v.setMigrationStartTime(migStart);
         v.setContinuation(blob);
         v.setApiVersion(apiVersion);
         v.setState(state);
         v.setStartTime(startTime);
         v.setEndTime(endTime);
-        
+        v.setStateInfo(stateInfo);
 
         assertThat(v.getId()).isNotNull().isEqualTo(10);
         assertThat(v.getUuid()).isNotNull().isEqualTo(uuid.toString());
         assertThat(v.getName()).isNotNull().isEqualTo(vehicleName);
         assertThat(v.getCode()).isNotNull().isEqualTo(clob);
+        assertThat(v.getMigrationDestination()).isNotNull().isEqualTo(migrationDestination);
         assertThat(v.getMigrationStartTime()).isNotNull().isEqualTo(migStart);
         assertThat(v.getContinuation()).isNotNull().isEqualTo(blob);
         assertThat(v.getApiVersion()).isNotNull().isEqualTo(apiVersion);
         assertThat(v.getState()).isNotNull().isEqualTo(state);
         assertThat(v.getStartTime()).isNotNull().isEqualTo(startTime);
         assertThat(v.getEndTime()).isNotNull().isEqualTo(endTime);
+        assertThat(v.getStateInfo()).isNotNull().isEqualTo(stateInfo);
     }
 }

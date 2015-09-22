@@ -164,10 +164,10 @@ public class StateServiceTest
                     + "\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]},"
                     + "\"rvName\":\"RV01\",\"type\":\"rvPosition\",\"rvId\":1001},"
                     + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"yellow\",\"type\":\"vv\"},"
-                    + "\"id\":\"19a43d42-669a-11e3-a337-df369887df3e\"},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"red\",\"type\":\"vv\"},"
-                    + "\"id\":\"1d50b380-669a-11e3-9008-471c9c51252f\"}]}"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\",\"type\":\"vv\"},"
+                    + "\"id\":\"19a43d...\"},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\",\"type\":\"vv\"},"
+                    + "\"id\":\"1d50b3...\"}]}"
             },
 
             new Object[]{
@@ -178,10 +178,10 @@ public class StateServiceTest
                     + "\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]},"
                     + "\"rvName\":\"RV01\",\"type\":\"rvPosition\",\"rvId\":1001},"
                     + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"yellow\",\"type\":\"vv\"},"
-                    + "\"id\":\"19a43d42-669a-11e3-a337-df369887df3e\"},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"red\",\"type\":\"vv\"},"
-                    + "\"id\":\"1d50b380-669a-11e3-9008-471c9c51252f\"}]}"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\",\"type\":\"vv\"},"
+                    + "\"id\":\"19a43d...\"},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\",\"type\":\"vv\"},"
+                    + "\"id\":\"1d50b3...\"}]}"
             },
 
             new Object[]{
@@ -197,10 +197,10 @@ public class StateServiceTest
             new Object[]{
                 "vvs",
                 "{\"type\":\"FeatureCollection\",\"features\":["
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"yellow\",\"type\":\"vv\"},"
-                    + "\"id\":\"19a43d42-669a-11e3-a337-df369887df3e\"},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"red\",\"type\":\"vv\"},"
-                    + "\"id\":\"1d50b380-669a-11e3-9008-471c9c51252f\"}]}"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\",\"type\":\"vv\"},"
+                    + "\"id\":\"19a43d...\"},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\",\"type\":\"vv\"},"
+                    + "\"id\":\"1d50b3...\"}]}"
             },
         };
     }

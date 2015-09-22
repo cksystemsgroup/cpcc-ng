@@ -183,6 +183,11 @@ public interface QueryManager
     RealVehicle findRealVehicleById(Integer id);
 
     /**
+     * @return the real vehicle carting myself.
+     */
+    RealVehicle findOwnRealVehicle();
+
+    /**
      * @return the list of real vehicle state entries for each real vehicle.
      */
     List<RealVehicleState> findAllRealVehicleStates();

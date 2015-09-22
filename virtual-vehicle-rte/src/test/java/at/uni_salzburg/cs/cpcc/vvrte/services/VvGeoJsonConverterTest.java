@@ -68,8 +68,8 @@ public class VvGeoJsonConverterTest
         return new Object[][]{
             new Object[]{
                 vv01,
-                "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"gray\",\"type\":\"vv\"},"
-                    + "\"id\":\"0123456-789-123\"}"},
+                "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"init\",\"type\":\"vv\"},"
+                    + "\"id\":\"012345...\"}"},
         };
     }
 
@@ -113,22 +113,22 @@ public class VvGeoJsonConverterTest
         vv02.setMigrationStartTime(new Date(1439669289333L));
         vv02.setName("RV02");
         vv02.setStartTime(new Date(1439669289444L));
-        vv02.setState(VirtualVehicleState.INIT);
+        vv02.setState(VirtualVehicleState.RUNNING);
         vv02.setUuid("0123456-789-321");
 
         return new Object[][]{
             new Object[]{
                 Arrays.asList(vv01),
                 "{\"type\":\"FeatureCollection\",\"features\":["
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"gray\",\"type\":\"vv\"},"
-                    + "\"id\":\"0123456-789-123\"}]}"},
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"init\",\"type\":\"vv\"},"
+                    + "\"id\":\"012345...\"}]}"},
             new Object[]{
                 Arrays.asList(vv01, vv02),
                 "{\"type\":\"FeatureCollection\",\"features\":["
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"gray\",\"type\":\"vv\"},"
-                    + "\"id\":\"0123456-789-123\"},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV02\",\"state\":\"gray\",\"type\":\"vv\"},"
-                    + "\"id\":\"0123456-789-321\"}]}"},
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"init\",\"type\":\"vv\"},"
+                    + "\"id\":\"012345...\"},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV02\",\"state\":\"running\",\"type\":\"vv\"},"
+                    + "\"id\":\"012345...\"}]}"},
         };
     }
 

@@ -284,6 +284,16 @@ public class QueryManagerImpl implements QueryManager
     /**
      * {@inheritDoc}
      */
+    @Override
+    public RealVehicle findOwnRealVehicle()
+    {
+        Parameter rvNameParam = findParameterByName(Parameter.REAL_VEHICLE_NAME);
+        return rvNameParam != null ? findRealVehicleByName(rvNameParam.getValue()) : null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<RealVehicleState> findAllRealVehicleStates()

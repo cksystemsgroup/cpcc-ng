@@ -23,7 +23,9 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeMethod;
@@ -175,7 +177,7 @@ public class RealVehicleTest
     }
 
     @SuppressWarnings("unchecked")
-    private RealVehicle setupRealVehicle(Object... data)
+    private static RealVehicle setupRealVehicle(Object... data)
     {
         RealVehicle realVehicle = new RealVehicle();
         realVehicle.setAreaOfOperation((String) data[0]);
@@ -291,5 +293,49 @@ public class RealVehicleTest
             , RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
         assertThat(a.equals(new Object[0])).isFalse();
+    }
+
+    @DataProvider
+    public Object[][] realVehicleDataProvider()
+    {
+        // SensorDefinition sen1 = mock(SensorDefinition.class);
+        // when(sen1.hashCode()).thenReturn(1019);
+        SensorDefinition sen1 = new SensorDefinition();
+        sen1.setId(9174);
+
+        return new Object[][]{
+            new Object[]{Arrays.asList(
+                setupRealVehicle("abcd", false, 10, new Date(123456789L), "rv01"
+                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle(null, false, 10, new Date(123456789L), "rv01"
+                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, null, new Date(123456789), "rv01"
+                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, null, "rv01"
+                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, new Date(123456789), null
+                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01"
+                    , null, RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01"
+                    , Arrays.asList(sen1), null, "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01"
+                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, null))
+            },
+        };
+    }
+
+    @Test(dataProvider = "realVehicleDataProvider")
+    public void shouldCalculateHashCode(List<RealVehicle> rvList)
+    {
+        Set<Integer> codeSet = new HashSet<Integer>();
+
+        for (RealVehicle rv : rvList)
+        {
+            int hash = rv.hashCode();
+            assertThat(codeSet).doesNotContain(hash);
+            codeSet.add(hash);
+        }
+
     }
 }

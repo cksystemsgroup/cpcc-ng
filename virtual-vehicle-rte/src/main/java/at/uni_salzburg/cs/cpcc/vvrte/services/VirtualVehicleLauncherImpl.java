@@ -96,6 +96,35 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      * {@inheritDoc}
      */
     @Override
+    public void stop(int vehicleId) throws VirtualVehicleLaunchException, IOException
+    {
+        VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleId);
+
+        if (vehicle == null)
+        {
+            throw new VirtualVehicleLaunchException("Invalid virtual vehicle 'null'");
+        }
+
+        VirtualVehicleState state = vehicle.getState();
+
+        if (!VirtualVehicleState.VV_STATES_FOR_STOP.contains(state))
+        {
+            throw new VirtualVehicleLaunchException("Got vehicle in state " + state
+                + ", but expected " + VirtualVehicleState.VV_STATES_FOR_STOP);
+        }
+
+        vehicle.setEndTime(new Date());
+        vehicle.setState(VirtualVehicleState.INIT);
+        vehicle.setStateInfo("Vehicle has been stopped manually.");
+        vehicle.setContinuation(null);
+        sessionManager.getSession().saveOrUpdate(vehicle);
+        sessionManager.commit();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void resume(int vehicleId) throws VirtualVehicleLaunchException, IOException
     {
         VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleId);
@@ -107,14 +136,10 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
 
         VirtualVehicleState state = vehicle.getState();
 
-        if (state != VirtualVehicleState.MIGRATION_AWAITED
-            && state != VirtualVehicleState.MIGRATION_INTERRUPTED
-            && state != VirtualVehicleState.MIGRATION_COMPLETED)
+        if (!VirtualVehicleState.VV_STATES_FOR_RESTART.contains(state))
         {
-            throw new VirtualVehicleLaunchException("Expected vehicle in state "
-                + VirtualVehicleState.MIGRATION_AWAITED + ", "
-                + VirtualVehicleState.MIGRATION_INTERRUPTED + ", or "
-                + VirtualVehicleState.MIGRATION_COMPLETED + ", but got " + state);
+            throw new VirtualVehicleLaunchException("Got vehicle in state " + state
+                + ", but expected " + VirtualVehicleState.VV_STATES_FOR_RESTART);
         }
 
         startVehicle(vehicle, true);

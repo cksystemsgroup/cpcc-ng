@@ -28,6 +28,9 @@ import org.testng.annotations.Test;
  */
 public class VirtualVehicleStateTest
 {
+    /*
+     * VirtualVehicleState.INIT
+     */
     @DataProvider
     public Object[][] validTransitionsFromInitDataprovider()
     {
@@ -49,7 +52,10 @@ public class VirtualVehicleStateTest
         return new Object[][]{
             new Object[]{VirtualVehicleState.INIT},
             new Object[]{VirtualVehicleState.WAITING},
+            new Object[]{VirtualVehicleState.MIGRATION_AWAITED},
             new Object[]{VirtualVehicleState.MIGRATING},
+            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED},
+            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
@@ -63,6 +69,9 @@ public class VirtualVehicleStateTest
         assertThat(result).isFalse();
     }
 
+    /*
+     * VirtualVehicleState.RUNNING
+     */
     @DataProvider
     public Object[][] validTransitionsFromRunningDataprovider()
     {
@@ -85,7 +94,10 @@ public class VirtualVehicleStateTest
         return new Object[][]{
             new Object[]{VirtualVehicleState.INIT},
             new Object[]{VirtualVehicleState.RUNNING},
+            new Object[]{VirtualVehicleState.MIGRATION_AWAITED},
             new Object[]{VirtualVehicleState.MIGRATING},
+            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED},
+            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
         };
@@ -98,6 +110,9 @@ public class VirtualVehicleStateTest
         assertThat(result).isFalse();
     }
 
+    /*
+     * VirtualVehicleState.WAITING
+     */
     @DataProvider
     public Object[][] validTransitionsFromWaitingDataprovider()
     {
@@ -120,6 +135,9 @@ public class VirtualVehicleStateTest
         return new Object[][]{
             new Object[]{VirtualVehicleState.INIT},
             new Object[]{VirtualVehicleState.WAITING},
+            new Object[]{VirtualVehicleState.MIGRATION_AWAITED},
+            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED},
+            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
@@ -133,11 +151,56 @@ public class VirtualVehicleStateTest
         assertThat(result).isFalse();
     }
 
+    /*
+     * VirtualVehicleState.MIGRATION_AWAITED
+     */
+    @DataProvider
+    public Object[][] validTransitionsFromMigrationAwaitedDataprovider()
+    {
+        return new Object[][]{
+            new Object[]{VirtualVehicleState.MIGRATING},
+        };
+    }
+
+    @Test(dataProvider = "validTransitionsFromMigrationAwaitedDataprovider")
+    public void shouldDetectValidTransitionsFromMigrationAwaited(VirtualVehicleState state)
+    {
+        boolean result = VirtualVehicleState.MIGRATION_AWAITED.canTraverseTo(state);
+        assertThat(result).isTrue();
+    }
+
+    @DataProvider
+    public Object[][] invalidTransitionsFromMigrationAwaitedDataprovider()
+    {
+        return new Object[][]{
+            new Object[]{VirtualVehicleState.INIT},
+            new Object[]{VirtualVehicleState.RUNNING},
+            new Object[]{VirtualVehicleState.WAITING},
+            new Object[]{VirtualVehicleState.MIGRATION_AWAITED},
+            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED},
+            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
+            new Object[]{VirtualVehicleState.FINISHED},
+            new Object[]{VirtualVehicleState.INTERRUPTED},
+            new Object[]{VirtualVehicleState.DEFECTIVE},
+        };
+    }
+
+    @Test(dataProvider = "invalidTransitionsFromMigrationAwaitedDataprovider")
+    public void shouldDetectInvalidTransitionsFromMigrationAwaited(VirtualVehicleState state)
+    {
+        boolean result = VirtualVehicleState.MIGRATION_AWAITED.canTraverseTo(state);
+        assertThat(result).isFalse();
+    }
+
+    /*
+     * VirtualVehicleState.MIGRATING
+     */
     @DataProvider
     public Object[][] validTransitionsFromMigratingDataprovider()
     {
         return new Object[][]{
             new Object[]{VirtualVehicleState.WAITING},
+            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED},
         };
     }
 
@@ -154,7 +217,9 @@ public class VirtualVehicleStateTest
         return new Object[][]{
             new Object[]{VirtualVehicleState.INIT},
             new Object[]{VirtualVehicleState.RUNNING},
+            new Object[]{VirtualVehicleState.MIGRATION_AWAITED},
             new Object[]{VirtualVehicleState.MIGRATING},
+            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
@@ -168,6 +233,47 @@ public class VirtualVehicleStateTest
         assertThat(result).isFalse();
     }
 
+    /*
+     * VirtualVehicleState.MIGRATION_INTERRUPTED
+     */
+    @DataProvider
+    public Object[][] validTransitionsFromMigrationInterruptedDataprovider()
+    {
+        return new Object[][]{
+            new Object[]{VirtualVehicleState.MIGRATION_AWAITED},
+            new Object[]{VirtualVehicleState.WAITING},
+        };
+    }
+
+    @Test(dataProvider = "validTransitionsFromMigrationInterruptedDataprovider")
+    public void shouldDetectValidTransitionsFromMigrationInterrupted(VirtualVehicleState state)
+    {
+        boolean result = VirtualVehicleState.MIGRATION_INTERRUPTED.canTraverseTo(state);
+        assertThat(result).isTrue();
+    }
+
+    @DataProvider
+    public Object[][] invalidTransitionsFromMigrationInterruptedDataprovider()
+    {
+        return new Object[][]{
+            new Object[]{VirtualVehicleState.INIT},
+            new Object[]{VirtualVehicleState.RUNNING},
+            new Object[]{VirtualVehicleState.MIGRATING},
+            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED},
+            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
+            new Object[]{VirtualVehicleState.FINISHED},
+            new Object[]{VirtualVehicleState.INTERRUPTED},
+            new Object[]{VirtualVehicleState.DEFECTIVE},
+        };
+    }
+
+    @Test(dataProvider = "invalidTransitionsFromMigrationInterruptedDataprovider")
+    public void shouldDetectInvalidTransitionsFromMigrationInterrupted(VirtualVehicleState state)
+    {
+        boolean result = VirtualVehicleState.MIGRATION_INTERRUPTED.canTraverseTo(state);
+        assertThat(result).isFalse();
+    }
+
     @DataProvider
     public Object[][] allStatesDataprovider()
     {
@@ -175,13 +281,29 @@ public class VirtualVehicleStateTest
             new Object[]{VirtualVehicleState.INIT},
             new Object[]{VirtualVehicleState.RUNNING},
             new Object[]{VirtualVehicleState.WAITING},
+            new Object[]{VirtualVehicleState.MIGRATION_AWAITED},
             new Object[]{VirtualVehicleState.MIGRATING},
+            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED},
+            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
         };
     }
 
+    /*
+     * VirtualVehicleState.MIGRATION_COMPLETED
+     */
+    @Test(dataProvider = "allStatesDataprovider")
+    public void shouldDetectInvalidTransitionsFromMigrationCompleted(VirtualVehicleState state)
+    {
+        boolean result = VirtualVehicleState.MIGRATION_COMPLETED.canTraverseTo(state);
+        assertThat(result).isFalse();
+    }
+
+    /*
+     * VirtualVehicleState.FINISHED
+     */
     @Test(dataProvider = "allStatesDataprovider")
     public void shouldDetectInvalidTransitionsFromFinished(VirtualVehicleState state)
     {
@@ -189,6 +311,9 @@ public class VirtualVehicleStateTest
         assertThat(result).isFalse();
     }
 
+    /*
+     * VirtualVehicleState.INTERRUPTED
+     */
     @Test(dataProvider = "allStatesDataprovider")
     public void shouldDetectValidTransitionsFromInterrupted(VirtualVehicleState state)
     {
@@ -196,10 +321,14 @@ public class VirtualVehicleStateTest
         assertThat(result).isTrue();
     }
 
+    /*
+     * VirtualVehicleState.DEFECTIVE
+     */
     @Test(dataProvider = "allStatesDataprovider")
     public void shouldDetectInvalidTransitionsFromDefective(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.DEFECTIVE.canTraverseTo(state);
         assertThat(result).isFalse();
     }
+
 }

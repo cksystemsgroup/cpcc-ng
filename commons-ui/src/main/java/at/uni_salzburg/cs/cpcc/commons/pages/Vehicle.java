@@ -20,8 +20,6 @@ package at.uni_salzburg.cs.cpcc.commons.pages;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -54,58 +52,6 @@ public class Vehicle
         VIEW_LIST,
         VIEW_MODAL
     }
-
-    @SuppressWarnings("serial")
-    private static final Set<VirtualVehicleState> VV_STATES_FOR_DELETE = new HashSet<VirtualVehicleState>()
-    {
-        {
-            add(VirtualVehicleState.DEFECTIVE);
-            add(VirtualVehicleState.FINISHED);
-            add(VirtualVehicleState.INIT);
-            add(VirtualVehicleState.INTERRUPTED);
-            add(VirtualVehicleState.MIGRATION_COMPLETED);
-            add(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final Set<VirtualVehicleState> VV_STATES_FOR_EDIT = new HashSet<VirtualVehicleState>()
-    {
-        {
-            add(VirtualVehicleState.DEFECTIVE);
-            add(VirtualVehicleState.FINISHED);
-            add(VirtualVehicleState.INIT);
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final Set<VirtualVehicleState> VV_STATES_FOR_START = new HashSet<VirtualVehicleState>()
-    {
-        {
-            add(VirtualVehicleState.INIT);
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART = new HashSet<VirtualVehicleState>()
-    {
-        {
-            add(VirtualVehicleState.DEFECTIVE);
-            add(VirtualVehicleState.FINISHED);
-            add(VirtualVehicleState.INTERRUPTED);
-            add(VirtualVehicleState.MIGRATION_COMPLETED);
-            add(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION = new HashSet<VirtualVehicleState>()
-    {
-        {
-            add(VirtualVehicleState.MIGRATION_AWAITED);
-            add(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        }
-    };
 
     @Inject
     private Logger logger;
@@ -187,7 +133,7 @@ public class Vehicle
     void startVehicle(Integer id)
     {
         VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
-        if (!VV_STATES_FOR_START.contains(vehicle.getState()))
+        if (!VirtualVehicleState.VV_STATES_FOR_START.contains(vehicle.getState()))
         {
             return;
         }
@@ -209,7 +155,7 @@ public class Vehicle
     void restartMigration(Integer id)
     {
         VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
-        if (!VV_STATES_FOR_RESTART_MIGRATION.contains(vehicle.getState()))
+        if (!VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION.contains(vehicle.getState()))
         {
             return;
         }
@@ -238,6 +184,21 @@ public class Vehicle
     @CommitAfter
     void stopVehicle(Integer id)
     {
+        VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
+        if (!VirtualVehicleState.VV_STATES_FOR_STOP.contains(vehicle.getState()))
+        {
+            return;
+        }
+
+        try
+        {
+            launcher.stop(vehicle.getId());
+        }
+        catch (VirtualVehicleLaunchException | IOException e)
+        {
+            logger.error("Can not restart migration of virtual vehicle " + id, e);
+        }
+        
         handleXhrRequest(paneZone);
     }
 
@@ -246,7 +207,7 @@ public class Vehicle
     void restartVehicle(Integer id)
     {
         VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
-        if (!VV_STATES_FOR_RESTART.contains(vehicle.getState()))
+        if (!VirtualVehicleState.VV_STATES_FOR_RESTART.contains(vehicle.getState()))
         {
             return;
         }
@@ -279,7 +240,7 @@ public class Vehicle
      */
     public boolean isStart()
     {
-        return VV_STATES_FOR_START.contains(virtualVehicle.getState());
+        return VirtualVehicleState.VV_STATES_FOR_START.contains(virtualVehicle.getState());
     }
 
     /**
@@ -287,7 +248,7 @@ public class Vehicle
      */
     public boolean isRestartMigration()
     {
-        return VV_STATES_FOR_RESTART_MIGRATION.contains(virtualVehicle.getState());
+        return VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION.contains(virtualVehicle.getState());
     }
 
     /**
@@ -295,7 +256,7 @@ public class Vehicle
      */
     public boolean isEdit()
     {
-        return VV_STATES_FOR_EDIT.contains(virtualVehicle.getState());
+        return VirtualVehicleState.VV_STATES_FOR_EDIT.contains(virtualVehicle.getState());
     }
 
     /**
@@ -303,7 +264,7 @@ public class Vehicle
      */
     public boolean isDelete()
     {
-        return VV_STATES_FOR_DELETE.contains(virtualVehicle.getState());
+        return VirtualVehicleState.VV_STATES_FOR_DELETE.contains(virtualVehicle.getState());
     }
 
     /**
@@ -319,7 +280,7 @@ public class Vehicle
      */
     public boolean isStop()
     {
-        return false;
+        return VirtualVehicleState.VV_STATES_FOR_STOP.contains(virtualVehicle.getState());
     }
 
     /**
@@ -327,7 +288,7 @@ public class Vehicle
      */
     public boolean isRestart()
     {
-        return VV_STATES_FOR_RESTART.contains(virtualVehicle.getState());
+        return VirtualVehicleState.VV_STATES_FOR_RESTART.contains(virtualVehicle.getState());
     }
 
 }

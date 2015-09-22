@@ -18,6 +18,9 @@
 
 package at.uni_salzburg.cs.cpcc.vvrte.entities;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * VehicleState
  */
@@ -181,6 +184,68 @@ public enum VirtualVehicleState
         public VirtualVehicleState traverse(VirtualVehicleState newState)
         {
             return null;
+        }
+    };
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_DELETE = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(DEFECTIVE);
+            add(FINISHED);
+            add(INIT);
+            add(INTERRUPTED);
+            add(MIGRATION_COMPLETED);
+            add(MIGRATION_INTERRUPTED);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_EDIT = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(DEFECTIVE);
+            add(FINISHED);
+            add(INIT);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_START = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(INIT);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_STOP = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(DEFECTIVE);
+            add(INTERRUPTED);
+            add(MIGRATION_INTERRUPTED);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(DEFECTIVE);
+            add(FINISHED);
+            add(INTERRUPTED);
+            add(MIGRATION_COMPLETED);
+            add(MIGRATION_INTERRUPTED);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(MIGRATION_AWAITED);
+            add(MIGRATION_INTERRUPTED);
         }
     };
 
