@@ -7,14 +7,17 @@
 		<version>0.0.3-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
+
 	<artifactId>cpcc-communication</artifactId>
-	<name>CPCC Communications Module</name>
-	<description>CPCC Communications Module</description>
+	<packaging>jar</packaging>
+
+	<name>CPCC - Communications Module</name>
+	<description>Cyber Physical Cloud Computing - Communications Module</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>cpcc-core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>

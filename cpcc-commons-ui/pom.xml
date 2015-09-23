@@ -1,72 +1,77 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>at.uni-salzburg.cs.cpcc</groupId>
 		<artifactId>cpcc-ng-project</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.3-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>cpcc-persistence</artifactId>
+	<artifactId>cpcc-commons-ui</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Persistence Module</name>
-	<description>Cyber Physical Cloud Computing - Persistence Module</description>
+	<name>CPCC - User Interface Common Components</name>
+	<description>Cyber Physical Cloud Computing - User Interface Common Components</description>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>cpcc-rv-base</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
 			<artifactId>tapestry-hibernate</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.tapestry</groupId>
 			<artifactId>tapestry-beanvalidator</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>at.uni-salzburg.cs</groupId>
+			<artifactId>tapestry-leaflet</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-test-constants</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
+			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
+			<artifactId>mockito-all</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.easytesting</groupId>
 			<artifactId>fest-assert-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- <dependency> -->
-		<!-- <groupId>com.googlecode.catch-exception</groupId> -->
-		<!-- <artifactId>catch-exception</artifactId> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -77,12 +82,11 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Tapestry-Module-Classes>at.uni_salzburg.cs.cpcc.persistence.services.PersistenceModule</Tapestry-Module-Classes>
+							<Tapestry-Module-Classes>at.uni_salzburg.cs.cpcc.commons.services.CommonsModule</Tapestry-Module-Classes>
 						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

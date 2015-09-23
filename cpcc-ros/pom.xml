@@ -9,10 +9,10 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>ros-service</artifactId>
+	<artifactId>cpcc-ros</artifactId>
 	<packaging>jar</packaging>
 
-	<name>ROS Service Module</name>
+	<name>CPCC - ROS Service Module</name>
 	<description>Cyber Physical Cloud Computing - ROS Service Module</description>
 
 	<dependencies>
@@ -75,7 +75,7 @@
 		</dependency>
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>cpcc-core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 	</dependencies>

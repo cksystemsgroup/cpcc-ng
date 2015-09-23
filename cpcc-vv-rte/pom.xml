@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -7,10 +8,40 @@
 		<version>0.0.3-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>core</artifactId>
-	<name>CPCC Core Module</name>
+
+	<artifactId>cpcc-vv-rte</artifactId>
+	<packaging>jar</packaging>
+
+	<name>CPCC - Virtual Vehicle Runtime Environment</name>
+	<description>Cyber Physical Cloud Computing - Virtual Vehicle Runtime Environment</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.mozilla</groupId>
+			<artifactId>rhino</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>at.uni-salzburg.cs.cpcc</groupId>
+			<artifactId>cpcc-ros</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>at.uni-salzburg.cs.cpcc</groupId>
+			<artifactId>cpcc-communication</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -18,40 +49,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-hibernate</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tapestry</groupId>
-			<artifactId>tapestry-beanvalidator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.grundid.opendatalab</groupId>
-			<artifactId>geojson-jackson</artifactId>
-			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.mchange</groupId>
-			<artifactId>c3p0</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -69,28 +66,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>eu.codearte.catch-exception</groupId>
-			<artifactId>catch-exception</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.skyscreamer</groupId>
 			<artifactId>jsonassert</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-testng</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -103,7 +80,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Tapestry-Module-Classes>at.uni_salzburg.cs.cpcc.core.services.CoreModule</Tapestry-Module-Classes>
+							<Tapestry-Module-Classes>at.uni_salzburg.cs.cpcc.vvrte.services.VvRteModule</Tapestry-Module-Classes>
 						</manifestEntries>
 					</archive>
 				</configuration>

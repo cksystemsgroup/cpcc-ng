@@ -9,11 +9,11 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>ground-station</artifactId>
+	<artifactId>cpcc-gs-web</artifactId>
 	<packaging>war</packaging>
 
-	<name>Ground Station Web Application Module</name>
-	<description>Cyber Physical Cloud Computing - Ground Station Web Application Module</description>
+	<name>CPCC - Ground Station Web Application</name>
+	<description>Cyber Physical Cloud Computing - Ground Station Web Application</description>
 
 	<dependencies>
 		<dependency>
@@ -83,7 +83,7 @@
 		</dependency>
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>commons-ui</artifactId>
+			<artifactId>cpcc-commons-ui</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<!-- <dependency> -->

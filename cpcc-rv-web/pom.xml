@@ -9,11 +9,11 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>real-vehicle</artifactId>
+	<artifactId>cpcc-rv-web</artifactId>
 	<packaging>war</packaging>
 
-	<name>Real Vehicle Web Application Module</name>
-	<description>Cyber Physical Cloud Computing - Real Vehicle Web Application Module</description>
+	<name>CPCC - Real Vehicle Web Application</name>
+	<description>Cyber Physical Cloud Computing - Real Vehicle Web Application</description>
 
 	<dependencies>
 		<dependency>
@@ -78,7 +78,7 @@
 		</dependency>
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>commons-ui</artifactId>
+			<artifactId>cpcc-commons-ui</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<!-- <dependency> -->

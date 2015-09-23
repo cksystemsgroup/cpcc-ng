@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -8,21 +9,21 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>cpcc-real-vehicle</artifactId>
+	<artifactId>cpcc-rv-base</artifactId>
 	<packaging>jar</packaging>
 
 	<name>CPCC - Real Vehicle Base Services</name>
-	<description>CPCC - Real Vehicle Base Services</description>
+	<description>Cyber Physical Cloud Computing - Real Vehicle Base Services</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>ros-service</artifactId>
+			<artifactId>cpcc-ros</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
-			<artifactId>virtual-vehicle-rte</artifactId>
+			<artifactId>cpcc-vv-rte</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
