@@ -23,13 +23,13 @@ import java.util.Map;
 
 import org.apache.tapestry5.ioc.ServiceResources;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
-
 import com.owlike.genson.Genson;
+
+import cpcc.com.services.CommunicationService;
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.SensorDefinition;
+import cpcc.core.services.QueryManager;
+import cpcc.core.services.jobs.JobRunnable;
 
 /**
  * Configuration synchronization job runnable.

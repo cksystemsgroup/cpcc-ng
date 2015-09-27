@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import org.apache.tapestry5.StreamResponse;
 import org.geojson.FeatureCollection;
 
-import at.uni_salzburg.cs.cpcc.core.utils.GeoJsonStreamResponse;
+import cpcc.core.utils.GeoJsonStreamResponse;
 import cpcc.rv.base.services.StateService;
 
 /**

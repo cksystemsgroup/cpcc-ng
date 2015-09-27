@@ -28,8 +28,8 @@ import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.SensorDefinition;
 
 public class ConfigSyncDataTest
 {

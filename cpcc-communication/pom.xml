@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>at.uni-salzburg.cs.cpcc</groupId>
 		<artifactId>cpcc-ng-project</artifactId>
-		<version>0.0.3-SNAPSHOT</version>
+		<version>0.0.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -61,6 +61,15 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.commons</groupId> -->
+		<!-- <artifactId>com.springsource.org.apache.commons.httpclient</artifactId> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.commons</groupId> -->
+		<!-- <artifactId>com.springsource.org.apache.commons.io</artifactId> -->
+		<!-- </dependency> -->
+
 		<dependency>
 			<groupId>eu.codearte.catch-exception</groupId>
 			<artifactId>catch-exception</artifactId>
@@ -76,7 +85,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Tapestry-Module-Classes>at.uni_salzburg.cs.cpcc.com.services.CommunicationModule</Tapestry-Module-Classes>
+							<Tapestry-Module-Classes>cpcc.com.services.CommunicationModule</Tapestry-Module-Classes>
 						</manifestEntries>
 					</archive>
 				</configuration>

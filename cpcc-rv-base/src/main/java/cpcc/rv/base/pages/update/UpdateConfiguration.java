@@ -28,7 +28,7 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.RequestGlobals;
 
-import at.uni_salzburg.cs.cpcc.core.utils.JsonStreamResponse;
+import cpcc.core.utils.JsonStreamResponse;
 import cpcc.rv.base.services.StateSynchronizer;
 
 /**

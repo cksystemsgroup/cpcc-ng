@@ -25,12 +25,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationResponse;
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleState;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
+import cpcc.com.services.CommunicationResponse;
+import cpcc.com.services.CommunicationService;
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleState;
+import cpcc.core.services.QueryManager;
+import cpcc.core.services.jobs.JobRunnable;
 
 /**
  * Real vehicle state job runnable.

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+	<head>
+		<meta charset="utf-8" />
+		<title>${title}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="" />
+		<meta name="author" content="" />
+
+		<!-- Le styles -->
+		<style type="text/css">
+			body {
+			padding-top: 50px;
+			padding-bottom: 0;
+			height:100%;
+			}
+		</style>
+
+		<!-- margin: 15px 0px 15px 20px; -->
+
+		<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+		<!--[if lt IE 9]> <script src="../assets/js/html5shiv.js"></script> <![endif] -->
+
+		<!-- Fav and touch icons -->
+		<link rel="shortcut icon" href="${asset:context:/favicon.ico}" />
+	</head>
+
+	<body>
+
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<t:pagelink page="index" class="navbar-brand">${message:pagetitle.Index} [${groundStationName}]</t:pagelink>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<t:loop source="pageNames" value="pageName">
+							<t:any element="li" class="prop:classForPageName">
+								<t:pagelink page="prop:pageName">${pageLabel}</t:pagelink>
+							</t:any>
+						</t:loop>
+					</ul>
+					<!-- <span class="navbar-right"> -->
+					<!-- <li> -->
+					<!-- <t:pagelink page="login" class="btn btn-default navbar-btn">Sign in</t:pagelink> -->
+					<!-- </li> -->
+					<!-- </span> -->
+
+				</div>
+			</div>
+		</div>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="span12">
+					<t:alerts />
+				</div>
+			</div>
+		</div>
+
+		<div class="container-fluid" id="content" style="height:100%; min-height:100%;">
+			<div class="row">
+				<t:body />
+			</div>
+		</div>
+
+	</body>
+</html>

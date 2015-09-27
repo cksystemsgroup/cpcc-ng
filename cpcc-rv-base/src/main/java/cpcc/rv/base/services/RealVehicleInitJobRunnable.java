@@ -21,10 +21,10 @@ package cpcc.rv.base.services;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
 
-import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
+import cpcc.core.entities.Parameter;
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.services.QueryManager;
+import cpcc.core.services.jobs.JobRunnable;
 
 /**
  * Real vehicle init job runnable..

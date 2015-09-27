@@ -37,13 +37,13 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleType;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorVisibility;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
+import cpcc.com.services.CommunicationService;
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleType;
+import cpcc.core.entities.SensorDefinition;
+import cpcc.core.entities.SensorType;
+import cpcc.core.entities.SensorVisibility;
+import cpcc.core.services.QueryManager;
 
 /**
  * Configuration synchronization job runnable test.

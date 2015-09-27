@@ -30,12 +30,12 @@ import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.services.LibraryMapping;
 import org.slf4j.Logger;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobQueue;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRepository;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnableFactory;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobService;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.TimeService;
+import cpcc.com.services.CommunicationService;
+import cpcc.core.services.jobs.JobQueue;
+import cpcc.core.services.jobs.JobRepository;
+import cpcc.core.services.jobs.JobRunnableFactory;
+import cpcc.core.services.jobs.JobService;
+import cpcc.core.services.jobs.TimeService;
 
 /**
  * CommonsModule

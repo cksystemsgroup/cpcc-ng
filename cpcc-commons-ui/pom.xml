@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>at.uni-salzburg.cs.cpcc</groupId>
 		<artifactId>cpcc-ng-project</artifactId>
-		<version>0.0.3-SNAPSHOT</version>
+		<version>0.0.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -82,7 +82,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Tapestry-Module-Classes>at.uni_salzburg.cs.cpcc.commons.services.CommonsModule</Tapestry-Module-Classes>
+							<Tapestry-Module-Classes>cpcc.commons.services.CommonsModule</Tapestry-Module-Classes>
 						</manifestEntries>
 					</archive>
 				</configuration>

@@ -18,14 +18,14 @@
 
 package cpcc.rv.base.services;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobCreationException;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobService;
+import cpcc.core.entities.Parameter;
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.services.QueryManager;
+import cpcc.core.services.jobs.JobCreationException;
+import cpcc.core.services.jobs.JobService;
 
 /**
  * This service synchronizes real vehicle and sensor configuration data to other real vehicles.

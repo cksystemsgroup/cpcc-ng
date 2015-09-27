@@ -31,11 +31,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobCreationException;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobService;
+import cpcc.core.entities.Parameter;
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.services.QueryManager;
+import cpcc.core.services.jobs.JobCreationException;
+import cpcc.core.services.jobs.JobService;
 
 public class StateSynchronizerTest
 {

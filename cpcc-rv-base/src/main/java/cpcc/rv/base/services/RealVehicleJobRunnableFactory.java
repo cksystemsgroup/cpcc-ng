@@ -24,9 +24,9 @@ import java.util.Map;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
 
-import at.uni_salzburg.cs.cpcc.core.entities.Job;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnableFactory;
+import cpcc.core.entities.Job;
+import cpcc.core.services.jobs.JobRunnable;
+import cpcc.core.services.jobs.JobRunnableFactory;
 
 /**
  * RealVehicleJobRunnableFactory

@@ -26,23 +26,23 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.Point;
 
+import cpcc.core.entities.MappingAttributes;
+import cpcc.core.entities.Parameter;
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleState;
+import cpcc.core.entities.RealVehicleType;
+import cpcc.core.entities.SensorDefinition;
+import cpcc.core.entities.SensorType;
+import cpcc.core.services.CoreGeoJsonConverter;
+import cpcc.core.services.QueryManager;
+import cpcc.core.utils.PolarCoordinate;
+import cpcc.ros.base.AbstractRosAdapter;
+import cpcc.ros.sensors.AbstractGpsSensorAdapter;
+import cpcc.ros.services.RosNodeService;
+import cpcc.vvrte.entities.VirtualVehicle;
+import cpcc.vvrte.services.VvGeoJsonConverter;
+import cpcc.vvrte.services.VvRteRepository;
 import sensor_msgs.NavSatFix;
-import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
-import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleState;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleType;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
-import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.core.utils.PolarCoordinate;
-import at.uni_salzburg.cs.cpcc.ros.base.AbstractRosAdapter;
-import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractGpsSensorAdapter;
-import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
-import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
-import at.uni_salzburg.cs.cpcc.vvrte.services.VvGeoJsonConverter;
-import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
 
 /**
  * State service implementation.

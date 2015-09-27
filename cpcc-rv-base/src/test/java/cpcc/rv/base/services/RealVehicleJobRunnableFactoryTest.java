@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.core.entities.Job;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRunnable;
+import cpcc.core.entities.Job;
+import cpcc.core.services.jobs.JobRunnable;
 
 public class RealVehicleJobRunnableFactoryTest
 {

@@ -20,7 +20,7 @@ package cpcc.rv.base.services;
 
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobCreationException;
+import cpcc.core.services.jobs.JobCreationException;
 
 /**
  * ConfigurationSynchronizer interface.

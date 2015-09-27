@@ -45,12 +45,12 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.testng.annotations.Test;
 
-import at.uni_salzburg.cs.cpcc.com.services.CommunicationService;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobExecutionException;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobQueue;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobRepository;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.JobService;
-import at.uni_salzburg.cs.cpcc.core.services.jobs.TimeService;
+import cpcc.com.services.CommunicationService;
+import cpcc.core.services.jobs.JobExecutionException;
+import cpcc.core.services.jobs.JobQueue;
+import cpcc.core.services.jobs.JobRepository;
+import cpcc.core.services.jobs.JobService;
+import cpcc.core.services.jobs.TimeService;
 
 public class RealVehicleBaseModuleTest
 {

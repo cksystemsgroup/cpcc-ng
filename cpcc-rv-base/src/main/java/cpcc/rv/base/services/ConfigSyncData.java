@@ -20,10 +20,10 @@ package cpcc.rv.base.services;
 
 import java.util.List;
 
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
-
 import com.owlike.genson.annotation.JsonProperty;
+
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.SensorDefinition;
 
 /**
  * ConfigSyncData

@@ -33,25 +33,26 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import sensor_msgs.NavSatFix;
-import at.uni_salzburg.cs.cpcc.core.entities.MappingAttributes;
-import at.uni_salzburg.cs.cpcc.core.entities.Parameter;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicle;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleState;
-import at.uni_salzburg.cs.cpcc.core.entities.RealVehicleType;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorDefinition;
-import at.uni_salzburg.cs.cpcc.core.entities.SensorType;
-import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverter;
-import at.uni_salzburg.cs.cpcc.core.services.CoreGeoJsonConverterImpl;
-import at.uni_salzburg.cs.cpcc.core.services.QueryManager;
-import at.uni_salzburg.cs.cpcc.ros.sensors.AbstractGpsSensorAdapter;
-import at.uni_salzburg.cs.cpcc.ros.services.RosNodeService;
-import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicle;
-import at.uni_salzburg.cs.cpcc.vvrte.entities.VirtualVehicleState;
-import at.uni_salzburg.cs.cpcc.vvrte.services.VvGeoJsonConverter;
-import at.uni_salzburg.cs.cpcc.vvrte.services.VvGeoJsonConverterImpl;
-import at.uni_salzburg.cs.cpcc.vvrte.services.VvRteRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import cpcc.core.entities.MappingAttributes;
+import cpcc.core.entities.Parameter;
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleState;
+import cpcc.core.entities.RealVehicleType;
+import cpcc.core.entities.SensorDefinition;
+import cpcc.core.entities.SensorType;
+import cpcc.core.services.CoreGeoJsonConverter;
+import cpcc.core.services.CoreGeoJsonConverterImpl;
+import cpcc.core.services.QueryManager;
+import cpcc.ros.sensors.AbstractGpsSensorAdapter;
+import cpcc.ros.services.RosNodeService;
+import cpcc.vvrte.entities.VirtualVehicle;
+import cpcc.vvrte.entities.VirtualVehicleState;
+import cpcc.vvrte.services.VvGeoJsonConverter;
+import cpcc.vvrte.services.VvGeoJsonConverterImpl;
+import cpcc.vvrte.services.VvRteRepository;
 
 public class StateServiceTest
 {

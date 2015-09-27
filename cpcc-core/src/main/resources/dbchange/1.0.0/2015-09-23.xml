@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="ckrainer" id="2015-09-23-01">
+		<update tableName="TOPIC">
+			<column name="ADAPTERCLASSNAME" value="cpcc.ros.actuators.MorseWayPointControllerAdapter" />
+			<where>ADAPTERCLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.actuators.MorseWayPointControllerAdapter'</where>
+		</update>
+		<update tableName="TOPIC">
+			<column name="ADAPTERCLASSNAME" value="cpcc.ros.actuators.SimpleWayPointControllerAdapter" />
+			<where>ADAPTERCLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.actuators.SimpleWayPointControllerAdapter'</where>
+		</update>
+		<update tableName="TOPIC">
+			<column name="ADAPTERCLASSNAME" value="cpcc.ros.sensors.AltimeterAdapter" />
+			<where>ADAPTERCLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.sensors.AltimeterAdapter'</where>
+		</update>
+		<update tableName="TOPIC">
+			<column name="ADAPTERCLASSNAME" value="cpcc.ros.sensors.CameraInfoSensorAdapter" />
+			<where>ADAPTERCLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.sensors.CameraInfoSensorAdapter'</where>
+		</update>
+		<update tableName="TOPIC">
+			<column name="ADAPTERCLASSNAME" value="cpcc.ros.sensors.GpsSensorAdapter" />
+			<where>ADAPTERCLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.sensors.GpsSensorAdapter'</where>
+		</update>
+		<update tableName="TOPIC">
+			<column name="ADAPTERCLASSNAME" value="cpcc.ros.sensors.GroundStationGpsPositionAdapter" />
+			<where>ADAPTERCLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.sensors.GroundStationGpsPositionAdapter'</where>
+		</update>
+		<update tableName="TOPIC">
+			<column name="ADAPTERCLASSNAME" value="cpcc.ros.sensors.ImageSensorAdapter" />
+			<where>ADAPTERCLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.sensors.ImageSensorAdapter'</where>
+		</update>
+		<update tableName="TOPIC">
+			<column name="ADAPTERCLASSNAME" value="cpcc.ros.sensors.MorseGpsSensorAdapter" />
+			<where>ADAPTERCLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.sensors.MorseGpsSensorAdapter'</where>
+		</update>
+
+		<update tableName="DEVICETYPE">
+			<column name="CLASSNAME" value="cpcc.ros.sim.osm.NodeGroup" />
+			<where>CLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.sim.osm.NodeGroup'</where>
+		</update>
+		<update tableName="DEVICETYPE">
+			<column name="CLASSNAME" value="cpcc.ros.sim.quadrotor.NodeGroup" />
+			<where>CLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.sim.quadrotor.NodeGroup'</where>
+		</update>
+		<update tableName="DEVICETYPE">
+			<column name="CLASSNAME" value="cpcc.ros.sim.SonarEmulator" />
+			<where>CLASSNAME = 'at.uni_salzburg.cs.cpcc.ros.sim.SonarEmulator'</where>
+		</update>
+	</changeSet>
+
+</databaseChangeLog>

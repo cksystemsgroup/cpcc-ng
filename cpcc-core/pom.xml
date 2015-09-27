@@ -4,15 +4,15 @@
 	<parent>
 		<groupId>at.uni-salzburg.cs.cpcc</groupId>
 		<artifactId>cpcc-ng-project</artifactId>
-		<version>0.0.3-SNAPSHOT</version>
+		<version>0.0.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>cpcc-core</artifactId>
-        <packaging>jar</packaging>
+	<packaging>jar</packaging>
 
 	<name>CPCC - Core Module</name>
-        <description>Cyber Physical Cloud Computing - Core Module</description>
+	<description>Cyber Physical Cloud Computing - Core Module</description>
 
 	<dependencies>
 		<dependency>
@@ -36,9 +36,18 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-io</artifactId>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-io</artifactId>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.commons</groupId> -->
+<!-- 			<artifactId>com.springsource.org.apache.commons.io</artifactId> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.commons</groupId> -->
+<!-- 			<artifactId>com.springsource.org.apache.commons.lang</artifactId> -->
+<!-- 		</dependency> -->
+
 		<dependency>
 			<groupId>de.grundid.opendatalab</groupId>
 			<artifactId>geojson-jackson</artifactId>
@@ -107,7 +116,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Tapestry-Module-Classes>at.uni_salzburg.cs.cpcc.core.services.CoreModule</Tapestry-Module-Classes>
+							<Tapestry-Module-Classes>cpcc.core.services.CoreModule</Tapestry-Module-Classes>
 						</manifestEntries>
 					</archive>
 				</configuration>

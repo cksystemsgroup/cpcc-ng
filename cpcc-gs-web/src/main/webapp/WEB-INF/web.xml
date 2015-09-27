@@ -6,15 +6,15 @@
 	<display-name>ground-station Tapestry 5 Application</display-name>
 	<context-param>
 		<param-name>tapestry.app-package</param-name>
-		<param-value>at.uni_salzburg.cs.cpcc.gs</param-value>
+		<param-value>cpcc.gs.web</param-value>
 	</context-param>
 	<context-param>
 		<param-name>tapestry.development-modules</param-name>
-		<param-value>at.uni_salzburg.cs.cpcc.gs.services.DevelopmentModule</param-value>
+		<param-value>cpcc.gs.web.services.DevelopmentModule</param-value>
 	</context-param>
 	<context-param>
 		<param-name>tapestry.qa-modules</param-name>
-		<param-value>at.uni_salzburg.cs.cpcc.gs.services.QaModule</param-value>
+		<param-value>cpcc.gs.web.services.QaModule</param-value>
 	</context-param>
 	<filter>
 		<filter-name>app</filter-name>
