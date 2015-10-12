@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,8 +26,11 @@ import javax.inject.Inject;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
+import cpcc.core.services.CoreGeoJsonConverter;
+import cpcc.core.services.CoreJsonConverter;
 import cpcc.core.services.QueryManager;
 import cpcc.core.utils.JSONUtils;
+import cpcc.core.utils.MathUtils;
 
 /**
  * GsViewer
@@ -37,12 +40,24 @@ public class GsViewer
     @Inject
     private QueryManager qm;
 
+    @Inject
+    private CoreJsonConverter jsonConverter;
+
+    @Inject
+    private CoreGeoJsonConverter geoJsonConverter;
+
     /**
      * @return the map center coordinates.
      */
     public String getMapCenter()
     {
-        // TODO fix me!
+        double[] bbox = geoJsonConverter.findBoundingBox(qm.findAllRealVehicles());
+
+        if (bbox.length == 4 && MathUtils.containsNoNaN(bbox))
+        {
+            return "[" + MathUtils.avg(bbox[1], bbox[3]) + "," + MathUtils.avg(bbox[0], bbox[2]) + "]";
+        }
+
         return "[37.8085124939787,-122.42505311965941]";
     }
 
@@ -61,14 +76,7 @@ public class GsViewer
     public String getRegions()
     {
         List<RealVehicle> rvList = qm.findAllRealVehicles();
-
-        Map<String, String> rvMap = new HashMap<String, String>();
-        for (RealVehicle rv : rvList)
-        {
-            rvMap.put(rv.getName(), rv.getAreaOfOperation());
-        }
-
-        return JSONUtils.toJsonString(rvMap);
+        return jsonConverter.toRegionJson(rvList);
     }
 
     /**

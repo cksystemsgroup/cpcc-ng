@@ -19,6 +19,8 @@
 package cpcc.commons.pages.rv;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +33,10 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.hibernate.Session;
 
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.services.CoreGeoJsonConverter;
+import cpcc.core.services.CoreJsonConverter;
 import cpcc.core.services.QueryManager;
+import cpcc.core.utils.MathUtils;
 import cpcc.core.utils.ResourceStreamResponse;
 import cpcc.rv.base.services.StateSynchronizer;
 
@@ -45,6 +50,12 @@ public class RvEditAreaOfOperations
 
     @Inject
     protected QueryManager qm;
+
+    @Inject
+    private CoreJsonConverter jsonConverter;
+
+    @Inject
+    private CoreGeoJsonConverter geoJsonConverter;
 
     @Inject
     protected StateSynchronizer confSync;
@@ -115,37 +126,17 @@ public class RvEditAreaOfOperations
      */
     public String getOtherRealVehicleRegions() throws IOException
     {
-        StringBuilder buff = new StringBuilder();
+        List<RealVehicle> otherRvList = new ArrayList<RealVehicle>();
 
-        List<RealVehicle> rvList = qm.findAllRealVehicles();
-        boolean first = true;
-
-        buff.append("{");
-        for (RealVehicle rv : rvList)
+        for (RealVehicle rv : qm.findAllRealVehicles())
         {
-            if (rv.getId().intValue() == realVehicle.getId().intValue())
+            if (rv.getId().intValue() != realVehicle.getId().intValue())
             {
-                continue;
+                otherRvList.add(rv);
             }
-
-            if (first)
-            {
-                first = false;
-            }
-            else
-            {
-                buff.append(",");
-            }
-
-            buff.append("\"")
-                .append(rv.getName())
-                .append("\":")
-                .append(rv.getAreaOfOperation().replaceAll("\\\\n\\s*", ""));
         }
 
-        buff.append("}");
-
-        return buff.toString();
+        return jsonConverter.toRegionJson(otherRvList);
     }
 
     /**
@@ -153,7 +144,20 @@ public class RvEditAreaOfOperations
      */
     public String getMapCenter()
     {
-        // TODO implement
+        double[] bbox = geoJsonConverter.findBoundingBox(Arrays.asList(realVehicle));
+        if (bbox.length == 4 && MathUtils.containsNoNaN(bbox))
+        {
+            return "[" + MathUtils.avg(bbox[1], bbox[3]) + "," + MathUtils.avg(bbox[0], bbox[2]) + "]";
+        }
+
+        //        List<Point> depotList = geoJsonConverter.findDepotPositions(realVehicle);
+        //        if (!depotList.isEmpty())
+        //        {
+        //            LngLatAlt coordinates = depotList.get(0).getCoordinates();
+        //            return "[" + coordinates.getLatitude() + "," + coordinates.getLongitude() + "]";
+        //        }
+
+        // TODO implement some more!
         return "[37.8085124939787,-122.42505311965941]";
     }
 
@@ -162,7 +166,7 @@ public class RvEditAreaOfOperations
      */
     public String getZoomLevel()
     {
-        // TODO implement
+        // TODO implement!
         return "17";
     }
 

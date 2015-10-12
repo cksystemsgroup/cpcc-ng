@@ -212,7 +212,7 @@ public class StateServiceTest
         FeatureCollection fc = sut.getState(what);
 
         String actual = new ObjectMapper().writeValueAsString(fc);
-        System.out.println("actual: \"" + actual.replaceAll("\"", "\\\\\"") + "\"");
+        // System.out.println("actual: \"" + actual.replaceAll("\"", "\\\\\"") + "\"");
 
         JSONAssert.assertEquals(expected, actual, false);
         JSONAssert.assertEquals(actual, expected, false);

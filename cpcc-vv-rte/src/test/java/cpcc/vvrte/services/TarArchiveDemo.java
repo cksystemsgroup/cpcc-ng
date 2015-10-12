@@ -24,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -35,84 +34,87 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.testng.annotations.Test;
 
-public class TarArchiveTest
+public class TarArchiveDemo
 {
+    private static final String GROUP_NAME_ONE = "cpcc1";
+    private static final String GROUP_NAME_TWO = "cpcc2";
+    private static final String USER_NAME_ONE = "vvrte1";
+    private static final String USER_NAME_TWO = "vvrte2";
+
+    private static final int CHUNK_ID_ONE = 170000;
+    private static final int STORAGE_ID_ONE = 1234000;
+    private static final int CHUNK_ID_TWO = 1067800;
+    private static final int STORAGE_ID_TWO = 484727;
 
     @Test
     public void shouldWriteTarFile() throws IOException, ArchiveException
     {
-        byte[] c1 = "content1\n".getBytes();
-        byte[] c2 = "content2 text\n".getBytes();
-        Date t1 = new Date();
-        int chunkId = 170000;
-        int storageId = 1234000;
-        
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        
+        byte[] c1 = "content1\n".getBytes("UTF-8");
+        byte[] c2 = "content2 text\n".getBytes("UTF-8");
+
+        Date t1 = new Date(1000L * (System.currentTimeMillis() / 1000L));
+        Date t2 = new Date(t1.getTime() - 30000);
+
         FileOutputStream fos = new FileOutputStream("bugger1.tar");
-//        TarArchiveOutputStream o = new TarArchiveOutputStream(baos);
-        
+
         ArchiveStreamFactory factory = new ArchiveStreamFactory();
         factory.setEntryEncoding("UTF-8");
         ArchiveOutputStream outStream = factory.createArchiveOutputStream("tar", fos);
-        
+
         TarArchiveEntry archiveEntry1 = new TarArchiveEntry("entry1");
         archiveEntry1.setModTime(t1);
         archiveEntry1.setSize(c1.length);
-        archiveEntry1.setIds(storageId, chunkId);
-        archiveEntry1.setNames("vvrte", "cpcc");
+        archiveEntry1.setIds(STORAGE_ID_ONE, CHUNK_ID_ONE);
+        archiveEntry1.setNames(USER_NAME_ONE, GROUP_NAME_ONE);
+
         outStream.putArchiveEntry(archiveEntry1);
         outStream.write(c1);
         outStream.closeArchiveEntry();
 
-        
         TarArchiveEntry archiveEntry2 = new TarArchiveEntry("data/entry2");
-        archiveEntry2.setModTime(t1.getTime()-300000);
+        archiveEntry2.setModTime(t2);
         archiveEntry2.setSize(c2.length);
-        archiveEntry2.setIds(storageId+1, chunkId);
-        archiveEntry2.setNames("vvrte", "cpcc");
+        archiveEntry2.setIds(STORAGE_ID_TWO, CHUNK_ID_TWO);
+        archiveEntry2.setNames(USER_NAME_TWO, GROUP_NAME_TWO);
+
         outStream.putArchiveEntry(archiveEntry2);
         outStream.write(c2);
         outStream.closeArchiveEntry();
-        
+
         outStream.close();
-        
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        
+
         FileInputStream fis = new FileInputStream("bugger1.tar");
         ArchiveInputStream inStream = factory.createArchiveInputStream("tar", fis);
-        
-        TarArchiveEntry entry1 = (TarArchiveEntry)inStream.getNextEntry();
-        System.out.printf("entry: %s, l=%d, (%d, %d), (%s/%s) %s\n",
-            entry1.getName(),
-            entry1.getSize(),
-            entry1.getUserId(),
-            entry1.getGroupId(),
-            entry1.getUserName(),
-            entry1.getGroupName(),
-            df.format(entry1.getModTime())
-            );
+
+        TarArchiveEntry entry1 = (TarArchiveEntry) inStream.getNextEntry();
+        assertThat(entry1.getModTime()).isEqualTo(t1);
+        assertThat(entry1.getSize()).isEqualTo(c1.length);
+        assertThat(entry1.getUserId()).isEqualTo(STORAGE_ID_ONE);
+        assertThat(entry1.getGroupId()).isEqualTo(CHUNK_ID_ONE);
+        assertThat(entry1.getUserName()).isEqualTo(USER_NAME_ONE);
+        assertThat(entry1.getGroupName()).isEqualTo(GROUP_NAME_ONE);
         ByteArrayOutputStream b1 = new ByteArrayOutputStream();
         IOUtils.copy(inStream, b1);
         b1.close();
-        
-        TarArchiveEntry entry2 = (TarArchiveEntry)inStream.getNextEntry();
-        System.out.printf("entry: %s, l=%d, (%d, %d), (%s/%s) %s\n",
-            entry2.getName(),
-            entry2.getSize(),
-            entry2.getUserId(),
-            entry2.getGroupId(),
-            entry2.getUserName(),
-            entry2.getGroupName(),
-            df.format(entry2.getModTime())
-            );
+        assertThat(b1.toByteArray().length).isEqualTo(c1.length);
+        assertThat(b1.toByteArray()).isEqualTo(c1);
+
+        TarArchiveEntry entry2 = (TarArchiveEntry) inStream.getNextEntry();
+        assertThat(entry2.getModTime()).isEqualTo(t2);
+        assertThat(entry2.getSize()).isEqualTo(c2.length);
+        assertThat(entry2.getUserId()).isEqualTo(STORAGE_ID_TWO);
+        assertThat(entry2.getGroupId()).isEqualTo(CHUNK_ID_TWO);
+        assertThat(entry2.getUserName()).isEqualTo(USER_NAME_TWO);
+        assertThat(entry2.getGroupName()).isEqualTo(GROUP_NAME_TWO);
         ByteArrayOutputStream b2 = new ByteArrayOutputStream();
         IOUtils.copy(inStream, b2);
         b2.close();
-        
-        TarArchiveEntry entry3 = (TarArchiveEntry)inStream.getNextEntry();
+        assertThat(b2.toByteArray().length).isEqualTo(c2.length);
+        assertThat(b2.toByteArray()).isEqualTo(c2);
+
+        TarArchiveEntry entry3 = (TarArchiveEntry) inStream.getNextEntry();
         assertThat(entry3).isNull();
-        
+
         inStream.close();
     }
 }

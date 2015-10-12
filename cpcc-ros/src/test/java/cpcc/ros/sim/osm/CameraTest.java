@@ -236,8 +236,8 @@ public class CameraTest
                 response.setStatusCode(HttpStatus.SC_OK);
                 FileEntity body = new FileEntity((File) responseContent[1], contentType);
                 response.setEntity(body);
-                System.out.println("Serving: url=" + target + ", file="
-                    + ((File) (responseContent[1])).getAbsolutePath());
+                //System.out.println("Serving: url=" + target + ", file="
+                //    + ((File) (responseContent[1])).getAbsolutePath());
             }
             else
             {
@@ -246,7 +246,7 @@ public class CameraTest
                     "<html><body><h1>Access denied</h1></body></html>",
                     ContentType.create("text/html", "UTF-8"));
                 response.setEntity(entity);
-                System.out.println("Cannot deliver file " + target);
+                // System.out.println("Cannot deliver file " + target);
             }
         }
 

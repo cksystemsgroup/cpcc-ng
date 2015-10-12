@@ -114,7 +114,6 @@ public final class CoreModule
     public static void adviseTransactions(HibernateTransactionAdvisor advisor, MethodAdviceReceiver receiver)
     {
         advisor.addTransactionCommitAdvice(receiver);
-        System.out.println("### CoreModule.adviseTransactions for " +        receiver.getInterface());
     }
 
     /**

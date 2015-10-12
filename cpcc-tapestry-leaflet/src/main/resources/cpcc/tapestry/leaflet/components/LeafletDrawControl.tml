@@ -1,0 +1,29 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+<t:content>
+	<div class="hidden">
+		<t:Zone t:id="drawFormZone">
+			<t:Form t:zone="^" t:id="drawForm">
+				<t:Hidden t:id="drawData" t:value="prop:data" />
+				<t:Submit t:id="drawButton" />
+			</t:Form>
+		</t:Zone>
+
+		<form t:type="form" t:id="popupTemplate">
+			<h4>${message:popup.header}</h4>
+			<div class="form-group popup-input">
+				<label class="control-label">${message:popup.minAltitude}</label> <input
+					class="form-control popup-input" type="number" name="min"
+					title="Only numbers are allowed!" pattern="^\d+$" required="true"
+					size="4" data-validate-popup-input="true" value="" initialValue="" />
+
+				<label class="control-label">${message:popup.maxAltitude}</label> <input
+					class="form-control popup-input" type="number" name="max"
+					title="Only numbers are allowed!" pattern="^\d+$" required="true"
+					size="4" data-validate-popup-input="true" value="" initialValue="" />
+			</div>
+		</form>
+	</div>
+
+</t:content>
+</html>

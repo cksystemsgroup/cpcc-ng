@@ -18,6 +18,8 @@
 
 package cpcc.core.services;
 
+import java.util.List;
+
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
@@ -110,4 +112,10 @@ public interface CoreJsonConverter
      *         object is older.
      */
     int fillInNewerSensorDefinitionFromJsonObject(SensorDefinition sd, JSONObject sdObj);
+    
+    /**
+     * @param rvList the list of real vehicles.
+     * @return the real vehicle regions as an JSON object.
+     */
+    String toRegionJson(List<RealVehicle> rvList);
 }

@@ -47,8 +47,6 @@ public class VirtualVehicleStorageTest
     @BeforeMethod
     public void setUp()
     {
-        System.out.println("setUp");
-
         storage = new VirtualVehicleStorage();
 
         object0.put("id", object0, 0);
@@ -73,8 +71,6 @@ public class VirtualVehicleStorageTest
     @DataProvider
     public Object[][] valuesDataProvider()
     {
-        System.out.println("valuesDataProvider");
-
         return new Object[][]{
             new Object[]{0, mock(VirtualVehicle.class), "file#0", object0},
             new Object[]{1, mock(VirtualVehicle.class), "file/1", object1},

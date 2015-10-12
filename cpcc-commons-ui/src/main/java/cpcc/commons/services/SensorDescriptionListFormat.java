@@ -23,7 +23,7 @@ import java.text.Format;
 import java.text.ParsePosition;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import cpcc.core.entities.SensorDefinition;
 
@@ -71,7 +71,7 @@ public class SensorDescriptionListFormat extends Format
     @Override
     public Object parseObject(String source, ParsePosition pos)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException("Method parseObject is not implemented!");
     }
 
 }

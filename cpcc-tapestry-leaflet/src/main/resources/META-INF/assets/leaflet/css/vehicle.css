@@ -1,0 +1,115 @@
+.vehicle-icon {
+	background: transparent;
+	border: none;
+}
+
+.vehicle-marker-icon {
+	position: relative;
+	top: 33px;
+	font-size: 12px;
+	width: 25px;
+	text-align: center;
+}
+
+.vehicle-info {
+	position: relative;
+	top: 10px;
+	font-size: 12px;
+	width: 70px;
+	text-align: left;
+}
+
+.vehicle-info-none {
+	color: black
+}
+
+.vehicle-info-idle {
+	color: green
+}
+
+.vehicle-info-busy {
+	color: red
+}
+
+.task-info {
+	position: relative;
+	top: 10px;
+	font-size: 12px;
+	width: 60px;
+	text-align: left;
+}
+
+.task-info-none {
+	color: black
+}
+
+.task-info-todo {
+	color: red
+}
+
+.task-info-inProgress {
+	color: blue
+}
+
+.task-info-done {
+	color: green
+}
+
+.task-info-assigned {
+	color: yellow
+}
+
+.task-info-cancelled {
+	color: grey
+}
+
+.vv-table {
+	position: relative;
+	top: 10px;
+	font-size: 12px;
+	width: 60px;
+}
+
+.vv-info {
+	text-align: left;
+}
+
+.vv-info-init {
+	color: black
+}
+
+.vv-info-running {
+	color: green
+}
+
+.vv-info-waiting {
+	color: yellow
+}
+
+.vv-info-migration_awaited {
+	color: blue
+}
+
+.vv-info-migrating {
+	color: blue
+}
+
+.vv-info-migration_interrupted {
+	color: red
+}
+
+.vv-info-migration_completed {
+	color: yellow
+}
+
+.vv-info-finished {
+	color: grey
+}
+
+.vv-info-interrupted {
+	color: red
+}
+
+.vv-info-defective {
+	color: red
+}

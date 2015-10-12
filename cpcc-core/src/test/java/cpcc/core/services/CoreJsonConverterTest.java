@@ -45,7 +45,20 @@ import cpcc.core.utils.PolarCoordinate;
 
 public class CoreJsonConverterTest
 {
-    private CoreJsonConverter converter;
+    private static final String RV1_AREA_OF_OPERATION = "["
+        + "{lat:37.80800,lng:-122.42600},{lat:37.80800,lng:-122.42700},{lat:37.80900,lng:-122.42700},"
+        + "{lat:37.80900,lng:-122.42600},{lat:37.80800,lng:-122.42600}]";
+    private static final String RV2_AREA_OF_OPERATION = "["
+        + "{lat:37.80800,lng:-122.42500},{lat:37.80800,lng:-122.42600},{lat:37.80900,lng:-122.42600},"
+        + "{lat:37.80900,lng:-122.42500},{lat:37.80800,lng:-122.42500}]";
+    private static final String RV3_AREA_OF_OPERATION = "["
+        + "{lat:37.80800,lng:-122.42400},{lat:37.80800,lng:-122.42500},{lat:37.80900,lng:-122.42500},"
+        + "{lat:37.80900,lng:-122.42400},{lat:37.80800,lng:-122.42400}]";
+    private static final String RV4_AREA_OF_OPERATION = "["
+        + "{lat:34.80800,lng:-124.42400},{lat:34.80800,lng:-124.42500},{lat:34.80900,lng:-124.42500},"
+        + "{lat:34.80900,lng:-124.42400},{lat:34.80800,lng:-124.42400}]";
+
+    private CoreJsonConverter sut;
     private SensorDefinition s1 = mock(SensorDefinition.class);
     private SensorDefinition s2 = mock(SensorDefinition.class);
     private SensorDefinition s3 = mock(SensorDefinition.class);
@@ -92,9 +105,7 @@ public class CoreJsonConverterTest
         when(rv1.getName()).thenReturn("rv1");
         when(rv1.getUrl()).thenReturn("http://localhost/rv01");
         when(rv1.getSensors()).thenReturn(Arrays.asList(s1, s2, s3));
-        when(rv1.getAreaOfOperation()).thenReturn("["
-            + "{lat:37.80800,lng:-122.42600},{lat:37.80800,lng:-122.42700},{lat:37.80900,lng:-122.42700},"
-            + "{lat:37.80900,lng:-122.42600},{lat:37.80800,lng:-122.42600}]");
+        when(rv1.getAreaOfOperation()).thenReturn(RV1_AREA_OF_OPERATION);
         when(rv1.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
         when(rv1.getId()).thenReturn(1);
         when(rv1.getLastUpdate()).thenReturn(new Date(1001));
@@ -102,9 +113,7 @@ public class CoreJsonConverterTest
         when(rv2.getName()).thenReturn("rv2");
         when(rv2.getUrl()).thenReturn("http://localhost/rv02");
         when(rv2.getSensors()).thenReturn(Arrays.asList(s2, s3, s4));
-        when(rv2.getAreaOfOperation()).thenReturn("["
-            + "{lat:37.80800,lng:-122.42500},{lat:37.80800,lng:-122.42600},{lat:37.80900,lng:-122.42600},"
-            + "{lat:37.80900,lng:-122.42500},{lat:37.80800,lng:-122.42500}]");
+        when(rv2.getAreaOfOperation()).thenReturn(RV2_AREA_OF_OPERATION);
         when(rv2.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
         when(rv2.getId()).thenReturn(2);
         when(rv2.getLastUpdate()).thenReturn(new Date(2002));
@@ -112,9 +121,7 @@ public class CoreJsonConverterTest
         when(rv3.getName()).thenReturn("rv3");
         when(rv3.getUrl()).thenReturn("http://localhost/rv03");
         when(rv3.getSensors()).thenReturn(Arrays.asList(s3, s4, s1));
-        when(rv3.getAreaOfOperation()).thenReturn("["
-            + "{lat:37.80800,lng:-122.42400},{lat:37.80800,lng:-122.42500},{lat:37.80900,lng:-122.42500},"
-            + "{lat:37.80900,lng:-122.42400},{lat:37.80800,lng:-122.42400}]");
+        when(rv3.getAreaOfOperation()).thenReturn(RV3_AREA_OF_OPERATION);
         when(rv3.getType()).thenReturn(RealVehicleType.GROUND_STATION);
         when(rv3.getId()).thenReturn(3);
         when(rv3.getLastUpdate()).thenReturn(new Date(3003));
@@ -122,13 +129,11 @@ public class CoreJsonConverterTest
         when(rv4.getName()).thenReturn("rv4");
         when(rv4.getUrl()).thenReturn("http://localhost/rv04");
         when(rv4.getSensors()).thenReturn(Arrays.asList(s4));
-        when(rv4.getAreaOfOperation()).thenReturn("["
-            + "{lat:34.80800,lng:-124.42400},{lat:34.80800,lng:-124.42500},{lat:34.80900,lng:-124.42500},"
-            + "{lat:34.80900,lng:-124.42400},{lat:34.80800,lng:-124.42400}]");
+        when(rv4.getAreaOfOperation()).thenReturn(RV4_AREA_OF_OPERATION);
         when(rv4.getType()).thenReturn(RealVehicleType.TABLET);
         when(rv4.getId()).thenReturn(4);
 
-        converter = new CoreJsonConverterImpl();
+        sut = new CoreJsonConverterImpl();
     }
 
     @DataProvider
@@ -197,7 +202,7 @@ public class CoreJsonConverterTest
     @Test(dataProvider = "singleVehicleDataProvider")
     public void shouldConvertRealVehicles(RealVehicle vehicle, String expectedJsonString) throws JSONException
     {
-        JSONObject result = converter.toJson(false, vehicle);
+        JSONObject result = sut.toJson(false, vehicle);
         JSONAssert.assertEquals(expectedJsonString, result.toString(true), false);
         JSONAssert.assertEquals(result.toString(true), expectedJsonString, false);
     }
@@ -245,7 +250,7 @@ public class CoreJsonConverterTest
     public void shouldConvertRealVehiclesWithSensorIdsOnly(RealVehicle vehicle, String expectedJsonString)
         throws JSONException
     {
-        JSONObject result = converter.toJson(true, vehicle);
+        JSONObject result = sut.toJson(true, vehicle);
         JSONAssert.assertEquals(expectedJsonString, result.toString(true), false);
         JSONAssert.assertEquals(result.toString(true), expectedJsonString, false);
     }
@@ -372,7 +377,7 @@ public class CoreJsonConverterTest
     public void shouldConvertRealVehicleArrays(RealVehicle[] vehicles, String expectedJsonString)
         throws JSONException
     {
-        JSONArray result = converter.toJsonArray(false, vehicles);
+        JSONArray result = sut.toJsonArray(false, vehicles);
         String actual = result.toString(true);
 
         JSONAssert.assertEquals(expectedJsonString, actual, false);
@@ -401,7 +406,7 @@ public class CoreJsonConverterTest
     @Test(dataProvider = "polarCoordinateDataProvicer")
     public void shouldConvertPolarCoordinates(PolarCoordinate data, String expected) throws JSONException
     {
-        JSONObject actual = converter.toJson(data);
+        JSONObject actual = sut.toJson(data);
 
         JSONAssert.assertEquals(expected, actual.toCompactString(), false);
         JSONAssert.assertEquals(actual.toCompactString(), expected, false);
@@ -422,7 +427,7 @@ public class CoreJsonConverterTest
     @Test(dataProvider = "integerArrayDataProvicer")
     public void shouldConvertIntegerArrays(List<Integer> data, String expected) throws JSONException
     {
-        JSONArray actual = converter.toJsonArray(data.toArray(new Integer[data.size()]));
+        JSONArray actual = sut.toJsonArray(data.toArray(new Integer[data.size()]));
 
         JSONAssert.assertEquals(expected, actual.toCompactString(), false);
         JSONAssert.assertEquals(actual.toCompactString(), expected, false);
@@ -443,7 +448,7 @@ public class CoreJsonConverterTest
     @Test(dataProvider = "doubleArrayDataProvicer")
     public void shouldConvertDoubleArrays(List<Double> data, String expected) throws JSONException
     {
-        JSONArray actual = converter.toJsonArray(data.toArray(new Double[data.size()]));
+        JSONArray actual = sut.toJsonArray(data.toArray(new Double[data.size()]));
 
         JSONAssert.assertEquals(expected, actual.toCompactString(), false);
         JSONAssert.assertEquals(actual.toCompactString(), expected, false);
@@ -510,10 +515,10 @@ public class CoreJsonConverterTest
 
         JSONObject obj = new JSONObject(data);
 
-        int actualCmp = converter.fillInNewerRealVehicleFromJsonObject(vehicle, obj);
+        int actualCmp = sut.fillInNewerRealVehicleFromJsonObject(vehicle, obj);
         assertThat(actualCmp).isEqualTo(cmp);
 
-        String actual = converter.toJson(true, vehicle).toCompactString();
+        String actual = sut.toJson(true, vehicle).toCompactString();
 
         JSONAssert.assertEquals(expected, actual, false);
         JSONAssert.assertEquals(actual, expected, false);
@@ -575,12 +580,31 @@ public class CoreJsonConverterTest
 
         JSONObject obj = new JSONObject(data);
 
-        int actualCmp = converter.fillInNewerSensorDefinitionFromJsonObject(sdTest, obj);
+        int actualCmp = sut.fillInNewerSensorDefinitionFromJsonObject(sdTest, obj);
         assertThat(actualCmp).isEqualTo(cmp);
 
-        String actual = converter.toJson(sdTest).toCompactString();
+        String actual = sut.toJson(sdTest).toCompactString();
 
         JSONAssert.assertEquals(expected, actual, false);
         JSONAssert.assertEquals(actual, expected, false);
+    }
+
+    @DataProvider
+    public Object[][] regionsDataProvicer()
+    {
+        return new Object[][]{
+            new Object[]{Arrays.asList(rv1), "{\"rv1\":" + RV1_AREA_OF_OPERATION + "}"},
+            new Object[]{Arrays.asList(rv2), "{\"rv2\":" + RV2_AREA_OF_OPERATION + "}"},
+            new Object[]{Arrays.asList(rv1, rv2),
+                "{\"rv1\":" + RV1_AREA_OF_OPERATION + ",\"rv2\":" + RV2_AREA_OF_OPERATION + "}"},
+        };
+    }
+
+    @Test(dataProvider = "regionsDataProvicer")
+    public void shouldConvertToRegionJson(List<RealVehicle> rvList, String expected)
+    {
+        String actual = sut.toRegionJson(rvList);
+
+        assertThat(actual).isEqualTo(expected);
     }
 }

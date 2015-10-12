@@ -173,7 +173,7 @@ public class PlantStateEstimatorTest
             ++iterationCounter;
             printStateToFile(plantState, writer);
             Assert.assertTrue(
-                    Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 1E-3);
+                Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 1E-3);
         } while (!e.calculateState());
 
         writer.close();
@@ -206,12 +206,12 @@ public class PlantStateEstimatorTest
             ++iterationCounter;
             printStateToFile(plantState, writer);
             writer.flush();
-            if (Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) > 1E-3)
-            {
-                System.out.println ("bugger");
-            }
+            //if (Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) > 1E-3)
+            //{
+            //    System.out.println ("bugger");
+            //}
             Assert.assertTrue(
-                    Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 1E-3);
+                Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 1E-3);
         } while (!e.calculateState());
 
         writer.close();
@@ -221,7 +221,7 @@ public class PlantStateEstimatorTest
         Assert.assertEquals(plantState.getPosition().getAltitude(), 20.0, 1E-3);
         Assert.assertEquals(iterationCounter, 566);
     }
-    
+
     /**
      * Should land plant.
      * 
@@ -256,18 +256,18 @@ public class PlantStateEstimatorTest
         Assert.assertEquals(plantState.getPosition().getAltitude(), 20.0, 1E-3);
         Assert.assertEquals(iterationCounter, 1217);
     }
-    
+
     @DataProvider
     public Object[][] numberDataProvider()
     {
         return new Object[][]{
-            new Object[] {-10D},
-            new Object[] {0D},
-            new Object[] {1D},
-            new Object[] {100D},
+            new Object[]{-10D},
+            new Object[]{0D},
+            new Object[]{1D},
+            new Object[]{100D},
         };
     }
-    
+
     @Test(dataProvider = "numberDataProvider")
     public void shouldStoreRemainingBatteryCapacity(double capacity)
     {
@@ -292,13 +292,15 @@ public class PlantStateEstimatorTest
         assertThat(map.get("test.elevation")).isNotNull().isNotEmpty().containsExactly("0.000");
         assertThat(map.get("test.flyingTime")).isNotNull().isNotEmpty().containsExactly("0.00");
         assertThat(map.get("test.heading")).isNotNull().isNotEmpty().containsExactly("0");
-        assertThat(map.get("test.position")).isNotNull().isNotEmpty().containsExactly("47.82199000","13.04085000","0.000");
+        assertThat(map.get("test.position")).isNotNull().isNotEmpty()
+            .containsExactly("47.82199000", "13.04085000", "0.000");
         assertThat(map.get("test.batteryCapacity")).isNotNull().isNotEmpty().containsExactly("0.0");
-        assertThat(map.get("test.target")).isNotNull().isNotEmpty().containsExactly("0.00000000","0.00000000","0.000");
+        assertThat(map.get("test.target")).isNotNull().isNotEmpty()
+            .containsExactly("0.00000000", "0.00000000", "0.000");
         assertThat(map.get("test.velocity")).isNotNull().isNotEmpty().containsExactly("0.00");
 
     }
-    
+
     /**
      * @param plantState the plant state.
      * @param writer the writer.
@@ -323,5 +325,5 @@ public class PlantStateEstimatorTest
             Math.toDegrees(elevation), remCap
             );
     }
-    
+
 }

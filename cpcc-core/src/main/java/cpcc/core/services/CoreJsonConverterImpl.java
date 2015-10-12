@@ -250,4 +250,37 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
                 : sensor.getBoolean(SENSOR_DEFINITION_DELETED));
         return 1;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toRegionJson(List<RealVehicle> rvList)
+    {
+        StringBuilder buff = new StringBuilder();
+
+        boolean first = true;
+
+        buff.append("{");
+        for (RealVehicle rv : rvList)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                buff.append(",");
+            }
+
+            buff.append("\"")
+                .append(rv.getName())
+                .append("\":")
+                .append(rv.getAreaOfOperation().replaceAll("\\\\n\\s*", ""));
+        }
+
+        buff.append("}");
+
+        return buff.toString();
+    }
 }

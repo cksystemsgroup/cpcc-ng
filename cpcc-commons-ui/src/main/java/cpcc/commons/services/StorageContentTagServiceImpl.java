@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.annotations.Symbol;
@@ -164,8 +164,8 @@ public class StorageContentTagServiceImpl implements StorageContentTagService
             {
                 Context.exit();
             }
-
-            return StringEscapeUtils.escapeHtml(json);
+            
+            return StringEscapeUtils.escapeHtml4(json);
         }
     }
 }

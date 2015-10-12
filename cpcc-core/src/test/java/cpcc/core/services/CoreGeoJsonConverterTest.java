@@ -24,46 +24,41 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import org.geojson.Feature;
-import org.geojson.FeatureCollection;
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
-import org.geojson.Polygon;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleType;
-import cpcc.core.services.CoreGeoJsonConverterImpl;
 import cpcc.core.utils.PolarCoordinate;
 
 public class CoreGeoJsonConverterTest
 {
-    private RealVehicle rv1;
-    private RealVehicle rv2;
-    private RealVehicle rv3;
+    private RealVehicle rv1 = mock(RealVehicle.class);
+    private RealVehicle rv2 = mock(RealVehicle.class);
+    private RealVehicle rv3 = mock(RealVehicle.class);
     private CoreGeoJsonConverterImpl sut;
 
     @BeforeMethod
     public void setUp()
     {
-        rv1 = mock(RealVehicle.class);
         when(rv1.getName()).thenReturn("rv1");
         when(rv1.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
         when(rv1.getId()).thenReturn(1);
 
-        rv2 = mock(RealVehicle.class);
         when(rv2.getName()).thenReturn("rv2");
         when(rv2.getAreaOfOperation()).thenReturn("{"
             + "\"type\":\"FeatureCollection\","
@@ -77,7 +72,6 @@ public class CoreGeoJsonConverterTest
         when(rv2.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
         when(rv2.getId()).thenReturn(2);
 
-        rv3 = mock(RealVehicle.class);
         when(rv3.getName()).thenReturn("rv3");
         when(rv3.getAreaOfOperation()).thenReturn("["
             + "{lat:37.80800,lng:-122.42400},{lat:37.80800,lng:-122.42500},{lat:37.80900,lng:-122.42500},"
@@ -215,56 +209,216 @@ public class CoreGeoJsonConverterTest
         };
     }
 
-    @Test
-    public void buggeritRV() throws JsonProcessingException
+    class DPTestParameters
     {
-        double[][] pos =
-        {{37.80700, -122.42400}, {37.80700, -122.42500}, {37.80800, -122.42500}, {37.80800, -122.42400},
-            {37.80700, -122.42400}};
-        double[] depot = {37.80750, -122.42450};
+        private RealVehicle realVehicle;
+        private List<Point> expected;
 
-        Point point = new Point(depot[1], depot[0]);
-
-        Feature pointFeature = new Feature();
-        pointFeature.setGeometry(point);
-        pointFeature.setProperty("type", "depot");
-
-        List<LngLatAlt> l = new ArrayList<LngLatAlt>();
-        for (double[] p : pos)
+        public DPTestParameters(RealVehicle realVehicle, List<Point> expected)
         {
-            l.add(new LngLatAlt(p[1], p[0]));
+            this.realVehicle = realVehicle;
+            this.expected = expected;
         }
 
-        Polygon polygon = new Polygon(l);
+        public RealVehicle getRealVehicle()
+        {
+            return realVehicle;
+        }
 
-        Feature polygonFeature = new Feature();
-        polygonFeature.setGeometry(polygon);
-        polygonFeature.setProperty("minAlt", 20);
-        polygonFeature.setProperty("maxAlt", 50);
+        public List<Point> getExpected()
+        {
+            return expected;
+        }
 
-        FeatureCollection fc = new FeatureCollection();
-        fc.add(pointFeature);
-        fc.add(polygonFeature);
+        @Override
+        public String toString()
+        {
+            StringBuilder b = new StringBuilder();
+            b.append("RV=").append(realVehicle.getName()).append(", Points=[");
 
-        String json = new ObjectMapper().writeValueAsString(fc);
+            String delimiter = "";
 
-        System.out.println(json);
+            for (Point p : expected)
+            {
+                double lng = p.getCoordinates().getLongitude();
+                double lat = p.getCoordinates().getLatitude();
+
+                b.append(delimiter).append("[").append(lng).append(",").append(lat).append("]");
+                delimiter = ",";
+            }
+
+            b.append("]");
+
+            return b.toString();
+        }
     }
 
-    @Test
-    public void buggeritGS() throws JsonProcessingException
+    @DataProvider
+    public Object[][] depotPositionDataProvider()
     {
-        Point point = new Point(-122.42600, 37.80800);
-
-        Feature pointFeature = new Feature();
-        pointFeature.setGeometry(point);
-        pointFeature.setProperty("type", "depot");
-
-        FeatureCollection fc = new FeatureCollection();
-        fc.add(pointFeature);
-
-        String json = new ObjectMapper().writeValueAsString(fc);
-
-        System.out.println(json);
+        return new Object[][]{
+            new Object[]{new DPTestParameters(rv1, Collections.<Point> emptyList())},
+            new Object[]{new DPTestParameters(rv2, Arrays.asList(new Point(-122.4255, 37.8085)))},
+            new Object[]{new DPTestParameters(rv3, Collections.<Point> emptyList())},
+        };
     }
+
+    @Test(dataProvider = "depotPositionDataProvider")
+    public void shouldFindDepotPositions(DPTestParameters params)
+    {
+        List<Point> actual = sut.findDepotPositions(params.getRealVehicle());
+
+        if (params.getExpected().isEmpty())
+        {
+            assertThat(actual).isEmpty();
+        }
+        else
+        {
+            assertThat(actual)
+                .usingElementComparator(new PointComparator())
+                .containsExactly(params.getExpected().toArray(new Point[0]));
+        }
+    }
+
+    public class PointComparator implements Comparator<Point>
+    {
+        @Override
+        public int compare(Point o1, Point o2)
+        {
+            LngLatAlt c1 = o1.getCoordinates();
+            LngLatAlt c2 = o2.getCoordinates();
+            boolean eq = Math.abs(c1.getLongitude() - c2.getLongitude()) < 1E-6
+                && Math.abs(c1.getLatitude() - c2.getLatitude()) < 1E-6;
+            // System.out.println(posToString(c1) + (eq ? " == " : " != ") + posToString(c2));
+            return eq ? 0 : 1;
+        }
+    }
+
+    // private static String posToString(LngLatAlt p)
+    // {
+    //     return "[" + p.getLongitude() + "," + p.getLatitude() + "]";
+    // }
+
+    class BBTestParameters
+    {
+        private List<RealVehicle> realVehicleList;
+        private double[] expected;
+
+        public BBTestParameters(List<RealVehicle> realVehicle, double[] expected)
+        {
+            this.realVehicleList = realVehicle;
+            this.expected = expected;
+        }
+
+        public List<RealVehicle> getRealVehicle()
+        {
+            return realVehicleList;
+        }
+
+        public double[] getExpected()
+        {
+            return expected;
+        }
+
+        @Override
+        public String toString()
+        {
+            StringBuilder b = new StringBuilder();
+
+            String delimiter = "";
+            b.append("RV=[");
+            for (RealVehicle rv : realVehicleList)
+            {
+                b.append(rv.getName());
+                delimiter = ",";
+            }
+            b.append("] ");
+
+            delimiter = "";
+            for (double d : expected)
+            {
+                b.append(delimiter).append(d);
+                delimiter = ",";
+            }
+            b.append("]");
+
+            return b.toString();
+        }
+    }
+
+    @DataProvider
+    public Object[][] bboxPositionDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{
+                new BBTestParameters(Arrays.asList(rv1), new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN})},
+            new Object[]{
+                new BBTestParameters(Arrays.asList(rv2), new double[]{-122.426, 37.808, -122.425, 37.809})},
+            new Object[]{
+                new BBTestParameters(Arrays.asList(rv3), new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN})},
+        };
+    }
+
+    @Test(dataProvider = "bboxPositionDataProvider")
+    public void shouldFindBoundingBox(BBTestParameters params)
+    {
+        double[] actual = sut.findBoundingBox(params.getRealVehicle());
+
+        assertThat(actual).isEqualTo(params.getExpected());
+    }
+
+//    @Test
+//    public void buggeritRV() throws JsonProcessingException
+//    {
+//        double[][] pos =
+//        {{37.80700, -122.42400}, {37.80700, -122.42500}, {37.80800, -122.42500}, {37.80800, -122.42400},
+//            {37.80700, -122.42400}};
+//        double[] depot = {37.80750, -122.42450};
+//
+//        Point point = new Point(depot[1], depot[0]);
+//
+//        Feature pointFeature = new Feature();
+//        pointFeature.setGeometry(point);
+//        pointFeature.setProperty("type", "depot");
+//
+//        List<LngLatAlt> l = new ArrayList<LngLatAlt>();
+//        for (double[] p : pos)
+//        {
+//            l.add(new LngLatAlt(p[1], p[0]));
+//        }
+//
+//        Polygon polygon = new Polygon(l);
+//
+//        Feature polygonFeature = new Feature();
+//        polygonFeature.setGeometry(polygon);
+//        polygonFeature.setProperty("minAlt", 20);
+//        polygonFeature.setProperty("maxAlt", 50);
+//
+//        FeatureCollection fc = new FeatureCollection();
+//        fc.add(pointFeature);
+//        fc.add(polygonFeature);
+//
+//        String json = new ObjectMapper().writeValueAsString(fc);
+//
+//        // TODO fixme
+//        // System.out.println(json);
+//    }
+//
+//    @Test
+//    public void buggeritGS() throws JsonProcessingException
+//    {
+//        Point point = new Point(-122.42600, 37.80800);
+//
+//        Feature pointFeature = new Feature();
+//        pointFeature.setGeometry(point);
+//        pointFeature.setProperty("type", "depot");
+//
+//        FeatureCollection fc = new FeatureCollection();
+//        fc.add(pointFeature);
+//
+//        String json = new ObjectMapper().writeValueAsString(fc);
+//
+//        // TODO fixme
+//        // System.out.println(json);
+//    }
 }

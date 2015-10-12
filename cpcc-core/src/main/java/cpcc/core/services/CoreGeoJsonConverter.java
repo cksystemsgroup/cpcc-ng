@@ -19,6 +19,7 @@
 package cpcc.core.services;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.geojson.Feature;
@@ -50,4 +51,16 @@ public interface CoreGeoJsonConverter
      * @return the position as a Map object.
      */
     Map<String, Double> toPosition(PolarCoordinate position);
+
+    /**
+     * @param rv the real vehicle
+     * @return the list of depot positions of the real vehicle.
+     */
+    List<Point> findDepotPositions(RealVehicle rv);
+
+    /**
+     * @param rvList the list of real vehicles.
+     * @return the bounding box of all areas of operation.
+     */
+    double[] findBoundingBox(List<RealVehicle> rvList);
 }

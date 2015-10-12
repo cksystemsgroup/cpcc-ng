@@ -652,21 +652,22 @@ public class VirtualVehicleMigratorTest
 
     private TarArchiveEntry readEntry(ArchiveInputStream inStream) throws IOException
     {
-        TarArchiveEntry entry = (TarArchiveEntry) inStream.getNextEntry();
-        if (entry == null)
-        {
-            return null;
-        }
-        System.out.printf("entry: %s, l=%d, (%d, %d), (%s/%s) %d\n",
-            entry.getName(),
-            entry.getSize(),
-            entry.getUserId(),
-            entry.getGroupId(),
-            entry.getUserName(),
-            entry.getGroupName(),
-            entry.getModTime().getTime()
-            );
-        return entry;
+        return (TarArchiveEntry) inStream.getNextEntry();
+        //TarArchiveEntry entry = (TarArchiveEntry) inStream.getNextEntry();
+        //if (entry == null)
+        //{
+        //    return null;
+        //}
+        //System.out.printf("entry: %s, l=%d, (%d, %d), (%s/%s) %d\n",
+        //    entry.getName(),
+        //    entry.getSize(),
+        //    entry.getUserId(),
+        //    entry.getGroupId(),
+        //    entry.getUserName(),
+        //    entry.getGroupName(),
+        //    entry.getModTime().getTime()
+        //    );
+        // return entry;
     }
 
     @Test(dataProvider = "chunkDataProvider")

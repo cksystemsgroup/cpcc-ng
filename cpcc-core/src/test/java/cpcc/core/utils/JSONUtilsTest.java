@@ -63,7 +63,6 @@ public class JSONUtilsTest
     {
         JSONObject obj = new JSONObject(jsonString);
         byte[] ba = JSONUtils.toByteArray(obj);
-        System.out.println(new String(ba));
 
         assertThat(ba).isNotNull().isEqualTo(jsonString.getBytes());
     }

@@ -76,13 +76,13 @@ public class RequestListenerThread extends Thread
     @Override
     public void run()
     {
-        System.out.println("Listening on port " + serverSocket.getLocalPort());
+        // System.out.println("Listening on port " + serverSocket.getLocalPort());
         while (!Thread.interrupted())
         {
             try
             {
                 Socket socket = serverSocket.accept();
-                System.out.println("Incoming connection from " + socket.getInetAddress());
+                // System.out.println("Incoming connection from " + socket.getInetAddress());
                 HttpServerConnection conn = connectionFactory.createConnection(socket);
 
                 Thread t = new WorkerThread(httpService, conn);
@@ -95,7 +95,7 @@ public class RequestListenerThread extends Thread
             }
             catch (IOException e)
             {
-                System.err.println("I/O error initialising connection thread: " + e.getMessage());
+                // System.err.println("I/O error initialising connection thread: " + e.getMessage());
                 break;
             }
         }
@@ -126,7 +126,7 @@ public class RequestListenerThread extends Thread
         @Override
         public void run()
         {
-            System.out.println("New connection thread");
+            // System.out.println("New connection thread");
             HttpContext context = new BasicHttpContext(null);
             try
             {

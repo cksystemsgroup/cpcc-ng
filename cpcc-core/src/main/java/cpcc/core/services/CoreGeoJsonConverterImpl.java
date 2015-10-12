@@ -19,13 +19,21 @@
 package cpcc.core.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.geojson.Feature;
+import org.geojson.FeatureCollection;
 import org.geojson.Point;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.utils.GeoJsonUtils;
 import cpcc.core.utils.PolarCoordinate;
 
 /**
@@ -73,4 +81,74 @@ public class CoreGeoJsonConverterImpl implements CoreGeoJsonConverter
             }
         };
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Point> findDepotPositions(RealVehicle realVehicle)
+    {
+        if (StringUtils.isBlank(realVehicle.getAreaOfOperation()))
+        {
+            return Collections.emptyList();
+        }
+
+        FeatureCollection collection;
+        try
+        {
+            collection = new ObjectMapper().readValue(realVehicle.getAreaOfOperation(), FeatureCollection.class);
+        }
+        catch (IOException e)
+        {
+            return Collections.emptyList();
+        }
+
+        List<Point> depotList = new ArrayList<Point>();
+
+        for (Feature feature : collection.getFeatures())
+        {
+            if ("depot".equals(feature.getProperty("type")) && feature.getGeometry() instanceof Point)
+            {
+                depotList.add((Point) feature.getGeometry());
+            }
+        }
+
+        return depotList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double[] findBoundingBox(List<RealVehicle> rvList)
+    {
+        double[] bbox = new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN};
+
+        for (RealVehicle rv : rvList)
+        {
+            if (rv.getAreaOfOperation() == null)
+            {
+                continue;
+            }
+
+            try
+            {
+                FeatureCollection collection =
+                    new ObjectMapper().readValue(rv.getAreaOfOperation(), FeatureCollection.class);
+                for (Feature feature : collection)
+                {
+                    double[] b = GeoJsonUtils.findBoundingBox(feature.getGeometry());
+                    GeoJsonUtils.mergeBoundingBoxes(bbox, b);
+                }
+
+            }
+            catch (IOException e)
+            {
+                continue;
+            }
+        }
+
+        return bbox;
+    }
+
 }

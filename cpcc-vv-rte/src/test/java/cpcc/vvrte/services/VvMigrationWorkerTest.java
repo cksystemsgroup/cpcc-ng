@@ -262,10 +262,10 @@ public class VvMigrationWorkerTest
         worker.start();
         worker.awaitCompetion();
 
-        verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+        verify(virtualVehicle).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, never()).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
         verify(session, never()).beginTransaction();
-        verify(sessionManager).commit();
+        verify(sessionManager, times(2)).commit();
         verify(sessionManager).abort();
         verify(perthreadManager).cleanup();
     }
@@ -281,10 +281,10 @@ public class VvMigrationWorkerTest
         worker.start();
         worker.awaitCompetion();
 
-        verify(virtualVehicle, never()).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+        verify(virtualVehicle).setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
         verify(com, times(1)).transfer(any(RealVehicle.class), anyString(), any(byte[].class));
         verify(session, never()).beginTransaction();
-        verify(sessionManager).commit();
+        verify(sessionManager, times(2)).commit();
         verify(sessionManager).abort();
         verify(perthreadManager).cleanup();
     }

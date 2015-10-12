@@ -1,0 +1,8 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+<t:content>
+	<t:Zone t:id="vehicleZone">
+		<t:Any id="prop:componentResources.id" data-vehicles="prop:vehicles"
+			class="hidden" />
+	</t:Zone>
+</t:content>
+</html>

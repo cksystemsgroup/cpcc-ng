@@ -149,8 +149,8 @@ public class JavascriptServiceTest
         JavascriptWorker sut = jss.createWorker(script, 1);
         sut.run();
 
-        System.out.println("shouldHandleVvRte() result1: '" + sut.getResult() + "'");
-        System.out.println("shouldHandleVvRte() output1: '" + out.toString("UTF-8") + "'");
+        // System.out.println("shouldHandleVvRte() result1: '" + sut.getResult() + "'");
+        // System.out.println("shouldHandleVvRte() output1: '" + out.toString("UTF-8") + "'");
         assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.INTERRUPTED);
         InputStream resultStream = this.getClass().getResourceAsStream("simple-vv-expected-result-1.txt");
         String expectedResult = IOUtils.toString(resultStream, "UTF-8");
@@ -328,7 +328,7 @@ public class JavascriptServiceTest
         @Override
         public List<ScriptableObject> listActiveSensors()
         {
-            System.out.println("listSensors start");
+            // System.out.println("listSensors start");
 
             NativeObject barometer = new NativeObject();
             barometer.put("name", barometer, "barometer");
@@ -372,7 +372,7 @@ public class JavascriptServiceTest
             sensorValue.put("name", sensorValue, sensor.get("name"));
             sensorValue.put("value", sensorValue, "value");
 
-            System.out.println("getSensorValue for " + sensor.get("name"));
+            // System.out.println("getSensorValue for " + sensor.get("name"));
             return sensorValue;
         }
 
@@ -382,14 +382,14 @@ public class JavascriptServiceTest
         @Override
         public void executeTask(ScriptableObject managementParameters, ScriptableObject taskParameters)
         {
-            System.out.println("executeTask1");
+            // System.out.println("executeTask1");
             if (!verifyTaskParameters(taskParameters))
             {
                 managementParameters.put("repeat", managementParameters, Boolean.FALSE);
                 return;
             }
 
-            System.out.println("executeTask2");
+            // System.out.println("executeTask2");
 
             Number sequence = (Number) managementParameters.get("sequence");
             if (sequence.intValue() == 0)
@@ -399,7 +399,7 @@ public class JavascriptServiceTest
 
                 if (migrate)
                 {
-                    System.out.println("migration");
+                    // System.out.println("migration");
                     Context cx = Context.enter();
                     try
                     {
@@ -413,7 +413,7 @@ public class JavascriptServiceTest
                     }
                 }
 
-                System.out.println("no migration");
+                // System.out.println("no migration");
 
                 // TODO no migration: schedule task and wait for completion.
 
@@ -469,21 +469,21 @@ public class JavascriptServiceTest
         @Override
         public ScriptableObject loadObject(String name)
         {
-            System.out.println("loadObject " + name);
+            // System.out.println("loadObject " + name);
             return storageMap.get(name);
         }
 
         @Override
         public void storeObject(String name, ScriptableObject obj)
         {
-            System.out.println("storeObject " + name);
+            // System.out.println("storeObject " + name);
             storageMap.put(name, (ScriptableObject) SerializationHelper.clone(obj));
         }
 
         @Override
         public List<String> listObjects(String pattern)
         {
-            System.out.println("listObjects " + pattern);
+            // System.out.println("listObjects " + pattern);
             List<String> result = new ArrayList<String>();
             for (String entry : storageMap.keySet())
             {
@@ -498,7 +498,7 @@ public class JavascriptServiceTest
         @Override
         public void removeObject(String name)
         {
-            System.out.println("removeObject " + name);
+            // System.out.println("removeObject " + name);
             storageMap.remove(name);
         }
     }

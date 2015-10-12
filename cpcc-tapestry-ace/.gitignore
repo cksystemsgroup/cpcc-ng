@@ -1,0 +1,13 @@
+*.swp
+.DS_Store
+/*.log
+/*.zip
+/.classpath
+/.project
+/.settings
+/bin
+/build
+/build.sh
+/target
+/test-output
+/work
