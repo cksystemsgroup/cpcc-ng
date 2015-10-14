@@ -345,6 +345,11 @@
 			<artifactId>annotations</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>eu.codearte.catch-exception</groupId>
+			<artifactId>catch-exception</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

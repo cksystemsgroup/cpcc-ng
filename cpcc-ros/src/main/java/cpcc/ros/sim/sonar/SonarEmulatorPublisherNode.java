@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,28 +16,32 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.ros.sim.osm;
+package cpcc.ros.sim.sonar;
 
-import org.ros.concurrent.CancellableLoop;
+import java.util.List;
+import java.util.Map;
+
 import org.ros.node.ConnectedNode;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import sensor_msgs.NavSatFix;
 import cpcc.ros.sim.AnonymousNodeMain;
 
 /**
- * ImagePublisherNode
+ * Sonar Emulator Publisher Node
  */
-public class ImagePublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
+public class SonarEmulatorPublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
 {
-    private static final Logger LOG = LoggerFactory.getLogger(ImagePublisherNode.class);
-    private Configuration config;
+    private Logger logger;
+    private Map<String, List<String>> config;
+    private SonarEmulatorPublisherLoop loop;
 
     /**
-     * @param config the configuration.
+     * @param config the device configuration
      */
-    public ImagePublisherNode(Configuration config)
+    public SonarEmulatorPublisherNode(Logger logger, Map<String, List<String>> config)
     {
+        this.logger = logger;
         this.config = config;
     }
 
@@ -47,9 +51,25 @@ public class ImagePublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
     @Override
     public void onStart(final ConnectedNode connectedNode)
     {
-        LOG.info("onStart");
-
-        CancellableLoop loop = new ImagePublisherNodeLoop(config, this, connectedNode);
+        logger.info("onStart");
+        loop = new SonarEmulatorPublisherLoop(config, connectedNode);
         connectedNode.executeCancellableLoop(loop);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onNewMessage(NavSatFix message)
+    {
+        loop.onNewMessage(message);
+    }
+
+    /**
+     * @return the publisher loop.
+     */
+    public SonarEmulatorPublisherLoop getLoop()
+    {
+        return loop;
     }
 }

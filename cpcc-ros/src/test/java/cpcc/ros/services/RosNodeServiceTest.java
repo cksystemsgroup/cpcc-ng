@@ -18,7 +18,12 @@
 
 package cpcc.ros.services;
 
+import static com.googlecode.catchexception.CatchException.catchException;
+import static com.googlecode.catchexception.CatchException.caughtException;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -31,13 +36,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
+import org.apache.tapestry5.ioc.ObjectLocator;
 import org.ros.internal.node.client.MasterClient;
 import org.ros.internal.node.response.Response;
 import org.ros.internal.node.response.StatusCode;
 import org.ros.master.client.SystemState;
 import org.ros.master.client.TopicSystemState;
 import org.ros.namespace.GraphName;
+import org.ros.node.NodeConfiguration;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -51,8 +58,9 @@ import cpcc.core.entities.TopicCategory;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.opts.OptionsParserService;
 import cpcc.core.services.opts.ParseException;
-import cpcc.ros.services.RosNodeServiceImpl;
+import cpcc.ros.sensors.Float32SensorAdapter;
 import cpcc.ros.sim.RosNodeGroup;
+import cpcc.ros.sim.sonar.SonarEmulator;
 
 public class RosNodeServiceTest
 {
@@ -67,6 +75,11 @@ public class RosNodeServiceTest
     private DeviceType type8;
     private Topic topic10;
     private MappingAttributes mappingAttribute;
+    private Logger logger;
+    private ObjectLocator objectLocator;
+    private SonarEmulator sonarEmulator;
+    private Float32SensorAdapter float32SensorAdapter;
+    private NodeConfiguration sonarEmulatorNodeConfiguration;
 
     @SuppressWarnings("serial")
     @BeforeMethod
@@ -113,12 +126,12 @@ public class RosNodeServiceTest
         topic10.setMessageType("std_msgs/Float32");
         topic10.setNodeType(RosNodeType.PUBLISHER);
         topic10.setSubpath(null);
-        topic10.setAdapterClassName("cpcc.ros.sensors.Float32SensorAdapter");
+        topic10.setAdapterClassName(Float32SensorAdapter.class.getName());
         topic10.setCategory(TopicCategory.ALTITUDE_OVER_GROUND);
 
         type8 = new DeviceType();
         type8.setId(8);
-        type8.setClassName("cpcc.ros.sim.SonarEmulator");
+        type8.setClassName(SonarEmulator.class.getName());
         type8.setMainTopic(topic10);
         type8.setName("Sonar Emulator");
         type8.setSubTopics(null);
@@ -128,10 +141,10 @@ public class RosNodeServiceTest
         device21.setTopicRoot("mav01/sonar");
         device21.setType(type8);
         device21.setConfiguration("origin=471 gps='/mav01/gps'");
-        
+
         mappingAttribute = mock(MappingAttributes.class);
         when(mappingAttribute.getConnectedToAutopilot()).thenReturn(true);
-        
+
         qm = mock(QueryManager.class);
         when(qm.findParameterByName(Parameter.MASTER_SERVER_URI)).thenReturn(masterServerURI);
         when(qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE)).thenReturn(useInternalRosCore);
@@ -147,104 +160,106 @@ public class RosNodeServiceTest
         };
         optionsParser = mock(OptionsParserService.class);
         when(optionsParser.parseConfig("origin=471 gps='/mav01/gps'")).thenReturn(options);
+
+        logger = mock(Logger.class);
+
+        sonarEmulatorNodeConfiguration = mock(NodeConfiguration.class);
+        when(sonarEmulatorNodeConfiguration.getNodeName()).thenReturn(GraphName.of("/sonar"));
+
+        sonarEmulator = mock(SonarEmulator.class);
+        when(sonarEmulator.getNodeConfiguration()).thenReturn(sonarEmulatorNodeConfiguration);
+
+        float32SensorAdapter = spy(Float32SensorAdapter.class);
+
+        objectLocator = mock(ObjectLocator.class);
+        when(objectLocator.autobuild(SonarEmulator.class)).thenReturn(sonarEmulator);
+        when(objectLocator.autobuild(Float32SensorAdapter.class)).thenReturn(float32SensorAdapter);
     }
 
     @Test
     public void shouldStartAndStopAndStartInternalRosCore()
     {
-        RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser);
-        Assert.assertNotNull(svc);
+        RosNodeServiceImpl svc = new RosNodeServiceImpl(logger, qm, optionsParser, objectLocator);
+        assertThat(svc).isNotNull();
 
         MasterClient master = new MasterClient(masterServer);
 
         Response<SystemState> systemState = master.getSystemState(GraphName.newAnonymous());
-        Assert.assertNotNull(systemState);
+        assertThat(systemState).isNotNull();
 
         StatusCode statusCode = systemState.getStatusCode();
-        Assert.assertNotNull(statusCode);
-        Assert.assertEquals(StatusCode.SUCCESS, statusCode);
+        assertThat(statusCode).isNotNull().isEqualTo(StatusCode.SUCCESS);
 
         String statusMessage = systemState.getStatusMessage();
-        Assert.assertNotNull(statusMessage);
+        assertThat(statusMessage).isNotNull();
 
         Collection<TopicSystemState> topics = systemState.getResult().getTopics();
-        Assert.assertNotNull(topics);
-//        if (!topics.isEmpty())
-//        {
-//            for (TopicSystemState x : topics)
-//            {
-//                System.out.println("### Topic: " + x.getTopicName());
-//            }
-//        }
-        
-        Assert.assertTrue(topics.isEmpty());
+        assertThat(topics).isNotNull().isEmpty();
+        //if (!topics.isEmpty())
+        //{
+        //    for (TopicSystemState x : topics)
+        //    {
+        //        System.out.println("### Topic: " + x.getTopicName());
+        //    }
+        //}
 
         svc.updateRosCore(false);
 
-        try
-        {
-            systemState = master.getSystemState(GraphName.newAnonymous());
-        }
-        catch (RuntimeException e)
-        {
-            Assert.assertTrue(e.getCause() instanceof SocketException);
-        }
+        catchException(master).getSystemState(GraphName.newAnonymous());
+
+        assertThat(caughtException()).isInstanceOf(RuntimeException.class);
+        assertThat(caughtException().getCause()).isInstanceOf(SocketException.class);
 
         svc.updateRosCore(true);
 
         systemState = master.getSystemState(GraphName.newAnonymous());
-        Assert.assertNotNull(systemState);
+        assertThat(systemState).isNotNull();
 
         statusCode = systemState.getStatusCode();
-        Assert.assertNotNull(statusCode);
-        Assert.assertEquals(StatusCode.SUCCESS, statusCode);
+        assertThat(statusCode).isNotNull().isEqualTo(StatusCode.SUCCESS);
     }
 
     @Test
     public void shouldRestartInternalRosCoreOnMasterUriChange()
     {
-        RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser);
-        Assert.assertNotNull(svc);
+        RosNodeServiceImpl svc = new RosNodeServiceImpl(logger, qm, optionsParser, objectLocator);
+        assertThat(svc).isNotNull();
 
         MasterClient master = new MasterClient(masterServer);
 
         Response<SystemState> systemState = master.getSystemState(GraphName.newAnonymous());
-        Assert.assertNotNull(systemState);
+        assertThat(systemState).isNotNull();
 
         StatusCode statusCode = systemState.getStatusCode();
-        Assert.assertNotNull(statusCode);
-        Assert.assertEquals(StatusCode.SUCCESS, statusCode);
+        assertThat(statusCode).isNotNull().isEqualTo(StatusCode.SUCCESS);
 
         svc.updateMasterServerURI(masterServer2);
 
         master = new MasterClient(masterServer2);
         systemState = master.getSystemState(GraphName.newAnonymous());
-        Assert.assertNotNull(systemState);
+        assertThat(systemState).isNotNull();
 
         statusCode = systemState.getStatusCode();
-        Assert.assertNotNull(statusCode);
-        Assert.assertEquals(StatusCode.SUCCESS, statusCode);
+        assertThat(statusCode).isNotNull().isEqualTo(StatusCode.SUCCESS);
     }
 
     @Test
     public void shouldUpdateDevice() throws IOException, ParseException
     {
-        RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser);
-        Assert.assertNotNull(svc);
+        RosNodeServiceImpl svc = new RosNodeServiceImpl(logger, qm, optionsParser, objectLocator);
+        assertThat(svc).isNotNull();
 
         Map<String, RosNodeGroup> deviceNodes = svc.getDeviceNodes();
-        Assert.assertNotNull(deviceNodes);
-        Assert.assertEquals(1, deviceNodes.size());
+        assertThat(deviceNodes).hasSize(1);
 
         svc.updateDevice(device21);
 
         deviceNodes = svc.getDeviceNodes();
-        Assert.assertNotNull(deviceNodes);
-        Assert.assertEquals(1, deviceNodes.size());
+        assertThat(deviceNodes).hasSize(1);
 
         svc.shutdownDevice(device21);
     }
-    
+
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void shouldThrowIAEOnWreckedMasterURI()
     {
@@ -252,7 +267,8 @@ public class RosNodeServiceTest
         when(qmi.findParameterByName(Parameter.MASTER_SERVER_URI)).thenReturn(wrongMasterServerURI);
         when(qmi.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE)).thenReturn(useInternalRosCore);
 
-        RosNodeServiceImpl svc = new RosNodeServiceImpl(qmi, optionsParser);
-        Assert.assertNull(svc);
+        new RosNodeServiceImpl(logger, qmi, optionsParser, objectLocator);
+
+        failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
     }
 }

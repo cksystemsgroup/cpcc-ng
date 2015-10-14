@@ -60,7 +60,6 @@ public class RosServiceModuleTest
         RosServiceModule.bind(binder);
 
         verify(binder).bind(RosNodeService.class, RosNodeServiceImpl.class);
-        verify(options1).eagerLoad();
         verify(binder).bind(RosImageConverter.class, RosImageConverterImpl.class);
     }
 

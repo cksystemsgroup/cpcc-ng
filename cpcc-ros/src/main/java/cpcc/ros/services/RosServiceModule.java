@@ -27,7 +27,7 @@ public final class RosServiceModule
 {
     private RosServiceModule()
     {
-        // intentionally empty.
+        // Intentionally empty.
     }
 
     /**
@@ -35,7 +35,7 @@ public final class RosServiceModule
      */
     public static void bind(ServiceBinder binder)
     {
-        binder.bind(RosNodeService.class, RosNodeServiceImpl.class).eagerLoad();
+        binder.bind(RosNodeService.class, RosNodeServiceImpl.class);
         binder.bind(RosImageConverter.class, RosImageConverterImpl.class);
     }
 }

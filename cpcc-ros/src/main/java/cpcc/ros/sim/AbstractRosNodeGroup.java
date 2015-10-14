@@ -34,8 +34,6 @@ public abstract class AbstractRosNodeGroup implements RosNodeGroup
     private Map<String, List<String>> config;
     private NodeConfiguration nodeConfiguration;
 
-
-
     /**
      * {@inheritDoc}
      */
@@ -43,7 +41,7 @@ public abstract class AbstractRosNodeGroup implements RosNodeGroup
     {
         return topicRoot;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -60,7 +58,7 @@ public abstract class AbstractRosNodeGroup implements RosNodeGroup
     {
         return config;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -77,7 +75,7 @@ public abstract class AbstractRosNodeGroup implements RosNodeGroup
     {
         return nodeConfiguration;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -86,7 +84,7 @@ public abstract class AbstractRosNodeGroup implements RosNodeGroup
     {
         this.nodeConfiguration = nodeConfiguration;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -99,7 +97,7 @@ public abstract class AbstractRosNodeGroup implements RosNodeGroup
         {
             map.put("config." + entry.getKey(), entry.getValue());
         }
-        
+
         return map;
     }
 }

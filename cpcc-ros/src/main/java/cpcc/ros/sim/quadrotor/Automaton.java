@@ -18,6 +18,7 @@
 
 package cpcc.ros.sim.quadrotor;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,68 +28,51 @@ import java.util.Map;
 public class Automaton
 {
     @SuppressWarnings("serial")
-    private static final Map<State, Map<Event, State>> MAP =
-        new HashMap<State, Map<Event, State>>()
+    private static final Map<State, Map<Event, State>> TRANSITION_MAP = new HashMap<State, Map<Event, State>>()
+    {
         {
-            {
-                put(State.OFFLINE, new HashMap<Event, State>()
-                {
-                    {
-                        put(Event.UNLOCK, State.READY);
-                        put(Event.BATTERY_LOW, State.DENY);
-                    }
-                });
-                put(State.READY, new HashMap<Event, State>()
-                {
-                    {
-                        put(Event.LOCK, State.OFFLINE);
-                        put(Event.BATTERY_LOW, State.DENY);
-                        put(Event.START, State.TAKE_OFF);
-                    }
-                });
-                put(State.TAKE_OFF, new HashMap<Event, State>()
-                {
-                    {
-                        put(Event.BATTERY_LOW, State.DEPOT_FLIGHT);
-                        put(Event.STOP, State.LAND);
-                        put(Event.REACHED, State.HOVER);
-                    }
-                });
-                put(State.LAND, new HashMap<Event, State>()
-                {
-                    {
-                        put(Event.LANDED, State.READY);
-                    }
-                });
-                put(State.HOVER, new HashMap<Event, State>()
-                {
-                    {
-                        put(Event.BATTERY_LOW, State.DEPOT_FLIGHT);
-                        put(Event.FLY_TO, State.FLIGHT);
-                    }
-                });
-                put(State.FLIGHT, new HashMap<Event, State>()
-                {
-                    {
-                        put(Event.BATTERY_LOW, State.DEPOT_FLIGHT);
-                        put(Event.REACHED, State.HOVER);
-                    }
-                });
-                put(State.DEPOT_FLIGHT, new HashMap<Event, State>()
-                {
-                    {
-                        put(Event.REACHED, State.DEPOT_LAND);
-                    }
-                });
-                put(State.DEPOT_LAND, new HashMap<Event, State>()
-                {
-                    {
-                        put(Event.LANDED, State.DENY);
-                    }
-                });
-                put(State.DENY, new HashMap<Event, State>());
-            }
-        };
+            Map<Event, State> m = new HashMap<Event, State>();
+            m.put(Event.UNLOCK, State.READY);
+            m.put(Event.BATTERY_LOW, State.DENY);
+            put(State.OFFLINE, m);
+
+            m = new HashMap<Event, State>();
+            m.put(Event.LOCK, State.OFFLINE);
+            m.put(Event.BATTERY_LOW, State.DENY);
+            m.put(Event.START, State.TAKE_OFF);
+            put(State.READY, m);
+
+            m = new HashMap<Event, State>();
+            m.put(Event.BATTERY_LOW, State.DEPOT_FLIGHT);
+            m.put(Event.STOP, State.LAND);
+            m.put(Event.REACHED, State.HOVER);
+            put(State.TAKE_OFF, m);
+
+            m = new HashMap<Event, State>();
+            m.put(Event.LANDED, State.READY);
+            put(State.LAND, m);
+
+            m = new HashMap<Event, State>();
+            m.put(Event.BATTERY_LOW, State.DEPOT_FLIGHT);
+            m.put(Event.FLY_TO, State.FLIGHT);
+            put(State.HOVER, m);
+
+            m = new HashMap<Event, State>();
+            m.put(Event.BATTERY_LOW, State.DEPOT_FLIGHT);
+            m.put(Event.REACHED, State.HOVER);
+            put(State.FLIGHT, m);
+
+            m = new HashMap<Event, State>();
+            m.put(Event.REACHED, State.DEPOT_LAND);
+            put(State.DEPOT_FLIGHT, m);
+
+            m = new HashMap<Event, State>();
+            m.put(Event.LANDED, State.DENY);
+            put(State.DEPOT_LAND, m);
+
+            put(State.DENY, Collections.<Event, State> emptyMap());
+        }
+    };
 
     private State currentState;
 
@@ -96,14 +80,6 @@ public class Automaton
      * Construct the automaton.
      */
     public Automaton()
-    {
-        reset();
-    }
-
-    /**
-     * Reset the automaton.
-     */
-    private void reset()
     {
         currentState = State.OFFLINE;
     }
@@ -114,11 +90,12 @@ public class Automaton
      */
     public State transition(Event event)
     {
-        if (!MAP.get(currentState).containsKey(event))
+        if (!TRANSITION_MAP.get(currentState).containsKey(event))
         {
             return null;
         }
-        currentState = MAP.get(currentState).get(event);
+
+        currentState = TRANSITION_MAP.get(currentState).get(event);
         return currentState;
     }
 
