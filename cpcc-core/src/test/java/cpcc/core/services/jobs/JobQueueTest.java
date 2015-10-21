@@ -20,7 +20,7 @@ package cpcc.core.services.jobs;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -196,7 +196,7 @@ public class JobQueueTest
 
         catchException(sut).execute(slowJob);
 
-        assertThat(caughtException())
+        assertThat((Throwable) caughtException())
             .overridingErrorMessage("Second invocation of execute() does not throw an exception!")
             .isNotNull()
             .isInstanceOf(JobExecutionException.class);

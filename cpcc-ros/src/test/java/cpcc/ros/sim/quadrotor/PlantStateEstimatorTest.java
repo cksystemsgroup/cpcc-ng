@@ -18,8 +18,8 @@
 
 package cpcc.ros.sim.quadrotor;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.offset;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -18,8 +18,8 @@
 
 package cpcc.core.services.opts;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.offset;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,17 +27,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.fest.assertions.api.Fail;
+import org.assertj.core.api.Fail;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import cpcc.core.services.opts.Option;
-import cpcc.core.services.opts.OptionsParserService;
-import cpcc.core.services.opts.OptionsParserServiceImpl;
-import cpcc.core.services.opts.ParseException;
-import cpcc.core.services.opts.Symbol;
-import cpcc.core.services.opts.Token;
 
 /**
  * OptionsParserServiceTest

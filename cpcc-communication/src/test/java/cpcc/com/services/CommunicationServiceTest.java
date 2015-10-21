@@ -20,7 +20,7 @@ package cpcc.com.services;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -50,8 +50,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.com.services.CommunicationResponse;
-import cpcc.com.services.CommunicationServiceImpl;
 import cpcc.com.services.CommunicationResponse.Status;
 import cpcc.core.entities.RealVehicle;
 
@@ -175,6 +173,6 @@ public class CommunicationServiceTest
 
         catchException(com).addConnector("connector", "path");
 
-        assertThat(caughtException()).isInstanceOf(IllegalStateException.class);
+        assertThat((Throwable) caughtException()).isInstanceOf(IllegalStateException.class);
     }
 }

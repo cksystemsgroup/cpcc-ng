@@ -18,7 +18,7 @@
 
 package cpcc.commons.services;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -27,12 +27,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.tapestry5.ValidationException;
-import org.fest.assertions.api.Fail;
+import org.assertj.core.api.Fail;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import cpcc.commons.services.UriTranslator;
 
 /**
  * UriTranslatorTest

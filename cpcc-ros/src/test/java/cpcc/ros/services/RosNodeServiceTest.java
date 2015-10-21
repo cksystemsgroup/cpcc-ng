@@ -20,8 +20,8 @@ package cpcc.ros.services;
 
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -207,7 +207,7 @@ public class RosNodeServiceTest
 
         catchException(master).getSystemState(GraphName.newAnonymous());
 
-        assertThat(caughtException()).isInstanceOf(RuntimeException.class);
+        assertThat((Throwable) caughtException()).isInstanceOf(RuntimeException.class);
         assertThat(caughtException().getCause()).isInstanceOf(SocketException.class);
 
         svc.updateRosCore(true);

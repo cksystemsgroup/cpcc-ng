@@ -56,7 +56,7 @@
 	</scm>
 
 	<properties>
-		<java-version>1.7</java-version>
+		<java-version>1.8</java-version>
 		<tapestry-release-version>5.4-beta-35</tapestry-release-version>
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
 		<testng-release-version>6.9.8</testng-release-version>
@@ -73,6 +73,7 @@
 		<powermock-version>1.6.3</powermock-version>
 		<easymock-version>3.4</easymock-version>
 		<argLine>-XX:-UseSplitVerifier</argLine>
+		<assertj-version>3.2.0</assertj-version>
 	</properties>
 
 	<dependencyManagement>
@@ -174,10 +175,16 @@
 			<!-- <version>${jmockit-version}</version> -->
 			<!-- <scope>test</scope> -->
 			<!-- </dependency> -->
+			<!-- <dependency> -->
+			<!-- <groupId>org.easytesting</groupId> -->
+			<!-- <artifactId>fest-assert-core</artifactId> -->
+			<!-- <version>2.0M10</version> -->
+			<!-- <scope>test</scope> -->
+			<!-- </dependency> -->
 			<dependency>
-				<groupId>org.easytesting</groupId>
-				<artifactId>fest-assert-core</artifactId>
-				<version>2.0M10</version>
+				<groupId>org.assertj</groupId>
+				<artifactId>assertj-core</artifactId>
+				<version>${assertj-version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>

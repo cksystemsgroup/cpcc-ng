@@ -18,7 +18,7 @@
 
 package cpcc.vvrte.services.js;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,7 +38,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
-import org.fest.assertions.api.Fail;
+import org.assertj.core.api.Fail;
 import org.hibernate.internal.util.SerializationHelper;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
@@ -50,12 +50,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.vvrte.services.js.BuiltInFunctions;
-import cpcc.vvrte.services.js.JavascriptService;
-import cpcc.vvrte.services.js.JavascriptServiceImpl;
-import cpcc.vvrte.services.js.JavascriptWorker;
-import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
-import cpcc.vvrte.services.js.VvRteFunctions;
 
 /**
  * JavascriptServiceTest

@@ -18,7 +18,7 @@
 
 package cpcc.core.utils;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
