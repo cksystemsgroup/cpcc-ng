@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.ros.node.DefaultNodeMainExecutor;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import sensor_msgs.NavSatFix;
 import cpcc.ros.sim.AbstractRosNodeGroup;
 import cpcc.ros.sim.AnonymousNodeMain;
 
@@ -35,10 +35,18 @@ import cpcc.ros.sim.AnonymousNodeMain;
  */
 public class NodeGroup extends AbstractRosNodeGroup
 {
-    private static final Logger LOG = LoggerFactory.getLogger(NodeGroup.class);
+    private Logger logger;
     private AnonymousNodeMain<sensor_msgs.NavSatFix> imagePublisherNode;
     private AnonymousNodeMain<sensor_msgs.NavSatFix> listenerNode;
     private Configuration config;
+
+    /**
+     * @param logger the application logger.
+     */
+    public NodeGroup(Logger logger)
+    {
+        this.logger = logger;
+    }
 
     /**
      * {@inheritDoc}
@@ -46,14 +54,14 @@ public class NodeGroup extends AbstractRosNodeGroup
     @Override
     public void start()
     {
-        LOG.info("start()");
+        logger.info("start()");
 
         getConfig().put("topicRoot", Arrays.asList(getTopicRoot()));
 
         config = new Configuration(getNodeConfiguration(), getConfig());
 
-        imagePublisherNode = new ImagePublisherNode(config);
-        listenerNode = new GpsListenerNode(config, imagePublisherNode);
+        imagePublisherNode = new ImagePublisherNode(logger, config);
+        listenerNode = new GpsListenerNode(logger, config, imagePublisherNode);
 
         DefaultNodeMainExecutor.newDefault().execute(imagePublisherNode, getNodeConfiguration());
         DefaultNodeMainExecutor.newDefault().execute(listenerNode, getNodeConfiguration());
@@ -65,7 +73,7 @@ public class NodeGroup extends AbstractRosNodeGroup
     @Override
     public void shutdown()
     {
-        LOG.info("shutdown()");
+        logger.info("shutdown()");
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(listenerNode);
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(imagePublisherNode);
     }
@@ -77,24 +85,26 @@ public class NodeGroup extends AbstractRosNodeGroup
     public Map<String, List<String>> getCurrentState()
     {
         Map<String, List<String>> map = super.getCurrentState();
-        if (imagePublisherNode.getReceivedMessage() != null)
+        NavSatFix pos = imagePublisherNode.getReceivedMessage();
+        if (pos != null)
         {
             map.put("image.position", Arrays.asList(
-                String.format(Locale.US, "%.8f", imagePublisherNode.getReceivedMessage().getLatitude()),
-                String.format(Locale.US, "%.8f", imagePublisherNode.getReceivedMessage().getLongitude()),
-                String.format(Locale.US, "%.3f", imagePublisherNode.getReceivedMessage().getAltitude())
+                String.format(Locale.US, "%.8f", pos.getLatitude()),
+                String.format(Locale.US, "%.8f", pos.getLongitude()),
+                String.format(Locale.US, "%.3f", pos.getAltitude())
                 ));
         }
-        
-        if (listenerNode.getReceivedMessage() != null)
+
+        pos = listenerNode.getReceivedMessage();
+        if (pos != null)
         {
             map.put("gps.position", Arrays.asList(
-                String.format(Locale.US, "%.8f", listenerNode.getReceivedMessage().getLatitude()),
-                String.format(Locale.US, "%.8f", listenerNode.getReceivedMessage().getLongitude()),
-                String.format(Locale.US, "%.3f", listenerNode.getReceivedMessage().getAltitude())
+                String.format(Locale.US, "%.8f", pos.getLatitude()),
+                String.format(Locale.US, "%.8f", pos.getLongitude()),
+                String.format(Locale.US, "%.3f", pos.getAltitude())
                 ));
         }
-        
+
         return map;
     }
 }

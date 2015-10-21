@@ -37,6 +37,7 @@ public class SonarEmulatorPublisherNode extends AnonymousNodeMain<sensor_msgs.Na
     private SonarEmulatorPublisherLoop loop;
 
     /**
+     * @param logger the application logger.
      * @param config the device configuration
      */
     public SonarEmulatorPublisherNode(Logger logger, Map<String, List<String>> config)

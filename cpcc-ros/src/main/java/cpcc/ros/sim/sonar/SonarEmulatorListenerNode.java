@@ -39,6 +39,7 @@ public class SonarEmulatorListenerNode extends AnonymousNodeMain<sensor_msgs.Nav
     private String listenTopic;
 
     /**
+     * @param logger the application logger.
      * @param config the device configuration.
      * @param listenerNode the listener node.
      */

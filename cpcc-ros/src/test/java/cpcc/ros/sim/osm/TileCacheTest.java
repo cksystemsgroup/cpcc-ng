@@ -126,7 +126,7 @@ public class TileCacheTest extends PowerMockTestCase
     {
         File path = new File("/tmp/");
         tempDirectory = Files.createTempDirectory(path.toPath(), "tmp-test").toFile();
-        assertThat(tempDirectory.exists()).isTrue();
+        assertThat(tempDirectory).exists();
 
         config = PowerMockito.mock(Configuration.class);
         PowerMockito.doReturn(tempDirectory.getAbsolutePath()).when(config).getTileCacheBaseDir();

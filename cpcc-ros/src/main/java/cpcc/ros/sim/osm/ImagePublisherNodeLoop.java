@@ -27,38 +27,34 @@ import org.ros.message.MessageFactory;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import sensor_msgs.CameraInfo;
 import sensor_msgs.Image;
 import sensor_msgs.NavSatFix;
 import cpcc.core.utils.PolarCoordinate;
-import cpcc.ros.sim.AnonymousNodeMain;
 
 /**
  * Image Publisher Node Loop
  */
 public class ImagePublisherNodeLoop extends CancellableLoop
 {
-    private static final Logger LOG = LoggerFactory.getLogger(ImagePublisherNodeLoop.class);
-
+    private Logger logger;
     private Configuration config;
-    private AnonymousNodeMain<NavSatFix> node;
     private ConnectedNode connectedNode;
     private Publisher<Image> imagePublisher;
     private Publisher<CameraInfo> infoPublisher;
     private Camera camera;
+    private NavSatFix message;
 
     /**
+     * @param logger the application logger.
      * @param config the configuration.
-     * @param node the node
      * @param connectedNode the connected node.
      */
-    public ImagePublisherNodeLoop(Configuration config, AnonymousNodeMain<sensor_msgs.NavSatFix> node
-        , ConnectedNode connectedNode)
+    public ImagePublisherNodeLoop(Logger logger, Configuration config, ConnectedNode connectedNode)
     {
+        this.logger = logger;
         this.config = config;
-        this.node = node;
         this.connectedNode = connectedNode;
 
         camera = new Camera(config);
@@ -76,28 +72,27 @@ public class ImagePublisherNodeLoop extends CancellableLoop
     @Override
     protected void loop() throws InterruptedException
     {
-        NavSatFix msg = node.getReceivedMessage();
-
-        if (msg == null)
+        if (message == null)
         {
             return;
         }
 
-        PolarCoordinate position = new PolarCoordinate(msg.getLatitude(), msg.getLongitude(), msg.getAltitude());
+        PolarCoordinate position =
+            new PolarCoordinate(message.getLatitude(), message.getLongitude(), message.getAltitude());
 
         MessageFactory factory = connectedNode.getTopicMessageFactory();
 
         try
         {
             byte[] image = camera.getImage(position);
-            sensor_msgs.Image message = factory.newFromType(sensor_msgs.Image._TYPE);
-            message.setIsBigendian((byte) 0);
-            message.setData(ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), image));
-            message.setEncoding("png");
-            message.setHeight(config.getCameraHeight());
-            message.setWidth(config.getCameraWidth());
-            message.setStep(0);
-            imagePublisher.publish(message);
+            sensor_msgs.Image imageMessage = factory.newFromType(sensor_msgs.Image._TYPE);
+            imageMessage.setIsBigendian((byte) 0);
+            imageMessage.setData(ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), image));
+            imageMessage.setEncoding("png");
+            imageMessage.setHeight(config.getCameraHeight());
+            imageMessage.setWidth(config.getCameraWidth());
+            imageMessage.setStep(0);
+            imagePublisher.publish(imageMessage);
 
             sensor_msgs.CameraInfo info = factory.newFromType(sensor_msgs.CameraInfo._TYPE);
             info.setHeight(config.getCameraHeight());
@@ -106,9 +101,25 @@ public class ImagePublisherNodeLoop extends CancellableLoop
         }
         catch (IOException e)
         {
-            LOG.error("Can not get camera image.", e);
+            logger.error("Can not get camera image.", e);
         }
 
         Thread.sleep(1000);
+    }
+
+    /**
+     * @return the received message.
+     */
+    public NavSatFix getMessage()
+    {
+        return message;
+    }
+
+    /**
+     * @param message the message to set.
+     */
+    public void setMessage(NavSatFix message)
+    {
+        this.message = message;
     }
 }

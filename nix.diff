@@ -1,0 +1,628 @@
+diff --git a/cpcc-core/pom.xml b/cpcc-core/pom.xml
+index d1c8980..8d50e63 100644
+--- a/cpcc-core/pom.xml
++++ b/cpcc-core/pom.xml
+@@ -36,17 +36,17 @@
+ 			<artifactId>commons-lang3</artifactId>
+ 		</dependency>
+ 		<dependency>
+-		<groupId>org.apache.commons</groupId>
+-		<artifactId>commons-io</artifactId>
+-		</dependency>
+-<!-- 		<dependency> -->
+-<!-- 			<groupId>org.apache.commons</groupId> -->
+-<!-- 			<artifactId>com.springsource.org.apache.commons.io</artifactId> -->
+-<!-- 		</dependency> -->
+-<!-- 		<dependency> -->
+-<!-- 			<groupId>org.apache.commons</groupId> -->
+-<!-- 			<artifactId>com.springsource.org.apache.commons.lang</artifactId> -->
+-<!-- 		</dependency> -->
++			<groupId>org.apache.commons</groupId>
++			<artifactId>commons-io</artifactId>
++		</dependency>
++		<!-- <dependency> -->
++		<!-- <groupId>org.apache.commons</groupId> -->
++		<!-- <artifactId>com.springsource.org.apache.commons.io</artifactId> -->
++		<!-- </dependency> -->
++		<!-- <dependency> -->
++		<!-- <groupId>org.apache.commons</groupId> -->
++		<!-- <artifactId>com.springsource.org.apache.commons.lang</artifactId> -->
++		<!-- </dependency> -->
+ 
+ 		<dependency>
+ 			<groupId>de.grundid.opendatalab</groupId>
+diff --git a/cpcc-ros/pom.xml b/cpcc-ros/pom.xml
+index 83e0be4..63c508b 100644
+--- a/cpcc-ros/pom.xml
++++ b/cpcc-ros/pom.xml
+@@ -45,20 +45,19 @@
+ 		</dependency>
+ 		<dependency>
+ 			<groupId>org.powermock</groupId>
+-			<artifactId>powermock-module-test-easymock-testng</artifactId>
+-			<version>1.5.1</version>
+-			<scope>test</scope>
+-		</dependency>
+-		<dependency>
+-			<groupId>org.powermock</groupId>
+-			<artifactId>powermock-module-junit4</artifactId>
+-			<version>1.5.1</version>
++			<artifactId>powermock-easymock-release-full</artifactId>
++			<classifier>full</classifier>
+ 			<scope>test</scope>
+ 		</dependency>
++		<!-- <dependency> -->
++		<!-- <groupId>org.powermock</groupId> -->
++		<!-- <artifactId>powermock-module-junit4</artifactId> -->
++		<!-- <version>1.5.1</version> -->
++		<!-- <scope>test</scope> -->
++		<!-- </dependency> -->
+ 		<dependency>
+ 			<groupId>org.easymock</groupId>
+ 			<artifactId>easymock</artifactId>
+-			<version>3.2</version>
+ 			<scope>test</scope>
+ 		</dependency>
+ 		<dependency>
+diff --git a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/Camera.java b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/Camera.java
+index cd126a8..ba9b81b 100644
+--- a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/Camera.java
++++ b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/Camera.java
+@@ -28,6 +28,8 @@ import java.io.IOException;
+ 
+ import javax.imageio.ImageIO;
+ 
++import org.apache.commons.lang3.ArrayUtils;
++
+ import cpcc.core.utils.PolarCoordinate;
+ 
+ /**
+@@ -35,8 +37,6 @@ import cpcc.core.utils.PolarCoordinate;
+  */
+ public class Camera
+ {
+-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+-    
+     private TileCache tileCache;
+     private BufferedImage map;
+     private MercatorProjection topLeftTile;
+@@ -88,7 +88,7 @@ public class Camera
+     {
+         if (position == null)
+         {
+-            return EMPTY_BYTE_ARRAY;
++            return ArrayUtils.EMPTY_BYTE_ARRAY;
+         }
+ 
+         PolarCoordinate pos = new PolarCoordinate(position);
+diff --git a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/GpsListenerNode.java b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/GpsListenerNode.java
+index 9094e37..7461567 100644
+--- a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/GpsListenerNode.java
++++ b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/GpsListenerNode.java
+@@ -18,41 +18,41 @@
+ 
+ package cpcc.ros.sim.osm;
+ 
+-import org.ros.message.MessageListener;
+ import org.ros.node.ConnectedNode;
+ import org.ros.node.topic.Subscriber;
+ import org.slf4j.Logger;
+-import org.slf4j.LoggerFactory;
+ 
+-import cpcc.ros.sim.AnonymousNodeMain;
+ import sensor_msgs.NavSatFix;
++import cpcc.ros.sim.AnonymousNodeMain;
+ 
+ /**
+  * GpsListenerNode
+  */
+ public class GpsListenerNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
+ {
+-    private static final Logger LOG = LoggerFactory.getLogger(GpsListenerNode.class);
++    private Logger logger;
+     private Configuration config;
+-    private MessageListener<NavSatFix> publisherNode;
+-    
++    private AnonymousNodeMain<sensor_msgs.NavSatFix> publisherNode;
++
+     /**
++     * @param logger the application logger.
+      * @param config the configuration.
+      * @param publisherNode the publisher node to send messages to.
+      */
+-    public GpsListenerNode(Configuration config, MessageListener<sensor_msgs.NavSatFix> publisherNode)
++    public GpsListenerNode(Logger logger, Configuration config, AnonymousNodeMain<sensor_msgs.NavSatFix> publisherNode)
+     {
++        this.logger = logger;
+         this.config = config;
+         this.publisherNode = publisherNode;
+     }
+-    
++
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public void onStart(ConnectedNode connectedNode)
+     {
+-        LOG.info("onStart()");
++        logger.info("onStart()");
+ 
+         Subscriber<sensor_msgs.NavSatFix> subscriber =
+             connectedNode.newSubscriber(config.getGpsTopic(), sensor_msgs.NavSatFix._TYPE);
+@@ -60,4 +60,13 @@ public class GpsListenerNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
+         subscriber.addMessageListener(publisherNode);
+     }
+ 
++    /**
++     * {@inheritDoc}
++     */
++    @Override
++    public void onNewMessage(NavSatFix message)
++    {
++        super.onNewMessage(message);
++        publisherNode.onNewMessage(message);
++    }
+ }
+diff --git a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/ImagePublisherNode.java b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/ImagePublisherNode.java
+index 9f4f256..4b8ca86 100644
+--- a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/ImagePublisherNode.java
++++ b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/ImagePublisherNode.java
+@@ -18,11 +18,10 @@
+ 
+ package cpcc.ros.sim.osm;
+ 
+-import org.ros.concurrent.CancellableLoop;
+ import org.ros.node.ConnectedNode;
+ import org.slf4j.Logger;
+-import org.slf4j.LoggerFactory;
+ 
++import sensor_msgs.NavSatFix;
+ import cpcc.ros.sim.AnonymousNodeMain;
+ 
+ /**
+@@ -30,14 +29,17 @@ import cpcc.ros.sim.AnonymousNodeMain;
+  */
+ public class ImagePublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
+ {
+-    private static final Logger LOG = LoggerFactory.getLogger(ImagePublisherNode.class);
++    private Logger logger;
+     private Configuration config;
++    private ImagePublisherNodeLoop loop;
+ 
+     /**
++     * @param logger the application logger.
+      * @param config the configuration.
+      */
+-    public ImagePublisherNode(Configuration config)
++    public ImagePublisherNode(Logger logger, Configuration config)
+     {
++        this.logger = logger;
+         this.config = config;
+     }
+ 
+@@ -47,9 +49,27 @@ public class ImagePublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
+     @Override
+     public void onStart(final ConnectedNode connectedNode)
+     {
+-        LOG.info("onStart");
++        logger.info("onStart");
+ 
+-        CancellableLoop loop = new ImagePublisherNodeLoop(config, this, connectedNode);
++        loop = new ImagePublisherNodeLoop(logger, config, connectedNode);
+         connectedNode.executeCancellableLoop(loop);
+     }
++
++    /**
++     * {@inheritDoc}
++     */
++    @Override
++    public void onNewMessage(NavSatFix message)
++    {
++        super.onNewMessage(message);
++        loop.setMessage(message);
++    }
++
++    /**
++     * @return the ROS loop instance.
++     */
++    public ImagePublisherNodeLoop getLoop()
++    {
++        return loop;
++    }
+ }
+diff --git a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/ImagePublisherNodeLoop.java b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/ImagePublisherNodeLoop.java
+index a893c66..fc889f5 100644
+--- a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/ImagePublisherNodeLoop.java
++++ b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/ImagePublisherNodeLoop.java
+@@ -27,38 +27,34 @@ import org.ros.message.MessageFactory;
+ import org.ros.node.ConnectedNode;
+ import org.ros.node.topic.Publisher;
+ import org.slf4j.Logger;
+-import org.slf4j.LoggerFactory;
+ 
+ import sensor_msgs.CameraInfo;
+ import sensor_msgs.Image;
+ import sensor_msgs.NavSatFix;
+ import cpcc.core.utils.PolarCoordinate;
+-import cpcc.ros.sim.AnonymousNodeMain;
+ 
+ /**
+  * Image Publisher Node Loop
+  */
+ public class ImagePublisherNodeLoop extends CancellableLoop
+ {
+-    private static final Logger LOG = LoggerFactory.getLogger(ImagePublisherNodeLoop.class);
+-
++    private Logger logger;
+     private Configuration config;
+-    private AnonymousNodeMain<NavSatFix> node;
+     private ConnectedNode connectedNode;
+     private Publisher<Image> imagePublisher;
+     private Publisher<CameraInfo> infoPublisher;
+     private Camera camera;
++    private NavSatFix message;
+ 
+     /**
++     * @param logger the application logger.
+      * @param config the configuration.
+-     * @param node the node
+      * @param connectedNode the connected node.
+      */
+-    public ImagePublisherNodeLoop(Configuration config, AnonymousNodeMain<sensor_msgs.NavSatFix> node
+-        , ConnectedNode connectedNode)
++    public ImagePublisherNodeLoop(Logger logger, Configuration config, ConnectedNode connectedNode)
+     {
++        this.logger = logger;
+         this.config = config;
+-        this.node = node;
+         this.connectedNode = connectedNode;
+ 
+         camera = new Camera(config);
+@@ -76,28 +72,27 @@ public class ImagePublisherNodeLoop extends CancellableLoop
+     @Override
+     protected void loop() throws InterruptedException
+     {
+-        NavSatFix msg = node.getReceivedMessage();
+-
+-        if (msg == null)
++        if (message == null)
+         {
+             return;
+         }
+ 
+-        PolarCoordinate position = new PolarCoordinate(msg.getLatitude(), msg.getLongitude(), msg.getAltitude());
++        PolarCoordinate position =
++            new PolarCoordinate(message.getLatitude(), message.getLongitude(), message.getAltitude());
+ 
+         MessageFactory factory = connectedNode.getTopicMessageFactory();
+ 
+         try
+         {
+             byte[] image = camera.getImage(position);
+-            sensor_msgs.Image message = factory.newFromType(sensor_msgs.Image._TYPE);
+-            message.setIsBigendian((byte) 0);
+-            message.setData(ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), image));
+-            message.setEncoding("png");
+-            message.setHeight(config.getCameraHeight());
+-            message.setWidth(config.getCameraWidth());
+-            message.setStep(0);
+-            imagePublisher.publish(message);
++            sensor_msgs.Image imageMessage = factory.newFromType(sensor_msgs.Image._TYPE);
++            imageMessage.setIsBigendian((byte) 0);
++            imageMessage.setData(ChannelBuffers.copiedBuffer(ByteOrder.nativeOrder(), image));
++            imageMessage.setEncoding("png");
++            imageMessage.setHeight(config.getCameraHeight());
++            imageMessage.setWidth(config.getCameraWidth());
++            imageMessage.setStep(0);
++            imagePublisher.publish(imageMessage);
+ 
+             sensor_msgs.CameraInfo info = factory.newFromType(sensor_msgs.CameraInfo._TYPE);
+             info.setHeight(config.getCameraHeight());
+@@ -106,9 +101,25 @@ public class ImagePublisherNodeLoop extends CancellableLoop
+         }
+         catch (IOException e)
+         {
+-            LOG.error("Can not get camera image.", e);
++            logger.error("Can not get camera image.", e);
+         }
+ 
+         Thread.sleep(1000);
+     }
++
++    /**
++     * @return the received message.
++     */
++    public NavSatFix getMessage()
++    {
++        return message;
++    }
++
++    /**
++     * @param message the message to set.
++     */
++    public void setMessage(NavSatFix message)
++    {
++        this.message = message;
++    }
+ }
+diff --git a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/NodeGroup.java b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/NodeGroup.java
+index 0ec636e..a94d01b 100644
+--- a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/NodeGroup.java
++++ b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/NodeGroup.java
+@@ -25,8 +25,8 @@ import java.util.Map;
+ 
+ import org.ros.node.DefaultNodeMainExecutor;
+ import org.slf4j.Logger;
+-import org.slf4j.LoggerFactory;
+ 
++import sensor_msgs.NavSatFix;
+ import cpcc.ros.sim.AbstractRosNodeGroup;
+ import cpcc.ros.sim.AnonymousNodeMain;
+ 
+@@ -35,25 +35,33 @@ import cpcc.ros.sim.AnonymousNodeMain;
+  */
+ public class NodeGroup extends AbstractRosNodeGroup
+ {
+-    private static final Logger LOG = LoggerFactory.getLogger(NodeGroup.class);
++    private Logger logger;
+     private AnonymousNodeMain<sensor_msgs.NavSatFix> imagePublisherNode;
+     private AnonymousNodeMain<sensor_msgs.NavSatFix> listenerNode;
+     private Configuration config;
+ 
+     /**
++     * @param logger the application logger.
++     */
++    public NodeGroup(Logger logger)
++    {
++        this.logger = logger;
++    }
++
++    /**
+      * {@inheritDoc}
+      */
+     @Override
+     public void start()
+     {
+-        LOG.info("start()");
++        logger.info("start()");
+ 
+         getConfig().put("topicRoot", Arrays.asList(getTopicRoot()));
+ 
+         config = new Configuration(getNodeConfiguration(), getConfig());
+ 
+-        imagePublisherNode = new ImagePublisherNode(config);
+-        listenerNode = new GpsListenerNode(config, imagePublisherNode);
++        imagePublisherNode = new ImagePublisherNode(logger, config);
++        listenerNode = new GpsListenerNode(logger, config, imagePublisherNode);
+ 
+         DefaultNodeMainExecutor.newDefault().execute(imagePublisherNode, getNodeConfiguration());
+         DefaultNodeMainExecutor.newDefault().execute(listenerNode, getNodeConfiguration());
+@@ -65,7 +73,7 @@ public class NodeGroup extends AbstractRosNodeGroup
+     @Override
+     public void shutdown()
+     {
+-        LOG.info("shutdown()");
++        logger.info("shutdown()");
+         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(listenerNode);
+         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(imagePublisherNode);
+     }
+@@ -77,24 +85,26 @@ public class NodeGroup extends AbstractRosNodeGroup
+     public Map<String, List<String>> getCurrentState()
+     {
+         Map<String, List<String>> map = super.getCurrentState();
+-        if (imagePublisherNode.getReceivedMessage() != null)
++        NavSatFix pos = imagePublisherNode.getReceivedMessage();
++        if (pos != null)
+         {
+             map.put("image.position", Arrays.asList(
+-                String.format(Locale.US, "%.8f", imagePublisherNode.getReceivedMessage().getLatitude()),
+-                String.format(Locale.US, "%.8f", imagePublisherNode.getReceivedMessage().getLongitude()),
+-                String.format(Locale.US, "%.3f", imagePublisherNode.getReceivedMessage().getAltitude())
++                String.format(Locale.US, "%.8f", pos.getLatitude()),
++                String.format(Locale.US, "%.8f", pos.getLongitude()),
++                String.format(Locale.US, "%.3f", pos.getAltitude())
+                 ));
+         }
+-        
+-        if (listenerNode.getReceivedMessage() != null)
++
++        pos = listenerNode.getReceivedMessage();
++        if (pos != null)
+         {
+             map.put("gps.position", Arrays.asList(
+-                String.format(Locale.US, "%.8f", listenerNode.getReceivedMessage().getLatitude()),
+-                String.format(Locale.US, "%.8f", listenerNode.getReceivedMessage().getLongitude()),
+-                String.format(Locale.US, "%.3f", listenerNode.getReceivedMessage().getAltitude())
++                String.format(Locale.US, "%.8f", pos.getLatitude()),
++                String.format(Locale.US, "%.8f", pos.getLongitude()),
++                String.format(Locale.US, "%.3f", pos.getAltitude())
+                 ));
+         }
+-        
++
+         return map;
+     }
+ }
+diff --git a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/TileCache.java b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/TileCache.java
+index 8cf4254..c7f3adb 100644
+--- a/cpcc-ros/src/main/java/cpcc/ros/sim/osm/TileCache.java
++++ b/cpcc-ros/src/main/java/cpcc/ros/sim/osm/TileCache.java
+@@ -124,15 +124,10 @@ public class TileCache
+         HttpEntity entity = response.getEntity();
+         if (entity != null)
+         {
+-            FileOutputStream outStream = new FileOutputStream(file);
+-            try
++            try (FileOutputStream outStream = new FileOutputStream(file))
+             {
+                 IOUtils.copy(entity.getContent(), outStream);
+             }
+-            finally
+-            {
+-                outStream.close();
+-            }
+         }
+     }
+ 
+diff --git a/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulator.java b/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulator.java
+index 11b3929..46097e2 100644
+--- a/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulator.java
++++ b/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulator.java
+@@ -37,6 +37,9 @@ public class SonarEmulator extends AbstractRosNodeGroup
+     private SonarEmulatorPublisherNode publisherNode;
+     private SonarEmulatorListenerNode listenerNode;
+ 
++    /**
++     * @param logger the application logger.
++     */
+     public SonarEmulator(Logger logger)
+     {
+         this.logger = logger;
+diff --git a/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulatorListenerNode.java b/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulatorListenerNode.java
+index be4f964..062239c 100644
+--- a/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulatorListenerNode.java
++++ b/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulatorListenerNode.java
+@@ -39,6 +39,7 @@ public class SonarEmulatorListenerNode extends AnonymousNodeMain<sensor_msgs.Nav
+     private String listenTopic;
+ 
+     /**
++     * @param logger the application logger.
+      * @param config the device configuration.
+      * @param listenerNode the listener node.
+      */
+diff --git a/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulatorPublisherNode.java b/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulatorPublisherNode.java
+index 78b2727..32ab19b 100644
+--- a/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulatorPublisherNode.java
++++ b/cpcc-ros/src/main/java/cpcc/ros/sim/sonar/SonarEmulatorPublisherNode.java
+@@ -37,6 +37,7 @@ public class SonarEmulatorPublisherNode extends AnonymousNodeMain<sensor_msgs.Na
+     private SonarEmulatorPublisherLoop loop;
+ 
+     /**
++     * @param logger the application logger.
+      * @param config the device configuration
+      */
+     public SonarEmulatorPublisherNode(Logger logger, Map<String, List<String>> config)
+diff --git a/cpcc-ros/src/test/java/cpcc/ros/sim/osm/TileCacheTest.java b/cpcc-ros/src/test/java/cpcc/ros/sim/osm/TileCacheTest.java
+index 456ec8a..d2f3d10 100644
+--- a/cpcc-ros/src/test/java/cpcc/ros/sim/osm/TileCacheTest.java
++++ b/cpcc-ros/src/test/java/cpcc/ros/sim/osm/TileCacheTest.java
+@@ -126,7 +126,7 @@ public class TileCacheTest extends PowerMockTestCase
+     {
+         File path = new File("/tmp/");
+         tempDirectory = Files.createTempDirectory(path.toPath(), "tmp-test").toFile();
+-        assertThat(tempDirectory.exists()).isTrue();
++        assertThat(tempDirectory).exists();
+ 
+         config = PowerMockito.mock(Configuration.class);
+         PowerMockito.doReturn(tempDirectory.getAbsolutePath()).when(config).getTileCacheBaseDir();
+diff --git a/pom.xml b/pom.xml
+index 4c5475d..0c3d48f 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -59,17 +59,20 @@
+ 		<java-version>1.7</java-version>
+ 		<tapestry-release-version>5.4-beta-35</tapestry-release-version>
+ 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
+-		<testng-release-version>6.9.4</testng-release-version>
++		<testng-release-version>6.9.8</testng-release-version>
+ 		<rosjava-version>0.0.6</rosjava-version>
+ 		<mockito-all-version>1.10.19</mockito-all-version>
+-		<com.h2database.version>1.4.189</com.h2database.version>
++		<com.h2database.version>1.4.190</com.h2database.version>
+ 		<com.hsqldb.version>2.3.3</com.hsqldb.version>
+ 		<c3p0.version>0.9.5.1</c3p0.version>
+ 		<javax.mail.version>1.4.7</javax.mail.version>
+-		<tomcat7Version>8.0.23</tomcat7Version>
++		<tomcat8Version>8.0.28</tomcat8Version>
+ 		<liquibase-version>3.4.1</liquibase-version>
++		<hibernate-version>4.3.11.Final</hibernate-version>
++		<!-- <jmockit-version>1.19</jmockit-version> -->
++		<powermock-version>1.6.3</powermock-version>
++		<easymock-version>3.4</easymock-version>
+ 		<argLine>-XX:-UseSplitVerifier</argLine>
+-		<hibernate-version>4.3.10.Final</hibernate-version>
+ 	</properties>
+ 
+ 	<dependencyManagement>
+@@ -153,18 +156,24 @@
+ 				<artifactId>rhino</artifactId>
+ 				<version>1.7R4</version>
+ 			</dependency>
+-			<dependency>
+-				<groupId>junit</groupId>
+-				<artifactId>junit</artifactId>
+-				<version>4.12</version>
+-				<scope>test</scope>
+-			</dependency>
++			<!-- <dependency> -->
++			<!-- <groupId>junit</groupId> -->
++			<!-- <artifactId>junit</artifactId> -->
++			<!-- <version>4.12</version> -->
++			<!-- <scope>test</scope> -->
++			<!-- </dependency> -->
+ 			<dependency>
+ 				<groupId>org.mockito</groupId>
+ 				<artifactId>mockito-all</artifactId>
+ 				<version>${mockito-all-version}</version>
+ 				<scope>test</scope>
+ 			</dependency>
++			<!-- <dependency> -->
++			<!-- <groupId>org.jmockit</groupId> -->
++			<!-- <artifactId>jmockit</artifactId> -->
++			<!-- <version>${jmockit-version}</version> -->
++			<!-- <scope>test</scope> -->
++			<!-- </dependency> -->
+ 			<dependency>
+ 				<groupId>org.easytesting</groupId>
+ 				<artifactId>fest-assert-core</artifactId>
+@@ -198,27 +207,40 @@
+ 			<dependency>
+ 				<groupId>org.powermock</groupId>
+ 				<artifactId>powermock-core</artifactId>
+-				<version>1.6.2</version>
++				<version>${powermock-version}</version>
+ 				<scope>test</scope>
+ 			</dependency>
+ 			<dependency>
+ 				<groupId>org.powermock</groupId>
+ 				<artifactId>powermock-module-testng</artifactId>
+-				<version>1.6.2</version>
++				<version>${powermock-version}</version>
+ 				<scope>test</scope>
+ 			</dependency>
+ 			<dependency>
+ 				<groupId>org.powermock</groupId>
+ 				<artifactId>powermock-api-mockito</artifactId>
+-				<version>1.6.2</version>
++				<version>${powermock-version}</version>
++				<scope>test</scope>
++			</dependency>
++			<dependency>
++				<groupId>org.powermock</groupId>
++				<artifactId>powermock-mockito-release-full</artifactId>
++				<version>${powermock-version}</version>
++				<scope>test</scope>
++			</dependency>
++			<dependency>
++				<groupId>org.powermock</groupId>
++				<artifactId>powermock-easymock-release-full</artifactId>
++				<version>${powermock-version}</version>
++				<classifier>full</classifier>
++				<scope>test</scope>
++			</dependency>
++			<dependency>
++				<groupId>org.easymock</groupId>
++				<artifactId>easymock</artifactId>
++				<version>${easymock-version}</version>
+ 				<scope>test</scope>
+ 			</dependency>
+-			<!-- <dependency> -->
+-			<!-- <groupId>org.powermock</groupId> -->
+-			<!-- <artifactId>powermock-mockito-release-full</artifactId> -->
+-			<!-- <version>1.6.0</version> -->
+-			<!-- <scope>test</scope> -->
+-			<!-- </dependency> -->
+ 			<dependency>
+ 				<groupId>org.apache.tapestry</groupId>
+ 				<artifactId>tapestry-test</artifactId>

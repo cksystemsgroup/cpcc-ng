@@ -28,6 +28,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import cpcc.core.utils.PolarCoordinate;
 
 /**
@@ -35,8 +37,6 @@ import cpcc.core.utils.PolarCoordinate;
  */
 public class Camera
 {
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-    
     private TileCache tileCache;
     private BufferedImage map;
     private MercatorProjection topLeftTile;
@@ -88,7 +88,7 @@ public class Camera
     {
         if (position == null)
         {
-            return EMPTY_BYTE_ARRAY;
+            return ArrayUtils.EMPTY_BYTE_ARRAY;
         }
 
         PolarCoordinate pos = new PolarCoordinate(position);

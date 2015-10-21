@@ -124,14 +124,9 @@ public class TileCache
         HttpEntity entity = response.getEntity();
         if (entity != null)
         {
-            FileOutputStream outStream = new FileOutputStream(file);
-            try
+            try (FileOutputStream outStream = new FileOutputStream(file))
             {
                 IOUtils.copy(entity.getContent(), outStream);
-            }
-            finally
-            {
-                outStream.close();
             }
         }
     }

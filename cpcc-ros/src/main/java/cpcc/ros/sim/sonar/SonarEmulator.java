@@ -37,6 +37,9 @@ public class SonarEmulator extends AbstractRosNodeGroup
     private SonarEmulatorPublisherNode publisherNode;
     private SonarEmulatorListenerNode listenerNode;
 
+    /**
+     * @param logger the application logger.
+     */
     public SonarEmulator(Logger logger)
     {
         this.logger = logger;

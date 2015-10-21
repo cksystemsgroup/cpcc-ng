@@ -18,11 +18,10 @@
 
 package cpcc.ros.sim.osm;
 
-import org.ros.concurrent.CancellableLoop;
 import org.ros.node.ConnectedNode;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import sensor_msgs.NavSatFix;
 import cpcc.ros.sim.AnonymousNodeMain;
 
 /**
@@ -30,14 +29,17 @@ import cpcc.ros.sim.AnonymousNodeMain;
  */
 public class ImagePublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
 {
-    private static final Logger LOG = LoggerFactory.getLogger(ImagePublisherNode.class);
+    private Logger logger;
     private Configuration config;
+    private ImagePublisherNodeLoop loop;
 
     /**
+     * @param logger the application logger.
      * @param config the configuration.
      */
-    public ImagePublisherNode(Configuration config)
+    public ImagePublisherNode(Logger logger, Configuration config)
     {
+        this.logger = logger;
         this.config = config;
     }
 
@@ -47,9 +49,27 @@ public class ImagePublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
     @Override
     public void onStart(final ConnectedNode connectedNode)
     {
-        LOG.info("onStart");
+        logger.info("onStart");
 
-        CancellableLoop loop = new ImagePublisherNodeLoop(config, this, connectedNode);
+        loop = new ImagePublisherNodeLoop(logger, config, connectedNode);
         connectedNode.executeCancellableLoop(loop);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onNewMessage(NavSatFix message)
+    {
+        super.onNewMessage(message);
+        loop.setMessage(message);
+    }
+
+    /**
+     * @return the ROS loop instance.
+     */
+    public ImagePublisherNodeLoop getLoop()
+    {
+        return loop;
     }
 }

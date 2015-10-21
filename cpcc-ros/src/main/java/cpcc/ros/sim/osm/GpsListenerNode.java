@@ -18,41 +18,41 @@
 
 package cpcc.ros.sim.osm;
 
-import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import cpcc.ros.sim.AnonymousNodeMain;
 import sensor_msgs.NavSatFix;
+import cpcc.ros.sim.AnonymousNodeMain;
 
 /**
  * GpsListenerNode
  */
 public class GpsListenerNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
 {
-    private static final Logger LOG = LoggerFactory.getLogger(GpsListenerNode.class);
+    private Logger logger;
     private Configuration config;
-    private MessageListener<NavSatFix> publisherNode;
-    
+    private AnonymousNodeMain<sensor_msgs.NavSatFix> publisherNode;
+
     /**
+     * @param logger the application logger.
      * @param config the configuration.
      * @param publisherNode the publisher node to send messages to.
      */
-    public GpsListenerNode(Configuration config, MessageListener<sensor_msgs.NavSatFix> publisherNode)
+    public GpsListenerNode(Logger logger, Configuration config, AnonymousNodeMain<sensor_msgs.NavSatFix> publisherNode)
     {
+        this.logger = logger;
         this.config = config;
         this.publisherNode = publisherNode;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
-        LOG.info("onStart()");
+        logger.info("onStart()");
 
         Subscriber<sensor_msgs.NavSatFix> subscriber =
             connectedNode.newSubscriber(config.getGpsTopic(), sensor_msgs.NavSatFix._TYPE);
@@ -60,4 +60,13 @@ public class GpsListenerNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
         subscriber.addMessageListener(publisherNode);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onNewMessage(NavSatFix message)
+    {
+        super.onNewMessage(message);
+        publisherNode.onNewMessage(message);
+    }
 }
