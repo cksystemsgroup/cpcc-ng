@@ -428,24 +428,24 @@ public class VirtualVehicleMigratorTest
             new Object[]{VV_ID1, 1, 5,
                 new Object[]{
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 172, 0, 0, "vvrte", "cpcc", null},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 1, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 172, 0, 1, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 8, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"vv/vv-continuation.js", 10, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage1", 727, 1789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 2, "vvrte", "cpcc", "storage/storage1"},
+                        new Object[]{"vv/vv.properties", 172, 0, 2, "vvrte", "cpcc", "storage/storage1"},
                         new Object[]{"storage/storage2", 897, 2789, 2, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 3, "vvrte", "cpcc", "storage/storage2"},
+                        new Object[]{"vv/vv.properties", 172, 0, 3, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 574, 3789, 3, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 4, "vvrte", "cpcc", "storage/storage3"},
+                        new Object[]{"vv/vv.properties", 172, 0, 4, "vvrte", "cpcc", "storage/storage3"},
                         new Object[]{"storage/storage4", 5, 4789, 4, "vvrte", "cpcc"},
                     }
                 }
@@ -453,17 +453,17 @@ public class VirtualVehicleMigratorTest
             new Object[]{VV_ID1, 2, 3,
                 new Object[]{
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 172, 0, 0, "vvrte", "cpcc", null},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 1, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 172, 0, 1, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 8, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"vv/vv-continuation.js", 10, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage1", 727, 1789, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage2", 897, 2789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 2, "vvrte", "cpcc", "storage/storage2"},
+                        new Object[]{"vv/vv.properties", 172, 0, 2, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 574, 3789, 2, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
                     }
@@ -472,10 +472,10 @@ public class VirtualVehicleMigratorTest
             new Object[]{VV_ID1, 3, 3,
                 new Object[]{
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 172, 0, 0, "vvrte", "cpcc", null},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 1, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 172, 0, 1, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 8, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"vv/vv-continuation.js", 10, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage1", 727, 1789, 1, "vvrte", "cpcc"},
@@ -483,7 +483,7 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"storage/storage3", 574, 3789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 189, 0, 2, "vvrte", "cpcc", "storage/storage3"},
+                        new Object[]{"vv/vv.properties", 188, 0, 2, "vvrte", "cpcc", "storage/storage3"},
                         new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
                     }
                 }
@@ -491,10 +491,10 @@ public class VirtualVehicleMigratorTest
             new Object[]{VV_ID1, 4, 2,
                 new Object[]{
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 172, 0, 0, "vvrte", "cpcc", null},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 173, 0, 1, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 172, 0, 1, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 8, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"vv/vv-continuation.js", 10, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage1", 727, 1789, 1, "vvrte", "cpcc"},
@@ -508,23 +508,23 @@ public class VirtualVehicleMigratorTest
             new Object[]{VV_ID2, 1, 5,
                 new Object[]{
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 124, 0, 0, "vvrte", "cpcc", null},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 1, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 124, 0, 1, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 12, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage1", 726, 1789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 2, "vvrte", "cpcc", "storage/storage1"},
+                        new Object[]{"vv/vv.properties", 124, 0, 2, "vvrte", "cpcc", "storage/storage1"},
                         new Object[]{"storage/storage2", 854, 2789, 2, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 3, "vvrte", "cpcc", "storage/storage2"},
+                        new Object[]{"vv/vv.properties", 124, 0, 3, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 655, 3789, 3, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 4, "vvrte", "cpcc", "storage/storage3"},
+                        new Object[]{"vv/vv.properties", 124, 0, 4, "vvrte", "cpcc", "storage/storage3"},
                         new Object[]{"storage/storage4", 5, 4789, 4, "vvrte", "cpcc"},
                     }
                 }
@@ -532,16 +532,16 @@ public class VirtualVehicleMigratorTest
             new Object[]{VV_ID2, 2, 3,
                 new Object[]{
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 124, 0, 0, "vvrte", "cpcc", null},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 1, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 124, 0, 1, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 12, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage1", 726, 1789, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage2", 854, 2789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 2, "vvrte", "cpcc", "storage/storage2"},
+                        new Object[]{"vv/vv.properties", 124, 0, 2, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 655, 3789, 2, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
                     }
@@ -550,17 +550,17 @@ public class VirtualVehicleMigratorTest
             new Object[]{VV_ID2, 3, 3,
                 new Object[]{
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 124, 0, 0, "vvrte", "cpcc", null},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 1, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 124, 0, 1, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 12, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage1", 726, 1789, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage2", 854, 2789, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage3", 655, 3789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 141, 0, 2, "vvrte", "cpcc", "storage/storage3"},
+                        new Object[]{"vv/vv.properties", 140, 0, 2, "vvrte", "cpcc", "storage/storage3"},
                         new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
                     }
                 }
@@ -568,10 +568,10 @@ public class VirtualVehicleMigratorTest
             new Object[]{VV_ID2, 4, 2,
                 new Object[]{
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 124, 0, 0, "vvrte", "cpcc", null},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 125, 0, 1, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 124, 0, 1, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 12, 0, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage1", 726, 1789, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage2", 854, 2789, 1, "vvrte", "cpcc"},

@@ -76,6 +76,16 @@ public final class CoreModule
             CoreConstants.PROP_MAX_JOB_AGE, System.getProperty(
                 CoreConstants.PROP_MAX_JOB_AGE,
                 CoreConstants.DEFAULT_MAX_JOB_AGE));
+
+        configuration.add(
+            CoreConstants.PROP_LIQUIBASE_CHANGE_LOG_FILE, System.getProperty(
+                CoreConstants.PROP_LIQUIBASE_CHANGE_LOG_FILE,
+                CoreConstants.DEFAULT_LIQUIBASE_CHANGE_LOG_FILE));
+
+        configuration.add(
+            CoreConstants.PROP_LIQUIBASE_DATABASE_URL, System.getProperty(
+                CoreConstants.PROP_LIQUIBASE_DATABASE_URL,
+                CoreConstants.DEFAULT_LIQUIBASE_DATABASE_URL));
     }
 
     /**

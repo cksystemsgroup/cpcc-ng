@@ -57,7 +57,7 @@
 
 	<properties>
 		<java-version>1.8</java-version>
-		<tapestry-release-version>5.4-beta-35</tapestry-release-version>
+		<tapestry-release-version>5.4-rc-1</tapestry-release-version>
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
 		<testng-release-version>6.9.8</testng-release-version>
 		<rosjava-version>0.0.6</rosjava-version>

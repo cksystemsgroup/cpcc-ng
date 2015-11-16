@@ -90,6 +90,26 @@
 
 	<build>
 		<finalName>cpcc-gs-web</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.css</include>
+					<include>**/*.js</include>
+					<include>**/*.properties</include>
+					<include>**/*.tml</include>
+					<include>**/*.xml</include>
+					<include>hibernate.cfg.xml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/filtered-resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

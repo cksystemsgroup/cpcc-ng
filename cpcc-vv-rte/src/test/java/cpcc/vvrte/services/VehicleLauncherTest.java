@@ -19,6 +19,7 @@
 package cpcc.vvrte.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -32,9 +33,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
-
-import javax.sql.rowset.serial.SerialException;
+import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
@@ -45,12 +44,9 @@ import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.vvrte.services.VirtualVehicleLaunchException;
-import cpcc.vvrte.services.VirtualVehicleLauncherImpl;
-import cpcc.vvrte.services.VirtualVehicleMigrator;
-import cpcc.vvrte.services.VvRteRepository;
 import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptWorker;
 import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
@@ -60,16 +56,33 @@ import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
  */
 public class VehicleLauncherTest
 {
-    JavascriptWorkerStateListener jobListener = null;
+    private static final int INVALID_VV_ID = 31337;
+
+    private Date currentDate;
+    private JavascriptWorkerStateListener jobListener = null;
     private VirtualVehicle vehicle;
     private VirtualVehicleLauncherImpl launcher;
     private Session session;
     private HibernateSessionManager sessionManager;
     private Logger logger;
+    private TimeService timeService;
+    private VirtualVehicle vehicle2;
 
     @BeforeMethod
     public void setUp() throws IOException
     {
+        currentDate = new Date();
+
+        timeService = mock(TimeService.class);
+        when(timeService.newDate()).thenAnswer(new Answer<Date>()
+        {
+            @Override
+            public Date answer(InvocationOnMock invocation) throws Throwable
+            {
+                return currentDate;
+            }
+        });
+
         logger = mock(Logger.class);
 
         String vvProgramFileName = "simple-vv.js";
@@ -82,6 +95,10 @@ public class VehicleLauncherTest
         vehicle.setCode(program);
         vehicle.setState(VirtualVehicleState.INIT);
         vehicle.setName("rv001");
+
+        vehicle2 = mock(VirtualVehicle.class);
+        when(vehicle2.getId()).thenReturn(1234567);
+        when(vehicle2.getState()).thenReturn(VirtualVehicleState.DEFECTIVE);
 
         final JavascriptWorker worker = mock(JavascriptWorker.class);
         when(worker.getApplicationState()).thenReturn(null);
@@ -116,13 +133,13 @@ public class VehicleLauncherTest
 
         VvRteRepository vvRteRepository = mock(VvRteRepository.class);
         when(vvRteRepository.findVirtualVehicleById(1001)).thenReturn(vehicle);
+        when(vvRteRepository.findVirtualVehicleById(1234567)).thenReturn(vehicle2);
 
-        launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository);
+        launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository, timeService);
     }
 
     @Test
-    public void shouldLaunchSimpleVirtualVehicle()
-        throws SerialException, SQLException, IOException, VirtualVehicleLaunchException
+    public void shouldLaunchSimpleVirtualVehicle() throws Exception
     {
         launcher.start(vehicle.getId());
 
@@ -131,6 +148,47 @@ public class VehicleLauncherTest
 
         verify(session, never()).beginTransaction();
         verify(sessionManager, times(2)).commit();
+    }
+
+    @Test
+    public void shouldStopSimpleVirtualVehicle() throws Exception
+    {
+        launcher.stop(vehicle2.getId());
+
+        verify(vehicle2).setEndTime(currentDate);
+        verify(vehicle2).setState(VirtualVehicleState.INIT);
+        verify(vehicle2).setStateInfo("Vehicle has been stopped manually.");
+        verify(vehicle2).setContinuation(null);
+        verify(sessionManager.getSession()).saveOrUpdate(vehicle2);
+        verify(sessionManager).commit();
+    }
+
+    @Test()
+    public void shouldThrowVVLEOnInvalidVvId() throws IOException
+    {
+        try
+        {
+            launcher.stop(INVALID_VV_ID);
+            failBecauseExceptionWasNotThrown(VirtualVehicleLaunchException.class);
+        }
+        catch (VirtualVehicleLaunchException e)
+        {
+            assertThat(e).hasMessage("Invalid virtual vehicle 'null'");
+        }
+    }
+
+    @Test
+    public void shouldThrowVVLEOnInvalidVvState() throws IOException
+    {
+        try
+        {
+            launcher.stop(vehicle.getId());
+            failBecauseExceptionWasNotThrown(VirtualVehicleLaunchException.class);
+        }
+        catch (VirtualVehicleLaunchException e)
+        {
+            assertThat(e).hasMessageMatching("Got vehicle in state INIT, but expected \\[[^]]*\\]");
+        }
     }
 
     @Test(expectedExceptions = {VirtualVehicleLaunchException.class},

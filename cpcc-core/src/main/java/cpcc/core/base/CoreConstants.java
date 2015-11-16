@@ -26,6 +26,12 @@ public final class CoreConstants
     public static final String PROP_MAX_JOB_AGE = "core.max.job.age";
     public static final String DEFAULT_MAX_JOB_AGE = "3600000";
 
+    public static final String PROP_LIQUIBASE_CHANGE_LOG_FILE = "liquibase.changeLogFile";
+    public static final String DEFAULT_LIQUIBASE_CHANGE_LOG_FILE = "dbchange/update.xml";
+
+    public static final String PROP_LIQUIBASE_DATABASE_URL = "liquibase.database.url";
+    public static final String DEFAULT_LIQUIBASE_DATABASE_URL = "java:/comp/env/jdbc/LIQUIBASE";
+    
     private CoreConstants()
     {
         // Intentionally left empty.

@@ -62,7 +62,10 @@ public class ImagePublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
     public void onNewMessage(NavSatFix message)
     {
         super.onNewMessage(message);
-        loop.setMessage(message);
+        if (loop != null)
+        {
+            loop.setMessage(message);
+        }
     }
 
     /**

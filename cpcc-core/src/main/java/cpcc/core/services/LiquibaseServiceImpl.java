@@ -34,24 +34,40 @@ import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.ResourceAccessor;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
+
+import cpcc.core.base.CoreConstants;
 
 /**
  * LiquibaseServiceImpl
  */
 public class LiquibaseServiceImpl implements LiquibaseService
 {
-    // private static final String CREATE_TIME_TO_DATE_ALIAS = "CREATE ALIAS IF NOT EXISTS TimeToDate AS "
-    //     + "$$ java.util.Date TimeToDate(long t) { return new java.util.Date(t); } $$;";
+    private static final String JNDI_COMP_ENV = "java:/comp/env";
 
     private final Logger logger;
+    private String changeLog;
+    private String dbResourceName;
 
     /**
      * @param logger the system logger.
+     * @param changeLog the Liquibase change log.
+     * @param databaseUrl the Liquibase database URL.
+     * @throws LiquibaseException in case of errors.
      */
-    public LiquibaseServiceImpl(Logger logger)
+    public LiquibaseServiceImpl(Logger logger, @Symbol(CoreConstants.PROP_LIQUIBASE_CHANGE_LOG_FILE) String changeLog,
+        @Symbol(CoreConstants.PROP_LIQUIBASE_DATABASE_URL) String databaseUrl) throws LiquibaseException
     {
         this.logger = logger;
+        this.changeLog = changeLog;
+
+        if (!databaseUrl.startsWith(JNDI_COMP_ENV + "/"))
+        {
+            throw new LiquibaseException("Only JNDI URLs starting with '" + JNDI_COMP_ENV + "' are allowed!");
+        }
+
+        dbResourceName = databaseUrl.substring(JNDI_COMP_ENV.length() + 1);
     }
 
     /**
@@ -63,16 +79,15 @@ public class LiquibaseServiceImpl implements LiquibaseService
         try
         {
             Context initContext = new InitialContext();
-            Context envContext = (Context) initContext.lookup("java:/comp/env");
-            DataSource dataSource = (DataSource) envContext.lookup("jdbc/LIQUIBASE");
+            Context envContext = (Context) initContext.lookup(JNDI_COMP_ENV);
+            DataSource dataSource = (DataSource) envContext.lookup(dbResourceName);
             try (Connection connection = dataSource.getConnection())
             {
                 JdbcConnection jdbcConnection = new JdbcConnection(connection);
-                // setupMigration(jdbcConnection);
                 Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
                 ResourceAccessor resourceAccessor = new ClassLoaderResourceAccessor();
 
-                Liquibase l = new Liquibase("dbchange/update.xml", resourceAccessor, database);
+                Liquibase l = new Liquibase(changeLog, resourceAccessor, database);
                 l.update("");
             }
         }
@@ -81,15 +96,4 @@ public class LiquibaseServiceImpl implements LiquibaseService
             logger.error(e.getMessage(), e);
         }
     }
-
-    //    /**
-    //     * @param jdbcConnection the JDBC connection.
-    //     * @throws SQLException in case of errors.
-    //     * @throws DatabaseException in case of errors.
-    //     */
-    //    private void setupMigration(JdbcConnection jdbcConnection) throws SQLException, DatabaseException
-    //    {
-    //        Statement statement = jdbcConnection.createStatement();
-    //        statement.executeUpdate(CREATE_TIME_TO_DATE_ALIAS);
-    //    }
 }

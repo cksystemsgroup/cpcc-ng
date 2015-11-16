@@ -20,7 +20,6 @@ package cpcc.rv.web.pages;
 
 import java.util.List;
 
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.slf4j.Logger;
 
@@ -48,24 +47,5 @@ public class Index
     public List<Device> getDeviceList()
     {
         return qm.findAllDevices();
-    }
-
-    /**
-     * Event RvSync received.
-     */
-    public void onRvSync()
-    {
-        logger.info("onRvSync");
-        stateSyncService.realVehicleStatusUpdate();
-    }
-
-    /**
-     * Event ConfigSync received.
-     */
-    @CommitAfter
-    public void onConfigSync()
-    {
-        logger.info("onConfigSync");
-        stateSyncService.pushConfiguration();
     }
 }

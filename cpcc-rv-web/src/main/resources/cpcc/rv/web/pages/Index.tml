@@ -13,14 +13,4 @@
 			</t:If>
 		</div>
 	</div>
-
-	<div class="col-xs-12 col-md-9">
-		<t:EventLink event="rvSync" class="btn btn-success">RV
-			Sync
-		</t:EventLink>&nbsp;&nbsp;
-		<t:EventLink event="configSync" class="btn btn-success">Config
-			Sync
-		</t:EventLink>
-	</div>
-
 </html>

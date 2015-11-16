@@ -68,8 +68,8 @@
 			<t:body />
 			<hr />
 			<footer>
-				<p class="muted credit">
-				&copy;
+				<p class="text-muted">
+					Version ${appVersion} &copy;
 					Computational Systems Group, University of Salzburg, Austria.
 					All Rights Reserved. Made with
 					<a target="_blank" href="http://tapestry.apache.org">Tapestry</a>

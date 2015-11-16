@@ -21,12 +21,16 @@ package cpcc.gs.web.services;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 
+import cpcc.core.utils.VersionUtils;
+
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to configure and extend
  * Tapestry, or to place your own service definitions.
  */
 public final class AppModule
 {
+    private static final String VERSION_PROPERTIES = "version.properties";
+
     private AppModule()
     {
         // intentionally empty.
@@ -43,7 +47,7 @@ public final class AppModule
         // change, to force the browser to download new versions. This overrides Tapesty's default
         // (a random hexadecimal number), but may be further overridden by DevelopmentModule or
         // QaModule.
-        configuration.override(SymbolConstants.APPLICATION_VERSION, "1.0-SNAPSHOT");
+        configuration.override(SymbolConstants.APPLICATION_VERSION, VersionUtils.getVersion(VERSION_PROPERTIES));
     }
 
     /**

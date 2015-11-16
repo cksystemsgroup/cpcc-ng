@@ -19,7 +19,6 @@
 package cpcc.vvrte.services;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +26,7 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.slf4j.Logger;
 
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.js.JavascriptService;
@@ -43,6 +43,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
     private JavascriptService jss;
     private VirtualVehicleMigrator migrator;
     private VvRteRepository vvRteRepository;
+    private TimeService timeService;
     private Map<JavascriptWorker, Integer> vehicleMap = new HashMap<JavascriptWorker, Integer>();
 
     /**
@@ -53,13 +54,14 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      * @param vvRteRepository the virtual vehicle RTE repository.
      */
     public VirtualVehicleLauncherImpl(Logger logger, HibernateSessionManager sessionManager, JavascriptService jss
-        , VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository)
+        , VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository, TimeService timeService)
     {
         this.logger = logger;
         this.sessionManager = sessionManager;
         this.jss = jss;
         this.migrator = migrator;
         this.vvRteRepository = vvRteRepository;
+        this.timeService = timeService;
 
         jss.addAllowedClassRegex("\\$BuiltInFunctions_.*");
     }
@@ -85,7 +87,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
                 + ", but got " + state);
         }
 
-        vehicle.setStartTime(new Date());
+        vehicle.setStartTime(timeService.newDate());
         sessionManager.getSession().saveOrUpdate(vehicle);
         sessionManager.commit();
 
@@ -113,7 +115,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
                 + ", but expected " + VirtualVehicleState.VV_STATES_FOR_STOP);
         }
 
-        vehicle.setEndTime(new Date());
+        vehicle.setEndTime(timeService.newDate());
         vehicle.setState(VirtualVehicleState.INIT);
         vehicle.setStateInfo("Vehicle has been stopped manually.");
         vehicle.setContinuation(null);
@@ -227,7 +229,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
                 }
                 break;
             case FINISHED:
-                vehicle.setEndTime(new Date());
+                vehicle.setEndTime(timeService.newDate());
                 break;
             case DEFECTIVE:
                 logger.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
@@ -251,7 +253,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      * @param decision the migration decision.
      * @return the decision as a string.
      */
-    private String convertToString(VirtualVehicleMappingDecision decision)
+    private static String convertToString(VirtualVehicleMappingDecision decision)
     {
         StringBuilder bldr = new StringBuilder("No suitable real vehicle found to migrate to!\n\n");
 

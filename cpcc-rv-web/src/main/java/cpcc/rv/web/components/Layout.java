@@ -56,6 +56,7 @@ public class Layout
     private ComponentResources resources;
 
     @Inject
+    @Property
     @Symbol(SymbolConstants.APPLICATION_VERSION)
     private String appVersion;
 
