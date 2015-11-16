@@ -25,7 +25,7 @@ import java.util.Properties;
 /**
  * Application Version Utilities
  */
-public class VersionUtils
+public final class VersionUtils
 {
     private static final String UNKNOWN_VERSION = "0.0.0-UNKNOWN";
     private static final String PROP_APPLICATION_VERSION = "application.version";

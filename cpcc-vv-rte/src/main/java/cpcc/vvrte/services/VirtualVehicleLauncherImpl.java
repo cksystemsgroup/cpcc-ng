@@ -52,6 +52,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      * @param jss the JavaScript service.
      * @param migrator the migration service.
      * @param vvRteRepository the virtual vehicle RTE repository.
+     * @param timeService the time service.
      */
     public VirtualVehicleLauncherImpl(Logger logger, HibernateSessionManager sessionManager, JavascriptService jss
         , VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository, TimeService timeService)
