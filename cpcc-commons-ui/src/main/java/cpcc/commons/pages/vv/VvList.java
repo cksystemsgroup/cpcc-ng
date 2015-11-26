@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.commons.pages;
+package cpcc.commons.pages.vv;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -27,6 +27,7 @@ import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
@@ -42,7 +43,7 @@ import cpcc.vvrte.services.VvRteRepository;
 /**
  * Vehicle
  */
-public class Vehicle
+public class VvList
 {
     /**
      * View function
@@ -55,6 +56,9 @@ public class Vehicle
 
     @Inject
     private Logger logger;
+    
+    @Inject
+    private HibernateSessionManager sessionManager;
 
     @Inject
     protected Request request;
@@ -215,6 +219,7 @@ public class Vehicle
         try
         {
             vehicle.setState(VirtualVehicleState.INIT);
+            sessionManager.commit();
             launcher.start(vehicle.getId());
         }
         catch (VirtualVehicleLaunchException | IOException e)

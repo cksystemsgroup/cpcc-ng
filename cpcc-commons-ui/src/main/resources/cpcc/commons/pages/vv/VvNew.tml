@@ -1,21 +1,21 @@
-<html t:type="layout" title="${message:editVehicle}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+<html t:type="layout" title="${message:createVehicle}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-	<h4>${message:editVehicle}</h4>
+	<h4>${message:createVehicle}</h4>
 
 	<t:Form t:validate="vehicle" t:id="form">
 		<t:Errors />
 
-		<t:BeanEditor t:object="vehicle" t:reorder="name,code"
-			t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime,stateInfo">
+		<t:BeanEditor t:object="vehicle" t:reorder="name,apiVersion,code"
+			t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime,stateInfo,preMigrationState">
 
 			<p:name>
-				<t:Label t:type="label" for="name" />
-				<t:TextField t:id="name" value="vehicle.name" t:validate="maxlength=36" />
+				<t:label t:type="label" for="name" />
+				<t:TextField t:id="name" t:class="col-sm-4" t:value="vehicle.name" t:validate="maxlength=36" />
 			</p:name>
 
 			<p:code>
-				<t:Label for="code" />
+				<t:label for="code" />
 				<t:TextArea t:id="code" rows="25" t:value="vehicle.code" t:clientId="buggerit" t:mixins="ace/AceEditor"
 					AceEditor.readOnly="false" AceEditor.theme="chrome" AceEditor.mode="javascript" AceEditor.animatedScroll="true"
 					AceEditor.hScrollBarAlwaysVisible="false" AceEditor.padding="0" AceEditor.printMarginColumn="80"
@@ -26,10 +26,10 @@
 		<div class="form-actions">
 			<ul class="list-inline">
 				<li>
-					<t:Submit t:value="${message:btn.commit}" t:class="btn btn-primary" />
+					<t:Submit t:value="${message:btn.create}" t:class="btn btn-primary" />
 				</li>
 				<li>
-					<t:PageLink t:page="commons/vehicle" t:class="btn btn-default">${message:btn.cancel}</t:PageLink>
+					<t:PageLink t:page="commons/vv/list" t:class="btn btn-default">${message:btn.cancel}</t:PageLink>
 				</li>
 			</ul>
 		</div>

@@ -10,8 +10,9 @@
 		<!-- Le styles -->
 		<style type="text/css">
 			body {
-			padding-top: 60px;
-			padding-bottom: 40px;
+			padding-top: 50px;
+			padding-bottom: 0;
+			height:100%;
 			}
 		</style>
 
@@ -60,7 +61,7 @@
 			</div>
 		</div>
 
-		<div class="container-fluid">
+		<div class="container-fluid" id="content" style="height:100%; min-height:100%;">
 			<t:body />
 			<hr />
 			<footer>

@@ -244,7 +244,27 @@ public enum VirtualVehicleState
     public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION = new HashSet<VirtualVehicleState>()
     {
         {
+            add(DEFECTIVE);
+            add(FINISHED);
             add(MIGRATION_AWAITED);
+            add(MIGRATION_INTERRUPTED);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_NO_CHANGE_AFTER_MIGRATION = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(DEFECTIVE);
+            add(FINISHED);
+        }
+    };
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_MIGRATION = new HashSet<VirtualVehicleState>()
+    {
+        {
+            add(MIGRATING);
             add(MIGRATION_INTERRUPTED);
         }
     };

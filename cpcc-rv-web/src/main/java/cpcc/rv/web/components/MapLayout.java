@@ -16,22 +16,12 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.commons.pages.vehicle;
-
-import java.util.UUID;
-
-import cpcc.vvrte.entities.VirtualVehicle;
-import cpcc.vvrte.entities.VirtualVehicleState;
+package cpcc.rv.web.components;
 
 /**
- * VehicleNew
+ * Layout component for pages containing leaflet maps.
  */
-public class VehicleNew extends AbstractModifyVehicle
+public class MapLayout extends Layout
 {
-    void onPrepare()
-    {
-        vehicle = new VirtualVehicle();
-        vehicle.setUuid(UUID.randomUUID().toString());
-        vehicle.setState(VirtualVehicleState.INIT);
-    }
+
 }

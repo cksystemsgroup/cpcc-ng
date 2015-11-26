@@ -28,7 +28,7 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
 import cpcc.core.entities.RealVehicle;
-import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.rv.base.services.StateSynchronizer;
 
 /**
@@ -40,7 +40,7 @@ public class RvList
     private HibernateSessionManager sessionManager;
 
     @Inject
-    private QueryManager qm;
+    private RealVehicleRepository rvRepo;
 
     @Inject
     protected StateSynchronizer confSync;
@@ -53,13 +53,13 @@ public class RvList
 
     void onActivate()
     {
-        realVehicleList = qm.findAllRealVehiclesOrderByName();
+        realVehicleList = rvRepo.findAllRealVehiclesOrderByName();
     }
 
     @CommitAfter
     void onActivateRealVehicle(Integer id)
     {
-        RealVehicle rv = qm.findRealVehicleById(id);
+        RealVehicle rv = rvRepo.findRealVehicleById(id);
         rv.setDeleted(Boolean.FALSE);
         rv.setLastUpdate(new Date());
         sessionManager.getSession().saveOrUpdate(rv);
@@ -69,7 +69,7 @@ public class RvList
     @CommitAfter
     void onDeactivateRealVehicle(Integer id)
     {
-        RealVehicle rv = qm.findRealVehicleById(id);
+        RealVehicle rv = rvRepo.findRealVehicleById(id);
         rv.setDeleted(Boolean.TRUE);
         rv.setLastUpdate(new Date());
         sessionManager.getSession().saveOrUpdate(rv);
@@ -78,6 +78,6 @@ public class RvList
 
     public boolean getConnected()
     {
-        return realVehicle != null ? qm.isRealVehicleConnected(realVehicle.getId()) : false;
+        return realVehicle != null ? rvRepo.isRealVehicleConnected(realVehicle.getId()) : false;
     }
 }

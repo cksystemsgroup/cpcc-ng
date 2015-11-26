@@ -80,7 +80,7 @@ public class StorageContentTagServiceImpl implements StorageContentTagService
      */
     private static class ImageContentTagService implements StorageContentTagService
     {
-        private static final String PAGE = "commons/vehicle/storageImage";
+        private static final String PAGE = "commons/vv/storageImage";
 
         private static final String TAG = "<a id=\"link_%4$d\" href=\"#\">"
             + "  <img src=\"%1$s/%2$s/%3$d/%4$d\" width=\"%5$d\" height=\"%6$d\" alt=\"%7$s\" title=\"%8$s\" />"

@@ -44,6 +44,8 @@ public class VirtualVehicle implements Serializable
 {
     private static final long serialVersionUID = 8974799441897681454L;
 
+    private static final int MAX_STATE_LENGTH = 30;
+
     @Id
     @GeneratedValue
     private Integer id;
@@ -63,7 +65,12 @@ public class VirtualVehicle implements Serializable
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(length = MAX_STATE_LENGTH)
     private VirtualVehicleState state;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = MAX_STATE_LENGTH, name ="pre_migration_state")
+    private VirtualVehicleState preMigrationState;
 
     @ManyToOne
     private RealVehicle migrationDestination;
@@ -180,6 +187,24 @@ public class VirtualVehicle implements Serializable
         this.state = state;
     }
 
+    
+    /**
+     * @return the state before migration started.
+     */
+    public VirtualVehicleState getPreMigrationState()
+    {
+        return preMigrationState;
+    }
+    
+    /**
+     * @param preMigrationState the state before migration started to set.
+     */
+    public void setPreMigrationState(VirtualVehicleState preMigrationState)
+    {
+        this.preMigrationState = preMigrationState;
+    }
+    
+    
     /**
      * @return the real vehicle to migrate to or null.
      */

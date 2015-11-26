@@ -20,13 +20,17 @@ package cpcc.vvrte.services;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.Messages;
 import org.slf4j.Logger;
 
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
+import cpcc.core.utils.PolarCoordinate;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.js.JavascriptService;
@@ -38,13 +42,17 @@ import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
  */
 public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, JavascriptWorkerStateListener
 {
+    private static final String MSG_MAPPING_DECISION = "virtual.vehicle.launcher.mapping.decision";
+
     private Logger logger;
     private HibernateSessionManager sessionManager;
     private JavascriptService jss;
     private VirtualVehicleMigrator migrator;
     private VvRteRepository vvRteRepository;
+    private RealVehicleRepository rvRepository;
     private TimeService timeService;
     private Map<JavascriptWorker, Integer> vehicleMap = new HashMap<JavascriptWorker, Integer>();
+    private Messages messages;
 
     /**
      * @param logger the application logger.
@@ -52,17 +60,22 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      * @param jss the JavaScript service.
      * @param migrator the migration service.
      * @param vvRteRepository the virtual vehicle RTE repository.
+     * @param rvRepository the real vehicle repository.
      * @param timeService the time service.
+     * @param messages the application message catalog.
      */
     public VirtualVehicleLauncherImpl(Logger logger, HibernateSessionManager sessionManager, JavascriptService jss
-        , VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository, TimeService timeService)
+        , VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository, RealVehicleRepository rvRepository
+        , TimeService timeService, Messages messages)
     {
         this.logger = logger;
         this.sessionManager = sessionManager;
         this.jss = jss;
         this.migrator = migrator;
         this.vvRteRepository = vvRteRepository;
+        this.rvRepository = rvRepository;
         this.timeService = timeService;
+        this.messages = messages;
 
         jss.addAllowedClassRegex("\\$BuiltInFunctions_.*");
     }
@@ -89,6 +102,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         }
 
         vehicle.setStartTime(timeService.newDate());
+        vehicle.setContinuation(null);
+        vehicle.setPreMigrationState(null);
         sessionManager.getSession().saveOrUpdate(vehicle);
         sessionManager.commit();
 
@@ -120,6 +135,12 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         vehicle.setState(VirtualVehicleState.INIT);
         vehicle.setStateInfo("Vehicle has been stopped manually.");
         vehicle.setContinuation(null);
+        vehicle.setPreMigrationState(null);
+        vehicle.setMigrationDestination(null);
+        vehicle.setMigrationStartTime(null);
+        vehicle.setStartTime(null);
+        vehicle.setEndTime(null);
+
         sessionManager.getSession().saveOrUpdate(vehicle);
         sessionManager.commit();
     }
@@ -134,7 +155,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
 
         if (vehicle == null)
         {
-            throw new VirtualVehicleLaunchException("Invalid virtual vehicle 'null'");
+            throw new VirtualVehicleLaunchException("Invalid virtual vehicle 'null' for id " + vehicleId);
         }
 
         VirtualVehicleState state = vehicle.getState();
@@ -211,29 +232,13 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         switch (vehicleState)
         {
             case INTERRUPTED:
-                vehicle.setContinuation(worker.getSnapshot());
-                decision = (VirtualVehicleMappingDecision) worker.getApplicationState();
-
-                if (decision.isMigration() && decision.getRealVehicles().size() > 0)
-                {
-                    // TODO select the best suitable RV instead of taking just the first.
-                    RealVehicle migrationDestination = decision.getRealVehicles().get(0);
-                    vehicle.setMigrationDestination(migrationDestination);
-                    vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
-                }
-                else
-                {
-                    vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-                    vehicle.setMigrationDestination(null);
-                    vehicle.setStateInfo(convertToString(decision));
-                    decision = null;
-                }
+                decision = handleInterruptedVehicle(worker, vehicle);
                 break;
             case FINISHED:
-                vehicle.setEndTime(timeService.newDate());
+                decision = handleFinishedVehicle(vehicle);
                 break;
             case DEFECTIVE:
-                logger.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
+                decision = handleDefectiveVehicle(worker, vehicle);
                 break;
             default:
                 break;
@@ -244,27 +249,96 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
 
         if (decision != null)
         {
-            logger.info("initiateMigration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
+            logger.info("initiate Migration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
             migrator.initiateMigration(vehicle);
         }
 
     }
 
     /**
+     * @param worker the worker instance.
+     * @param vehicle the defective virtual vehicle.
+     * @return the mapping decision.
+     */
+    private VirtualVehicleMappingDecision handleDefectiveVehicle(JavascriptWorker worker, VirtualVehicle vehicle)
+    {
+        logger.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
+        // vehicle.setPreMigrationState(VirtualVehicleState.DEFECTIVE);
+        vehicle.setStateInfo(worker.getResult());
+        return handleFinishedVehicle(vehicle);
+    }
+
+    /**
+     * @param vehicle the defective virtual vehicle.
+     * @return the mapping decision.
+     */
+    private VirtualVehicleMappingDecision handleFinishedVehicle(VirtualVehicle vehicle)
+    {
+        vehicle.setEndTime(timeService.newDate());
+        //        vehicle.setPreMigrationState(VirtualVehicleState.FINISHED);
+
+        List<RealVehicle> groundStations = rvRepository.findAllConnectedGroundStations();
+
+        VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision();
+        if (!groundStations.isEmpty())
+        {
+            decision.setMigration(true);
+            decision.setRealVehicles(groundStations);
+            vehicle.setMigrationDestination(groundStations.get(0));
+        }
+
+        return decision;
+    }
+
+    /**
+     * @param worker the worker instance.
+     * @param vehicle the interrupted virtual vehicle.
+     * @return the mapping decision.
+     */
+    private VirtualVehicleMappingDecision handleInterruptedVehicle(JavascriptWorker worker, VirtualVehicle vehicle)
+    {
+        vehicle.setContinuation(worker.getSnapshot());
+        VirtualVehicleMappingDecision decision = (VirtualVehicleMappingDecision) worker.getApplicationState();
+
+        if (decision.isMigration() && decision.getRealVehicles().size() > 0)
+        {
+            // TODO select the best suitable RV instead of taking just the first.
+            RealVehicle migrationDestination = decision.getRealVehicles().get(0);
+            vehicle.setMigrationDestination(migrationDestination);
+            vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
+            // vehicle.setPreMigrationState(null);
+        }
+        else
+        {
+            vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+            // vehicle.setPreMigrationState(null);
+            vehicle.setMigrationDestination(null);
+            vehicle.setStateInfo(convertToStateInfoString(decision));
+            decision = null;
+        }
+
+        return decision;
+    }
+
+    /**
      * @param decision the migration decision.
      * @return the decision as a string.
      */
-    private static String convertToString(VirtualVehicleMappingDecision decision)
+    private String convertToStateInfoString(VirtualVehicleMappingDecision decision)
     {
-        StringBuilder bldr = new StringBuilder("No suitable real vehicle found to migrate to!\n\n");
+        PolarCoordinate pos = decision.getTask().getPosition();
+        return messages.format(MSG_MAPPING_DECISION, decision.isMigration()
+            , pos.getLatitude(), pos.getLongitude(), pos.getAltitude());
 
-        bldr.append("Migration: ").append(decision.isMigration()).append("\n")
-            .append("Task Position: {lat: ").append(decision.getTask().getPosition().getLatitude())
-            .append(", lng: ").append(decision.getTask().getPosition().getLongitude())
-            .append(", alt: ").append(decision.getTask().getPosition().getAltitude())
-            .append("}\n");
-
-        return bldr.toString();
+        //        StringBuilder bldr = new StringBuilder("No suitable real vehicle found to migrate to!\n\n");
+        //
+        //        bldr.append("Migration: ").append(decision.isMigration()).append("\n")
+        //            .append("Task Position: {lat: ").append(decision.getTask().getPosition().getLatitude())
+        //            .append(", lng: ").append(decision.getTask().getPosition().getLongitude())
+        //            .append(", alt: ").append(decision.getTask().getPosition().getAltitude())
+        //            .append("}\n");
+        //
+        //        return bldr.toString();
     }
 
 }

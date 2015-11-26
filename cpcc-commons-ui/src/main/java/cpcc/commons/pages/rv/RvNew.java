@@ -37,14 +37,14 @@ public class RvNew extends AbstractModifyRealVehicle
     {
         checkAreaOfOperation();
 
-        RealVehicle rv = qm.findRealVehicleByName(realVehicle.getName());
+        RealVehicle rv = rvRepo.findRealVehicleByName(realVehicle.getName());
         if (rv != null)
         {
             form.recordError(messages.format(ERROR_REAL_VEHICLE_NAME_ALREADY_EXISTS,
                 rv.getName(), rv.getId()));
         }
 
-        rv = qm.findRealVehicleByUrl(realVehicle.getUrl());
+        rv = rvRepo.findRealVehicleByUrl(realVehicle.getUrl());
         if (rv != null)
         {
             form.recordError(messages.format(ERROR_REAL_VEHICLE_URL_ALREADY_EXISTS,

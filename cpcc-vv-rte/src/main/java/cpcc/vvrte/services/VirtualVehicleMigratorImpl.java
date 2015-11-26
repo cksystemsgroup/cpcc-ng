@@ -31,12 +31,14 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
 
 import cpcc.core.entities.Parameter;
 import cpcc.core.services.QueryManager;
+import cpcc.core.utils.PropertyUtils;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
@@ -268,19 +270,28 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         Properties props = new Properties();
         props.setProperty("name", virtualVehicle.getName());
         props.setProperty("uuid", virtualVehicle.getUuid());
-        props.setProperty("api.version", Integer.toString(virtualVehicle.getApiVersion()));
+        // props.setProperty("api.version", Integer.toString(virtualVehicle.getApiVersion()));
+        PropertyUtils.setProperty(props, "api.version", virtualVehicle.getApiVersion());
+        PropertyUtils.setProperty(props, "state", virtualVehicle.getPreMigrationState());
+
         if (virtualVehicle.getStartTime() != null)
         {
-            props.setProperty("start.time", Long.toString(virtualVehicle.getStartTime().getTime()));
+            PropertyUtils.setProperty(props, "start.time", virtualVehicle.getStartTime().getTime());
+            // props.setProperty("start.time", Long.toString(virtualVehicle.getStartTime().getTime()));
         }
+
         if (virtualVehicle.getEndTime() != null)
         {
-            props.setProperty("end.time", Long.toString(virtualVehicle.getEndTime().getTime()));
+            PropertyUtils.setProperty(props, "end.time", virtualVehicle.getEndTime().getTime());
+            // props.setProperty("end.time", Long.toString(virtualVehicle.getEndTime().getTime()));
         }
+
         if (lastChunk)
         {
-            props.setProperty("last.chunk", Boolean.TRUE.toString());
+            PropertyUtils.setProperty(props, "last.chunk", Boolean.TRUE);
+            // props.setProperty("last.chunk", Boolean.TRUE.toString());
         }
+
         return props;
     }
 
@@ -397,8 +408,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      */
     private void updateVirtualVehicle(boolean lastChunk, VirtualVehicle vv) throws IOException
     {
-        if (vv.getState() != VirtualVehicleState.MIGRATING
-            && vv.getState() != VirtualVehicleState.MIGRATION_INTERRUPTED)
+        if (!VirtualVehicleState.VV_STATES_FOR_MIGRATION.contains(vv.getState()))
         {
             throw new IOException("Virtual vehicle " + vv.getName() + " (" + vv.getUuid() + ") "
                 + "has not state " + VirtualVehicleState.MIGRATING + " but " + vv.getState());
@@ -410,10 +420,28 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
                 + "is being migrated and can not be a migration target.");
         }
 
-        vv.setState(lastChunk ? VirtualVehicleState.MIGRATION_COMPLETED : VirtualVehicleState.MIGRATING);
+        logger.info("pre-migration:  " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last="
+            + lastChunk);
+
+        if (lastChunk)
+        {
+            VirtualVehicleState newState =
+                VirtualVehicleState.VV_NO_CHANGE_AFTER_MIGRATION.contains(vv.getPreMigrationState())
+                    ? vv.getPreMigrationState()
+                    : VirtualVehicleState.MIGRATION_COMPLETED;
+
+            vv.setState(newState);
+            vv.setPreMigrationState(null);
+        }
+        //        else
+        //        {
+        //            // TODO check if necessary.
+        //            vv.setState(VirtualVehicleState.MIGRATING);
+        //        }
         sessionManager.getSession().saveOrUpdate(vv);
 
-        logger.info("migration: " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last=" + lastChunk);
+        logger.info("post-migration: " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last="
+            + lastChunk);
     }
 
     /**
@@ -428,7 +456,16 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         vv.setName(props.getProperty("name"));
         vv.setUuid(props.getProperty("uuid"));
         vv.setApiVersion(Integer.parseInt(props.getProperty("api.version")));
-        vv.setState(lastChunk ? VirtualVehicleState.MIGRATION_COMPLETED : VirtualVehicleState.MIGRATING);
+
+        if (lastChunk)
+        {
+            vv.setState(getVehicleState(props.getProperty("state")));
+        }
+        else
+        {
+            vv.setState(VirtualVehicleState.MIGRATING);
+            vv.setPreMigrationState(getVehicleState(props.getProperty("state")));
+        }
 
         String startTime = props.getProperty("start.time");
         if (startTime != null)
@@ -445,6 +482,20 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         vv.setMigrationDestination(null);
         sessionManager.getSession().saveOrUpdate(vv);
         return vv;
+    }
+
+    /**
+     * @param stateString the state as a {@code String}.
+     * @return the state as an enumeration.
+     */
+    private VirtualVehicleState getVehicleState(String stateString)
+    {
+        if (StringUtils.isBlank(stateString))
+        {
+            return null;
+        }
+
+        return VirtualVehicleState.valueOf(stateString);
     }
 
     /**

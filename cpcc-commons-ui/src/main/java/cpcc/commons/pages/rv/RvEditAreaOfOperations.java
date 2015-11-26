@@ -35,7 +35,7 @@ import org.hibernate.Session;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.CoreJsonConverter;
-import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.utils.MathUtils;
 import cpcc.core.utils.ResourceStreamResponse;
 import cpcc.rv.base.services.StateSynchronizer;
@@ -49,7 +49,7 @@ public class RvEditAreaOfOperations
     protected Session session;
 
     @Inject
-    protected QueryManager qm;
+    protected RealVehicleRepository realVehicleRepository;
 
     @Inject
     private CoreJsonConverter jsonConverter;
@@ -72,7 +72,7 @@ public class RvEditAreaOfOperations
     void onActivate(Integer id)
     {
         this.realVehicelId = id;
-        realVehicle = qm.findRealVehicleById(id);
+        realVehicle = realVehicleRepository.findRealVehicleById(id);
     }
 
     /**
@@ -128,7 +128,7 @@ public class RvEditAreaOfOperations
     {
         List<RealVehicle> otherRvList = new ArrayList<RealVehicle>();
 
-        for (RealVehicle rv : qm.findAllRealVehicles())
+        for (RealVehicle rv : realVehicleRepository.findAllRealVehicles())
         {
             if (rv.getId().intValue() != realVehicle.getId().intValue())
             {

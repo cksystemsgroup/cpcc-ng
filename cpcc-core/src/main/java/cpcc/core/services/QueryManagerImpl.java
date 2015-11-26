@@ -36,12 +36,9 @@ import cpcc.core.entities.DeviceType;
 import cpcc.core.entities.MappingAttributes;
 import cpcc.core.entities.MappingAttributesPK;
 import cpcc.core.entities.Parameter;
-import cpcc.core.entities.RealVehicle;
-import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.entities.Topic;
-import cpcc.core.services.jobs.TimeService;
 
 /**
  * QueryManager implementation.
@@ -53,22 +50,15 @@ public class QueryManagerImpl implements QueryManager
     private static final String SENSOR_MESSAGETYPE = "messageType";
     private static final String DEVICE_NAME = "name";
     private static final String TOPIC_ROOT = "topicRoot";
-    private static final String REAL_VEHICLE_NAME = "name";
-    private static final String REAL_VEHICLE_URL = "url";
 
     private Session session;
-    private TimeService timeService;
-    private long connectionTimeout;
 
     /**
      * @param session the Hibernate {@link Session}
-     * @param timeService the time service instance.
      */
-    public QueryManagerImpl(Session session, TimeService timeService)
+    public QueryManagerImpl(Session session)
     {
         this.session = session;
-        this.timeService = timeService;
-        this.connectionTimeout = 10000L;
     }
 
     /**
@@ -220,111 +210,6 @@ public class QueryManagerImpl implements QueryManager
         session
             .createQuery("DELETE FROM SensorDefinition WHERE id = :id")
             .setInteger("id", id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<RealVehicle> findAllRealVehicles()
-    {
-        return (List<RealVehicle>) session
-            .createCriteria(RealVehicle.class)
-            .addOrder(Property.forName("id").asc())
-            .list();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<RealVehicle> findAllRealVehiclesOrderByName()
-    {
-        return (List<RealVehicle>) session
-            .createCriteria(RealVehicle.class)
-            .addOrder(Property.forName("name").asc())
-            .list();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RealVehicle findRealVehicleByName(String name)
-    {
-        return (RealVehicle) session
-            .createCriteria(RealVehicle.class)
-            .add(Restrictions.eq(REAL_VEHICLE_NAME, name))
-            .uniqueResult();
-    }
-
-    @Override
-    public RealVehicle findRealVehicleByUrl(String url)
-    {
-        return (RealVehicle) session
-            .createCriteria(RealVehicle.class)
-            .add(Restrictions.eq(REAL_VEHICLE_URL, url))
-            .uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RealVehicle findRealVehicleById(Integer id)
-    {
-        return (RealVehicle) session
-            .createCriteria(RealVehicle.class)
-            .add(Restrictions.eq("id", id))
-            .uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RealVehicle findOwnRealVehicle()
-    {
-        Parameter rvNameParam = findParameterByName(Parameter.REAL_VEHICLE_NAME);
-        return rvNameParam != null ? findRealVehicleByName(rvNameParam.getValue()) : null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<RealVehicleState> findAllRealVehicleStates()
-    {
-        return (List<RealVehicleState>) session
-            .createCriteria(RealVehicleState.class)
-            .list();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RealVehicleState findRealVehicleStateById(int id)
-    {
-        return (RealVehicleState) session
-            .createCriteria(RealVehicleState.class)
-            .add(Restrictions.eq("id", id))
-            .uniqueResult();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isRealVehicleConnected(int id)
-    {
-        RealVehicleState state = findRealVehicleStateById(id);
-        return state != null
-            ? timeService.currentTimeMillis() - state.getLastUpdate().getTime() < connectionTimeout
-            : false;
     }
 
     /**

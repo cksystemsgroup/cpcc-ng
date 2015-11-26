@@ -157,7 +157,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
 
         double distance = gs.calculateDistance(currentRunningTask.getPosition(), vehiclePosition);
         currentRunningTask.setDistanceToTarget(distance);
-        
+
         if (distance < currentRunningTask.getTolerance())
         {
             LOG.info("Task completed: " + currentRunningTask.getPosition() + " distance=" + distance);

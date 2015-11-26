@@ -30,7 +30,7 @@ public class RvEdit extends AbstractModifyRealVehicle
 
     void onPrepare()
     {
-        realVehicle = qm.findRealVehicleById(vehicleId);
+        realVehicle = rvRepo.findRealVehicleById(vehicleId);
     }
 
     /**

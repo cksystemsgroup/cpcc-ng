@@ -27,7 +27,6 @@ import org.geojson.FeatureCollection;
 import org.geojson.Point;
 
 import cpcc.core.entities.MappingAttributes;
-import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
@@ -35,6 +34,7 @@ import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.utils.PolarCoordinate;
 import cpcc.ros.base.AbstractRosAdapter;
 import cpcc.ros.sensors.AbstractGpsSensorAdapter;
@@ -58,6 +58,7 @@ public class StateServiceImpl implements StateService
     private VvRteRepository vvRepo;
     private CoreGeoJsonConverter pjc;
     private VvGeoJsonConverter vjc;
+    private RealVehicleRepository rvRepo;
 
     /**
      * @param qm the query manager.
@@ -65,10 +66,12 @@ public class StateServiceImpl implements StateService
      * @param vvRepo the virtual vehicle RTE repository.
      * @param pjc the core geo JSON converter.
      * @param vjc the virtual vehicle JSON converter.
+     * @param rvRepo the real vehicle repository.
      */
     public StateServiceImpl(QueryManager qm, RosNodeService rns, VvRteRepository vvRepo, CoreGeoJsonConverter pjc,
-        VvGeoJsonConverter vjc)
+        VvGeoJsonConverter vjc, RealVehicleRepository rvRepo)
     {
+        this.rvRepo = rvRepo;
         this.qm = qm;
         this.rns = rns;
         this.vvRepo = vvRepo;
@@ -93,7 +96,7 @@ public class StateServiceImpl implements StateService
             pointFeature.setProperty("type", "rvPosition");
             pointFeature.setProperty("rvHeading", 0);
             pointFeature.setProperty("rvPosition", point);
-            
+
             RealVehicle rv = findRealVehicle();
             if (rv != null)
             {
@@ -101,7 +104,7 @@ public class StateServiceImpl implements StateService
                 pointFeature.setProperty("rvId", rv.getId());
                 pointFeature.setProperty("rvName", rv.getName());
 
-                RealVehicleState state = qm.findRealVehicleStateById(rv.getId());
+                RealVehicleState state = rvRepo.findRealVehicleStateById(rv.getId());
                 if (state != null)
                 {
                     // TODO fixme
@@ -147,8 +150,7 @@ public class StateServiceImpl implements StateService
      */
     private RealVehicle findRealVehicle()
     {
-        Parameter rvn = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME, "");
-        return qm.findRealVehicleByName(rvn.getValue());
+        return rvRepo.findOwnRealVehicle();
     }
 
     /**

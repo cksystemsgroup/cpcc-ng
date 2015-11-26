@@ -33,10 +33,12 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.Messages;
 import org.hibernate.Session;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -44,6 +46,8 @@ import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import cpcc.core.entities.RealVehicle;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
@@ -67,6 +71,7 @@ public class VehicleLauncherTest
     private Logger logger;
     private TimeService timeService;
     private VirtualVehicle vehicle2;
+    private RealVehicle groundStation;
 
     @BeforeMethod
     public void setUp() throws IOException
@@ -99,6 +104,8 @@ public class VehicleLauncherTest
         vehicle2 = mock(VirtualVehicle.class);
         when(vehicle2.getId()).thenReturn(1234567);
         when(vehicle2.getState()).thenReturn(VirtualVehicleState.DEFECTIVE);
+
+        groundStation = mock(RealVehicle.class);
 
         final JavascriptWorker worker = mock(JavascriptWorker.class);
         when(worker.getApplicationState()).thenReturn(null);
@@ -135,7 +142,13 @@ public class VehicleLauncherTest
         when(vvRteRepository.findVirtualVehicleById(1001)).thenReturn(vehicle);
         when(vvRteRepository.findVirtualVehicleById(1234567)).thenReturn(vehicle2);
 
-        launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository, timeService);
+        RealVehicleRepository rvRepository = mock(RealVehicleRepository.class);
+        when(rvRepository.findAllConnectedGroundStations()).thenReturn(Arrays.asList(groundStation));
+
+        Messages messages = mock(Messages.class);
+
+        launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository
+            , rvRepository, timeService, messages);
     }
 
     @Test

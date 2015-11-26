@@ -21,9 +21,8 @@ package cpcc.rv.base.services;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
 
-import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
-import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.JobRunnable;
 
 /**
@@ -50,14 +49,12 @@ public class RealVehicleInitJobRunnable implements JobRunnable
     @Override
     public void run() throws Exception
     {
-        QueryManager qm = serviceResources.getService(QueryManager.class);
-
-        Parameter rvName = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME, "");
-        RealVehicle myself = qm.findRealVehicleByName(rvName.getValue());
+        RealVehicleRepository rvRepo = serviceResources.getService(RealVehicleRepository.class);
+        RealVehicle myself = rvRepo.findOwnRealVehicle();
 
         if (myself != null)
         {
-            logger.info("Found own vehicle name: " + rvName.getValue() + ", id=" + myself.getId()
+            logger.info("Found own vehicle name: " + myself.getName() + ", id=" + myself.getId()
                 + " Initialization already complete.");
             return;
         }

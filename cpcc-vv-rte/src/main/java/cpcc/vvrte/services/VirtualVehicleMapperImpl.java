@@ -36,8 +36,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
-import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.utils.PolarCoordinate;
 import cpcc.vvrte.task.Task;
 
@@ -48,17 +49,18 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
 {
     private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleMapperImpl.class);
 
-    private QueryManager qm;
+    private RealVehicleRepository rvRepo;
 
     /**
-     * @param qm the query manager.
+     * @param rvRepo the real vehicle repository.
      * @throws JsonParseException thrown in case of errors.
      * @throws JsonMappingException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    public VirtualVehicleMapperImpl(QueryManager qm) throws JsonParseException, JsonMappingException, IOException
+    public VirtualVehicleMapperImpl(RealVehicleRepository rvRepo)
+        throws JsonParseException, JsonMappingException, IOException
     {
-        this.qm = qm;
+        this.rvRepo = rvRepo;
     }
 
     /**
@@ -71,7 +73,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         decision.setTask(task);
         decision.setMigration(true);
 
-        RealVehicle rv = qm.findOwnRealVehicle();
+        RealVehicle rv = rvRepo.findOwnRealVehicle();
         if (rv == null)
         {
             migrateTask(task, decision);
@@ -97,10 +99,16 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
      */
     private void migrateTask(Task task, VirtualVehicleMappingDecision decision)
     {
+        List<RealVehicle> groundStations = new ArrayList<RealVehicle>();
         List<RealVehicle> destinationRealVehicles = new ArrayList<RealVehicle>();
 
-        for (RealVehicle rv : qm.findAllRealVehicles())
+        for (RealVehicle rv : rvRepo.findAllRealVehiclesExceptOwn())
         {
+            if (rv.getType() == RealVehicleType.GROUND_STATION)
+            {
+                groundStations.add(rv);
+            }
+
             if (isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition()))
             {
                 if (rv.getSensors().containsAll(task.getSensors()))
@@ -120,7 +128,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
             }
         }
 
-        decision.setRealVehicles(destinationRealVehicles);
+        decision.setRealVehicles(destinationRealVehicles.isEmpty() ? groundStations : destinationRealVehicles);
     }
 
     private static List<PolygonZone> getPolygons(String areaOfOperationString) throws IOException

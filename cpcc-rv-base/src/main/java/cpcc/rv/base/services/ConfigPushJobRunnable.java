@@ -29,6 +29,7 @@ import cpcc.com.services.CommunicationService;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.JobRunnable;
 
 /**
@@ -60,11 +61,12 @@ public class ConfigPushJobRunnable implements JobRunnable
     {
         QueryManager queryManager = serviceResources.getService(QueryManager.class);
         CommunicationService com = serviceResources.getService(CommunicationService.class);
+        RealVehicleRepository realVehicleRepository = serviceResources.getService(RealVehicleRepository.class);
 
-        RealVehicle target = queryManager.findRealVehicleById(id);
+        RealVehicle target = realVehicleRepository.findRealVehicleById(id);
 
         List<SensorDefinition> sds = queryManager.findAllSensorDefinitions();
-        List<RealVehicle> rvs = queryManager.findAllRealVehicles();
+        List<RealVehicle> rvs = realVehicleRepository.findAllRealVehicles();
         ConfigSyncData syncData = new ConfigSyncData(sds, rvs);
         byte[] data = genson.serializeBytes(syncData);
 

@@ -43,7 +43,7 @@ public final class VvRteModule
 {
     private VvRteModule()
     {
-        // intentionally empty.
+        // Intentionally empty.
     }
 
     /**
@@ -81,7 +81,7 @@ public final class VvRteModule
     public static void scheduleJobs(PeriodicExecutor executor, final TaskExecutionService taskExecutionService)
     {
         // TODO check cycle
-        executor.addJob(new CronSchedule("*/5 * * * * ?"), "Real Vehicle status update", new Runnable()
+        executor.addJob(new CronSchedule("* * * * * ?"), "VvRte Task execution.", new Runnable()
         {
             @Override
             public void run()

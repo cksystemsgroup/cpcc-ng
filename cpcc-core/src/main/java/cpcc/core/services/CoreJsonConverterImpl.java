@@ -19,17 +19,21 @@
 package cpcc.core.services;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
+import cpcc.core.utils.JSONUtils;
 import cpcc.core.utils.PolarCoordinate;
 
 /**
@@ -282,5 +286,29 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         buff.append("}");
 
         return buff.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toRealVehicleStateJson(List<RealVehicleState> statesList)
+    {
+        try
+        {
+            Map<String, String> stateMap = new HashMap<String, String>();
+
+            for (RealVehicleState state : statesList)
+            {
+                stateMap.put(state.getId().toString(), state.getState());
+            }
+
+            return JSONUtils.toJsonString(stateMap);
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+            return "{}";
+        }
     }
 }

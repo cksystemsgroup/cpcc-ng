@@ -44,6 +44,7 @@ import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 
 /**
  * Configuration synchronization job runnable test.
@@ -58,7 +59,7 @@ public class ConfigSyncJobRunnableTest
         + "\"messageType\":\"std_msgs/Float32\",\"parameters\":null,\"type\":\"ALTIMETER\",\"visibility\":\"ALL_VV\"},"
         + "{\"deleted\":true,\"description\":\"CO2\",\"id\":2222,\"lastUpdate\":1439642630222,"
         + "\"messageType\":\"std_msgs/Float32\",\"parameters\":null,\"type\":\"CO2\",\"visibility\":\"NO_VV\"}],"
-        + "\"type\":\"QUADROCOPTER\",\"url\":\"http://rv01.site/app\"}],"
+        + "\"state\":null,\"type\":\"QUADROCOPTER\",\"url\":\"http://rv01.site/app\"}],"
         + "\"sen\":[{\"deleted\":false,\"description\":\"Altimeter\",\"id\":1111,\"lastUpdate\":1439642630111,"
         + "\"messageType\":\"std_msgs/Float32\",\"parameters\":null,\"type\":\"ALTIMETER\",\"visibility\":\"ALL_VV\"},"
         + "{\"deleted\":true,\"description\":\"CO2\",\"id\":2222,\"lastUpdate\":1439642630222,"
@@ -84,6 +85,7 @@ public class ConfigSyncJobRunnableTest
     private CommunicationService com;
 
     private RealVehicle target;
+    private RealVehicleRepository realVehicleRepository;
 
     @SuppressWarnings("unchecked")
     @BeforeMethod
@@ -152,8 +154,10 @@ public class ConfigSyncJobRunnableTest
 
         queryManager = mock(QueryManager.class);
         when(queryManager.findAllSensorDefinitions()).thenReturn(sensorDefinitions);
-        when(queryManager.findAllRealVehicles()).thenReturn(realVehicles);
-        when(queryManager.findRealVehicleById(10)).thenReturn(target);
+
+        realVehicleRepository = mock(RealVehicleRepository.class);
+        when(realVehicleRepository.findAllRealVehicles()).thenReturn(realVehicles);
+        when(realVehicleRepository.findRealVehicleById(10)).thenReturn(target);
 
         com = mock(CommunicationService.class);
 
@@ -161,6 +165,7 @@ public class ConfigSyncJobRunnableTest
         when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
         when(serviceResources.getService(QueryManager.class)).thenReturn(queryManager);
         when(serviceResources.getService(CommunicationService.class)).thenReturn(com);
+        when(serviceResources.getService(RealVehicleRepository.class)).thenReturn(realVehicleRepository);
 
         sut = new ConfigPushJobRunnable(serviceResources, parameters);
     }

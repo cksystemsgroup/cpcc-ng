@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.commons.pages.vehicle;
+package cpcc.commons.pages.vv;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -37,9 +37,9 @@ import cpcc.vvrte.entities.VirtualVehicleStorage;
 import cpcc.vvrte.services.VvRteRepository;
 
 /**
- * VehicleStorageImage
+ * Vehicle storage image page.
  */
-public class VehicleStorageImage
+public class VvStorageImage
 {
     @Inject
     private Logger logger;

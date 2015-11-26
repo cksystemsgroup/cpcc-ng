@@ -24,6 +24,7 @@ import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.utils.PolarCoordinate;
 
@@ -115,7 +116,13 @@ public interface CoreJsonConverter
     
     /**
      * @param rvList the list of real vehicles.
-     * @return the real vehicle regions as an JSON object.
+     * @return the real vehicle regions as a JSON object.
      */
     String toRegionJson(List<RealVehicle> rvList);
+
+    /**
+     * @param statesList the list of real vehicle states.
+     * @return the real vehicle states as a JSON object.
+     */
+    String toRealVehicleStateJson(List<RealVehicleState> statesList);
 }

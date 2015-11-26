@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.commons.pages.vehicle;
+package cpcc.commons.pages.vv;
 
 import java.io.InputStream;
 
@@ -29,9 +29,9 @@ import org.apache.tapestry5.util.TextStreamResponse;
 import cpcc.vvrte.services.VirtualVehicleMigrator;
 
 /**
- * VehicleMigration
+ * Vehicle migration page
  */
-public class VehicleMigration
+public class VvMigration
 {
     @Inject
     private RequestGlobals requestGlobals;

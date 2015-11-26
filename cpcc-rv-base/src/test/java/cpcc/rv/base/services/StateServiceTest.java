@@ -46,6 +46,7 @@ import cpcc.core.entities.SensorType;
 import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.CoreGeoJsonConverterImpl;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.ros.sensors.AbstractGpsSensorAdapter;
 import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.entities.VirtualVehicle;
@@ -78,6 +79,7 @@ public class StateServiceTest
     private List<VirtualVehicle> vvList;
     private VirtualVehicle vv1;
     private VirtualVehicle vv2;
+    private RealVehicleRepository rvRepo;
 
     @BeforeMethod
     public void setUp()
@@ -118,8 +120,11 @@ public class StateServiceTest
         qm = mock(QueryManager.class);
         when(qm.findAllMappingAttributes()).thenReturn(allMappingAttributes);
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME, "")).thenReturn(rvName);
-        when(qm.findRealVehicleByName(REAL_VEHICLE_NAME)).thenReturn(realVehicle);
-        when(qm.findRealVehicleStateById(REAL_VEHICLE_ID)).thenReturn(rvState);
+
+        rvRepo = mock(RealVehicleRepository.class);
+        when(rvRepo.findRealVehicleByName(REAL_VEHICLE_NAME)).thenReturn(realVehicle);
+        when(rvRepo.findRealVehicleStateById(REAL_VEHICLE_ID)).thenReturn(rvState);
+        when(rvRepo.findOwnRealVehicle()).thenReturn(realVehicle);
 
         position = mock(NavSatFix.class);
         when(position.getLatitude()).thenReturn(POSITION_LATITUDE);
@@ -150,7 +155,7 @@ public class StateServiceTest
         pjc = new CoreGeoJsonConverterImpl();
         vjc = new VvGeoJsonConverterImpl();
 
-        sut = new StateServiceImpl(qm, rns, vvRepo, pjc, vjc);
+        sut = new StateServiceImpl(qm, rns, vvRepo, pjc, vjc, rvRepo);
     }
 
     @DataProvider

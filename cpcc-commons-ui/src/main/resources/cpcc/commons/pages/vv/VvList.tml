@@ -1,7 +1,7 @@
 <html t:type="layout" title="${message:virtualVehicleOverview}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
-	<t:PageLink t:page="commons/vehicle/new" class="btn btn-primary">${message:createNewVehicle}
+	<t:PageLink t:page="commons/vv/new" class="btn btn-primary">${message:createNewVehicle}
 	</t:PageLink>
 
 	<h4>${message:virtualVehicleList}</h4>
@@ -17,15 +17,15 @@
 				</p:uuidCell>
 
 				<p:startTimeCell>
-					<t:output t:format="${message:dateFormat}" t:value="virtualVehicle.startTime" />
+					<t:output t:format="message:dateFormat" t:value="virtualVehicle.startTime" />
 				</p:startTimeCell>
 
 				<p:endTimeCell>
-					<t:output t:format="${message:dateFormat}" t:value="virtualVehicle.endTime" />
+					<t:output t:format="message:dateFormat" t:value="virtualVehicle.endTime" />
 				</p:endTimeCell>
 
 				<p:migrationStartTimeCell>
-					<t:output t:format="${message:dateFormat}" t:value="virtualVehicle.migrationStartTime" />
+					<t:output t:format="message:dateFormat" t:value="virtualVehicle.migrationStartTime" />
 				</p:migrationStartTimeCell>
 
 				<p:migrationDestinationCell>
@@ -46,7 +46,7 @@
 
 						<t:If test="isEdit()">
 							<li>
-								<t:PageLink t:page="commons/vehicle/edit" t:context="virtualVehicle.id" t:title="${message:editVehicle}">
+								<t:PageLink t:page="commons/vv/edit" t:context="virtualVehicle.id" t:title="${message:editVehicle}">
 									<span class="glyphicon glyphicon-pencil" />
 								</t:PageLink>
 							</li>
@@ -85,7 +85,7 @@
 						</t:If>
 
 						<li>
-							<t:PageLink t:page="commons/vehicle/storage" t:context="virtualVehicle.id" t:title="${message:showVehicleStorage}">
+							<t:PageLink t:page="commons/vv/storage" t:context="virtualVehicle.id" t:title="${message:showVehicleStorage}">
 								<span class="glyphicon glyphicon-folder-close" />
 							</t:PageLink>
 						</li>

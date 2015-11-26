@@ -34,6 +34,7 @@ import org.testng.annotations.Test;
 import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.JobCreationException;
 import cpcc.core.services.jobs.JobService;
 
@@ -50,6 +51,7 @@ public class StateSynchronizerTest
     private Parameter hostRvName;
     private RealVehicle rv01;
     private RealVehicle rv02;
+    private RealVehicleRepository realVehicleRepository;
 
     @BeforeMethod
     public void setUp()
@@ -72,11 +74,13 @@ public class StateSynchronizerTest
         logger = mock(Logger.class);
 
         qm = mock(QueryManager.class);
-        when(qm.findAllRealVehicles()).thenReturn(Arrays.asList(rv01, rv02));
+
+        realVehicleRepository = mock(RealVehicleRepository.class);
+        when(realVehicleRepository.findAllRealVehicles()).thenReturn(Arrays.asList(rv01, rv02));
 
         jobService = mock(JobService.class);
 
-        sut = new StateSynchronizerImpl(logger, qm, jobService);
+        sut = new StateSynchronizerImpl(logger, qm, jobService, realVehicleRepository);
     }
 
     @Test
@@ -87,7 +91,7 @@ public class StateSynchronizerTest
         sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
-        verify(qm).findAllRealVehicles();
+        verify(realVehicleRepository).findAllRealVehicles();
 
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_1);
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_2);
@@ -120,7 +124,7 @@ public class StateSynchronizerTest
         sut.realVehicleStatusUpdate();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
-        verify(qm).findAllRealVehicles();
+        verify(realVehicleRepository).findAllRealVehicles();
 
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_RV_PARAMETERS);
         verifyZeroInteractions(logger);

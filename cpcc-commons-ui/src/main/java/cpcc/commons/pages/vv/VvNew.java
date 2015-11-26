@@ -16,18 +16,22 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.commons.pages.vv;
+
+import java.util.UUID;
+
+import cpcc.vvrte.entities.VirtualVehicle;
+import cpcc.vvrte.entities.VirtualVehicleState;
 
 /**
- * Virtual vehicle runtime environment constants.
+ * Vehicle new page
  */
-public final class VvRteConstants
+public class VvNew extends AbstractModifyVv
 {
-    public static final String MIGRATION_CONNECTOR = "migration";
-    public static final String MIGRATION_PATH = "/commons/vv/migration";
-
-    private VvRteConstants()
+    void onPrepare()
     {
-        // Intentionally empty.
+        vehicle = new VirtualVehicle();
+        vehicle.setUuid(UUID.randomUUID().toString());
+        vehicle.setState(VirtualVehicleState.INIT);
     }
 }

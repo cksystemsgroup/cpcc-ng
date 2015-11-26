@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.commons.pages.vehicle;
+package cpcc.commons.pages.vv;
 
 import java.io.IOException;
 
@@ -31,16 +31,16 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
-import cpcc.commons.pages.Vehicle;
 import cpcc.rv.base.services.StateSynchronizer;
 import cpcc.vvrte.entities.VirtualVehicle;
+import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.VvRteRepository;
 import cpcc.vvrte.services.js.JavascriptService;
 
 /**
- * AbstractModifyVehicle
+ * Abstract Modify Vehicle page.
  */
-public class AbstractModifyVehicle
+public class AbstractModifyVv
 {
     public static final String ERROR_AT_COMPILATION = "error.at.compilation";
     private static final String ERROR_NAME_REQUIRED = "error.name.required";
@@ -76,13 +76,21 @@ public class AbstractModifyVehicle
     protected Object onSuccessFromForm()
     {
         vehicle.setCode(vehicle.getCode().trim().replace("\\n", "\n"));
+        vehicle.setMigrationDestination(null);
+        vehicle.setContinuation(null);
+        vehicle.setEndTime(null);
+        vehicle.setStartTime(null);
+        vehicle.setState(VirtualVehicleState.INIT);
+        vehicle.setMigrationDestination(null);
+        vehicle.setMigrationStartTime(null);
+        vehicle.setPreMigrationState(null);
         sessionManager.getSession().saveOrUpdate(vehicle);
         sessionManager.commit();
 
         // TODO
         //        rvss.notifyConfigurationChange();
         //        confSync.notifyConfigurationChange();
-        return Vehicle.class;
+        return VvList.class;
     }
 
     /**

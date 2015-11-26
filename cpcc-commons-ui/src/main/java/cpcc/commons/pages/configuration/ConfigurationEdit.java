@@ -52,6 +52,7 @@ import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.SensorDefinitionSelectHelpers;
 import cpcc.ros.services.RosNodeService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -96,6 +97,9 @@ public class ConfigurationEdit
     @Inject
     private RosNodeService nodeService;
 
+    @Inject
+    private RealVehicleRepository rvRepo;
+
     @Property
     private Parameter internalRosCore;
 
@@ -134,7 +138,7 @@ public class ConfigurationEdit
         masterServerURI = qm.findParameterByName(Parameter.MASTER_SERVER_URI, "");
         internalRosCore = qm.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE, "");
         realVehicleName = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME, "");
-        realVehicle = qm.findRealVehicleByName(realVehicleName.getValue());
+        realVehicle = rvRepo.findRealVehicleByName(realVehicleName.getValue());
         deviceList = qm.findAllDevices();
         mappingList = orderByTopic(qm.findAllMappingAttributes());
         enumFormat = new EnumFormatter(messages);
@@ -197,7 +201,7 @@ public class ConfigurationEdit
 
         if (realVehicle == null)
         {
-            realVehicle = qm.findRealVehicleByName(realVehicleName.getValue());
+            realVehicle = rvRepo.findRealVehicleByName(realVehicleName.getValue());
             handleXhrRequest(realVehicleNameFormZone);
             return;
         }

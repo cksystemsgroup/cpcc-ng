@@ -38,6 +38,11 @@ import cpcc.vvrte.entities.VirtualVehicleState;
  */
 public class VvMigrationWorker extends Thread
 {
+    private static final String LOG_MIG_WRONG_STATE =
+        "Can not migrate vehicle %s because of wrong state %s";
+    private static final String LOG_MIG_NO_DESTINATION =
+        "Can not migrate vehicle %s (%s) because of missing destination.";
+
     private boolean running = true;
     private Thread waiter = null;
     private ServiceResources serviceResources;
@@ -77,6 +82,10 @@ public class VvMigrationWorker extends Thread
 
         setName("MIG-" + vehicle.getName() + "-" + vehicle.getMigrationDestination().getName());
 
+        // TODO remember old state and transfer it to the migration destination!
+        // TODO Finished VVs should not be started automatically after migration.
+
+        vehicle.setPreMigrationState(vehicle.getState());
         vehicle.setState(VirtualVehicleState.MIGRATING);
         vehicle.setMigrationStartTime(new Date());
         sessionManager.getSession().saveOrUpdate(vehicle);
@@ -159,16 +168,13 @@ public class VvMigrationWorker extends Thread
     {
         if (vehicle.getMigrationDestination() == null)
         {
-            logger.error("Can not migrate vehicle " + vehicle.getName()
-                + " (" + vehicle.getUuid() + ") because of missing destination.");
+            logger.error(String.format(LOG_MIG_NO_DESTINATION, vehicle.getName(), vehicle.getUuid()));
             return false;
         }
 
-        if (vehicle.getState() != VirtualVehicleState.MIGRATION_AWAITED
-            && vehicle.getState() != VirtualVehicleState.MIGRATION_INTERRUPTED)
+        if (!VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION.contains(vehicle.getState()))
         {
-            logger.error("Can not migrate vehicle " + vehicle.getName()
-                + " because of wrong state " + vehicle.getState());
+            logger.error(String.format(LOG_MIG_WRONG_STATE, vehicle.getName(), vehicle.getState().name()));
             return false;
         }
 

@@ -42,6 +42,7 @@ import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.utils.PolarCoordinate;
 import cpcc.vvrte.services.VirtualVehicleMapperImpl;
 import cpcc.vvrte.services.VirtualVehicleMappingDecision;
@@ -135,6 +136,7 @@ public class VirtualVehicleMapperTest
     private RealVehicle realVehicle2;
     private QueryManager qm;
     private VirtualVehicleMapperImpl sut;
+    private RealVehicleRepository realVehicleRepository;
 
     @BeforeMethod
     public void setUp() throws JsonParseException, JsonMappingException, IOException
@@ -156,13 +158,16 @@ public class VirtualVehicleMapperTest
         rvName2.setValue(REAL_VEHICLE_TWO_NAME);
 
         qm = mock(QueryManager.class);
-        when(qm.findRealVehicleByName(REAL_VEHICLE_ONE_NAME)).thenReturn(realVehicle1);
-        when(qm.findRealVehicleByName(REAL_VEHICLE_TWO_NAME)).thenReturn(realVehicle2);
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(rvName1);
-        when(qm.findAllRealVehicles()).thenReturn(Arrays.asList(realVehicle1, realVehicle2));
-        when(qm.findOwnRealVehicle()).thenReturn(realVehicle1);
 
-        sut = new VirtualVehicleMapperImpl(qm);
+        realVehicleRepository = mock(RealVehicleRepository.class);
+        when(realVehicleRepository.findRealVehicleByName(REAL_VEHICLE_ONE_NAME)).thenReturn(realVehicle1);
+        when(realVehicleRepository.findRealVehicleByName(REAL_VEHICLE_TWO_NAME)).thenReturn(realVehicle2);
+        when(realVehicleRepository.findAllRealVehicles()).thenReturn(Arrays.asList(realVehicle1, realVehicle2));
+        when(realVehicleRepository.findOwnRealVehicle()).thenReturn(realVehicle1);
+        when(realVehicleRepository.findAllRealVehiclesExceptOwn()).thenReturn(Arrays.asList(realVehicle2));
+
+        sut = new VirtualVehicleMapperImpl(realVehicleRepository);
     }
 
     @DataProvider
@@ -294,10 +299,10 @@ public class VirtualVehicleMapperTest
     @Test
     public void shouldHandleUnconfiguredRealVehicleName() throws JsonParseException, JsonMappingException, IOException
     {
-        QueryManager qm2 = mock(QueryManager.class);
+        RealVehicleRepository realVehicleRepository2 = mock(RealVehicleRepository.class);
         Task task = mock(Task.class);
 
-        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(qm2);
+        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(realVehicleRepository2);
         localSut.findMappingDecision(task);
 
         verifyZeroInteractions(task);
@@ -308,12 +313,13 @@ public class VirtualVehicleMapperTest
         throws JsonParseException, JsonMappingException, IOException
     {
         RealVehicle realVehicle3 = mock(RealVehicle.class);
-        QueryManager qm2 = mock(QueryManager.class);
-        when(qm2.findOwnRealVehicle()).thenReturn(realVehicle3);
+
+        RealVehicleRepository realVehicleRepository2 = mock(RealVehicleRepository.class);
+        when(realVehicleRepository2.findOwnRealVehicle()).thenReturn(realVehicle3);
 
         Task task = mock(Task.class);
 
-        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(qm2);
+        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(realVehicleRepository2);
         VirtualVehicleMappingDecision actual = localSut.findMappingDecision(task);
 
         assertThat(actual.isMigration()).isTrue();
@@ -328,12 +334,13 @@ public class VirtualVehicleMapperTest
     {
         RealVehicle realVehicle3 = mock(RealVehicle.class);
         when(realVehicle3.getAreaOfOperation()).thenReturn("buggerit!");
-        QueryManager qm2 = mock(QueryManager.class);
-        when(qm2.findOwnRealVehicle()).thenReturn(realVehicle3);
+
+        RealVehicleRepository rvRepo2 = mock(RealVehicleRepository.class);
+        when(rvRepo2.findOwnRealVehicle()).thenReturn(realVehicle3);
 
         Task task = mock(Task.class);
 
-        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(qm2);
+        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(rvRepo2);
         VirtualVehicleMappingDecision actual = localSut.findMappingDecision(task);
 
         assertThat(actual.isMigration()).isTrue();

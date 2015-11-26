@@ -16,18 +16,20 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.commons.pages.vv;
+
+import org.apache.tapestry5.annotations.PageActivationContext;
 
 /**
- * Virtual vehicle runtime environment constants.
+ * Vehicle edit page
  */
-public final class VvRteConstants
+public class VvEdit extends AbstractModifyVv
 {
-    public static final String MIGRATION_CONNECTOR = "migration";
-    public static final String MIGRATION_PATH = "/commons/vv/migration";
+    @PageActivationContext
+    private Integer vehicleId;
 
-    private VvRteConstants()
+    void onPrepare()
     {
-        // Intentionally empty.
+        vehicle = repository.findVirtualVehicleById(vehicleId);
     }
 }

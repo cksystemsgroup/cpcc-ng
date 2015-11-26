@@ -27,8 +27,6 @@ import cpcc.core.entities.Device;
 import cpcc.core.entities.DeviceType;
 import cpcc.core.entities.MappingAttributes;
 import cpcc.core.entities.Parameter;
-import cpcc.core.entities.RealVehicle;
-import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.Topic;
 
@@ -153,55 +151,4 @@ public interface QueryManager
      * @param id the sensor definition identification.
      */
     void deleteSensorDefinitionById(Integer id);
-
-    /**
-     * @return the list of available real vehicles
-     */
-    List<RealVehicle> findAllRealVehicles();
-
-    /**
-     * @return the list of available real vehicles ordered by name.
-     */
-    List<RealVehicle> findAllRealVehiclesOrderByName();
-
-    /**
-     * @param name the real vehicle name.
-     * @return the real vehicle or null if not found.
-     */
-    RealVehicle findRealVehicleByName(String name);
-
-    /**
-     * @param url the real vehicle's URL.
-     * @return the real vehicle or null if not found.
-     */
-    RealVehicle findRealVehicleByUrl(String url);
-
-    /**
-     * @param id the real vehicle identification.
-     * @return the real vehicle or null if not found.
-     */
-    RealVehicle findRealVehicleById(Integer id);
-
-    /**
-     * @return the real vehicle carting myself.
-     */
-    RealVehicle findOwnRealVehicle();
-
-    /**
-     * @return the list of real vehicle state entries for each real vehicle.
-     */
-    List<RealVehicleState> findAllRealVehicleStates();
-
-    /**
-     * @param id the real vehicle identification.
-     * @return the real vehicle state or null if not found.
-     */
-    RealVehicleState findRealVehicleStateById(int id);
-
-    /**
-     * @param id the real vehicle identification.
-     * @return true, if a connection to the real vehicle is possible. 
-     */
-    boolean isRealVehicleConnected(int id);
-
 }

@@ -65,6 +65,7 @@ public final class CoreModule
         binder.bind(JobService.class, JobServiceImpl.class);
         binder.bind(JobRepository.class, JobRepositoryImpl.class);
         binder.bind(TimeService.class, TimeServiceImpl.class);
+        binder.bind(RealVehicleRepository.class, RealVehicleRepositoryImpl.class);
     }
 
     /**

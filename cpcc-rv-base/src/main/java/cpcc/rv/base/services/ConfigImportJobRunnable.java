@@ -35,6 +35,7 @@ import com.owlike.genson.Genson;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.JobRunnable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -50,6 +51,7 @@ public class ConfigImportJobRunnable implements JobRunnable
     private Genson genson;
     private HibernateSessionManager sessionManager;
     private QueryManager queryManager;
+    private RealVehicleRepository rvRepo;
 
     /**
      * @param logger the application logger.
@@ -73,6 +75,7 @@ public class ConfigImportJobRunnable implements JobRunnable
     {
         queryManager = serviceResources.getService(QueryManager.class);
         sessionManager = serviceResources.getService(HibernateSessionManager.class);
+        rvRepo = serviceResources.getService(RealVehicleRepository.class);
 
         ConfigSyncData syncData = genson.deserialize(data, ConfigSyncData.class);
 
@@ -139,7 +142,7 @@ public class ConfigImportJobRunnable implements JobRunnable
     {
         Map<Integer, RealVehicle> rvMap = new HashMap<Integer, RealVehicle>();
 
-        for (RealVehicle rv : queryManager.findAllRealVehicles())
+        for (RealVehicle rv : rvRepo.findAllRealVehicles())
         {
             rvMap.put(rv.getId(), rv);
         }

@@ -31,7 +31,7 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
 import cpcc.core.entities.RealVehicle;
-import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.opts.OptionsParserService;
 import cpcc.rv.base.services.StateSynchronizer;
 
@@ -50,7 +50,7 @@ public class AbstractModifyRealVehicle
     protected HibernateSessionManager sessionManager;
 
     @Inject
-    protected QueryManager qm;
+    protected RealVehicleRepository rvRepo;
 
     @Inject
     protected OptionsParserService parserService;

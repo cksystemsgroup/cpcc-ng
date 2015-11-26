@@ -29,7 +29,7 @@ import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationService;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
-import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.JobRunnable;
 
 /**
@@ -58,15 +58,15 @@ public class RealVehicleStateJobRunnable implements JobRunnable
     public void run() throws Exception
     {
         HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
-        QueryManager qm = serviceResources.getService(QueryManager.class);
         CommunicationService com = serviceResources.getService(CommunicationService.class);
+        RealVehicleRepository rvRepo = serviceResources.getService(RealVehicleRepository.class);
 
-        RealVehicle target = qm.findRealVehicleById(id);
+        RealVehicle target = rvRepo.findRealVehicleById(id);
 
         CommunicationResponse result = com
             .transfer(target, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY);
 
-        RealVehicleState rvState = qm.findRealVehicleStateById(id);
+        RealVehicleState rvState = rvRepo.findRealVehicleStateById(id);
         if (rvState == null)
         {
             rvState = new RealVehicleState();

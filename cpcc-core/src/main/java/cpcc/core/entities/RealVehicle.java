@@ -30,8 +30,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -80,6 +82,10 @@ public class RealVehicle implements Serializable
 
     @NotNull
     private boolean deleted;
+
+    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id", referencedColumnName = "id")
+    private RealVehicleState state;
 
     /**
      * @return the id
@@ -209,6 +215,22 @@ public class RealVehicle implements Serializable
     public void setDeleted(boolean deleted)
     {
         this.deleted = deleted;
+    }
+
+    /**
+     * @return the real vehicle state.
+     */
+    public RealVehicleState getState()
+    {
+        return state;
+    }
+
+    /**
+     * @param state the real vehicle state to set.
+     */
+    public void setState(RealVehicleState state)
+    {
+        this.state = state;
     }
 
     /**

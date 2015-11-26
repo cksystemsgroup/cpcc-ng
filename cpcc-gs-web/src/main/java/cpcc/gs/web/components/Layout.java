@@ -87,9 +87,9 @@ public class Layout
             "commons/ros/Overview",
             "commons/sensor/list",
             "commons/rv/list",
-            "commons/vehicle",
+            "commons/vv/list",
             "commons/tasks",
-            "commons/jobs/List",
+            "commons/jobs/list",
             "gsviewer");
     }
 
@@ -104,7 +104,7 @@ public class Layout
     /**
      * @return the name of the real vehicle
      */
-    public String getGroundStationName()
+    public String getRealVehicleName()
     {
         cpcc.core.entities.Parameter rvn =
             qm.findParameterByName(cpcc.core.entities.Parameter.REAL_VEHICLE_NAME, "");

@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.JobCreationException;
 import cpcc.core.services.jobs.JobService;
 
@@ -35,17 +36,21 @@ public class StateSynchronizerImpl implements StateSynchronizer
     private Logger logger;
     private QueryManager qm;
     private JobService jobService;
+    private RealVehicleRepository realVehicleRepository;
 
     /**
      * @param logger the application logger.
      * @param qm the query manager.
      * @param jobService the job service.
+     * @param realVehicleRepository the real vehicle repository.
      */
-    public StateSynchronizerImpl(Logger logger, QueryManager qm, JobService jobService)
+    public StateSynchronizerImpl(Logger logger, QueryManager qm, JobService jobService
+        , RealVehicleRepository realVehicleRepository)
     {
         this.logger = logger;
         this.qm = qm;
         this.jobService = jobService;
+        this.realVehicleRepository = realVehicleRepository;
     }
 
     /**
@@ -87,7 +92,7 @@ public class StateSynchronizerImpl implements StateSynchronizer
             return;
         }
 
-        for (RealVehicle rv : qm.findAllRealVehicles())
+        for (RealVehicle rv : realVehicleRepository.findAllRealVehicles())
         {
             if (rv.getDeleted())
             {

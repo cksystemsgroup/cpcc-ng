@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,20 +16,34 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.commons.pages.vehicle;
+package cpcc.core.utils;
 
-import org.apache.tapestry5.annotations.PageActivationContext;
+import java.util.Properties;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * VehicleEdit
+ * Property utilities.
  */
-public class VehicleEdit extends AbstractModifyVehicle
+public final class PropertyUtils
 {
-    @PageActivationContext
-    private Integer vehicleId;
-
-    void onPrepare()
+    private PropertyUtils()
     {
-        vehicle = repository.findVirtualVehicleById(vehicleId);
+        // Intentionally empty.
     }
+
+    /**
+     * @param <T> generic type definition of values.
+     * @param properties the {@code Properties} instance.
+     * @param key the key of the property to set.
+     * @param value the property value to set.
+     */
+    public static <T> void setProperty(Properties properties, String key, T value)
+    {
+        if (StringUtils.isNotBlank(key) && value != null)
+        {
+            properties.setProperty(key, value.toString());
+        }
+    }
+
 }

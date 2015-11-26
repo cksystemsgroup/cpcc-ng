@@ -18,9 +18,7 @@
 
 package cpcc.gs.web.pages;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -28,8 +26,7 @@ import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
 import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.CoreJsonConverter;
-import cpcc.core.services.QueryManager;
-import cpcc.core.utils.JSONUtils;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.utils.MathUtils;
 
 /**
@@ -38,7 +35,7 @@ import cpcc.core.utils.MathUtils;
 public class GsViewer
 {
     @Inject
-    private QueryManager qm;
+    private RealVehicleRepository realVehicleRepository;
 
     @Inject
     private CoreJsonConverter jsonConverter;
@@ -51,7 +48,7 @@ public class GsViewer
      */
     public String getMapCenter()
     {
-        double[] bbox = geoJsonConverter.findBoundingBox(qm.findAllRealVehicles());
+        double[] bbox = geoJsonConverter.findBoundingBox(realVehicleRepository.findAllRealVehicles());
 
         if (bbox.length == 4 && MathUtils.containsNoNaN(bbox))
         {
@@ -75,7 +72,7 @@ public class GsViewer
      */
     public String getRegions()
     {
-        List<RealVehicle> rvList = qm.findAllRealVehicles();
+        List<RealVehicle> rvList = realVehicleRepository.findAllRealVehicles();
         return jsonConverter.toRegionJson(rvList);
     }
 
@@ -84,21 +81,7 @@ public class GsViewer
      */
     public String getVehicles()
     {
-        try
-        {
-            Map<String, String> stateMap = new HashMap<String, String>();
-
-            for (RealVehicleState state : qm.findAllRealVehicleStates())
-            {
-                stateMap.put(state.getId().toString(), state.getState());
-            }
-
-            return JSONUtils.toJsonString(stateMap);
-        }
-        catch (Throwable t)
-        {
-            t.printStackTrace();
-            return "{}";
-        }
+        List<RealVehicleState> statesList = realVehicleRepository.findAllRealVehicleStates();
+        return jsonConverter.toRealVehicleStateJson(statesList);
     }
 }
