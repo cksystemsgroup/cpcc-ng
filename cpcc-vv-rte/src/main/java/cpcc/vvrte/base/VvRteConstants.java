@@ -16,25 +16,21 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.base;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.lang.reflect.Constructor;
-
-import org.testng.annotations.Test;
-
-import cpcc.vvrte.base.VvRteConstants;
-
-public class VvRteConstantsTest
+/**
+ * Virtual vehicle runtime environment constants.
+ */
+public final class VvRteConstants
 {
-    @Test
-    public void shouldHavePrivateConstructor() throws Exception
-    {
-        Constructor<VvRteConstants> cnt = VvRteConstants.class.getDeclaredConstructor();
+    public static final String MIGRATION_CONNECTOR = "migration";
+    public static final String MIGRATION_PATH = "/commons/vv/migration";
 
-        assertThat(cnt.isAccessible()).describedAs("Constructor Acessability").isFalse();
-        cnt.setAccessible(true);
-        cnt.newInstance();
+    public static final String PROP_DEFAULT_SCHEDULER = "vvrte.default.scheduler";
+    public static final String PROP_DEFAULT_SCHEDULER_CLASS_NAME = "cpcc.vvrte.task.FirstComeFirstServeAlgorithm";
+
+    private VvRteConstants()
+    {
+        // Intentionally empty.
     }
 }

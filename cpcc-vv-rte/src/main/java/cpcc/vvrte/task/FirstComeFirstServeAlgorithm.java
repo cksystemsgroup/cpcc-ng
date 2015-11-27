@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,18 +16,23 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.task;
+
+import java.util.List;
 
 /**
- * Virtual vehicle runtime environment constants.
+ * First Come First Serve Scheduling Algorithm
  */
-public final class VvRteConstants
+public class FirstComeFirstServeAlgorithm implements TaskSchedulingAlgorithm
 {
-    public static final String MIGRATION_CONNECTOR = "migration";
-    public static final String MIGRATION_PATH = "/commons/vv/migration";
-
-    private VvRteConstants()
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
     {
-        // Intentionally empty.
+        scheduledTasks.addAll(pendingTasks);
+        pendingTasks.clear();
     }
+
 }

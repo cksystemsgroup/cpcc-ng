@@ -30,28 +30,16 @@ import static org.testng.Assert.assertFalse;
 import java.lang.reflect.Constructor;
 
 import org.apache.tapestry5.ioc.Configuration;
+import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.ServiceBindingOptions;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import cpcc.com.services.CommunicationService;
-import cpcc.vvrte.services.BuiltInFunctionsImpl;
-import cpcc.vvrte.services.MessageConverter;
-import cpcc.vvrte.services.MessageConverterImpl;
-import cpcc.vvrte.services.VirtualVehicleLauncher;
-import cpcc.vvrte.services.VirtualVehicleLauncherImpl;
-import cpcc.vvrte.services.VirtualVehicleMapper;
-import cpcc.vvrte.services.VirtualVehicleMapperImpl;
-import cpcc.vvrte.services.VirtualVehicleMigrator;
-import cpcc.vvrte.services.VirtualVehicleMigratorImpl;
-import cpcc.vvrte.services.VvJsonConverter;
-import cpcc.vvrte.services.VvJsonConverterImpl;
-import cpcc.vvrte.services.VvRteConstants;
-import cpcc.vvrte.services.VvRteModule;
-import cpcc.vvrte.services.VvRteRepository;
-import cpcc.vvrte.services.VvRteRepositoryImpl;
+import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.services.js.BuiltInFunctions;
 import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptServiceImpl;
@@ -93,6 +81,7 @@ public class VvRteModuleTest
         when(binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class)).thenReturn(options);
         when(binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class)).thenReturn(options);
         when(binder.bind(VvJsonConverter.class, VvJsonConverterImpl.class)).thenReturn(options);
+        when(binder.bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class)).thenReturn(options);
 
         VvRteModule.bind(binder);
 
@@ -107,6 +96,7 @@ public class VvRteModuleTest
         verify(binder).bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class);
         verify(binder).bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class);
         verify(binder).bind(VvJsonConverter.class, VvJsonConverterImpl.class);
+        verify(binder).bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class);
         verify(options, times(9)).eagerLoad();
     }
 
@@ -119,6 +109,28 @@ public class VvRteModuleTest
         VvRteModule.contributeHibernateEntityPackageManager(configuration);
 
         verify(configuration).add("cpcc.vvrte.entities");
+    }
+
+    @DataProvider
+    public Object[][] applicationDefaultsDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{VvRteConstants.PROP_DEFAULT_SCHEDULER_CLASS_NAME},
+            new Object[]{"Iingoo8m voh2EiCh eefahNg4 Ov6ahqua"},
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(dataProvider = "applicationDefaultsDataProvider")
+    public void shouldContributeApplicationDefaults(String className)
+    {
+        MappedConfiguration<String, String> configuration = mock(MappedConfiguration.class);
+
+        System.setProperty(VvRteConstants.PROP_DEFAULT_SCHEDULER, className);
+
+        VvRteModule.contributeApplicationDefaults(configuration);
+
+        verify(configuration).add(VvRteConstants.PROP_DEFAULT_SCHEDULER, className);
     }
 
     @Test

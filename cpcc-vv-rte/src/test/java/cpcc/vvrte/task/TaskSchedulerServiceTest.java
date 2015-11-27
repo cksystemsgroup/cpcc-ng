@@ -19,20 +19,22 @@
 package cpcc.vvrte.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import cpcc.core.utils.PolarCoordinate;
-import cpcc.vvrte.task.Task;
-import cpcc.vvrte.task.TaskSchedulerServiceImpl;
-import cpcc.vvrte.task.TaskSchedulingAlgorithm;
+import cpcc.vvrte.base.VvRteConstants;
 
 /**
  * TaskSchedulerServiceTest
@@ -48,10 +50,13 @@ public class TaskSchedulerServiceTest
     private ArrayList<Task> pendingTasks;
 
     private TaskSchedulerServiceImpl scheduler;
+    private Logger logger;
 
     @BeforeMethod
     public void setUp()
     {
+        logger = mock(Logger.class);
+
         taskA = mock(Task.class);
         when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1234, 13.7897, 8));
         when(taskA.getCreationTime()).thenReturn(1L);
@@ -78,7 +83,7 @@ public class TaskSchedulerServiceTest
         pendingTasks = new ArrayList<Task>();
         assertThat(pendingTasks).isNotNull().isEmpty();
 
-        scheduler = new TaskSchedulerServiceImpl();
+        scheduler = new TaskSchedulerServiceImpl(VvRteConstants.PROP_DEFAULT_SCHEDULER_CLASS_NAME, logger);
         assertThat(scheduler).isNotNull();
     }
 
@@ -103,6 +108,21 @@ public class TaskSchedulerServiceTest
         scheduler.schedule(scheduledTasks, pendingTasks);
 
         assertThat(scheduledTasks).isNotEmpty().containsExactly(taskD, taskC, taskB, taskA);
+        assertThat(pendingTasks).isEmpty();
+    }
+
+    @Test
+    public void shouldLogNotExistingSchedulingAlgorithm() throws Exception
+    {
+        TaskSchedulerServiceImpl scheduler2 = new TaskSchedulerServiceImpl("cpcc.notExistingAlgorithmImpl", logger);
+
+        verify(logger).error(anyString(), any(ClassNotFoundException.class));
+
+        pendingTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
+
+        scheduler2.schedule(scheduledTasks, pendingTasks);
+
+        assertThat(scheduledTasks).isNotEmpty().containsExactly(taskA, taskB, taskC, taskD);
         assertThat(pendingTasks).isEmpty();
     }
 

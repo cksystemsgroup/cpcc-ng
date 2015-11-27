@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 
 import cpcc.vvrte.entities.VirtualVehicle;
@@ -87,9 +88,8 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public VirtualVehicle findVirtualVehicleById(Integer id)
     {
-        return (VirtualVehicle) session
-            .createQuery("from VirtualVehicle where id = :id")
-            .setInteger("id", id)
+        return (VirtualVehicle) session.createCriteria(VirtualVehicle.class)
+            .add(Restrictions.eq("id", id))
             .uniqueResult();
     }
 
@@ -99,9 +99,8 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public VirtualVehicle findVirtualVehicleByName(String name)
     {
-        return (VirtualVehicle) session
-            .createQuery("from VirtualVehicle where name = :name")
-            .setString("name", name)
+        return (VirtualVehicle) session.createCriteria(VirtualVehicle.class)
+            .add(Restrictions.eq("name", name))
             .uniqueResult();
     }
 
@@ -111,9 +110,8 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public VirtualVehicle findVirtualVehicleByUUID(String uuid)
     {
-        return (VirtualVehicle) session
-            .createQuery("from VirtualVehicle where uuid = :uuid")
-            .setString("uuid", uuid)
+        return (VirtualVehicle) session.createCriteria(VirtualVehicle.class)
+            .add(Restrictions.eq("uuid", uuid))
             .uniqueResult();
     }
 
@@ -181,6 +179,13 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .setInteger("id", vehicle.getId())
             .setString("name", name)
             .uniqueResult();
+
+        //        return (VirtualVehicleStorage) session
+        //            .createCriteria(VirtualVehicleStorage.class)
+        //            .add(Restrictions.and(
+        //                Restrictions.eq("virtualVehicle.id", vehicle.getId()), 
+        //                Restrictions.eq("name", name)))
+        //            .uniqueResult();
     }
 
     /**
@@ -189,9 +194,8 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public VirtualVehicleStorage findStorageItemById(Integer id)
     {
-        return (VirtualVehicleStorage) session
-            .createQuery("from VirtualVehicleStorage where id = :id")
-            .setInteger("id", id)
+        return (VirtualVehicleStorage) session.createCriteria(VirtualVehicleStorage.class)
+            .add(Restrictions.eq("id", id))
             .uniqueResult();
     }
 
@@ -206,6 +210,11 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .createQuery("from VirtualVehicleStorage where virtualVehicle.id = :id")
             .setInteger("id", id)
             .list();
+
+        //        return (VirtualVehicleStorage) session
+        //            .createCriteria(VirtualVehicleStorage.class)
+        //            .add(Restrictions.eq("virtualVehicle.id", vehicle.getId()))
+        //            .uniqueResult(); 
     }
 
     /**

@@ -22,12 +22,35 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
+
+import cpcc.vvrte.base.VvRteConstants;
+
 /**
- * TaskSchedulerServiceImpl
+ * Task Scheduler Service Implementation.
  */
 public class TaskSchedulerServiceImpl implements TaskSchedulerService
 {
     private TaskSchedulingAlgorithm algorithm = null;
+
+    /**
+     * @param scheduler the task scheduling algorithm.
+     * @param logger the application logger.
+     */
+    public TaskSchedulerServiceImpl(@Symbol(VvRteConstants.PROP_DEFAULT_SCHEDULER) String scheduler
+        , Logger logger)
+    {
+        try
+        {
+            setAlgorithm(scheduler);
+        }
+        catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+            | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+        {
+            logger.error("Can not load default scheduling algorithm: " + scheduler, e);
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -35,14 +58,20 @@ public class TaskSchedulerServiceImpl implements TaskSchedulerService
     @Override
     public void schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
     {
-        if (algorithm != null)
+        synchronized (scheduledTasks)
         {
-            algorithm.schedule(scheduledTasks, pendingTasks);
-        }
-        else
-        {
-            scheduledTasks.addAll(pendingTasks);
-            pendingTasks.clear();
+            synchronized (pendingTasks)
+            {
+                if (algorithm != null)
+                {
+                    algorithm.schedule(scheduledTasks, pendingTasks);
+                }
+                else
+                {
+                    scheduledTasks.addAll(pendingTasks);
+                    pendingTasks.clear();
+                }
+            }
         }
     }
 

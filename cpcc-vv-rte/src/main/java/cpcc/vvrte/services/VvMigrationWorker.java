@@ -28,8 +28,9 @@ import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.slf4j.Logger;
 
 import cpcc.com.services.CommunicationResponse;
-import cpcc.com.services.CommunicationService;
 import cpcc.com.services.CommunicationResponse.Status;
+import cpcc.com.services.CommunicationService;
+import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 

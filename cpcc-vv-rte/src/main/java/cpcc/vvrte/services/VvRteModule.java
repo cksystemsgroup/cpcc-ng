@@ -19,6 +19,7 @@
 package cpcc.vvrte.services;
 
 import org.apache.tapestry5.ioc.Configuration;
+import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ScopeConstants;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Startup;
@@ -26,6 +27,7 @@ import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 
 import cpcc.com.services.CommunicationService;
+import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.services.js.BuiltInFunctions;
 import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptServiceImpl;
@@ -71,6 +73,17 @@ public final class VvRteModule
     public static void contributeHibernateEntityPackageManager(Configuration<String> configuration)
     {
         configuration.add("cpcc.vvrte.entities");
+    }
+
+    /**
+     * @param configuration the IoC configuration.
+     */
+    public static void contributeApplicationDefaults(MappedConfiguration<String, String> configuration)
+    {
+        configuration.add(
+            VvRteConstants.PROP_DEFAULT_SCHEDULER, System.getProperty(
+                VvRteConstants.PROP_DEFAULT_SCHEDULER,
+                VvRteConstants.PROP_DEFAULT_SCHEDULER_CLASS_NAME));
     }
 
     /**

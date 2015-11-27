@@ -135,6 +135,11 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     {
         if (currentRunningTask == null)
         {
+            if (scheduledTasks.isEmpty() && !pendingTasks.isEmpty())
+            {
+                scheduler.schedule(scheduledTasks, pendingTasks);
+            }
+
             if (scheduledTasks.isEmpty())
             {
                 return;
@@ -199,7 +204,11 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     @Override
     public void addTask(Task task)
     {
-        pendingTasks.add(task);
+        synchronized (pendingTasks)
+        {
+            pendingTasks.add(task);
+        }
+
         scheduler.schedule(scheduledTasks, pendingTasks);
     }
 
