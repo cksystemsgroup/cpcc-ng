@@ -32,6 +32,7 @@ import org.apache.tapestry5.ioc.Messages;
 
 import cpcc.commons.services.MillisecondTimeFormat;
 import cpcc.commons.services.SensorDescriptionListFormat;
+import cpcc.core.utils.PolarCoordinate;
 import cpcc.vvrte.task.Task;
 import cpcc.vvrte.task.TaskExecutionService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -66,12 +67,11 @@ public class Tasks
     @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Tasks.tml uses this formatter.")
     @Property
     private Format sensorFormat;
-    
+
     @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Tasks.tml uses this formatter.")
     @Property
     private Format distanceFormat;
-    
-    
+
     void onActivate()
     {
         timeFormat = new MillisecondTimeFormat(messages.get(DATE_FORMAT));
@@ -109,5 +109,14 @@ public class Tasks
         Arrays.sort(a);
 
         return StringUtils.join(a, ", ");
+    }
+
+    /**
+     * @param task the task.
+     * @return the task position as a {@code String}.
+     */
+    public String getPositionString(Task task)
+    {
+        return ((PolarCoordinate) task).toString();
     }
 }

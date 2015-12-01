@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
+import org.geojson.GeoJsonObject;
+import org.geojson.GeometryCollection;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.annotations.BeforeMethod;
@@ -122,15 +124,20 @@ public class VvGeoJsonConverterTest
             new Object[]{
                 Arrays.asList(vv01),
                 "{\"type\":\"FeatureCollection\",\"features\":["
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"init\",\"type\":\"vv\"},"
-                    + "\"id\":\"012345...\"}]}"},
+                    + "{\"type\":\"Feature\""
+                    + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"init\",\"type\":\"vv\"}"
+                    + ",\"id\":\"012345...\"}"
+                    + "]}}]}"},
             new Object[]{
                 Arrays.asList(vv01, vv02),
                 "{\"type\":\"FeatureCollection\",\"features\":["
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"init\",\"type\":\"vv\"},"
-                    + "\"id\":\"012345...\"},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV02\",\"state\":\"running\",\"type\":\"vv\"},"
-                    + "\"id\":\"012345...\"}]}"},
+                    + "{\"type\":\"Feature\",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"init\",\"type\":\"vv\"}"
+                    + ",\"id\":\"012345...\"},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV02\",\"state\":\"running\",\"type\":\"vv\"}"
+                    + ",\"id\":\"012345...\"}"
+                    + "]}}]}"},
         };
     }
 
@@ -138,10 +145,16 @@ public class VvGeoJsonConverterTest
     public void shouldConvertListToJsonArray(List<VirtualVehicle> virtualVehicleList, String expected)
         throws JsonProcessingException, JSONException
     {
-        List<Feature> featureList = sut.toFeatureList(virtualVehicleList);
+        List<GeoJsonObject> featureList = sut.toGeometryObjectsList(virtualVehicleList);
+
+        GeometryCollection f = new GeometryCollection();
+        f.setGeometries(featureList);
+
+        Feature feature = new Feature();
+        feature.setGeometry(f);
 
         FeatureCollection featureCollection = new FeatureCollection();
-        featureCollection.addAll(featureList);
+        featureCollection.add(feature);
 
         String actual = new ObjectMapper().writeValueAsString(featureCollection);
 

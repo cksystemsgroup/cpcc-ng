@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,30 +16,24 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.rv.base.services;
 
 import java.util.List;
 
-import org.geojson.Feature;
-import org.geojson.GeoJsonObject;
+import org.geojson.FeatureCollection;
 
-import cpcc.vvrte.entities.VirtualVehicle;
+import cpcc.core.utils.PolarCoordinate;
+import cpcc.vvrte.task.Task;
 
 /**
- * VvGeoJsonConverter
+ * State contributor interface.
  */
-public interface VvGeoJsonConverter
+public interface StateContributor
 {
     /**
-     * @param virtualVehicle the virtual vehicle to be converted.
-     * @return the virtual vehicle as a Feature object.
+     * @param featureCollection the collection to contribute to.
+     * @param rvPosition the current position of the host Real Vehicle.
+     * @param taskList the list of tasks containing the current executed task and the scheduled tasks.
      */
-    Feature toFeature(VirtualVehicle virtualVehicle);
-
-    /**
-     * @param virtualVehicleList the virtual vehicles to be converted.
-     * @return the virtual vehicles as a list of Feature objects.
-     */
-    List<GeoJsonObject> toGeometryObjectsList(List<VirtualVehicle> virtualVehicleList);
-
+    void contribute(FeatureCollection featureCollection, PolarCoordinate rvPosition, List<Task> taskList);
 }

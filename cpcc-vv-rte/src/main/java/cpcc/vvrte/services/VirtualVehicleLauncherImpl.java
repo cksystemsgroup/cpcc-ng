@@ -30,12 +30,12 @@ import org.slf4j.Logger;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
-import cpcc.core.utils.PolarCoordinate;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptWorker;
 import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
+import cpcc.vvrte.task.Task;
 
 /**
  * VehicleLauncherImpl
@@ -263,7 +263,6 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
     private VirtualVehicleMappingDecision handleDefectiveVehicle(JavascriptWorker worker, VirtualVehicle vehicle)
     {
         logger.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
-        // vehicle.setPreMigrationState(VirtualVehicleState.DEFECTIVE);
         vehicle.setStateInfo(worker.getResult());
         return handleFinishedVehicle(vehicle);
     }
@@ -275,7 +274,6 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
     private VirtualVehicleMappingDecision handleFinishedVehicle(VirtualVehicle vehicle)
     {
         vehicle.setEndTime(timeService.newDate());
-        //        vehicle.setPreMigrationState(VirtualVehicleState.FINISHED);
 
         List<RealVehicle> groundStations = rvRepository.findAllConnectedGroundStations();
 
@@ -306,12 +304,10 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
             RealVehicle migrationDestination = decision.getRealVehicles().get(0);
             vehicle.setMigrationDestination(migrationDestination);
             vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
-            // vehicle.setPreMigrationState(null);
         }
         else
         {
             vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
-            // vehicle.setPreMigrationState(null);
             vehicle.setMigrationDestination(null);
             vehicle.setStateInfo(convertToStateInfoString(decision));
             decision = null;
@@ -326,9 +322,10 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      */
     private String convertToStateInfoString(VirtualVehicleMappingDecision decision)
     {
-        PolarCoordinate pos = decision.getTask().getPosition();
+        Task task = decision.getTask();
+
         return messages.format(MSG_MAPPING_DECISION, decision.isMigration()
-            , pos.getLatitude(), pos.getLongitude(), pos.getAltitude());
+            , task.getLatitude(), task.getLongitude(), task.getAltitude());
 
         //        StringBuilder bldr = new StringBuilder("No suitable real vehicle found to migrate to!\n\n");
         //

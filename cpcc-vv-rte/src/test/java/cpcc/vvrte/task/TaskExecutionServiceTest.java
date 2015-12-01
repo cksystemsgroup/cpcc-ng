@@ -89,25 +89,33 @@ public class TaskExecutionServiceTest
     public void setUp()
     {
         taskA = mock(Task.class);
-        when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1234, 13.7897, 8));
+        when(taskA.getLatitude()).thenReturn(47.1234);
+        when(taskA.getLongitude()).thenReturn(13.7897);
+        when(taskA.getAltitude()).thenReturn(8.0);
         when(taskA.getCreationTime()).thenReturn(1L);
         when(taskA.getTolerance()).thenReturn(10.0);
         when(taskA.toString()).thenReturn("taskA (47.1234, 13.7897, 8), time=1");
 
         taskB = mock(Task.class);
-        when(taskB.getPosition()).thenReturn(new PolarCoordinate(47.2345, 13.1234, 23));
+        when(taskB.getLatitude()).thenReturn(47.2345);
+        when(taskB.getLongitude()).thenReturn(13.1234);
+        when(taskB.getAltitude()).thenReturn(23.0);
         when(taskB.getCreationTime()).thenReturn(2L);
         when(taskB.getTolerance()).thenReturn(10.0);
         when(taskB.toString()).thenReturn("taskB (47.2345, 13.1234, 23), time=2");
 
         taskC = mock(Task.class);
-        when(taskC.getPosition()).thenReturn(new PolarCoordinate(47.3345, 13.5234, 13));
+        when(taskC.getLatitude()).thenReturn(47.3345);
+        when(taskC.getLongitude()).thenReturn(13.5234);
+        when(taskC.getAltitude()).thenReturn(13.0);
         when(taskC.getCreationTime()).thenReturn(3L);
         when(taskC.getTolerance()).thenReturn(10.0);
         when(taskC.toString()).thenReturn("taskC (47.3345, 13.5234, 13), time=3");
 
         taskD = mock(Task.class);
-        when(taskD.getPosition()).thenReturn(new PolarCoordinate(47.4345, 13.3234, 18));
+        when(taskD.getLatitude()).thenReturn(47.4345);
+        when(taskD.getLongitude()).thenReturn(13.3234);
+        when(taskD.getAltitude()).thenReturn(18.0);
         when(taskD.getCreationTime()).thenReturn(4L);
         when(taskD.getTolerance()).thenReturn(10.0);
         when(taskD.toString()).thenReturn("taskD (47.4345, 13.3234, 18), time=4");
@@ -270,7 +278,7 @@ public class TaskExecutionServiceTest
 
         executor.executeTasks();
 
-        verify(wpc).setPosition(taskA.getPosition());
+        verify(wpc).setPosition(taskA);
 
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("returned an unexpected task")
@@ -296,7 +304,7 @@ public class TaskExecutionServiceTest
 
         executor.executeTasks();
 
-        verify(wpc).setPosition(taskA.getPosition());
+        verify(wpc).setPosition(taskA);
 
         assertThat(executor.getCurrentRunningTask())
             .overridingErrorMessage("returned an unexpected task")
@@ -320,7 +328,7 @@ public class TaskExecutionServiceTest
 
         executor.executeTasks();
 
-        verify(wpc).setPosition(taskA.getPosition());
+        verify(wpc).setPosition(taskA);
 
         assertThat(executor.getPendingTasks()).isEmpty();
         assertThat(executor.getScheduledTasks()).containsExactly(taskB);
@@ -330,7 +338,7 @@ public class TaskExecutionServiceTest
 
         executor.executeTasks();
 
-        verify(wpc).setPosition(taskB.getPosition());
+        verify(wpc).setPosition(taskB);
 
         assertThat(executor.getPendingTasks()).isEmpty();
         assertThat(executor.getScheduledTasks()).isEmpty();
@@ -359,7 +367,7 @@ public class TaskExecutionServiceTest
 
         executor.executeTasks();
 
-        verify(wpc).setPosition(taskB.getPosition());
+        verify(wpc).setPosition(taskB);
 
         executor.addTask(taskC);
         assertThat(executor.getPendingTasks()).isEmpty();
@@ -370,7 +378,7 @@ public class TaskExecutionServiceTest
 
         executor.executeTasks();
 
-        verify(wpc).setPosition(taskC.getPosition());
+        verify(wpc).setPosition(taskC);
 
         executor.addTask(taskD);
         assertThat(executor.getPendingTasks()).isEmpty();
@@ -381,7 +389,7 @@ public class TaskExecutionServiceTest
 
         executor.executeTasks();
 
-        verify(wpc).setPosition(taskD.getPosition());
+        verify(wpc).setPosition(taskD);
 
         assertThat(executor.getPendingTasks()).isEmpty();
         assertThat(executor.getScheduledTasks()).containsExactly(taskA);
@@ -391,7 +399,7 @@ public class TaskExecutionServiceTest
 
         executor.executeTasks();
 
-        verify(wpc).setPosition(taskA.getPosition());
+        verify(wpc).setPosition(taskA);
 
         assertThat(executor.getPendingTasks()).isEmpty();
         assertThat(executor.getScheduledTasks()).isEmpty();
@@ -429,9 +437,9 @@ public class TaskExecutionServiceTest
         assertThat(executor.getPendingTasks()).isEmpty();
 
         NavSatFix position2 = NodeConfiguration.newPrivate().getTopicMessageFactory().newFromType(NavSatFix._TYPE);
-        position2.setLatitude(taskA.getPosition().getLatitude());
-        position2.setLongitude(taskA.getPosition().getLongitude() + 22.0);
-        position2.setAltitude(taskA.getPosition().getAltitude());
+        position2.setLatitude(taskA.getLatitude());
+        position2.setLongitude(taskA.getLongitude() + 22.0);
+        position2.setAltitude(taskA.getAltitude());
         when(gps.getPosition()).thenReturn(position2);
 
         executor.addTask(taskA);

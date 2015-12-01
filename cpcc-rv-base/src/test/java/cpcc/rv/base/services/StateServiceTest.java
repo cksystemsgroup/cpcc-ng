@@ -23,16 +23,16 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.geojson.FeatureCollection;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import sensor_msgs.NavSatFix;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,6 +47,7 @@ import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.CoreGeoJsonConverterImpl;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.ros.sensors.AbstractGpsSensorAdapter;
 import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.entities.VirtualVehicle;
@@ -54,16 +55,30 @@ import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.VvGeoJsonConverter;
 import cpcc.vvrte.services.VvGeoJsonConverterImpl;
 import cpcc.vvrte.services.VvRteRepository;
+import cpcc.vvrte.task.Task;
+import cpcc.vvrte.task.TaskExecutionService;
+import sensor_msgs.NavSatFix;
 
 public class StateServiceTest
 {
-    private static final double POSITION_ALTITUDE = 4.5;
-    private static final double POSITION_LONGITUDE = 6.7;
-    private static final double POSITION_LATITUDE = 8.9;
+    private static final double POSITION_ALTITUDE_1 = 4.5;
+    private static final double POSITION_LONGITUDE_1 = 6.7;
+    private static final double POSITION_LATITUDE_1 = 8.9;
+
+    private static final double POSITION_ALTITUDE_2 = 5.3;
+    private static final double POSITION_LONGITUDE_2 = 7.4;
+    private static final double POSITION_LATITUDE_2 = 9.5;
+
     private static final int SENSOR_DEFINITION_ONE_ID = 111;
     private static final int SENSOR_DEFINITION_TWO_ID = 222;
+    private static final int SENSOR_DEFINITION_THREE_ID = 333;
+
     private static final int REAL_VEHICLE_ID = 1001;
     private static final String REAL_VEHICLE_NAME = "RV01";
+
+    private static final long LAST_RV_UPDATE = 123456789L;
+    private static final long NOW_TIMEOUT_CURRENT_MILLIS = 200000000L;
+    private static final long NOW_NO_TIMEOUT_CURRENT_MILLIS = 123456790L;
 
     private StateService sut;
 
@@ -80,10 +95,14 @@ public class StateServiceTest
     private VirtualVehicle vv1;
     private VirtualVehicle vv2;
     private RealVehicleRepository rvRepo;
+    private TaskExecutionService execSvc;
+    private TimeService timeService;
 
     @BeforeMethod
     public void setUp()
     {
+        Logger logger = mock(Logger.class);
+
         SensorDefinition sd1 = mock(SensorDefinition.class);
         when(sd1.getId()).thenReturn(SENSOR_DEFINITION_ONE_ID);
         when(sd1.getType()).thenReturn(SensorType.GPS);
@@ -91,6 +110,10 @@ public class StateServiceTest
         SensorDefinition sd2 = mock(SensorDefinition.class);
         when(sd2.getId()).thenReturn(SENSOR_DEFINITION_TWO_ID);
         when(sd2.getType()).thenReturn(SensorType.ALTIMETER);
+
+        SensorDefinition sd3 = mock(SensorDefinition.class);
+        when(sd3.getId()).thenReturn(SENSOR_DEFINITION_THREE_ID);
+        when(sd3.getType()).thenReturn(SensorType.BAROMETER);
 
         MappingAttributes ma1 = mock(MappingAttributes.class);
         when(ma1.getConnectedToAutopilot()).thenReturn(true);
@@ -116,6 +139,7 @@ public class StateServiceTest
         when(realVehicle.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
 
         rvState = mock(RealVehicleState.class);
+        when(rvState.getLastUpdate()).thenReturn(new Date(LAST_RV_UPDATE));
 
         qm = mock(QueryManager.class);
         when(qm.findAllMappingAttributes()).thenReturn(allMappingAttributes);
@@ -127,9 +151,9 @@ public class StateServiceTest
         when(rvRepo.findOwnRealVehicle()).thenReturn(realVehicle);
 
         position = mock(NavSatFix.class);
-        when(position.getLatitude()).thenReturn(POSITION_LATITUDE);
-        when(position.getLongitude()).thenReturn(POSITION_LONGITUDE);
-        when(position.getAltitude()).thenReturn(POSITION_ALTITUDE);
+        when(position.getLatitude()).thenReturn(POSITION_LATITUDE_1);
+        when(position.getLongitude()).thenReturn(POSITION_LONGITUDE_1);
+        when(position.getAltitude()).thenReturn(POSITION_ALTITUDE_1);
 
         adapter = mock(AbstractGpsSensorAdapter.class);
         when(adapter.getPosition()).thenReturn(position);
@@ -155,7 +179,24 @@ public class StateServiceTest
         pjc = new CoreGeoJsonConverterImpl();
         vjc = new VvGeoJsonConverterImpl();
 
-        sut = new StateServiceImpl(qm, rns, vvRepo, pjc, vjc, rvRepo);
+        Task task1 = mock(Task.class);
+        when(task1.getLatitude()).thenReturn(POSITION_LATITUDE_1);
+        when(task1.getLongitude()).thenReturn(POSITION_LONGITUDE_1);
+        when(task1.getAltitude()).thenReturn(POSITION_ALTITUDE_1);
+        when(task1.getSensors()).thenReturn(Arrays.asList(sd1));
+
+        Task task2 = mock(Task.class);
+        when(task2.getLatitude()).thenReturn(POSITION_LATITUDE_2);
+        when(task2.getLongitude()).thenReturn(POSITION_LONGITUDE_2);
+        when(task2.getAltitude()).thenReturn(POSITION_ALTITUDE_2);
+        when(task2.getSensors()).thenReturn(Arrays.asList(sd2, sd3));
+
+        execSvc = mock(TaskExecutionService.class);
+        when(execSvc.getScheduledTasks()).thenReturn(Arrays.asList(task1, task2));
+
+        timeService = mock(TimeService.class);
+
+        sut = new StateServiceImpl(logger, qm, rns, vvRepo, pjc, vjc, rvRepo, execSvc, timeService);
     }
 
     @DataProvider
@@ -164,60 +205,145 @@ public class StateServiceTest
         return new Object[][]{
             new Object[]{
                 null,
+                NOW_NO_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\""
-                    + ",\"properties\":{\"rvType\":\"QUADROCOPTER\",\"rvState\":\"none\",\"rvHeading\":0,"
-                    + "\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]},"
-                    + "\"rvName\":\"RV01\",\"type\":\"rvPosition\",\"rvId\":1001},"
-                    + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\",\"type\":\"vv\"},"
-                    + "\"id\":\"19a43d...\"},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\",\"type\":\"vv\"},"
-                    + "\"id\":\"1d50b3...\"}]}"
+                    + ",\"properties\":{\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]},\"rvType\":\"QUADROCOPTER\""
+                    + ",\"rvName\":\"RV01\",\"rvState\":\"busy\",\"rvHeading\":0,\"rvId\":1001,\"type\":\"rvPosition\"}"
+                    + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
+                    + ""
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"type\":\"vvs\"}"
+                    + ",\"geometry\":{\"type\":\"GeometryCollection\""
+                    + ",\"geometries\":["
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"name\":\"vv1\",\"state\":\"running\",\"type\":\"vv\"},\"id\":\"19a43d...\"},"
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\",\"type\":\"vv\"},\"id\":\"1d50b3...\"}"
+                    + "]}},"
+                    + ""
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"type\":\"rvPath\"}"
+                    + ",\"geometry\":{\"type\":\"LineString\",\"coordinates\":"
+                    + "[[6.7,8.9,4.5],[6.7,8.9,4.5],[7.4,9.5,5.3]]}},"
+                    + ""
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"type\":\"sensors\"}"
+                    + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"GPS\""
+                    + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"ALTIMETER,BAROMETER\""
+                    + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[7.4,9.5,5.3]}}"
+                    + "]}}"
+                    + "]}"
             },
 
             new Object[]{
                 "pos-vvs",
+                NOW_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\""
-                    + ",\"properties\":{\"rvType\":\"QUADROCOPTER\",\"rvState\":\"none\",\"rvHeading\":0,"
-                    + "\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]},"
-                    + "\"rvName\":\"RV01\",\"type\":\"rvPosition\",\"rvId\":1001},"
-                    + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\",\"type\":\"vv\"},"
-                    + "\"id\":\"19a43d...\"},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\",\"type\":\"vv\"},"
-                    + "\"id\":\"1d50b3...\"}]}"
+                    + ",\"properties\":{\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]}"
+                    + ",\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"none\""
+                    + ",\"rvHeading\":0,\"rvId\":1001,\"type\":\"rvPosition\"}"
+                    + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
+                    + ""
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"type\":\"vvs\"}"
+                    + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\""
+                    + ",\"type\":\"vv\"},\"id\":\"19a43d...\"},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\""
+                    + ",\"type\":\"vv\"},\"id\":\"1d50b3...\"}"
+                    + "]}}"
+                    + "]}"
             },
 
             new Object[]{
                 "pos",
+                NOW_NO_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
-                    + "{\"type\":\"Feature\""
-                    + ",\"properties\":{\"rvType\":\"QUADROCOPTER\",\"rvState\":\"none\",\"rvHeading\":0,"
+                    + "{\"type\":\"Feature\",\"properties\":{"
                     + "\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]},"
-                    + "\"rvName\":\"RV01\",\"type\":\"rvPosition\",\"rvId\":1001},"
-                    + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}}]}"
+                    + "\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"busy\",\"rvHeading\":0,"
+                    + "\"rvId\":1001,\"type\":\"rvPosition\"},"
+                    + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}}"
+                    + "]}"
             },
 
             new Object[]{
                 "vvs",
+                NOW_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\",\"type\":\"vv\"},"
-                    + "\"id\":\"19a43d...\"},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\",\"type\":\"vv\"},"
-                    + "\"id\":\"1d50b3...\"}]}"
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"type\":\"vvs\"}"
+                    + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\""
+                    + ",\"type\":\"vv\"},\"id\":\"19a43d...\"},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\""
+                    + ",\"type\":\"vv\"},\"id\":\"1d50b3...\"}"
+                    + "]"
+                    + "}}"
+                    + "]}"
+            },
+
+            new Object[]{
+                "tsk",
+                NOW_NO_TIMEOUT_CURRENT_MILLIS,
+                "{\"type\":\"FeatureCollection\",\"features\":["
+                    + "{\"type\":\"Feature\",\"properties\":{\"type\":\"rvPath\"},\"geometry\":{\"type\":\"LineString\""
+                    + ",\"coordinates\":[[6.7,8.9,4.5],[6.7,8.9,4.5],[7.4,9.5,5.3]]}}"
+                    + "]}"
+            },
+
+            new Object[]{
+                "sen",
+                NOW_TIMEOUT_CURRENT_MILLIS,
+                "{\"type\":\"FeatureCollection\",\"features\":["
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"type\":\"sensors\"}"
+                    + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"GPS\",\"type\":\"rvSensor\"}"
+                    + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"ALTIMETER,BAROMETER\""
+                    + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[7.4,9.5,5.3]}}"
+                    + "]}}"
+                    + "]}"
+            },
+
+            new Object[]{
+                "tsk-sen",
+                NOW_NO_TIMEOUT_CURRENT_MILLIS,
+                "{\"type\":\"FeatureCollection\",\"features\":["
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"type\":\"rvPath\"}"
+                    + ",\"geometry\":{\"type\":\"LineString\""
+                    + ",\"coordinates\":[[6.7,8.9,4.5],[6.7,8.9,4.5],[7.4,9.5,5.3]]}},"
+                    + ""
+                    + "{\"type\":\"Feature\""
+                    + ",\"properties\":{\"type\":\"sensors\"}"
+                    + ",\"geometry\":{\"type\":\"GeometryCollection\""
+                    + ",\"geometries\":["
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"GPS\""
+                    + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"ALTIMETER,BAROMETER\""
+                    + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[7.4,9.5,5.3]}}"
+                    + "]}}"
+                    + "]}"
             },
         };
     }
 
     @Test(dataProvider = "stateDataProvider")
-    public void should(String what, String expected) throws IOException, JSONException
+    public void should(String what, long now, String expected) throws IOException, JSONException
     {
+        when(timeService.currentTimeMillis()).thenReturn(now);
+
         FeatureCollection fc = sut.getState(what);
 
         String actual = new ObjectMapper().writeValueAsString(fc);
-        // System.out.println("actual: \"" + actual.replaceAll("\"", "\\\\\"") + "\"");
+
+        System.out.println("actual: \"" + actual.replaceAll("\"", "\\\\\"") + "\"");
 
         JSONAssert.assertEquals(expected, actual, false);
         JSONAssert.assertEquals(actual, expected, false);

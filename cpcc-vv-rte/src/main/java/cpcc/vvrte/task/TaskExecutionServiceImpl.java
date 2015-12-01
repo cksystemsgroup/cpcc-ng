@@ -149,7 +149,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
             scheduledTasks.remove(0);
         }
 
-        wayPointController.setPosition(currentRunningTask.getPosition());
+        wayPointController.setPosition(currentRunningTask);
 
         NavSatFix pos = gpsReceiver.getPosition();
         if (pos == null)
@@ -160,12 +160,12 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         PolarCoordinate vehiclePosition = new PolarCoordinate(pos.getLatitude(), pos.getLongitude(),
             altimeter != null ? altimeter.getValue().getData() : pos.getAltitude());
 
-        double distance = gs.calculateDistance(currentRunningTask.getPosition(), vehiclePosition);
+        double distance = gs.calculateDistance(currentRunningTask, vehiclePosition);
         currentRunningTask.setDistanceToTarget(distance);
 
         if (distance < currentRunningTask.getTolerance())
         {
-            LOG.info("Task completed: " + currentRunningTask.getPosition() + " distance=" + distance);
+            LOG.info("Task completed: " + ((PolarCoordinate) currentRunningTask) + " distance=" + distance);
             currentRunningTask.setCompleted();
             currentRunningTask = null;
         }
@@ -218,7 +218,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     @Override
     public List<Task> getPendingTasks()
     {
-        return pendingTasks;
+        return Collections.unmodifiableList(pendingTasks);
     }
 
     /**
@@ -227,7 +227,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     @Override
     public List<Task> getScheduledTasks()
     {
-        return scheduledTasks;
+        return Collections.unmodifiableList(scheduledTasks);
     }
 
     /**

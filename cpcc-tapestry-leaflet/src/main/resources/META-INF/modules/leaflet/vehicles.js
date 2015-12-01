@@ -1,6 +1,6 @@
-define([ "leaflet" ],
+define([ "leaflet", "t5/core/console" ],
 
-function(leaflet)
+function(leaflet, console)
 {
 	var module = {};
 
@@ -36,7 +36,11 @@ function(leaflet)
 			this.taskDiv = document.createElement('div');
 			div.appendChild(this.taskDiv);
 
-			this.setVvState([]);
+			this.setVvState({
+				geometry : {
+					geometries : []
+				}
+			});
 			this.setVehicleState('0', 'none');
 			this._setIconStyles(div, 'icon');
 			return div;
@@ -49,18 +53,22 @@ function(leaflet)
 
 		setVvState : function(vvs)
 		{
-			var html = '<table class="vv-table">';
+			var geometries = vvs.geometry.geometries;
 
-			for (var k = 1; k < vvs.length; ++k)
+			var html = '';
+
+			if (geometries.length > 0)
 			{
-				if (vvs[k].properties.type === 'vv')
-				{
-					html = html + '<tr class="vv-info vv-info-' + vvs[k].properties.state + '"><td>'
-							+ vvs[k].id + '</td><td>' + vvs[k].properties.name + '</td></tr>';
-				}
-			}
+				html = html + '<table class="vv-table">';
 
-			html = html + "</table>";
+				for (var k = 0; k < geometries.length; ++k)
+				{
+					html = html + '<tr class="vv-info vv-info-' + geometries[k].properties.state + '"><td>'
+							+ geometries[k].id + '</td><td>' + geometries[k].properties.name + '</td></tr>';
+				}
+
+				html = html + "</table>";
+			}
 
 			if (this.taskDiv.innerHTML != html)
 			{

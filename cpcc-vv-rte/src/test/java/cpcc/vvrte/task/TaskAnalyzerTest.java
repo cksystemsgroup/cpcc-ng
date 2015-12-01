@@ -99,18 +99,16 @@ public class TaskAnalyzerTest
         assertThat(task).isNotNull();
         assertThat(task.getCreationTime()).isGreaterThan(System.currentTimeMillis() - 10000);
         assertThat(task.getTolerance()).isEqualTo(10.0, offset(1E-9));
-        assertThat(task.getPosition()).isNotNull();
-        assertThat(task.getPosition().getLatitude())
-            .isEqualTo((Double) position.get("lat"));
-        assertThat(task.getPosition().getLongitude())
-            .isEqualTo((Double) position.get("lng"));
-        assertThat(task.getPosition().getAltitude())
-            .isEqualTo((Double) position.get("alt"));
+        assertThat(task.getLatitude()).isEqualTo((Double) position.get("lat"));
+        assertThat(task.getLongitude()).isEqualTo((Double) position.get("lng"));
+        assertThat(task.getAltitude()).isEqualTo((Double) position.get("alt"));
+
         assertThat(task.getSensors()).isNotNull().hasSize(1);
         assertThat(task.getSensors().get(0)).isNotNull();
         assertThat(task.getSensors().get(0).getId()).isNotNull()
             .isEqualTo((Integer) sensor.get("id"));
-        assertThat(task.getSensors().get(0).getDescription()).isNotNull().isEqualTo((String) sensor.get("description"));
+        assertThat(task.getSensors().get(0).getDescription()).isNotNull()
+            .isEqualTo((String) sensor.get("description"));
         assertThat(task.getSensors().get(0).getMessageType()).isNotNull()
             .isEqualTo((String) sensor.get("messageType"));
         assertThat(task.getSensors().get(0).getType()).isNotNull()

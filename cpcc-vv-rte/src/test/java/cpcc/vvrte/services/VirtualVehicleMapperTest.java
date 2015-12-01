@@ -119,16 +119,12 @@ public class VirtualVehicleMapperTest
             + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
             + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[13,47],[14,47],[14,48],[13,48],[13,48]]]}}]}";
 
-    // "[{lat: 47.0, lng: 13}, {lat: 47.0, lng: 14}, {lat: 48.0, lng: 14}, {lat: 48.0, lng: 13},{lat: 47.0, lng: 13}]"
-
     private static final String AREA_OF_OPERATION_RV2 =
         "{\"type\":\"FeatureCollection\",\"features\":["
             + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},"
             + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[47.5,14.5]}},"
             + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
             + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[14,47],[15,47],[15,48],[14,48],[14,47]]]}}]}";
-
-    // "[{lat: 47.0, lng: 14}, {lat: 47.0, lng: 15}, {lat: 48.0, lng: 15}, {lat: 48.0, lng: 14},{lat: 47.0, lng: 14}]"
 
     private Parameter rvName1;
     private RealVehicle realVehicle1;
@@ -183,7 +179,9 @@ public class VirtualVehicleMapperTest
         List<SensorDefinition> sensors)
     {
         Task task = mock(Task.class);
-        when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
+        when(task.getLatitude()).thenReturn(latitude);
+        when(task.getLongitude()).thenReturn(longitude);
+        when(task.getAltitude()).thenReturn(altitude);
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);
@@ -206,7 +204,9 @@ public class VirtualVehicleMapperTest
         List<SensorDefinition> sensors)
     {
         Task task = mock(Task.class);
-        when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
+        when(task.getLatitude()).thenReturn(latitude);
+        when(task.getLongitude()).thenReturn(longitude);
+        when(task.getAltitude()).thenReturn(altitude);
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);
@@ -232,7 +232,9 @@ public class VirtualVehicleMapperTest
     public void shouldDecideForNoMigrationBecauseOfSensors(PolarCoordinate position, List<SensorDefinition> sensors)
     {
         Task task = mock(Task.class);
-        when(task.getPosition()).thenReturn(position);
+        when(task.getLatitude()).thenReturn(position.getLatitude());
+        when(task.getLongitude()).thenReturn(position.getLongitude());
+        when(task.getAltitude()).thenReturn(position.getAltitude());
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);
@@ -254,7 +256,10 @@ public class VirtualVehicleMapperTest
         List<SensorDefinition> sensors)
     {
         Task task = mock(Task.class);
-        when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
+        // when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
+        when(task.getLatitude()).thenReturn(latitude);
+        when(task.getLongitude()).thenReturn(longitude);
+        when(task.getAltitude()).thenReturn(altitude);
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);
@@ -282,7 +287,9 @@ public class VirtualVehicleMapperTest
         List<SensorDefinition> sensors)
     {
         Task task = mock(Task.class);
-        when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
+        when(task.getLatitude()).thenReturn(latitude);
+        when(task.getLongitude()).thenReturn(longitude);
+        when(task.getAltitude()).thenReturn(altitude);
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);

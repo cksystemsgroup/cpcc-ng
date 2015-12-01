@@ -19,6 +19,7 @@
 package cpcc.vvrte.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
@@ -29,8 +30,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.SensorDefinition;
-import cpcc.core.utils.PolarCoordinate;
-import cpcc.vvrte.task.Task;
 
 /**
  * TaskTest
@@ -49,18 +48,23 @@ public class TaskTest
     public Object[][] positionDataProvider()
     {
         return new Object[][]{
-            new Object[]{new PolarCoordinate(37.1234, -122.0898, 0.0)},
-            new Object[]{new PolarCoordinate(37.1234, 122.0898, 100.0)},
-            new Object[]{new PolarCoordinate(-37.1234, -122.0898, -100.0)},
-            new Object[]{new PolarCoordinate(-37.1234, 122.0898, 1.0)},
+            new Object[]{37.1234, -122.0898, 0.0},
+            new Object[]{37.1234, 122.0898, 100.0},
+            new Object[]{-37.1234, -122.0898, -100.0},
+            new Object[]{-37.1234, 122.0898, 1.0},
         };
     };
 
     @Test(dataProvider = "positionDataProvider")
-    public void shouldStorePosition(PolarCoordinate position)
+    public void shouldStorePosition(double lat, double lon, double alt)
     {
-        sut.setPosition(position);
-        assertThat(sut.getPosition()).isEqualTo(position);
+        sut.setLatitude(lat);
+        sut.setLongitude(lon);
+        sut.setAltitude(alt);
+
+        assertThat(sut.getLatitude()).describedAs("latitude").isEqualTo(lat, offset(1E-9));
+        assertThat(sut.getLongitude()).describedAs("longitude").isEqualTo(lon, offset(1E-9));
+        assertThat(sut.getAltitude()).describedAs("altitude").isEqualTo(alt, offset(1E-9));
     }
 
     @DataProvider
@@ -79,7 +83,7 @@ public class TaskTest
     public void shouldStoreDistanceToTarget(Double expected)
     {
         sut.setDistanceToTarget(expected);
-        assertThat(sut.getDistanceToTarget()).isEqualTo(expected);
+        assertThat(sut.getDistanceToTarget()).describedAs("distance to target").isEqualTo(expected);
     }
 
     @Test
@@ -237,7 +241,4 @@ public class TaskTest
             task.setCompleted();
         }
     }
-
-    //    private boolean completed = false;
-    //    private Thread waitingThread;
 }

@@ -18,6 +18,10 @@
 	<l:LeafletVehicleLayer t:mapId="map" t:name="message:vehicleLayer.name" t:value="prop:vehicles"
 		t:frequencySecs="1" />
 
+	<l:LeafletVehiclePathLayer t:mapId="map" t:name="message:vehiclePathLayer.name" />
+
+	<l:LeafletSensorsLayer t:mapId="map" t:name="message:sensorsLayer.name" />
+
 	<l:LeafletLayerControl t:id="layerControl" t:mapId="map" />
 
 </html>

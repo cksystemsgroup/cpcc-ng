@@ -31,6 +31,10 @@
 	color: red
 }
 
+.vehicle-planned-path {
+	color: gray
+} 
+
 .task-info {
 	position: relative;
 	top: 10px;

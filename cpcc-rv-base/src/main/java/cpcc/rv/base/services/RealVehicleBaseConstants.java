@@ -27,7 +27,7 @@ public final class RealVehicleBaseConstants
     public static final String CONFIGURATION_UPDATE_PATH = "/rvbase/update/configuration";
 
     public static final String REAL_VEHICLE_STATUS_CONNECTOR = "vehicle.status";
-    public static final String REAL_VEHICLE_STATUS_PATH = "/rvbase/update/status/pos-vvs";
+    public static final String REAL_VEHICLE_STATUS_PATH = "/rvbase/update/status/pos-vvs-tsk-sen";
 
     public static final String JOB_QUEUE_NAME = "RV Base";
     public static final int NUMBER_OF_POOL_THREADS = 10;

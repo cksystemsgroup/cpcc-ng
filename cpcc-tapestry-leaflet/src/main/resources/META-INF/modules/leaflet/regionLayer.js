@@ -78,6 +78,9 @@ function($, leaflet, data, zoneManager, console)
 			{
 				overlay.regionTimeStamps[regionId] = region.properties['timeStamp'];
 			}
+
+			regionLayer.cpccType = 'regions';
+
 			overlay.layer.addLayer(regionLayer);
 		}
 	}

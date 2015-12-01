@@ -19,29 +19,29 @@
 package cpcc.rv.base.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
 
-import org.geojson.Feature;
 import org.geojson.FeatureCollection;
-import org.geojson.Point;
+import org.slf4j.Logger;
 
 import cpcc.core.entities.MappingAttributes;
-import cpcc.core.entities.RealVehicle;
-import cpcc.core.entities.RealVehicleState;
-import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.core.utils.PolarCoordinate;
 import cpcc.ros.base.AbstractRosAdapter;
 import cpcc.ros.sensors.AbstractGpsSensorAdapter;
 import cpcc.ros.services.RosNodeService;
-import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.services.VvGeoJsonConverter;
 import cpcc.vvrte.services.VvRteRepository;
+import cpcc.vvrte.task.Task;
+import cpcc.vvrte.task.TaskExecutionService;
 import sensor_msgs.NavSatFix;
 
 /**
@@ -49,34 +49,42 @@ import sensor_msgs.NavSatFix;
  */
 public class StateServiceImpl implements StateService
 {
-    // private static final Pattern RVS = Pattern.compile("^(rvs|rvs-.*|.*-rvs)$");
-    private static final Pattern POS = Pattern.compile("^(pos|pos-.*|.*-pos)$");
-    private static final Pattern VVS = Pattern.compile("^(vvs|vvs-.*|.*-vvs)$");
+    private static final String POSITION = "pos";
+    private static final String VIRTUAL_VEHICLES = "vvs";
+    private static final String TASKS = "tsk";
+    private static final String SENSORS = "sen";
+
+    private static final String[] ALL_CONTRIBUTORS = {POSITION, VIRTUAL_VEHICLES, TASKS, SENSORS};
+
+    private final Map<String, StateContributor> contributorMap = new HashMap<String, StateContributor>();
 
     private QueryManager qm;
     private RosNodeService rns;
-    private VvRteRepository vvRepo;
-    private CoreGeoJsonConverter pjc;
-    private VvGeoJsonConverter vjc;
-    private RealVehicleRepository rvRepo;
+    private TaskExecutionService execSvc;
 
     /**
+     * @param logger the application logger.
      * @param qm the query manager.
      * @param rns the ROS node service.
      * @param vvRepo the virtual vehicle RTE repository.
      * @param pjc the core geo JSON converter.
      * @param vjc the virtual vehicle JSON converter.
      * @param rvRepo the real vehicle repository.
+     * @param execSvc the task execution service.
+     * @param timeService the time service.
      */
-    public StateServiceImpl(QueryManager qm, RosNodeService rns, VvRteRepository vvRepo, CoreGeoJsonConverter pjc,
-        VvGeoJsonConverter vjc, RealVehicleRepository rvRepo)
+    public StateServiceImpl(Logger logger, QueryManager qm, RosNodeService rns, VvRteRepository vvRepo,
+        CoreGeoJsonConverter pjc, VvGeoJsonConverter vjc, RealVehicleRepository rvRepo, TaskExecutionService execSvc,
+        TimeService timeService)
     {
-        this.rvRepo = rvRepo;
         this.qm = qm;
         this.rns = rns;
-        this.vvRepo = vvRepo;
-        this.pjc = pjc;
-        this.vjc = vjc;
+        this.execSvc = execSvc;
+
+        contributorMap.put(POSITION, new PositionContributor(timeService, rvRepo, pjc));
+        contributorMap.put(VIRTUAL_VEHICLES, new VirtualVehicleContributor(vvRepo, vjc));
+        contributorMap.put(TASKS, new TasksContributor());
+        contributorMap.put(SENSORS, new SensorsContributor(pjc));
     }
 
     /**
@@ -85,72 +93,27 @@ public class StateServiceImpl implements StateService
     @Override
     public FeatureCollection getState(String what) throws IOException
     {
-        FeatureCollection fc = new FeatureCollection();
+        List<Task> tasks = new ArrayList<>();
+        Task task = execSvc.getCurrentRunningTask();
+        if (task != null)
+        {
+            tasks.add(task);
+        }
+        tasks.addAll(execSvc.getScheduledTasks());
+
         PolarCoordinate position = findRealVehiclePosition();
 
-        if (position != null && isNullOrMatches(what, POS))
+        FeatureCollection fc = new FeatureCollection();
+
+        for (String x : what != null ? what.split("-") : ALL_CONTRIBUTORS)
         {
-            Point point = pjc.toPoint(position);
-            Feature pointFeature = new Feature();
-            pointFeature.setGeometry(point);
-            pointFeature.setProperty("type", "rvPosition");
-            pointFeature.setProperty("rvHeading", 0);
-            pointFeature.setProperty("rvPosition", point);
-
-            RealVehicle rv = findRealVehicle();
-            if (rv != null)
+            if (contributorMap.containsKey(x))
             {
-                pointFeature.setProperty("rvType", rv.getType().name());
-                pointFeature.setProperty("rvId", rv.getId());
-                pointFeature.setProperty("rvName", rv.getName());
-
-                RealVehicleState state = rvRepo.findRealVehicleStateById(rv.getId());
-                if (state != null)
-                {
-                    // TODO fixme
-                    pointFeature.setProperty("rvState", "none"); // "idle", "busy"
-                    // state.getState();
-                }
-            }
-            else
-            {
-                pointFeature.setProperty("rvType", RealVehicleType.UNKNOWN.name());
-                pointFeature.setProperty("rvId", -1);
-                pointFeature.setProperty("rvName", "unknown");
-                pointFeature.setProperty("rvState", "none");
-            }
-
-            fc.add(pointFeature);
-        }
-
-        if (isNullOrMatches(what, VVS))
-        {
-            List<VirtualVehicle> vvs = vvRepo.findAllVehicles();
-            if (vvs != null && vvs.size() > 0)
-            {
-                fc.addAll(vjc.toFeatureList(vvs));
+                contributorMap.get(x).contribute(fc, position, tasks);
             }
         }
 
         return fc;
-    }
-
-    /**
-     * @param a the value to be tested.
-     * @param b another value.
-     * @return true if a is null or a equals b.
-     */
-    private static boolean isNullOrMatches(String a, Pattern pattern)
-    {
-        return a == null || pattern.matcher(a).matches();
-    }
-
-    /**
-     * @return the current real vehicle.
-     */
-    private RealVehicle findRealVehicle()
-    {
-        return rvRepo.findOwnRealVehicle();
     }
 
     /**

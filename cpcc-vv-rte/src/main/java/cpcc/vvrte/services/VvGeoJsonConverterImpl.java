@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.geojson.Feature;
+import org.geojson.GeoJsonObject;
 
 import cpcc.vvrte.entities.VirtualVehicle;
 
@@ -49,9 +50,9 @@ public class VvGeoJsonConverterImpl implements VvGeoJsonConverter
      * {@inheritDoc}
      */
     @Override
-    public List<Feature> toFeatureList(List<VirtualVehicle> vvList)
+    public List<GeoJsonObject> toGeometryObjectsList(List<VirtualVehicle> vvList)
     {
-        List<Feature> fc = new ArrayList<Feature>();
+        List<GeoJsonObject> fc = new ArrayList<GeoJsonObject>();
 
         for (VirtualVehicle vv : vvList)
         {

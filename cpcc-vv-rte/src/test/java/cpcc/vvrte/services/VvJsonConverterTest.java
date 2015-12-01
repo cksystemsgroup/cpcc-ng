@@ -36,11 +36,8 @@ import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.CoreJsonConverter;
 import cpcc.core.services.CoreJsonConverterImpl;
-import cpcc.core.utils.PolarCoordinate;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.vvrte.services.VvJsonConverter;
-import cpcc.vvrte.services.VvJsonConverterImpl;
 import cpcc.vvrte.task.Task;
 
 public class VvJsonConverterTest
@@ -64,7 +61,6 @@ public class VvJsonConverterTest
     @BeforeMethod
     public void setUp()
     {
-
         CoreJsonConverter pjc = new CoreJsonConverterImpl();
         converter = new VvJsonConverterImpl(pjc);
 
@@ -116,19 +112,27 @@ public class VvJsonConverterTest
         when(s4.getParameters()).thenReturn("");
         when(s4.getLastUpdate()).thenReturn(new Date(4000004));
 
-        when(task1.getPosition()).thenReturn(new PolarCoordinate(47.1234, 13.4321, 10));
+        when(task1.getLatitude()).thenReturn(47.1234);
+        when(task1.getLongitude()).thenReturn(13.4321);
+        when(task1.getAltitude()).thenReturn(10.0);
         when(task1.getTolerance()).thenReturn(10.1);
         when(task1.getSensors()).thenReturn(Arrays.asList(s1));
 
-        when(task2.getPosition()).thenReturn(new PolarCoordinate(47.2345, 13.5432, 20));
+        when(task2.getLatitude()).thenReturn(47.2345);
+        when(task2.getLongitude()).thenReturn(13.5432);
+        when(task2.getAltitude()).thenReturn(20.0);
         when(task2.getTolerance()).thenReturn(3.7);
         when(task2.getSensors()).thenReturn(Arrays.asList(s2, s1));
 
-        when(task3.getPosition()).thenReturn(new PolarCoordinate(47.3456, 13.6543, 30));
+        when(task3.getLatitude()).thenReturn(47.3456);
+        when(task3.getLongitude()).thenReturn(13.6543);
+        when(task3.getAltitude()).thenReturn(30.0);
         when(task3.getTolerance()).thenReturn(7.9);
         when(task3.getSensors()).thenReturn(Arrays.asList(s3, s2, s1));
 
-        when(task4.getPosition()).thenReturn(new PolarCoordinate(47.4567, 13.7654, 40));
+        when(task4.getLatitude()).thenReturn(47.4567);
+        when(task4.getLongitude()).thenReturn(13.7654);
+        when(task4.getAltitude()).thenReturn(40.0);
         when(task4.getTolerance()).thenReturn(1.6);
         when(task4.getSensors()).thenReturn(Arrays.asList(s4, s3, s2, s1));
     }

@@ -29,13 +29,12 @@ import cpcc.core.utils.PolarCoordinate;
 /**
  * Task
  */
-public class Task
+public class Task extends PolarCoordinate
 {
     private static final double MIN_TOLERANCE_DISTANCE = 3.0;
 
     private static final Logger LOG = LoggerFactory.getLogger(Task.class);
 
-    private PolarCoordinate position;
     private double tolerance = 5.0;
     private Double distanceToTarget = null;
     private long creationTime = System.currentTimeMillis();
@@ -43,23 +42,6 @@ public class Task
     private List<SensorDefinition> sensors;
     private boolean completed = false;
     private Thread waitingThread;
-    
-
-    /**
-     * @return the task's position.
-     */
-    public PolarCoordinate getPosition()
-    {
-        return position;
-    }
-
-    /**
-     * @param position the position to set.
-     */
-    public void setPosition(PolarCoordinate position)
-    {
-        this.position = position;
-    }
 
     /**
      * @return the tolerance distance
@@ -76,7 +58,7 @@ public class Task
     {
         this.tolerance = tolerance >= MIN_TOLERANCE_DISTANCE ? tolerance : MIN_TOLERANCE_DISTANCE;
     }
-    
+
     /**
      * @return the distance to the target position.
      */
@@ -84,7 +66,7 @@ public class Task
     {
         return distanceToTarget;
     }
-    
+
     /**
      * @param distanceToTarget the distance to the target position to set.
      */
@@ -108,7 +90,7 @@ public class Task
     {
         this.creationTime = creationTime;
     }
-    
+
     /**
      * @return true if the task is the last in a group.
      */
@@ -116,7 +98,7 @@ public class Task
     {
         return lastInTaskGroup;
     }
-    
+
     /**
      * @param lastInTaskGroup the last task in the group to set.
      */
@@ -148,7 +130,7 @@ public class Task
     {
         return completed;
     }
-    
+
     /**
      * Set the task to completed.
      */

@@ -80,7 +80,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
             return decision;
         }
 
-        boolean migration = !isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition());
+        boolean migration = !isInsideAreasOfOperation(rv.getAreaOfOperation(), task);
 
         if (migration || !rv.getSensors().containsAll(task.getSensors()))
         {
@@ -109,11 +109,11 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
                 groundStations.add(rv);
             }
 
-            if (isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition()))
+            if (isInsideAreasOfOperation(rv.getAreaOfOperation(), task))
             {
                 if (rv.getSensors().containsAll(task.getSensors()))
                 {
-                    LOG.info("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
+                    LOG.info("Found migration candidate " + rv.getName() + " for task at " + ((PolarCoordinate) task));
                     destinationRealVehicles.add(rv);
                 }
                 else
@@ -124,7 +124,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
             }
             else
             {
-                LOG.info("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
+                LOG.info("Migrate not to " + rv.getName() + " because of position " + ((PolarCoordinate) task));
             }
         }
 

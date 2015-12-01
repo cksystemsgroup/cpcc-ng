@@ -28,6 +28,7 @@ import java.util.TreeMap;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.PageActivationContext;
 import org.apache.tapestry5.annotations.Property;
@@ -200,19 +201,7 @@ public class RosDeviceDetail
             b.append("(");
         }
 
-        boolean first = true;
-        for (String value : valueList)
-        {
-            if (first)
-            {
-                first = false;
-            }
-            else
-            {
-                b.append(",");
-            }
-            b.append(value);
-        }
+        b.append(StringUtils.join(valueList, ","));
 
         if (valueList.size() > 1)
         {

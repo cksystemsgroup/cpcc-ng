@@ -27,7 +27,6 @@ import org.mozilla.javascript.ScriptableObject;
 
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.services.QueryManager;
-import cpcc.core.utils.PolarCoordinate;
 
 /**
  * SimpleTaskAnalyzer
@@ -43,7 +42,7 @@ public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
     {
         this.qm = qm;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -57,11 +56,9 @@ public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
         task.setTolerance(tolerance.doubleValue());
 
         NativeObject position = (NativeObject) taskParameters.get("position");
-        double lat = (Double) position.get("lat");
-        double lon = (Double) position.get("lng");
-        double alt = (Double) position.get("alt");
-        PolarCoordinate pos = new PolarCoordinate(lat, lon, alt);
-        task.setPosition(pos);
+        task.setLatitude((Double) position.get("lat"));
+        task.setLongitude((Double) position.get("lng"));
+        task.setAltitude((Double) position.get("alt"));
 
         NativeArray sensors = (NativeArray) taskParameters.get("sensors");
         List<SensorDefinition> sensorDefinitions = new ArrayList<SensorDefinition>();
@@ -77,7 +74,7 @@ public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
         task.setSensors(sensorDefinitions);
 
         task.setLastInTaskGroup(true);
-        
+
         return task;
     }
 }

@@ -8,7 +8,7 @@
 			class="table table-striped table-condensed topic-table">
 
 			<p:positionCell>
-				${currentRunningTask.getPosition().toString()}
+				${getPositionString(currentRunningTask)}
 			</p:positionCell>
 
 			<p:creationTimeCell>
@@ -38,7 +38,7 @@
 			t:reorder="creationTime,position,tolerance,sensors" t:add="position,sensors" class="table table-striped table-condensed topic-table">
 
 			<p:positionCell>
-				${scheduledTask.position.toString()}
+				${getPositionString(scheduledTask)}
 			</p:positionCell>
 
 			<p:creationTimeCell>
@@ -64,7 +64,7 @@
 			t:reorder="creationTime,position,tolerance,sensors" t:add="position,sensors" class="table table-striped table-condensed topic-table">
 
 			<p:positionCell>
-				${pendingTask.getPosition().toString()}
+				${getPositionString(pendingTask)}
 			</p:positionCell>
 
 			<p:creationTimeCell>
