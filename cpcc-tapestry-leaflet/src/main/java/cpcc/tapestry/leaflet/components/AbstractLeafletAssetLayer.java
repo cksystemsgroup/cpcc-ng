@@ -18,24 +18,32 @@
 
 package cpcc.tapestry.leaflet.components;
 
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.MixinAfter;
+import javax.inject.Inject;
+
+import org.apache.tapestry5.Asset;
+import org.apache.tapestry5.BindingConstants;
+import org.apache.tapestry5.annotations.Parameter;
+import org.apache.tapestry5.annotations.Path;
+import org.apache.tapestry5.annotations.Property;
 
 /**
- * Leaflet vehicle layer component.
+ * Abstract Leaflet Asset Layer implementation.
  */
-@MixinAfter
-@Import(stylesheet = {"css/vehicle.css"})
-public class LeafletVehiclePathLayer extends AbstractLeafletAssetLayer
+public class AbstractLeafletAssetLayer extends AbstractLeafletLayer
 {
-    @Override
+    @Property
+    @Parameter(required = false, defaultPrefix = BindingConstants.LITERAL)
+    protected String iconBaseUrl;
+
+    @Inject
+    @Path("images/dummyAsset.txt")
+    private Asset dummyAsset;
+
     void afterRender()
     {
-        super.afterRender();
-
-        javaScriptSupport
-            .require("leaflet/vehiclePathLayer")
-            .invoke("initialize")
-            .with(componentResources.getId(), mapId, name, iconBaseUrl);
+        if (iconBaseUrl == null)
+        {
+            iconBaseUrl = dummyAsset.toClientURL().replace("dummyAsset.txt", "");
+        }
     }
 }

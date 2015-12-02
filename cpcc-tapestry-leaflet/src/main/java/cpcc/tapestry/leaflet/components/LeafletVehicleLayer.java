@@ -1,16 +1,30 @@
+// This code is part of the CPCC-NG project.
+//
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+
 package cpcc.tapestry.leaflet.components;
 
 import javax.inject.Inject;
 
-import org.apache.tapestry5.Asset;
 import org.apache.tapestry5.BindingConstants;
-import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.MixinAfter;
 import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.services.Request;
@@ -23,14 +37,8 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
  */
 @MixinAfter
 @Import(stylesheet = {"css/vehicle.css"})
-public class LeafletVehicleLayer
+public class LeafletVehicleLayer extends AbstractLeafletAssetLayer
 {
-    @Environmental
-    private JavaScriptSupport javaScriptSupport;
-
-    @Inject
-    private ComponentResources componentResources;
-
     @Inject
     private AjaxResponseRenderer ajaxResponseRenderer;
 
@@ -44,34 +52,16 @@ public class LeafletVehicleLayer
     @Parameter(required = true, principal = true, autoconnect = true)
     private String value;
 
-    @Property
-    @Parameter(required = true, defaultPrefix = BindingConstants.LITERAL)
-    private String mapId;
-
-    @Property
-    @Parameter(required = false, defaultPrefix = BindingConstants.LITERAL, value = "[No Name]")
-    private String name;
-
-    @Property
-    @Parameter(required = false, defaultPrefix = BindingConstants.LITERAL)
-    private String iconBaseUrl;
-
     @Parameter
     private Object[] context;
 
     @Parameter(defaultPrefix = BindingConstants.LITERAL, required = true)
     private int frequencySecs;
 
-    @Inject
-    @Path("images/dummyAsset.txt")
-    private Asset dummyAsset;
-
+    @Override
     void afterRender()
     {
-        if (iconBaseUrl == null)
-        {
-            iconBaseUrl = dummyAsset.toClientURL().replace("dummyAsset.txt", "");
-        }
+        super.afterRender();
 
         String eventURL = componentResources.createEventLink("vehicleUpdate", context).toAbsoluteURI();
 

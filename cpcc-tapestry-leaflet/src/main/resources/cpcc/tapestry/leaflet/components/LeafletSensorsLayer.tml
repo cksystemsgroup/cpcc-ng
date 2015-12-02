@@ -1,0 +1,5 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd">
+	<t:content>
+		<t:Any id="prop:componentResources.id" class="hidden" />
+	</t:content>
+</html>

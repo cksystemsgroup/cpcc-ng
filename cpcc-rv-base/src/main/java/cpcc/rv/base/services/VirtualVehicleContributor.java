@@ -50,8 +50,7 @@ public class VirtualVehicleContributor implements StateContributor
     }
 
     /**
-     * @param what the sub set of the state to be returned.
-     * @param fc the state.
+     * {@inheritDoc}
      */
     @Override
     public void contribute(FeatureCollection featureCollection, PolarCoordinate rvPosition, List<Task> taskList)

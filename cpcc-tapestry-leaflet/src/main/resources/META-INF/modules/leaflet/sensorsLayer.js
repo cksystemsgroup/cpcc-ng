@@ -7,23 +7,25 @@ function($, leaflet, data, console, map, v, vl)
 
 	module.baseUrl = 'images';
 
-	module.onPathChange = function(e, overlay)
+	module.onSensorsChange = function(e, overlay)
 	{
 		console.info('sensorsChange: start ' + JSON.stringify(e.layer.cpccFeatures));
 
-		if (overlay.sensors[e.layer.cpccRvId])
-		{
-			overlay.layer.removeLayer(overlay.sensors[e.layer.cpccRvId]);
-		}
-
-		overlay.sensors[e.layer.cpccRvId] = leaflet.geoJson(e.layer.cpccFeatures, {
-			style : function(feature)
-			{
-				return {
-					color : "red"
-				};
-			},
-		}).addTo(overlay.layer);
+//		if (overlay.sensors[e.layer.cpccRvId])
+//		{
+//			overlay.layer.removeLayer(overlay.sensors[e.layer.cpccRvId]);
+//		}
+//
+//		overlay.sensors[e.layer.cpccRvId] = leaflet.geoJson(e.layer.cpccFeatures, {
+//			style : function(feature)
+//			{
+//				return {
+//					color : "red"
+//				};
+//			},
+//		}).addTo(overlay.layer);
+		
+		
 	}
 
 	module.initialize = function(myId, mapId, name, baseUrl)
@@ -55,7 +57,7 @@ function($, leaflet, data, console, map, v, vl)
 			{
 				o.on('sensorsChange', function(e)
 				{
-					module.onPathChange(e, data[mapId].overlays[myId]);
+					module.onSensorsChange(e, data[mapId].overlays[myId]);
 				});
 			}
 		}

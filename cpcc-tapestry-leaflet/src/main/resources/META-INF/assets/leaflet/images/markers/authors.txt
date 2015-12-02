@@ -1,0 +1,16 @@
+
+Yusuke Kamiyamane
+=================
+1326750555_compass.png	->	course.png
+1326750713_thermometer.png	->	temperature.png
+1326751013_dashboard.png	->	speed.png
+
+FAMFAMFAM
+=========
+airPressure.png
+altitude.png
+arrow_down.png
+photo.png
+random.png
+sonar.png
+video.png

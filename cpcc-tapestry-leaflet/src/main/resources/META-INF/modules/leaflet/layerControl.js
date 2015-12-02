@@ -1,5 +1,5 @@
 define([ "jquery", "leaflet", "leaflet/data", "leaflet/emptyLayer", "leaflet/tileLayer", "leaflet/regionLayer",
-		"leaflet/vehicleLayer", "leaflet/vehiclePathLayer" ],
+		"leaflet/vehicleLayer", "leaflet/vehiclePathLayer", "leaflet/sensorsLayer" ],
 
 function($, leaflet, data)
 {
