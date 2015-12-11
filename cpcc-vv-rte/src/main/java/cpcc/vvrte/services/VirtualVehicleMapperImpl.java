@@ -29,37 +29,33 @@ import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
 import org.geojson.Polygon;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cpcc.core.base.PolygonZone;
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.services.RealVehicleRepository;
-import cpcc.core.utils.PolarCoordinate;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.base.VirtualVehicleMappingDecision;
+import cpcc.vvrte.entities.Task;
 
 /**
  * VirtualVehicleMapperImpl
  */
 public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
 {
-    private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleMapperImpl.class);
-
+    private Logger logger;
     private RealVehicleRepository rvRepo;
 
     /**
+     * @param logger the application logger.
      * @param rvRepo the real vehicle repository.
-     * @throws JsonParseException thrown in case of errors.
-     * @throws JsonMappingException thrown in case of errors.
-     * @throws IOException thrown in case of errors.
      */
-    public VirtualVehicleMapperImpl(RealVehicleRepository rvRepo)
-        throws JsonParseException, JsonMappingException, IOException
+    public VirtualVehicleMapperImpl(Logger logger, RealVehicleRepository rvRepo)
     {
+        this.logger = logger;
         this.rvRepo = rvRepo;
     }
 
@@ -69,36 +65,33 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
     @Override
     public VirtualVehicleMappingDecision findMappingDecision(Task task)
     {
-        VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision();
-        decision.setTask(task);
-        decision.setMigration(true);
+        VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision()
+            .setTask(task)
+            .setMigration(true);
 
         RealVehicle rv = rvRepo.findOwnRealVehicle();
         if (rv == null)
         {
-            migrateTask(task, decision);
-            return decision;
+            return migrateTask(decision);
         }
 
-        boolean migration = !isInsideAreasOfOperation(rv.getAreaOfOperation(), task);
+        boolean migration = !isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition());
 
         if (migration || !rv.getSensors().containsAll(task.getSensors()))
         {
-            migrateTask(task, decision);
-            return decision;
+            return migrateTask(decision);
         }
 
-        decision.setMigration(false);
-
-        return decision;
+        return decision.setMigration(false);
     }
 
     /**
-     * @param task the task to be migrated.
      * @param decision the migration decision.
+     * @return the migration decision.
      */
-    private void migrateTask(Task task, VirtualVehicleMappingDecision decision)
+    private VirtualVehicleMappingDecision migrateTask(VirtualVehicleMappingDecision decision)
     {
+        Task task = decision.getTask();
         List<RealVehicle> groundStations = new ArrayList<RealVehicle>();
         List<RealVehicle> destinationRealVehicles = new ArrayList<RealVehicle>();
 
@@ -109,33 +102,39 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
                 groundStations.add(rv);
             }
 
-            if (isInsideAreasOfOperation(rv.getAreaOfOperation(), task))
+            if (isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition()))
             {
                 if (rv.getSensors().containsAll(task.getSensors()))
                 {
-                    LOG.info("Found migration candidate " + rv.getName() + " for task at " + ((PolarCoordinate) task));
+                    logger.info("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
                     destinationRealVehicles.add(rv);
                 }
                 else
                 {
-                    LOG.info("Migrate not to " + rv.getName() + " because of sensors "
+                    logger.info("Migrate not to " + rv.getName() + " because of sensors "
                         + getSensorString(task.getSensors(), rv.getSensors()));
                 }
             }
             else
             {
-                LOG.info("Migrate not to " + rv.getName() + " because of position " + ((PolarCoordinate) task));
+                logger.info("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
             }
         }
 
         decision.setRealVehicles(destinationRealVehicles.isEmpty() ? groundStations : destinationRealVehicles);
+        return decision;
     }
 
-    private static List<PolygonZone> getPolygons(String areaOfOperationString) throws IOException
+    /**
+     * @param areaOfOperation the area of operation as a {@code String}.
+     * @return the list of {@code PolygonZone} instances.
+     * @throws IOException in case of errors.
+     */
+    private static List<PolygonZone> getPolygons(String areaOfOperation) throws IOException
     {
         List<PolygonZone> list = new ArrayList<PolygonZone>();
         FeatureCollection fc = new ObjectMapper()
-            .readValue(areaOfOperationString.replace("\\n", "\n"), FeatureCollection.class);
+            .readValue(areaOfOperation.replace("\\n", "\n"), FeatureCollection.class);
 
         for (Feature feature : fc.getFeatures())
         {
@@ -150,16 +149,21 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         return list;
     }
 
-    private static boolean isInsideAreasOfOperation(String areasOfOperation, PolarCoordinate position)
+    /**
+     * @param areaOfOperation the area of operation as a {@code String}.
+     * @param position the position in question.
+     * @return true if the position is inside the area of operation.
+     */
+    private static boolean isInsideAreasOfOperation(String areaOfOperation, PolarCoordinate position)
     {
-        if (StringUtils.isBlank(areasOfOperation))
+        if (StringUtils.isBlank(areaOfOperation))
         {
             return false;
         }
 
         try
         {
-            for (PolygonZone zone : getPolygons(areasOfOperation))
+            for (PolygonZone zone : getPolygons(areaOfOperation))
             {
                 if (zone.isInside(position))
                 {
@@ -176,6 +180,11 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         }
     }
 
+    /**
+     * @param requiredSensors the list of required sensors.
+     * @param availableSensors the list of available sensors.
+     * @return the sensors as a {@code String} object.
+     */
     private static String getSensorString(List<SensorDefinition> requiredSensors,
         List<SensorDefinition> availableSensors)
     {
@@ -186,6 +195,10 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         return b.toString();
     }
 
+    /**
+     * @param toAppendTo the {@code StringBuilder} instance.
+     * @param sensors the list of sensors to be appended.
+     */
     private static void sd(StringBuilder toAppendTo, List<SensorDefinition> sensors)
     {
         boolean first = true;

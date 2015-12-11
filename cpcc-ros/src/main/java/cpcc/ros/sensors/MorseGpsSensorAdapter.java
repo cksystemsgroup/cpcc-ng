@@ -29,9 +29,9 @@ import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.ConfigUtils;
 import cpcc.core.utils.GeodeticSystem;
-import cpcc.core.utils.PolarCoordinate;
 import cpcc.core.utils.WGS84;
 
 /**

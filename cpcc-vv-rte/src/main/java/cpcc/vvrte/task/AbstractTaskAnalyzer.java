@@ -20,6 +20,8 @@ package cpcc.vvrte.task;
 
 import org.mozilla.javascript.ScriptableObject;
 
+import cpcc.vvrte.entities.Task;
+
 /**
  * AbstractTaskAnalyzer
  */

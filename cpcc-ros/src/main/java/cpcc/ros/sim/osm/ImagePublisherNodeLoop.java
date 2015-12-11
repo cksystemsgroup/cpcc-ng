@@ -28,10 +28,10 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
 
+import cpcc.core.entities.PolarCoordinate;
 import sensor_msgs.CameraInfo;
 import sensor_msgs.Image;
 import sensor_msgs.NavSatFix;
-import cpcc.core.utils.PolarCoordinate;
 
 /**
  * Image Publisher Node Loop

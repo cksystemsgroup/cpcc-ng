@@ -16,13 +16,20 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.core.utils;
+package cpcc.core.entities;
+
+import java.io.Serializable;
+
+import javax.persistence.Embeddable;
 
 /**
  * This class implements a 3-tuple to describe a position in a polar coordinate system.
  */
-public class PolarCoordinate
+@Embeddable
+public class PolarCoordinate implements Serializable
 {
+    private static final long serialVersionUID = 2879155483936546557L;
+
     /**
      * The latitude value of this vector.
      */

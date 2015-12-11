@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.services.ros;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
@@ -36,8 +36,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.vvrte.services.MessageConverter;
-import cpcc.vvrte.services.MessageConverterImpl;
+import cpcc.vvrte.services.ros.MessageConverter;
+import cpcc.vvrte.services.ros.MessageConverterImpl;
 
 /**
  * MessageConverterTest

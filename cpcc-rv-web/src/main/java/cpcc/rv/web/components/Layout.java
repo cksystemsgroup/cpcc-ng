@@ -84,11 +84,11 @@ public class Layout
         return Arrays.asList(
             "commons/configuration/edit",
             "commons/contact",
-            "commons/ros/Overview",
+            "commons/ros/overview",
             "commons/sensor/list",
             "commons/rv/list",
             "commons/vv/list",
-            "commons/tasks",
+            "commons/task/list",
             "commons/jobs/list");
     }
 

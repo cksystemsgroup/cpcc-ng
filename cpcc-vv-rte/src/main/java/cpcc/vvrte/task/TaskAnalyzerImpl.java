@@ -21,9 +21,12 @@ package cpcc.vvrte.task;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.mozilla.javascript.ScriptableObject;
 
 import cpcc.core.services.QueryManager;
+import cpcc.vvrte.base.VvRteConstants;
+import cpcc.vvrte.entities.Task;
 
 /**
  * TaskAnalyzerImpl
@@ -35,9 +38,14 @@ public class TaskAnalyzerImpl implements TaskAnalyzer
     /**
      * @param qm the query manager.
      */
-    public TaskAnalyzerImpl(QueryManager qm)
+    /**
+     * @param minToleranceDistance the minimum tolerance distance in meters.
+     * @param qm the query manager.
+     */
+    public TaskAnalyzerImpl(@Symbol(VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE) String minToleranceDistance
+        , QueryManager qm)
     {
-        analyzermap.put("point", new SimpleTaskAnalyzer(qm));
+        analyzermap.put("point", new SimpleTaskAnalyzer(qm, Double.valueOf(minToleranceDistance)));
         // analyzermap.put("patrol-line", new PatrolLineTaskAnalyzer(qm));
         // analyzermap.put("patrol-area", new PatrolAreaTaskAnalyzer(qm));
     }

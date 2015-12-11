@@ -27,8 +27,8 @@ import org.ros.node.ConnectedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.ConfigUtils;
-import cpcc.core.utils.PolarCoordinate;
 
 /**
  * GroundStationGpsPositionAdapter

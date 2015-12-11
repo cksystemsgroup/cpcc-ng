@@ -25,11 +25,11 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.GeometryCollection;
 
-import cpcc.core.utils.PolarCoordinate;
+import cpcc.core.entities.PolarCoordinate;
+import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.VirtualVehicle;
-import cpcc.vvrte.services.VvGeoJsonConverter;
-import cpcc.vvrte.services.VvRteRepository;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.services.json.VvGeoJsonConverter;
 
 /**
  * Virtual Vehicle contributor implementation.

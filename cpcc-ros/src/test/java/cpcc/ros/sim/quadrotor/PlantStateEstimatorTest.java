@@ -34,7 +34,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.utils.PolarCoordinate;
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.ros.sim.quadrotor.Configuration;
 import cpcc.ros.sim.quadrotor.PlantState;
 import cpcc.ros.sim.quadrotor.PlantStateEstimator;

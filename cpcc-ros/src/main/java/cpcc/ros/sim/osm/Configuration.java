@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.ros.node.NodeConfiguration;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.ConfigUtils;
 import cpcc.core.utils.GeodeticSystem;
-import cpcc.core.utils.PolarCoordinate;
 import cpcc.core.utils.WGS84;
 
 /**

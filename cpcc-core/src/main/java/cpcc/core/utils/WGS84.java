@@ -18,6 +18,8 @@
 
 package cpcc.core.utils;
 
+import cpcc.core.entities.PolarCoordinate;
+
 /**
  * This geodetic system implements the Department of Defense World Geodetic System 1984 (WGS84)
  * 

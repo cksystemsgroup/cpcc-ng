@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+	<changeSet author="ckrainer" id="2015-12-07-01">
+		<createTable tableName="TASKS">
+			<column autoIncrement="true" name="ID" type="INT(10)">
+				<constraints primaryKey="true" primaryKeyName="PK_TASKS" />
+			</column>
+			<column name="LATITUDE" type="FLOAT8" />
+			<column name="LONGITUDE" type="FLOAT8" />
+			<column name="ALTITUDE" type="FLOAT8" />
+			<column name="TASK_STATE" type="VARCHAR(20)" />
+			<column name="TASK_ORDER" type="INT(10)" />
+			<column name="TOLERANCE" type="FLOAT8" />
+			<column name="DISTANCE_TO_TARGET" type="FLOAT8" />
+			<column name="CREATION_TIME" type="TIMESTAMP" />
+			<column name="EXECUTION_START" type="TIMESTAMP" />
+			<column name="EXECUTION_END" type="TIMESTAMP" />
+			<column name="SENSOR_VALUES" type="CLOB" />
+			<column name="VEHICLE_ID" type="INT(10)" />
+		</createTable>
+		<createTable tableName="TASKS_SENSORS">
+			<column name="TASK_ID" type="INT(10)">
+				<constraints nullable="false" />
+			</column>
+			<column name="SENSOR_ID" type="INT(10)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addColumn tableName="VIRTUALVEHICLE">
+			<column name="TASK_ID" type="INT(10)" />
+		</addColumn>
+		<addPrimaryKey columnNames="TASK_ID, SENSOR_ID" constraintName="PK_TASKS_SENSORS" tableName="TASKS_SENSORS" />
+		<addForeignKeyConstraint baseColumnNames="TASK_ID" baseTableName="TASKS_SENSORS"
+			constraintName="FK_TS_TASKS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+			referencedColumnNames="ID" referencedTableName="TASKS" />
+		<addForeignKeyConstraint baseColumnNames="SENSOR_ID" baseTableName="TASKS_SENSORS"
+			constraintName="FK_TS_SENSOR" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+			referencedColumnNames="ID" referencedTableName="SENSORDEFINITION" />
+	</changeSet>
+	<changeSet author="ckrainer" id="2015-12-07-02">
+		<addForeignKeyConstraint baseColumnNames="TASK_ID" baseTableName="VIRTUALVEHICLE"
+			constraintName="FK_VVS_TASKS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+			referencedColumnNames="ID" referencedTableName="TASKS" />
+		<addForeignKeyConstraint baseColumnNames="VEHICLE_ID" baseTableName="TASKS" constraintName="FK_TASKS_VVS"
+			deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"
+			referencedTableName="VIRTUALVEHICLE" />
+	</changeSet>
+
+</databaseChangeLog>

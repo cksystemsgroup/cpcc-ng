@@ -24,14 +24,14 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.Point;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
 import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
-import cpcc.core.utils.PolarCoordinate;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.entities.Task;
 
 /**
  * Position contributor implementation.

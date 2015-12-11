@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,30 +16,18 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.services.ros;
 
-import java.util.List;
-
-import org.geojson.Feature;
-import org.geojson.GeoJsonObject;
-
-import cpcc.vvrte.entities.VirtualVehicle;
+import org.mozilla.javascript.ScriptableObject;
 
 /**
- * VvGeoJsonConverter
+ * MessageConverter
  */
-public interface VvGeoJsonConverter
+public interface MessageConverter
 {
     /**
-     * @param virtualVehicle the virtual vehicle to be converted.
-     * @return the virtual vehicle as a Feature object.
+     * @param message the message.
+     * @return the message as a native JS object.
      */
-    Feature toFeature(VirtualVehicle virtualVehicle);
-
-    /**
-     * @param virtualVehicleList the virtual vehicles to be converted.
-     * @return the virtual vehicles as a list of Feature objects.
-     */
-    List<GeoJsonObject> toGeometryObjectsList(List<VirtualVehicle> virtualVehicleList);
-
+    ScriptableObject convertMessageToJS(org.ros.internal.message.Message message);
 }

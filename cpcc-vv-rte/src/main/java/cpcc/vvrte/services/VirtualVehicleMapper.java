@@ -18,7 +18,8 @@
 
 package cpcc.vvrte.services;
 
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.base.VirtualVehicleMappingDecision;
+import cpcc.vvrte.entities.Task;
 
 /**
  * VirtualVehicleMapper

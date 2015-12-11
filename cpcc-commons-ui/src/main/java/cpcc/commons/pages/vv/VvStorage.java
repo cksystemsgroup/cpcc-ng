@@ -27,7 +27,7 @@ import org.apache.tapestry5.annotations.Property;
 import cpcc.commons.services.StorageContentTagService;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
-import cpcc.vvrte.services.VvRteRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

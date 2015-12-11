@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.geojson.FeatureCollection;
 
-import cpcc.core.utils.PolarCoordinate;
-import cpcc.vvrte.task.Task;
+import cpcc.core.entities.PolarCoordinate;
+import cpcc.vvrte.entities.Task;
 
 /**
  * State contributor interface.

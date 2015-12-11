@@ -25,9 +25,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.CartesianCoordinate;
 import cpcc.core.utils.GeodeticSystem;
-import cpcc.core.utils.PolarCoordinate;
 import cpcc.core.utils.WGS84;
 
 /**

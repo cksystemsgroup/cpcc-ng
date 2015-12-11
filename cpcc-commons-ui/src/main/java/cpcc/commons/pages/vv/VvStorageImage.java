@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import cpcc.core.utils.PngImageStreamResponse;
 import cpcc.ros.services.RosImageConverter;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
-import cpcc.vvrte.services.VvRteRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
 
 /**
  * Vehicle storage image page.

@@ -34,6 +34,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
@@ -41,7 +42,6 @@ import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.CoreJsonConverter;
 import cpcc.core.services.CoreJsonConverterImpl;
-import cpcc.core.utils.PolarCoordinate;
 
 public class CoreJsonConverterTest
 {

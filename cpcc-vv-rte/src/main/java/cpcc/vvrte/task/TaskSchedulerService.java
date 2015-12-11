@@ -20,10 +20,12 @@ package cpcc.vvrte.task;
 
 import java.lang.reflect.InvocationTargetException;
 
+import cpcc.vvrte.entities.Task;
+
 /**
  * TaskSchedulerService
  */
-public interface TaskSchedulerService extends TaskSchedulingAlgorithm
+public interface TaskSchedulerService
 {
     /**
      * @param className the class name of the scheduling algorithm.
@@ -37,4 +39,9 @@ public interface TaskSchedulerService extends TaskSchedulingAlgorithm
      */
     void setAlgorithm(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
         InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+
+    /**
+     * @return the next {@code Task} to be executed.
+     */
+    Task schedule();
 }

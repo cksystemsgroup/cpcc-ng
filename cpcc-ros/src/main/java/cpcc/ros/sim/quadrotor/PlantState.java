@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import cpcc.core.utils.PolarCoordinate;
+import cpcc.core.entities.PolarCoordinate;
 
 
 /**

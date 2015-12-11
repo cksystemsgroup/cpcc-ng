@@ -20,6 +20,8 @@ package cpcc.vvrte.task;
 
 import java.util.List;
 
+import cpcc.vvrte.entities.Task;
+
 /**
  * First Come First Serve Scheduling Algorithm
  */
@@ -29,10 +31,16 @@ public class FirstComeFirstServeAlgorithm implements TaskSchedulingAlgorithm
      * {@inheritDoc}
      */
     @Override
-    public void schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
+    public boolean schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
     {
+        if (pendingTasks.isEmpty())
+        {
+            return false;
+        }
+
         scheduledTasks.addAll(pendingTasks);
         pendingTasks.clear();
+        return true;
     }
 
 }

@@ -23,10 +23,10 @@ import java.util.List;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.SensorDefinition;
-import cpcc.core.utils.PolarCoordinate;
 
 /**
  * CoreJsonConverter

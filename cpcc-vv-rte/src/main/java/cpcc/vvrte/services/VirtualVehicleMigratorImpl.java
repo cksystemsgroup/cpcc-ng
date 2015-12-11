@@ -42,6 +42,7 @@ import cpcc.core.utils.PropertyUtils;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
+import cpcc.vvrte.services.db.VvRteRepository;
 
 /**
  * VirtualVehicleMigratorImpl
@@ -53,7 +54,6 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private Logger logger;
     private HibernateSessionManager sessionManager;
     private VvRteRepository vvRepository;
-    // private Set<VirtualVehicleListener> listenerSet = new HashSet<VirtualVehicleListener>();
     private QueryManager qm;
     private VirtualVehicleLauncher launcher;
     private ServiceResources serviceResources;
@@ -522,21 +522,6 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
         sessionManager.getSession().saveOrUpdate(item);
     }
-
-    //    @Override
-    //    public void addListener(VirtualVehicleListener listener)
-    //    {
-    //        listenerSet.add(listener);
-    //    }
-    //
-    //    private void notifyListeners(VirtualVehicle vehicle)
-    //    {
-    //        for (VirtualVehicleListener listener : listenerSet)
-    //        {
-    //            logger.info("Notifying listener " + listener.getClass());
-    //            listener.notify(vehicle);
-    //        }
-    //    }
 
     /**
      * VirtualVehicleHolder

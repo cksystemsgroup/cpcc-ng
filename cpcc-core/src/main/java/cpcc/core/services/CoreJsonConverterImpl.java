@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
@@ -34,7 +35,6 @@ import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.utils.JSONUtils;
-import cpcc.core.utils.PolarCoordinate;
 
 /**
  * CoreJsonConverterImpl

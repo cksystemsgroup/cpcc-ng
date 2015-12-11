@@ -33,7 +33,7 @@ import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.QueryManager;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.task.TaskAnalyzerImpl;
 
 /**
@@ -46,12 +46,14 @@ public class TaskAnalyzerTest
     private static final String SENSOR_MESSAGE_TYPE = "sensor_msgs/Image";
     private static final SensorType SENSOR_TYPE = SensorType.CAMERA;
     private static final SensorVisibility SENSOR_VISIBILITY = SensorVisibility.ALL_VV;
+    private static final String MIN_TOLERANCE_DIST = "3.0";
 
     private QueryManager qm;
     private TaskAnalyzerImpl analyzer;
     private NativeObject taskParameters;
     private NativeObject position;
     private NativeObject sensor;
+    private NativeArray sensors;
 
     @BeforeMethod
     public void setUp()
@@ -66,7 +68,7 @@ public class TaskAnalyzerTest
         qm = mock(QueryManager.class);
         when(qm.findSensorDefinitionByDescription(anyString())).thenReturn(sensorDefinition);
 
-        analyzer = new TaskAnalyzerImpl(qm);
+        analyzer = new TaskAnalyzerImpl(MIN_TOLERANCE_DIST, qm);
 
         position = new NativeObject();
         position.put("lat", position, Double.valueOf(47.2));
@@ -80,8 +82,7 @@ public class TaskAnalyzerTest
         sensor.put("type", sensor, SENSOR_TYPE);
         sensor.put("visibility", sensor, SENSOR_VISIBILITY);
 
-        NativeArray sensors = new NativeArray(new NativeObject[]{sensor});
-        //        sensors.put(0, sensors, sensor);
+        sensors = new NativeArray(new NativeObject[]{sensor});
 
         taskParameters = new NativeObject();
         taskParameters.put("type", taskParameters, "unknownTask");
@@ -97,11 +98,11 @@ public class TaskAnalyzerTest
         Task task = analyzer.analyzeTaskParameters(taskParameters, 0);
 
         assertThat(task).isNotNull();
-        assertThat(task.getCreationTime()).isGreaterThan(System.currentTimeMillis() - 10000);
+        assertThat(task.getCreationTime().getTime()).isGreaterThan(System.currentTimeMillis() - 10000);
         assertThat(task.getTolerance()).isEqualTo(10.0, offset(1E-9));
-        assertThat(task.getLatitude()).isEqualTo((Double) position.get("lat"));
-        assertThat(task.getLongitude()).isEqualTo((Double) position.get("lng"));
-        assertThat(task.getAltitude()).isEqualTo((Double) position.get("alt"));
+        assertThat(task.getPosition().getLatitude()).isEqualTo((Double) position.get("lat"));
+        assertThat(task.getPosition().getLongitude()).isEqualTo((Double) position.get("lng"));
+        assertThat(task.getPosition().getAltitude()).isEqualTo((Double) position.get("alt"));
 
         assertThat(task.getSensors()).isNotNull().hasSize(1);
         assertThat(task.getSensors().get(0)).isNotNull();
@@ -122,5 +123,30 @@ public class TaskAnalyzerTest
     {
         Task task = analyzer.analyzeTaskParameters(taskParameters, 0);
         assertThat(task).isNull();
+    }
+
+    @Test
+    public void shouldLimitTheToleranceDistance()
+    {
+        taskParameters.put("type", taskParameters, "point");
+        taskParameters.put("tolerance", taskParameters, Double.valueOf(2.0));
+
+        Task task = analyzer.analyzeTaskParameters(taskParameters, 0);
+
+        assertThat(task).isNotNull();
+        assertThat(task.getTolerance()).isEqualTo(Double.valueOf(MIN_TOLERANCE_DIST), offset(1E-9));
+    }
+
+    @Test
+    public void shouldIgnoreNullSensors()
+    {
+        taskParameters.put("type", taskParameters, "point");
+        sensors.put(0, sensors, null);
+
+        Task task = analyzer.analyzeTaskParameters(taskParameters, 0);
+
+        assertThat(task).isNotNull();
+
+        assertThat(task.getSensors()).isEmpty();
     }
 }

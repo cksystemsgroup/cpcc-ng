@@ -21,6 +21,8 @@ package cpcc.core.utils;
 import java.util.List;
 import java.util.Map;
 
+import cpcc.core.entities.PolarCoordinate;
+
 /**
  * ConfigUtils
  */

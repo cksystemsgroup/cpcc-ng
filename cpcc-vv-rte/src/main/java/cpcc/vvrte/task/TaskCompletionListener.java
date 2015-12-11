@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,18 +16,17 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.task;
 
-import org.mozilla.javascript.ScriptableObject;
+import cpcc.vvrte.entities.Task;
 
 /**
- * MessageConverter
+ * Task Completion Listener interface.
  */
-public interface MessageConverter
+public interface TaskCompletionListener
 {
     /**
-     * @param message the message.
-     * @return the message as a native JS object.
+     * @param task the completed {@code Task}.
      */
-    ScriptableObject convertMessageToJS(org.ros.internal.message.Message message);
+    void notify(Task task);
 }

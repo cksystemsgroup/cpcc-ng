@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.services.json;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -31,14 +31,17 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.CoreJsonConverter;
 import cpcc.core.services.CoreJsonConverterImpl;
+import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.services.json.VvJsonConverter;
+import cpcc.vvrte.services.json.VvJsonConverterImpl;
 
 public class VvJsonConverterTest
 {
@@ -52,6 +55,11 @@ public class VvJsonConverterTest
     private SensorDefinition s2 = mock(SensorDefinition.class);
     private SensorDefinition s3 = mock(SensorDefinition.class);
     private SensorDefinition s4 = mock(SensorDefinition.class);
+
+    private PolarCoordinate pos1 = mock(PolarCoordinate.class);
+    private PolarCoordinate pos2 = mock(PolarCoordinate.class);
+    private PolarCoordinate pos3 = mock(PolarCoordinate.class);
+    private PolarCoordinate pos4 = mock(PolarCoordinate.class);
 
     private Task task1 = mock(Task.class);
     private Task task2 = mock(Task.class);
@@ -112,27 +120,35 @@ public class VvJsonConverterTest
         when(s4.getParameters()).thenReturn("");
         when(s4.getLastUpdate()).thenReturn(new Date(4000004));
 
-        when(task1.getLatitude()).thenReturn(47.1234);
-        when(task1.getLongitude()).thenReturn(13.4321);
-        when(task1.getAltitude()).thenReturn(10.0);
+        when(pos1.getLatitude()).thenReturn(47.1234);
+        when(pos1.getLongitude()).thenReturn(13.4321);
+        when(pos1.getAltitude()).thenReturn(10.0);
+
+        when(task1.getPosition()).thenReturn(pos1);
         when(task1.getTolerance()).thenReturn(10.1);
         when(task1.getSensors()).thenReturn(Arrays.asList(s1));
 
-        when(task2.getLatitude()).thenReturn(47.2345);
-        when(task2.getLongitude()).thenReturn(13.5432);
-        when(task2.getAltitude()).thenReturn(20.0);
+        when(pos2.getLatitude()).thenReturn(47.2345);
+        when(pos2.getLongitude()).thenReturn(13.5432);
+        when(pos2.getAltitude()).thenReturn(20.0);
+
+        when(task2.getPosition()).thenReturn(pos2);
         when(task2.getTolerance()).thenReturn(3.7);
         when(task2.getSensors()).thenReturn(Arrays.asList(s2, s1));
 
-        when(task3.getLatitude()).thenReturn(47.3456);
-        when(task3.getLongitude()).thenReturn(13.6543);
-        when(task3.getAltitude()).thenReturn(30.0);
+        when(pos3.getLatitude()).thenReturn(47.3456);
+        when(pos3.getLongitude()).thenReturn(13.6543);
+        when(pos3.getAltitude()).thenReturn(30.0);
+
+        when(task3.getPosition()).thenReturn(pos3);
         when(task3.getTolerance()).thenReturn(7.9);
         when(task3.getSensors()).thenReturn(Arrays.asList(s3, s2, s1));
 
-        when(task4.getLatitude()).thenReturn(47.4567);
-        when(task4.getLongitude()).thenReturn(13.7654);
-        when(task4.getAltitude()).thenReturn(40.0);
+        when(pos4.getLatitude()).thenReturn(47.4567);
+        when(pos4.getLongitude()).thenReturn(13.7654);
+        when(pos4.getAltitude()).thenReturn(40.0);
+
+        when(task4.getPosition()).thenReturn(pos4);
         when(task4.getTolerance()).thenReturn(1.6);
         when(task4.getSensors()).thenReturn(Arrays.asList(s4, s3, s2, s1));
     }

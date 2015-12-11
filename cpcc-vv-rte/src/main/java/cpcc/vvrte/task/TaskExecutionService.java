@@ -18,8 +18,6 @@
 
 package cpcc.vvrte.task;
 
-import java.util.List;
-
 import cpcc.ros.actuators.AbstractActuatorAdapter;
 import cpcc.ros.sensors.AbstractSensorAdapter;
 
@@ -32,26 +30,6 @@ public interface TaskExecutionService
      * Execute the tasks.
      */
     void executeTasks();
-
-    /**
-     * @param task the task to be executed.
-     */
-    void addTask(Task task);
-
-    /**
-     * @return the currently pending tasks.
-     */
-    List<Task> getPendingTasks();
-
-    /**
-     * @return the tasks currently scheduled for execution.
-     */
-    List<Task> getScheduledTasks();
-
-    /**
-     * @return the task the execution service currently processes.
-     */
-    Task getCurrentRunningTask();
 
     /**
      * @return the way-point controller.
@@ -68,4 +46,8 @@ public interface TaskExecutionService
      */
     AbstractSensorAdapter getAltimeter();
 
+    /**
+     * @param listener the listener to add.
+     */
+    void addListener(TaskCompletionListener listener);
 }

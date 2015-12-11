@@ -25,8 +25,11 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
+import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.QueryManager;
+import cpcc.vvrte.entities.Task;
 
 /**
  * SimpleTaskAnalyzer
@@ -34,13 +37,16 @@ import cpcc.core.services.QueryManager;
 public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
 {
     private QueryManager qm;
+    private double minToleranceDistance;
 
     /**
      * @param qm the query manager.
+     * @param minToleranceDistance the minimum tolerance distance.
      */
-    public SimpleTaskAnalyzer(QueryManager qm)
+    public SimpleTaskAnalyzer(QueryManager qm, double minToleranceDistance)
     {
         this.qm = qm;
+        this.minToleranceDistance = minToleranceDistance;
     }
 
     /**
@@ -53,12 +59,15 @@ public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
         Task task = new Task();
 
         Number tolerance = (Number) taskParameters.get("tolerance");
-        task.setTolerance(tolerance.doubleValue());
+        task.setTolerance(fixToleranceDistance(tolerance.floatValue()));
 
         NativeObject position = (NativeObject) taskParameters.get("position");
-        task.setLatitude((Double) position.get("lat"));
-        task.setLongitude((Double) position.get("lng"));
-        task.setAltitude((Double) position.get("alt"));
+
+        PolarCoordinate taskPosition = new PolarCoordinate();
+        taskPosition.setLatitude((Double) position.get("lat"));
+        taskPosition.setLongitude((Double) position.get("lng"));
+        taskPosition.setAltitude((Double) position.get("alt"));
+        task.setPosition(taskPosition);
 
         NativeArray sensors = (NativeArray) taskParameters.get("sensors");
         List<SensorDefinition> sensorDefinitions = new ArrayList<SensorDefinition>();
@@ -68,13 +77,25 @@ public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
             if (s != null)
             {
                 SensorDefinition sd = qm.findSensorDefinitionByDescription((String) s.get("description"));
-                sensorDefinitions.add(sd);
+                if (sd != null && sd.getVisibility() != SensorVisibility.NO_VV)
+                {
+                    sensorDefinitions.add(sd);
+                }
             }
         }
-        task.setSensors(sensorDefinitions);
 
-        task.setLastInTaskGroup(true);
-
+        task.getSensors().addAll(sensorDefinitions);
         return task;
     }
+
+    /**
+     * @param toleranceDistance the tolerance distance to set.
+     * @return the tolerance distance if it is greater than the minimum tolerance distance, otherwise the minimum
+     *         tolerance distance.
+     */
+    private double fixToleranceDistance(double toleranceDistance)
+    {
+        return toleranceDistance < minToleranceDistance ? minToleranceDistance : toleranceDistance;
+    }
+
 }

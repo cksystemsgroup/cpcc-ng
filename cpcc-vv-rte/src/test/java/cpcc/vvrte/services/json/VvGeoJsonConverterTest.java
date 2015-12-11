@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.services.json;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -38,8 +38,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cpcc.core.entities.RealVehicle;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.vvrte.services.VvGeoJsonConverter;
-import cpcc.vvrte.services.VvGeoJsonConverterImpl;
+import cpcc.vvrte.services.json.VvGeoJsonConverter;
+import cpcc.vvrte.services.json.VvGeoJsonConverterImpl;
 
 public class VvGeoJsonConverterTest
 {

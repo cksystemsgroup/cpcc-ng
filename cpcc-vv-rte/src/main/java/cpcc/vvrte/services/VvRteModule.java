@@ -28,9 +28,19 @@ import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 
 import cpcc.com.services.CommunicationService;
 import cpcc.vvrte.base.VvRteConstants;
+import cpcc.vvrte.services.db.TaskRepository;
+import cpcc.vvrte.services.db.TaskRepositoryImpl;
+import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.services.db.VvRteRepositoryImpl;
 import cpcc.vvrte.services.js.BuiltInFunctions;
 import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptServiceImpl;
+import cpcc.vvrte.services.json.VvGeoJsonConverter;
+import cpcc.vvrte.services.json.VvGeoJsonConverterImpl;
+import cpcc.vvrte.services.json.VvJsonConverter;
+import cpcc.vvrte.services.json.VvJsonConverterImpl;
+import cpcc.vvrte.services.ros.MessageConverter;
+import cpcc.vvrte.services.ros.MessageConverterImpl;
 import cpcc.vvrte.task.TaskAnalyzer;
 import cpcc.vvrte.task.TaskAnalyzerImpl;
 import cpcc.vvrte.task.TaskExecutionService;
@@ -65,6 +75,7 @@ public final class VvRteModule
         binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class).scope(ScopeConstants.PERTHREAD);
         binder.bind(VvJsonConverter.class, VvJsonConverterImpl.class);
         binder.bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class);
+        binder.bind(TaskRepository.class, TaskRepositoryImpl.class);
     }
 
     /**
@@ -84,6 +95,10 @@ public final class VvRteModule
             VvRteConstants.PROP_DEFAULT_SCHEDULER, System.getProperty(
                 VvRteConstants.PROP_DEFAULT_SCHEDULER,
                 VvRteConstants.PROP_DEFAULT_SCHEDULER_CLASS_NAME));
+        configuration.add(
+            VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE, System.getProperty(
+                VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE,
+                VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE_DEFAULT));
     }
 
     /**
@@ -122,5 +137,15 @@ public final class VvRteModule
         communicationService.addConnector(
             VvRteConstants.MIGRATION_CONNECTOR,
             VvRteConstants.MIGRATION_PATH);
+    }
+    
+    /**
+     * @param tes the task execution service instance.
+     * @param vvl the virtual vehicle launcher instance.
+     */
+    @Startup
+    public static void setupTaskExecutionService(TaskExecutionService tes, VirtualVehicleLauncher vvl)
+    {
+        tes.addListener(vvl);
     }
 }

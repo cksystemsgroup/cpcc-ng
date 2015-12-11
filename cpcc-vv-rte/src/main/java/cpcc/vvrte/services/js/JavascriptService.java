@@ -20,30 +20,26 @@ package cpcc.vvrte.services.js;
 
 import java.io.IOException;
 
+import cpcc.vvrte.entities.VirtualVehicle;
+
 /**
  * JavascriptService
  */
 public interface JavascriptService
 {
     /**
-     * @param script the script.
-     * @param apiVersion the VVRTE API version.
+     * @param vehicle the Virtual Vehicle.
+     * @param useContinuation use the continuation, if possible.
      * @return the executing worker.
      * @throws IOException thrown in case of errors.
      */
-    JavascriptWorker createWorker(String script, int apiVersion) throws IOException;
-
-    /**
-     * @param snapshot the frozen program.
-     * @return the executing worker.
-     */
-    JavascriptWorker createWorker(byte[] snapshot);
+    JavascriptWorker createWorker(VirtualVehicle vehicle, boolean useContinuation) throws IOException;
 
     /**
      * @param string the name of the class to permit access to.
      */
     void addAllowedClass(String string);
-    
+
     /**
      * @param string the regular expression of the name of the classes to permit access to.
      */

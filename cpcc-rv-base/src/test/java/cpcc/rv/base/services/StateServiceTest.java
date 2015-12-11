@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cpcc.core.entities.MappingAttributes;
 import cpcc.core.entities.Parameter;
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
@@ -50,13 +51,13 @@ import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.ros.sensors.AbstractGpsSensorAdapter;
 import cpcc.ros.services.RosNodeService;
+import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.vvrte.services.VvGeoJsonConverter;
-import cpcc.vvrte.services.VvGeoJsonConverterImpl;
-import cpcc.vvrte.services.VvRteRepository;
-import cpcc.vvrte.task.Task;
-import cpcc.vvrte.task.TaskExecutionService;
+import cpcc.vvrte.services.db.TaskRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.services.json.VvGeoJsonConverter;
+import cpcc.vvrte.services.json.VvGeoJsonConverterImpl;
 import sensor_msgs.NavSatFix;
 
 public class StateServiceTest
@@ -95,7 +96,7 @@ public class StateServiceTest
     private VirtualVehicle vv1;
     private VirtualVehicle vv2;
     private RealVehicleRepository rvRepo;
-    private TaskExecutionService execSvc;
+    private TaskRepository taskRepo;
     private TimeService timeService;
 
     @BeforeMethod
@@ -179,24 +180,30 @@ public class StateServiceTest
         pjc = new CoreGeoJsonConverterImpl();
         vjc = new VvGeoJsonConverterImpl();
 
+        PolarCoordinate pos1 = mock(PolarCoordinate.class);
+        when(pos1.getLatitude()).thenReturn(POSITION_LATITUDE_1);
+        when(pos1.getLongitude()).thenReturn(POSITION_LONGITUDE_1);
+        when(pos1.getAltitude()).thenReturn(POSITION_ALTITUDE_1);
+
         Task task1 = mock(Task.class);
-        when(task1.getLatitude()).thenReturn(POSITION_LATITUDE_1);
-        when(task1.getLongitude()).thenReturn(POSITION_LONGITUDE_1);
-        when(task1.getAltitude()).thenReturn(POSITION_ALTITUDE_1);
+        when(task1.getPosition()).thenReturn(pos1);
         when(task1.getSensors()).thenReturn(Arrays.asList(sd1));
 
+        PolarCoordinate pos2 = mock(PolarCoordinate.class);
+        when(pos2.getLatitude()).thenReturn(POSITION_LATITUDE_2);
+        when(pos2.getLongitude()).thenReturn(POSITION_LONGITUDE_2);
+        when(pos2.getAltitude()).thenReturn(POSITION_ALTITUDE_2);
+
         Task task2 = mock(Task.class);
-        when(task2.getLatitude()).thenReturn(POSITION_LATITUDE_2);
-        when(task2.getLongitude()).thenReturn(POSITION_LONGITUDE_2);
-        when(task2.getAltitude()).thenReturn(POSITION_ALTITUDE_2);
+        when(task2.getPosition()).thenReturn(pos2);
         when(task2.getSensors()).thenReturn(Arrays.asList(sd2, sd3));
 
-        execSvc = mock(TaskExecutionService.class);
-        when(execSvc.getScheduledTasks()).thenReturn(Arrays.asList(task1, task2));
+        taskRepo = mock(TaskRepository.class);
+        when(taskRepo.getScheduledTasks()).thenReturn(Arrays.asList(task1, task2));
 
         timeService = mock(TimeService.class);
 
-        sut = new StateServiceImpl(logger, qm, rns, vvRepo, pjc, vjc, rvRepo, execSvc, timeService);
+        sut = new StateServiceImpl(logger, qm, rns, vvRepo, pjc, vjc, rvRepo, taskRepo, timeService);
     }
 
     @DataProvider

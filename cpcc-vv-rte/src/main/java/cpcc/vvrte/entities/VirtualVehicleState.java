@@ -18,6 +18,7 @@
 
 package cpcc.vvrte.entities;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -178,6 +179,18 @@ public enum VirtualVehicleState
         }
     },
 
+    TASK_COMPLETION_AWAITED
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
+        {
+            return newState;
+        }
+    },
+
     DEFECTIVE
     {
         @Override
@@ -188,86 +201,97 @@ public enum VirtualVehicleState
     };
 
     @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_DELETE = new HashSet<VirtualVehicleState>()
-    {
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_DELETE = Collections.unmodifiableSet(
+        new HashSet<VirtualVehicleState>()
         {
-            add(DEFECTIVE);
-            add(FINISHED);
-            add(INIT);
-            add(INTERRUPTED);
-            add(MIGRATION_COMPLETED);
-            add(MIGRATION_INTERRUPTED);
-        }
-    };
+            {
+                add(DEFECTIVE);
+                add(FINISHED);
+                add(INIT);
+                add(INTERRUPTED);
+                add(TASK_COMPLETION_AWAITED);
+                add(MIGRATION_COMPLETED);
+                add(MIGRATION_INTERRUPTED);
+            }
+        });
 
     @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_EDIT = new HashSet<VirtualVehicleState>()
-    {
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_EDIT = Collections.unmodifiableSet(
+        new HashSet<VirtualVehicleState>()
         {
-            add(DEFECTIVE);
-            add(FINISHED);
-            add(INIT);
-        }
-    };
+            {
+                add(DEFECTIVE);
+                add(FINISHED);
+                add(INIT);
+            }
+        });
 
     @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_START = new HashSet<VirtualVehicleState>()
-    {
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_START = Collections.unmodifiableSet(
+        new HashSet<VirtualVehicleState>()
         {
-            add(INIT);
-        }
-    };
+            {
+                add(INIT);
+            }
+        });
 
     @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_STOP = new HashSet<VirtualVehicleState>()
-    {
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_STOP = Collections.unmodifiableSet(
+        new HashSet<VirtualVehicleState>()
         {
-            add(DEFECTIVE);
-            add(INTERRUPTED);
-            add(MIGRATION_INTERRUPTED);
-        }
-    };
+            {
+                add(DEFECTIVE);
+                add(INTERRUPTED);
+                add(TASK_COMPLETION_AWAITED);
+                add(MIGRATION_INTERRUPTED);
+            }
+        });
 
     @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART = new HashSet<VirtualVehicleState>()
-    {
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART = Collections.unmodifiableSet(
+        new HashSet<VirtualVehicleState>()
         {
-            add(DEFECTIVE);
-            add(FINISHED);
-            add(INTERRUPTED);
-            add(MIGRATION_COMPLETED);
-            add(MIGRATION_INTERRUPTED);
-        }
-    };
+            {
+                add(DEFECTIVE);
+                add(FINISHED);
+                add(INTERRUPTED);
+                add(TASK_COMPLETION_AWAITED);
+                add(MIGRATION_COMPLETED);
+                add(MIGRATION_INTERRUPTED);
+            }
+        });
 
     @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION = new HashSet<VirtualVehicleState>()
-    {
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION = Collections.unmodifiableSet(
+        new HashSet<VirtualVehicleState>()
         {
-            add(DEFECTIVE);
-            add(FINISHED);
-            add(MIGRATION_AWAITED);
-            add(MIGRATION_INTERRUPTED);
-        }
-    };
+            {
+                add(DEFECTIVE);
+                add(FINISHED);
+                add(MIGRATION_AWAITED);
+                add(MIGRATION_INTERRUPTED);
+            }
+        });
 
     @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_NO_CHANGE_AFTER_MIGRATION = new HashSet<VirtualVehicleState>()
-    {
+    public static final Set<VirtualVehicleState> VV_NO_CHANGE_AFTER_MIGRATION = Collections.unmodifiableSet(
+        new HashSet<VirtualVehicleState>()
         {
-            add(DEFECTIVE);
-            add(FINISHED);
-        }
-    };
+            {
+                add(DEFECTIVE);
+                add(FINISHED);
+            }
+        });
 
     @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_MIGRATION = new HashSet<VirtualVehicleState>()
-    {
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_MIGRATION = Collections.unmodifiableSet(
+        new HashSet<VirtualVehicleState>()
         {
-            add(MIGRATING);
-            add(MIGRATION_INTERRUPTED);
-        }
-    };
+            {
+                add(MIGRATING);
+                add(MIGRATION_INTERRUPTED);
+            }
+        });
 
     /**
      * @param newState the new state to traverse to.

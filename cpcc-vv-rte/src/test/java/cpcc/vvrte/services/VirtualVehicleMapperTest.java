@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -37,16 +38,16 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import cpcc.core.entities.Parameter;
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
-import cpcc.core.utils.PolarCoordinate;
+import cpcc.vvrte.base.VirtualVehicleMappingDecision;
+import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.services.VirtualVehicleMapperImpl;
-import cpcc.vvrte.services.VirtualVehicleMappingDecision;
-import cpcc.vvrte.task.Task;
 
 /**
  * VirtualVehicleMapperTest
@@ -133,10 +134,13 @@ public class VirtualVehicleMapperTest
     private QueryManager qm;
     private VirtualVehicleMapperImpl sut;
     private RealVehicleRepository realVehicleRepository;
+    private Logger logger;
 
     @BeforeMethod
     public void setUp() throws JsonParseException, JsonMappingException, IOException
     {
+        logger = mock(Logger.class);
+
         realVehicle1 = mock(RealVehicle.class);
         when(realVehicle1.getAreaOfOperation()).thenReturn(AREA_OF_OPERATION_RV1);
         when(realVehicle1.getSensors()).thenReturn(Arrays.asList(altimeter, barometer, co2Sensor));
@@ -163,7 +167,7 @@ public class VirtualVehicleMapperTest
         when(realVehicleRepository.findOwnRealVehicle()).thenReturn(realVehicle1);
         when(realVehicleRepository.findAllRealVehiclesExceptOwn()).thenReturn(Arrays.asList(realVehicle2));
 
-        sut = new VirtualVehicleMapperImpl(realVehicleRepository);
+        sut = new VirtualVehicleMapperImpl(logger, realVehicleRepository);
     }
 
     @DataProvider
@@ -178,10 +182,13 @@ public class VirtualVehicleMapperTest
     public void shouldDecideForMigratingOfVirtualVehicles(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
+        PolarCoordinate pos = mock(PolarCoordinate.class);
+        when(pos.getLatitude()).thenReturn(latitude);
+        when(pos.getLongitude()).thenReturn(longitude);
+        when(pos.getAltitude()).thenReturn(altitude);
+
         Task task = mock(Task.class);
-        when(task.getLatitude()).thenReturn(latitude);
-        when(task.getLongitude()).thenReturn(longitude);
-        when(task.getAltitude()).thenReturn(altitude);
+        when(task.getPosition()).thenReturn(pos);
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);
@@ -203,10 +210,13 @@ public class VirtualVehicleMapperTest
     public void shouldDecideForNotMigratingOfVirtualVehicles(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
+        PolarCoordinate pos = mock(PolarCoordinate.class);
+        when(pos.getLatitude()).thenReturn(latitude);
+        when(pos.getLongitude()).thenReturn(longitude);
+        when(pos.getAltitude()).thenReturn(altitude);
+
         Task task = mock(Task.class);
-        when(task.getLatitude()).thenReturn(latitude);
-        when(task.getLongitude()).thenReturn(longitude);
-        when(task.getAltitude()).thenReturn(altitude);
+        when(task.getPosition()).thenReturn(pos);
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);
@@ -232,9 +242,7 @@ public class VirtualVehicleMapperTest
     public void shouldDecideForNoMigrationBecauseOfSensors(PolarCoordinate position, List<SensorDefinition> sensors)
     {
         Task task = mock(Task.class);
-        when(task.getLatitude()).thenReturn(position.getLatitude());
-        when(task.getLongitude()).thenReturn(position.getLongitude());
-        when(task.getAltitude()).thenReturn(position.getAltitude());
+        when(task.getPosition()).thenReturn(position);
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);
@@ -255,11 +263,14 @@ public class VirtualVehicleMapperTest
     public void shouldDecideForMigrationBecauseOfSensors(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
+        PolarCoordinate pos = mock(PolarCoordinate.class);
+        when(pos.getLatitude()).thenReturn(latitude);
+        when(pos.getLongitude()).thenReturn(longitude);
+        when(pos.getAltitude()).thenReturn(altitude);
+
         Task task = mock(Task.class);
         // when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
-        when(task.getLatitude()).thenReturn(latitude);
-        when(task.getLongitude()).thenReturn(longitude);
-        when(task.getAltitude()).thenReturn(altitude);
+        when(task.getPosition()).thenReturn(pos);
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);
@@ -286,10 +297,13 @@ public class VirtualVehicleMapperTest
     public void shouldDecideForMigrationBecauseOfPosition(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
+        PolarCoordinate pos = mock(PolarCoordinate.class);
+        when(pos.getLatitude()).thenReturn(latitude);
+        when(pos.getLongitude()).thenReturn(longitude);
+        when(pos.getAltitude()).thenReturn(altitude);
+
         Task task = mock(Task.class);
-        when(task.getLatitude()).thenReturn(latitude);
-        when(task.getLongitude()).thenReturn(longitude);
-        when(task.getAltitude()).thenReturn(altitude);
+        when(task.getPosition()).thenReturn(pos);
         when(task.getSensors()).thenReturn(sensors);
 
         VirtualVehicleMappingDecision decision = sut.findMappingDecision(task);
@@ -309,7 +323,7 @@ public class VirtualVehicleMapperTest
         RealVehicleRepository realVehicleRepository2 = mock(RealVehicleRepository.class);
         Task task = mock(Task.class);
 
-        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(realVehicleRepository2);
+        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(logger, realVehicleRepository2);
         localSut.findMappingDecision(task);
 
         verifyZeroInteractions(task);
@@ -326,7 +340,7 @@ public class VirtualVehicleMapperTest
 
         Task task = mock(Task.class);
 
-        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(realVehicleRepository2);
+        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(logger, realVehicleRepository2);
         VirtualVehicleMappingDecision actual = localSut.findMappingDecision(task);
 
         assertThat(actual.isMigration()).isTrue();
@@ -347,7 +361,7 @@ public class VirtualVehicleMapperTest
 
         Task task = mock(Task.class);
 
-        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(rvRepo2);
+        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(logger, rvRepo2);
         VirtualVehicleMappingDecision actual = localSut.findMappingDecision(task);
 
         assertThat(actual.isMigration()).isTrue();

@@ -55,7 +55,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import sensor_msgs.NavSatFix;
-import cpcc.core.utils.PolarCoordinate;
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.WGS84;
 
 // @RunWith(PowerMockRunner.class)

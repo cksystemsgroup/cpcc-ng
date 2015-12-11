@@ -34,7 +34,7 @@ import org.apache.tapestry5.ioc.Messages;
 import cpcc.rv.base.services.StateSynchronizer;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.vvrte.services.VvRteRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
 import cpcc.vvrte.services.js.JavascriptService;
 
 /**

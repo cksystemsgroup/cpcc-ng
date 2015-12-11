@@ -21,25 +21,39 @@ package cpcc.vvrte.task;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Session;
+import org.mockito.InOrder;
 import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.vvrte.base.VvRteConstants;
+import cpcc.vvrte.entities.Task;
+import cpcc.vvrte.entities.TaskState;
+import cpcc.vvrte.services.db.TaskRepository;
 
 /**
  * TaskSchedulerServiceTest
  */
 public class TaskSchedulerServiceTest
 {
+    private PolarCoordinate posA;
+    private PolarCoordinate posB;
+    private PolarCoordinate posC;
+    private PolarCoordinate posD;
+
     private Task taskA;
     private Task taskB;
     private Task taskC;
@@ -49,39 +63,51 @@ public class TaskSchedulerServiceTest
     private ArrayList<Task> pendingTasks;
 
     private TaskSchedulerServiceImpl scheduler;
-    private Logger logger;
+    private Logger logger = mock(Logger.class);
+    private Session session;
+    private TaskRepository taskRepository;
 
     @BeforeMethod
     public void setUp()
     {
-        logger = mock(Logger.class);
+        posA = mock(PolarCoordinate.class);
+        when(posA.getLatitude()).thenReturn(47.1234);
+        when(posA.getLongitude()).thenReturn(13.7897);
+        when(posA.getAltitude()).thenReturn(8.0);
 
         taskA = mock(Task.class);
-        when(taskA.getLatitude()).thenReturn(47.1234);
-        when(taskA.getLongitude()).thenReturn(13.7897);
-        when(taskA.getAltitude()).thenReturn(8.0);
-        when(taskA.getCreationTime()).thenReturn(1L);
+        when(taskA.getPosition()).thenReturn(posA);
+        when(taskA.getCreationTime()).thenReturn(new Date(1L));
         when(taskA.toString()).thenReturn("taskA (47.1234, 13.7897, 8), time=1");
 
+        posB = mock(PolarCoordinate.class);
+        when(posB.getLatitude()).thenReturn(47.2345);
+        when(posB.getLongitude()).thenReturn(13.1234);
+        when(posB.getAltitude()).thenReturn(23.0);
+
         taskB = mock(Task.class);
-        when(taskB.getLatitude()).thenReturn(47.2345);
-        when(taskB.getLongitude()).thenReturn(13.1234);
-        when(taskB.getAltitude()).thenReturn(23.0);
-        when(taskB.getCreationTime()).thenReturn(2L);
+        when(taskB.getPosition()).thenReturn(posB);
+        when(taskB.getCreationTime()).thenReturn(new Date(2L));
         when(taskB.toString()).thenReturn("taskB (47.2345, 13.1234, 23), time=2");
 
+        posC = mock(PolarCoordinate.class);
+        when(posC.getLatitude()).thenReturn(47.3345);
+        when(posC.getLongitude()).thenReturn(13.5234);
+        when(posC.getAltitude()).thenReturn(13.0);
+
         taskC = mock(Task.class);
-        when(taskC.getLatitude()).thenReturn(47.3345);
-        when(taskC.getLongitude()).thenReturn(13.5234);
-        when(taskC.getAltitude()).thenReturn(13.0);
-        when(taskC.getCreationTime()).thenReturn(3L);
+        when(taskC.getPosition()).thenReturn(posC);
+        when(taskC.getCreationTime()).thenReturn(new Date(3L));
         when(taskC.toString()).thenReturn("taskC (47.3345, 13.5234, 13), time=3");
 
+        posD = mock(PolarCoordinate.class);
+        when(posD.getLatitude()).thenReturn(47.4345);
+        when(posD.getLongitude()).thenReturn(13.3234);
+        when(posD.getAltitude()).thenReturn(18.0);
+
         taskD = mock(Task.class);
-        when(taskD.getLatitude()).thenReturn(47.4345);
-        when(taskD.getLongitude()).thenReturn(13.3234);
-        when(taskD.getAltitude()).thenReturn(18.0);
-        when(taskD.getCreationTime()).thenReturn(4L);
+        when(taskD.getPosition()).thenReturn(posD);
+        when(taskD.getCreationTime()).thenReturn(new Date(4L));
         when(taskD.toString()).thenReturn("taskD (47.4345, 13.3234, 18), time=4");
 
         scheduledTasks = new ArrayList<Task>();
@@ -90,7 +116,15 @@ public class TaskSchedulerServiceTest
         pendingTasks = new ArrayList<Task>();
         assertThat(pendingTasks).isNotNull().isEmpty();
 
-        scheduler = new TaskSchedulerServiceImpl(VvRteConstants.PROP_DEFAULT_SCHEDULER_CLASS_NAME, logger);
+        session = mock(Session.class);
+
+        taskRepository = mock(TaskRepository.class);
+        when(taskRepository.getScheduledTasks()).thenReturn(scheduledTasks);
+        when(taskRepository.getPendingTasks()).thenReturn(pendingTasks);
+
+        scheduler = new TaskSchedulerServiceImpl(VvRteConstants.PROP_DEFAULT_SCHEDULER_CLASS_NAME
+            , logger, session, taskRepository);
+
         assertThat(scheduler).isNotNull();
     }
 
@@ -98,39 +132,150 @@ public class TaskSchedulerServiceTest
     public void shouldHaveDefaultSchedulingAlgorithm()
     {
         pendingTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
+        when(taskRepository.getCurrentRunningTask()).thenReturn(null);
 
-        scheduler.schedule(scheduledTasks, pendingTasks);
+        Task actual = scheduler.schedule();
 
-        assertThat(scheduledTasks).isNotEmpty().containsExactly(taskA, taskB, taskC, taskD);
-        assertThat(pendingTasks).isEmpty();
+        assertThat(actual).isSameAs(taskA);
+
+        InOrder io = inOrder(taskA, taskB, taskC, taskD, session);
+
+        io.verify(taskA).setOrder(1);
+        io.verify(taskA).setTaskState(TaskState.SCHEDULED);
+
+        io.verify(taskB).setOrder(2);
+        io.verify(taskB).setTaskState(TaskState.SCHEDULED);
+
+        io.verify(taskC).setOrder(3);
+        io.verify(taskC).setTaskState(TaskState.SCHEDULED);
+
+        io.verify(taskD).setOrder(4);
+        io.verify(taskD).setTaskState(TaskState.SCHEDULED);
+
+        io.verify(taskA).setOrder(0);
+        io.verify(taskA).setTaskState(TaskState.RUNNING);
+
+        io.verify(session).update(taskA);
+        io.verify(session).update(taskB);
+        io.verify(session).update(taskC);
+        io.verify(session).update(taskD);
+    }
+
+    @Test
+    public void shouldNotRescheduleTasksIfNoneIsPending()
+    {
+        scheduledTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
+        when(taskRepository.getCurrentRunningTask()).thenReturn(null);
+
+        Task actual = scheduler.schedule();
+
+        assertThat(actual).isSameAs(taskA);
+
+        verify(taskA).setOrder(0);
+        verify(taskA).setTaskState(TaskState.RUNNING);
+        verify(session).update(taskA);
+
+        verify(taskRepository).getCurrentRunningTask();
+        verify(taskRepository).getScheduledTasks();
+        verify(taskRepository).getPendingTasks();
+        verifyZeroInteractions(logger);
+
     }
 
     @Test
     public void shouldLoadSchedulingAlgorithm() throws Exception
     {
         pendingTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
+        when(taskRepository.getCurrentRunningTask()).thenReturn(null);
 
         scheduler.setAlgorithm(ReverseScheduler.class.getName());
 
-        scheduler.schedule(scheduledTasks, pendingTasks);
+        Task actual = scheduler.schedule();
 
-        assertThat(scheduledTasks).isNotEmpty().containsExactly(taskD, taskC, taskB, taskA);
-        assertThat(pendingTasks).isEmpty();
+        assertThat(actual).isSameAs(taskD);
+
+        InOrder io = inOrder(taskA, taskB, taskC, taskD, session);
+
+        io.verify(taskD).setOrder(1);
+        io.verify(taskD).setTaskState(TaskState.SCHEDULED);
+
+        io.verify(taskC).setOrder(2);
+        io.verify(taskC).setTaskState(TaskState.SCHEDULED);
+
+        io.verify(taskB).setOrder(3);
+        io.verify(taskB).setTaskState(TaskState.SCHEDULED);
+
+        io.verify(taskA).setOrder(4);
+        io.verify(taskA).setTaskState(TaskState.SCHEDULED);
+
+        io.verify(taskD).setOrder(0);
+        io.verify(taskD).setTaskState(TaskState.RUNNING);
+
+        io.verify(session).update(taskD);
+        io.verify(session).update(taskC);
+        io.verify(session).update(taskB);
+        io.verify(session).update(taskA);
+    }
+
+    @Test
+    public void shouldScheduleCurrentRunningTaskFirst()
+    {
+        scheduledTasks.addAll(Arrays.asList(taskB));
+        pendingTasks.addAll(Arrays.asList(taskC, taskD));
+
+        when(taskRepository.getCurrentRunningTask()).thenReturn(taskA);
+
+        Task actual = scheduler.schedule();
+
+        assertThat(actual).isSameAs(taskA);
+
+        verify(taskRepository).getCurrentRunningTask();
+        verifyZeroInteractions(taskA);
+        verifyZeroInteractions(taskB);
+        verifyZeroInteractions(taskC);
+        verifyZeroInteractions(taskD);
+        verifyZeroInteractions(session);
+        verifyZeroInteractions(logger);
+    }
+
+    @Test
+    public void shouldReturnNullOnNoTasksToHandle()
+    {
+        Task actual = scheduler.schedule();
+
+        assertThat(actual).isNull();
+
+        verify(taskRepository).getCurrentRunningTask();
+        verify(taskRepository).getScheduledTasks();
+        verify(taskRepository).getPendingTasks();
+        verifyZeroInteractions(session);
+        verifyZeroInteractions(logger);
     }
 
     @Test
     public void shouldLogNotExistingSchedulingAlgorithm() throws Exception
     {
-        TaskSchedulerServiceImpl scheduler2 = new TaskSchedulerServiceImpl("cpcc.notExistingAlgorithmImpl", logger);
+        pendingTasks.addAll(Arrays.asList(taskA, taskB));
+        scheduledTasks.addAll(Arrays.asList(taskC, taskD));
+
+        when(taskRepository.getCurrentRunningTask()).thenReturn(null);
+
+        TaskSchedulerServiceImpl scheduler2 =
+            new TaskSchedulerServiceImpl("cpcc.notExistingAlgorithmImpl", logger, session, taskRepository);
 
         verify(logger).error(anyString(), any(ClassNotFoundException.class));
 
-        pendingTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
+        Task actual = scheduler2.schedule();
 
-        scheduler2.schedule(scheduledTasks, pendingTasks);
+        assertThat(actual).isNull();
 
-        assertThat(scheduledTasks).isNotEmpty().containsExactly(taskA, taskB, taskC, taskD);
-        assertThat(pendingTasks).isEmpty();
+        verify(logger).error(anyString());
+        verifyZeroInteractions(taskA);
+        verifyZeroInteractions(taskB);
+        verifyZeroInteractions(taskC);
+        verifyZeroInteractions(taskD);
+        verifyZeroInteractions(session);
+        verifyZeroInteractions(taskRepository);
     }
 
     /**
@@ -142,13 +287,15 @@ public class TaskSchedulerServiceTest
          * {@inheritDoc}
          */
         @Override
-        public void schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
+        public boolean schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
         {
             for (int k = pendingTasks.size(); k > 0; --k)
             {
                 scheduledTasks.add(pendingTasks.get(k - 1));
             }
+
             pendingTasks.clear();
+            return true;
         }
     }
 }

@@ -32,9 +32,9 @@ import org.geojson.Point;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.utils.GeoJsonUtils;
-import cpcc.core.utils.PolarCoordinate;
 
 /**
  * CoreGeoJsonConverterImpl

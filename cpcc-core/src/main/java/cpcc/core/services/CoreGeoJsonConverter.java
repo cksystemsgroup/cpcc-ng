@@ -25,8 +25,8 @@ import java.util.Map;
 import org.geojson.Feature;
 import org.geojson.Point;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
-import cpcc.core.utils.PolarCoordinate;
 
 /**
  * CoreGeoJsonConverter

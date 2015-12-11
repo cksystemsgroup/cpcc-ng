@@ -20,9 +20,8 @@ package cpcc.vvrte.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -51,6 +50,8 @@ import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
+import cpcc.vvrte.services.db.TaskRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
 import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptWorker;
 import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
@@ -134,7 +135,7 @@ public class VehicleLauncherTest
         when(sessionManager.getSession()).thenReturn(session);
 
         JavascriptService jss = mock(JavascriptService.class);
-        when(jss.createWorker(anyString(), anyInt())).thenReturn(worker);
+        when(jss.createWorker(any(VirtualVehicle.class), any(Boolean.class))).thenReturn(worker);
 
         VirtualVehicleMigrator migrator = mock(VirtualVehicleMigrator.class);
 
@@ -147,8 +148,10 @@ public class VehicleLauncherTest
 
         Messages messages = mock(Messages.class);
 
+        TaskRepository taskRepository = mock(TaskRepository.class);
+
         launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository
-            , rvRepository, timeService, messages);
+            , rvRepository, timeService, messages, taskRepository);
     }
 
     @Test

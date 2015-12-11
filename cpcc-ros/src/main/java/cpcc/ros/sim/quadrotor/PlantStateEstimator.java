@@ -21,9 +21,9 @@ package cpcc.ros.sim.quadrotor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.CartesianCoordinate;
 import cpcc.core.utils.GeodeticSystem;
-import cpcc.core.utils.PolarCoordinate;
 
 /**
  * PlantStateEstimator

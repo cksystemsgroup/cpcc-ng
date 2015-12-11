@@ -28,20 +28,20 @@ import org.geojson.FeatureCollection;
 import org.slf4j.Logger;
 
 import cpcc.core.entities.MappingAttributes;
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
-import cpcc.core.utils.PolarCoordinate;
 import cpcc.ros.base.AbstractRosAdapter;
 import cpcc.ros.sensors.AbstractGpsSensorAdapter;
 import cpcc.ros.services.RosNodeService;
-import cpcc.vvrte.services.VvGeoJsonConverter;
-import cpcc.vvrte.services.VvRteRepository;
-import cpcc.vvrte.task.Task;
-import cpcc.vvrte.task.TaskExecutionService;
+import cpcc.vvrte.entities.Task;
+import cpcc.vvrte.services.db.TaskRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.services.json.VvGeoJsonConverter;
 import sensor_msgs.NavSatFix;
 
 /**
@@ -60,26 +60,26 @@ public class StateServiceImpl implements StateService
 
     private QueryManager qm;
     private RosNodeService rns;
-    private TaskExecutionService execSvc;
+    private TaskRepository taskRepository;
 
     /**
      * @param logger the application logger.
      * @param qm the query manager.
      * @param rns the ROS node service.
      * @param vvRepo the virtual vehicle RTE repository.
-     * @param pjc the core geo JSON converter.
+     * @param pjc the core GeoJSON converter.
      * @param vjc the virtual vehicle JSON converter.
      * @param rvRepo the real vehicle repository.
-     * @param execSvc the task execution service.
+     * @param taskRepository the task repository.
      * @param timeService the time service.
      */
     public StateServiceImpl(Logger logger, QueryManager qm, RosNodeService rns, VvRteRepository vvRepo,
-        CoreGeoJsonConverter pjc, VvGeoJsonConverter vjc, RealVehicleRepository rvRepo, TaskExecutionService execSvc,
+        CoreGeoJsonConverter pjc, VvGeoJsonConverter vjc, RealVehicleRepository rvRepo, TaskRepository taskRepository,
         TimeService timeService)
     {
         this.qm = qm;
         this.rns = rns;
-        this.execSvc = execSvc;
+        this.taskRepository = taskRepository;
 
         contributorMap.put(POSITION, new PositionContributor(timeService, rvRepo, pjc));
         contributorMap.put(VIRTUAL_VEHICLES, new VirtualVehicleContributor(vvRepo, vjc));
@@ -94,12 +94,12 @@ public class StateServiceImpl implements StateService
     public FeatureCollection getState(String what) throws IOException
     {
         List<Task> tasks = new ArrayList<>();
-        Task task = execSvc.getCurrentRunningTask();
+        Task task = taskRepository.getCurrentRunningTask();
         if (task != null)
         {
             tasks.add(task);
         }
-        tasks.addAll(execSvc.getScheduledTasks());
+        tasks.addAll(taskRepository.getScheduledTasks());
 
         PolarCoordinate position = findRealVehiclePosition();
 

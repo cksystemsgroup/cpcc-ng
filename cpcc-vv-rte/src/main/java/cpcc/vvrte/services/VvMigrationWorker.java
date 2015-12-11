@@ -33,6 +33,7 @@ import cpcc.com.services.CommunicationService;
 import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
+import cpcc.vvrte.services.db.VvRteRepository;
 
 /**
  * VvMigrationWorker

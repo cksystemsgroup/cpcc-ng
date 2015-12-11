@@ -18,16 +18,24 @@
 
 package cpcc.vvrte.task;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.ServiceResources;
+import org.apache.tapestry5.ioc.services.PerthreadManager;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJSON;
+import org.mozilla.javascript.NativeObject;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.entities.SensorDefinition;
+import cpcc.core.entities.SensorVisibility;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.core.utils.GeodeticSystem;
-import cpcc.core.utils.PolarCoordinate;
 import cpcc.core.utils.WGS84;
 import cpcc.ros.actuators.AbstractActuatorAdapter;
 import cpcc.ros.actuators.ActuatorType;
@@ -38,6 +46,10 @@ import cpcc.ros.sensors.AbstractSensorAdapter;
 import cpcc.ros.sensors.AltimeterAdapter;
 import cpcc.ros.sensors.SensorType;
 import cpcc.ros.services.RosNodeService;
+import cpcc.vvrte.entities.Task;
+import cpcc.vvrte.entities.TaskState;
+import cpcc.vvrte.services.db.TaskRepository;
+import cpcc.vvrte.services.ros.MessageConverter;
 import sensor_msgs.NavSatFix;
 
 /**
@@ -45,28 +57,38 @@ import sensor_msgs.NavSatFix;
  */
 public class TaskExecutionServiceImpl implements TaskExecutionService
 {
-    private static final Logger LOG = LoggerFactory.getLogger(TaskExecutionServiceImpl.class);
-
-    private List<Task> pendingTasks = Collections.synchronizedList(new ArrayList<Task>());
-    private List<Task> scheduledTasks = Collections.synchronizedList(new ArrayList<Task>());
     private Task currentRunningTask = null;
 
+    private ServiceResources serviceResources;
+    private Logger logger;
     private TaskSchedulerService scheduler;
     private RosNodeService rosNodeService;
+    private MessageConverter conv;
+    private TimeService timeService;
     private Map<String, List<AbstractRosAdapter>> adapterNodes;
     private SimpleWayPointControllerAdapter wayPointController = null;
     private AbstractGpsSensorAdapter gpsReceiver;
     private AltimeterAdapter altimeter;
     private GeodeticSystem gs = new WGS84();
+    private Set<TaskCompletionListener> listeners = new HashSet<>();
 
     /**
-     * @param scheduler the task scheduler.
-     * @param rosNodeService the ROS node service.
+     * @param logger the application logger.
+     * @param serviceResources the service resources.
+     * @param scheduler the scheduler instance.
+     * @param rosNodeService the ROS node service instance.
+     * @param conv the ROS message converter instance.
+     * @param timeService the time service instance.
      */
-    public TaskExecutionServiceImpl(TaskSchedulerService scheduler, RosNodeService rosNodeService)
+    public TaskExecutionServiceImpl(Logger logger, ServiceResources serviceResources, TaskSchedulerService scheduler
+        , RosNodeService rosNodeService, MessageConverter conv, TimeService timeService)
     {
+        this.serviceResources = serviceResources;
+        this.logger = logger;
         this.scheduler = scheduler;
         this.rosNodeService = rosNodeService;
+        this.conv = conv;
+        this.timeService = timeService;
         init();
     }
 
@@ -133,42 +155,120 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     @Override
     public void executeTasks()
     {
+        PerthreadManager tm = serviceResources.getService(PerthreadManager.class);
+        HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
+        TaskRepository taskRepository = serviceResources.getService(TaskRepository.class);
+
         if (currentRunningTask == null)
         {
-            if (scheduledTasks.isEmpty() && !pendingTasks.isEmpty())
-            {
-                scheduler.schedule(scheduledTasks, pendingTasks);
-            }
-
-            if (scheduledTasks.isEmpty())
-            {
-                return;
-            }
-
-            currentRunningTask = scheduledTasks.get(0);
-            scheduledTasks.remove(0);
+            currentRunningTask = taskRepository.getCurrentRunningTask();
         }
 
-        wayPointController.setPosition(currentRunningTask);
-
-        NavSatFix pos = gpsReceiver.getPosition();
-        if (pos == null)
+        if (currentRunningTask == null)
         {
+            currentRunningTask = scheduler.schedule();
+        }
+
+        if (currentRunningTask == null)
+        {
+            // TODO after some idle time return to the depot/loiter position.
+            sessionManager.commit();
+            tm.cleanup();
             return;
         }
 
-        PolarCoordinate vehiclePosition = new PolarCoordinate(pos.getLatitude(), pos.getLongitude(),
-            altimeter != null ? altimeter.getValue().getData() : pos.getAltitude());
+        boolean completed = false;
 
-        double distance = gs.calculateDistance(currentRunningTask, vehiclePosition);
-        currentRunningTask.setDistanceToTarget(distance);
+        wayPointController.setPosition(currentRunningTask.getPosition());
 
-        if (distance < currentRunningTask.getTolerance())
+        NavSatFix pos = gpsReceiver.getPosition();
+        if (pos != null)
         {
-            LOG.info("Task completed: " + ((PolarCoordinate) currentRunningTask) + " distance=" + distance);
-            currentRunningTask.setCompleted();
-            currentRunningTask = null;
+            PolarCoordinate vehiclePosition = new PolarCoordinate(pos.getLatitude(), pos.getLongitude(),
+                altimeter != null ? altimeter.getValue().getData() : pos.getAltitude());
+
+            double distance = gs.calculateDistance(currentRunningTask.getPosition(), vehiclePosition);
+            currentRunningTask.setDistanceToTarget(distance);
+
+            if (distance < currentRunningTask.getTolerance())
+            {
+                logger.info("Task executed: " + currentRunningTask.getPosition() + " distance=" + distance);
+                completeTask(currentRunningTask);
+                completed = true;
+            }
+            else if (currentRunningTask.getExecutionStart() == null)
+            {
+                currentRunningTask.setExecutionStart(timeService.newDate());
+            }
+
+            sessionManager.getSession().saveOrUpdate(currentRunningTask);
         }
+
+        sessionManager.commit();
+
+        if (completed)
+        {
+            try
+            {
+                notify(currentRunningTask);
+            }
+            finally
+            {
+                currentRunningTask = null;
+            }
+        }
+
+        tm.cleanup();
+    }
+
+    /**
+     * @param task the task to be completed.
+     */
+    private void completeTask(Task task)
+    {
+        task.setTaskState(TaskState.EXECUTED);
+        task.setExecutionEnd(timeService.newDate());
+
+        NativeObject o = new NativeObject();
+
+        for (SensorDefinition sd : task.getSensors())
+        {
+            if (sd == null || sd.getVisibility() == SensorVisibility.NO_VV)
+            {
+                continue;
+            }
+
+            AbstractRosAdapter node = rosNodeService.findAdapterNodeBySensorDefinitionId(sd.getId());
+            o.put(sd.getDescription(), o, conv.convertMessageToJS(node.getValue()));
+        }
+
+        Context cx = Context.enter();
+        try
+        {
+            Object sensorValues = NativeJSON.stringify(cx, cx.initStandardObjects(), o, null, null);
+            task.setSensorValues((String) sensorValues);
+        }
+        finally
+        {
+            Context.exit();
+        }
+    }
+
+    /**
+     * @param task the completed task.
+     */
+    private void notify(Task task)
+    {
+        listeners.stream().forEach(listener -> listener.notify(task));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addListener(TaskCompletionListener listener)
+    {
+        listeners.add(listener);
     }
 
     /**
@@ -198,44 +298,4 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         return altimeter;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addTask(Task task)
-    {
-        synchronized (pendingTasks)
-        {
-            pendingTasks.add(task);
-        }
-
-        scheduler.schedule(scheduledTasks, pendingTasks);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Task> getPendingTasks()
-    {
-        return Collections.unmodifiableList(pendingTasks);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Task> getScheduledTasks()
-    {
-        return Collections.unmodifiableList(scheduledTasks);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Task getCurrentRunningTask()
-    {
-        return currentRunningTask;
-    }
 }

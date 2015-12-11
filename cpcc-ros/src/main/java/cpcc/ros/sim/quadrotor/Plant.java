@@ -25,10 +25,10 @@ import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cpcc.core.utils.PolarCoordinate;
 import sensor_msgs.NavSatFix;
 import std_msgs.Float32;
 import big_actor_msgs.LatLngAlt;
+import cpcc.core.entities.PolarCoordinate;
 
 /**
  * Plant

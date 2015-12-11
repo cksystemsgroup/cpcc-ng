@@ -19,12 +19,9 @@ import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.opts.OptionsParserService;
 import cpcc.ros.services.RosNodeService;
-import cpcc.vvrte.services.BuiltInFunctionsImpl;
-import cpcc.vvrte.services.MessageConverter;
-import cpcc.vvrte.services.VirtualVehicleMapper;
-import cpcc.vvrte.services.VvRteRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.services.ros.MessageConverter;
 import cpcc.vvrte.task.TaskAnalyzer;
-import cpcc.vvrte.task.TaskExecutionService;
 
 public class BuiltInFunctionsTest
 {
@@ -33,7 +30,7 @@ public class BuiltInFunctionsTest
     private OptionsParserService opts;
     private MessageConverter conv;
     private VirtualVehicleMapper mapper;
-    private TaskExecutionService taskExecutor;
+    // private TaskExecutionService taskExecutor;
     private TaskAnalyzer taskAnalyzer;
     private VvRteRepository vvRteRepo;
     private QueryManager qm;
@@ -78,7 +75,7 @@ public class BuiltInFunctionsTest
         opts = mock(OptionsParserService.class);
         conv = mock(MessageConverter.class);
         mapper = mock(VirtualVehicleMapper.class);
-        taskExecutor = mock(TaskExecutionService.class);
+        // taskExecutor = mock(TaskExecutionService.class);
         taskAnalyzer = mock(TaskAnalyzer.class);
         vvRteRepo = mock(VvRteRepository.class);
         qm = mock(QueryManager.class);
@@ -88,7 +85,7 @@ public class BuiltInFunctionsTest
         sessionManager = mock(HibernateSessionManager.class);
         logger = mock(Logger.class);
 
-        sut = new BuiltInFunctionsImpl(rns, opts, conv, mapper, taskExecutor, taskAnalyzer, vvRteRepo, qm
+        sut = new BuiltInFunctionsImpl(rns, opts, conv, mapper, taskAnalyzer, vvRteRepo, qm
             , sessionManager, logger);
     }
 

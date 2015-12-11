@@ -20,6 +20,8 @@ package cpcc.vvrte.task;
 
 import java.util.List;
 
+import cpcc.vvrte.entities.Task;
+
 /**
  * TaskSchedulingAlgorithm
  */
@@ -31,6 +33,7 @@ public interface TaskSchedulingAlgorithm
      * 
      * @param scheduledTasks the already scheduled tasks.
      * @param pendingTasks the currently pending tasks.
+     * @return true if the algorithm changed the list of scheduled tasks.
      */
-    void schedule(List<Task> scheduledTasks, List<Task> pendingTasks);
+    boolean schedule(List<Task> scheduledTasks, List<Task> pendingTasks);
 }

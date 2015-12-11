@@ -20,12 +20,18 @@ package cpcc.vvrte.task;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 
+import cpcc.core.utils.UpdateConsumer;
 import cpcc.vvrte.base.VvRteConstants;
+import cpcc.vvrte.entities.Task;
+import cpcc.vvrte.entities.TaskState;
+import cpcc.vvrte.services.db.TaskRepository;
 
 /**
  * Task Scheduler Service Implementation.
@@ -33,14 +39,23 @@ import cpcc.vvrte.base.VvRteConstants;
 public class TaskSchedulerServiceImpl implements TaskSchedulerService
 {
     private TaskSchedulingAlgorithm algorithm = null;
+    private Logger logger;
+    private Session session;
+    private TaskRepository taskRepository;
 
     /**
      * @param scheduler the task scheduling algorithm.
      * @param logger the application logger.
+     * @param session the database session.
+     * @param taskRepository the task repository.
      */
     public TaskSchedulerServiceImpl(@Symbol(VvRteConstants.PROP_DEFAULT_SCHEDULER) String scheduler
-        , Logger logger)
+        , Logger logger, Session session, TaskRepository taskRepository)
     {
+        this.logger = logger;
+        this.session = session;
+        this.taskRepository = taskRepository;
+
         try
         {
             setAlgorithm(scheduler);
@@ -56,23 +71,43 @@ public class TaskSchedulerServiceImpl implements TaskSchedulerService
      * {@inheritDoc}
      */
     @Override
-    public void schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
+    public Task schedule()
     {
-        synchronized (scheduledTasks)
+        if (algorithm == null)
         {
-            synchronized (pendingTasks)
+            logger.error("No TaskSchedulingAlgorithm defined!");
+            return null;
+        }
+
+        Task currentRunningTask = taskRepository.getCurrentRunningTask();
+        if (currentRunningTask != null)
+        {
+            return currentRunningTask;
+        }
+
+        List<Task> scheduledTasks = new ArrayList<>(taskRepository.getScheduledTasks());
+        List<Task> pendingTasks = new ArrayList<>(taskRepository.getPendingTasks());
+
+        if (!pendingTasks.isEmpty() && algorithm.schedule(scheduledTasks, pendingTasks))
+        {
+            int order = 0;
+            for (Task task : scheduledTasks)
             {
-                if (algorithm != null)
-                {
-                    algorithm.schedule(scheduledTasks, pendingTasks);
-                }
-                else
-                {
-                    scheduledTasks.addAll(pendingTasks);
-                    pendingTasks.clear();
-                }
+                task.setOrder(++order);
+                task.setTaskState(TaskState.SCHEDULED);
             }
         }
+
+        if (scheduledTasks.isEmpty())
+        {
+            return null;
+        }
+
+        currentRunningTask = scheduledTasks.get(0);
+        currentRunningTask.setOrder(0);
+        currentRunningTask.setTaskState(TaskState.RUNNING);
+        scheduledTasks.stream().forEach(new UpdateConsumer<>(session));
+        return currentRunningTask;
     }
 
     /**

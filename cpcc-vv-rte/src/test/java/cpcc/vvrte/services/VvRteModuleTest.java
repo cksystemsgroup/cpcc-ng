@@ -40,9 +40,17 @@ import org.testng.annotations.Test;
 
 import cpcc.com.services.CommunicationService;
 import cpcc.vvrte.base.VvRteConstants;
+import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.services.db.VvRteRepositoryImpl;
 import cpcc.vvrte.services.js.BuiltInFunctions;
 import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptServiceImpl;
+import cpcc.vvrte.services.json.VvGeoJsonConverter;
+import cpcc.vvrte.services.json.VvGeoJsonConverterImpl;
+import cpcc.vvrte.services.json.VvJsonConverter;
+import cpcc.vvrte.services.json.VvJsonConverterImpl;
+import cpcc.vvrte.services.ros.MessageConverter;
+import cpcc.vvrte.services.ros.MessageConverterImpl;
 import cpcc.vvrte.task.TaskAnalyzer;
 import cpcc.vvrte.task.TaskAnalyzerImpl;
 import cpcc.vvrte.task.TaskExecutionService;

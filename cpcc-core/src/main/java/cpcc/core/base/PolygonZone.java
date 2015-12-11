@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.core.base;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.Locale;
 
 import org.geojson.LngLatAlt;
 
-import cpcc.core.utils.PolarCoordinate;
+import cpcc.core.entities.PolarCoordinate;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

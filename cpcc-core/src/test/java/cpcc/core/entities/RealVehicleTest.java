@@ -42,12 +42,12 @@ import cpcc.core.entities.SensorDefinition;
 public class RealVehicleTest
 {
 
-    private RealVehicle rv;
+    private RealVehicle sut;
 
     @BeforeMethod
     public void setUp()
     {
-        rv = new RealVehicle();
+        sut = new RealVehicle();
     }
 
     @DataProvider
@@ -68,8 +68,8 @@ public class RealVehicleTest
     @Test(dataProvider = "integerDataProvider")
     public void shouldStoreId(int id)
     {
-        rv.setId(id);
-        assertThat(rv.getId()).isNotNull().isEqualTo(id);
+        sut.setId(id);
+        assertThat(sut.getId()).isNotNull().isEqualTo(id);
     }
 
     @DataProvider
@@ -87,8 +87,8 @@ public class RealVehicleTest
     @Test(dataProvider = "stringDataProvider")
     public void shouldStoreAreaOfOperations(String areaOfOperation)
     {
-        rv.setAreaOfOperation(areaOfOperation);
-        assertThat(rv.getAreaOfOperation()).isNotNull().isEqualTo(areaOfOperation);
+        sut.setAreaOfOperation(areaOfOperation);
+        assertThat(sut.getAreaOfOperation()).isNotNull().isEqualTo(areaOfOperation);
     }
 
     @DataProvider
@@ -103,8 +103,8 @@ public class RealVehicleTest
     @Test(dataProvider = "booleanDataProvider")
     public void shouldStoreDeletedMarker(boolean deleted)
     {
-        rv.setDeleted(deleted);
-        assertThat(rv.getDeleted()).isNotNull().isEqualTo(deleted);
+        sut.setDeleted(deleted);
+        assertThat(sut.getDeleted()).isNotNull().isEqualTo(deleted);
     }
 
     @DataProvider
@@ -120,15 +120,15 @@ public class RealVehicleTest
     @Test(dataProvider = "dateDataProvider")
     public void shouldStoreLastUpdate(Date lastUpdate)
     {
-        rv.setLastUpdate(lastUpdate);
-        assertThat(rv.getLastUpdate()).isNotNull().isEqualTo(lastUpdate);
+        sut.setLastUpdate(lastUpdate);
+        assertThat(sut.getLastUpdate()).isNotNull().isEqualTo(lastUpdate);
     }
 
     @Test(dataProvider = "stringDataProvider")
     public void shouldStoreName(String name)
     {
-        rv.setName(name);
-        assertThat(rv.getName()).isNotNull().isEqualTo(name);
+        sut.setName(name);
+        assertThat(sut.getName()).isNotNull().isEqualTo(name);
     }
 
     @DataProvider
@@ -146,15 +146,15 @@ public class RealVehicleTest
     @Test(dataProvider = "typeDataProvider")
     public void shouldStoreType(RealVehicleType type)
     {
-        rv.setType(type);
-        assertThat(rv.getType()).isNotNull().isEqualTo(type);
+        sut.setType(type);
+        assertThat(sut.getType()).isNotNull().isEqualTo(type);
     }
 
     @Test(dataProvider = "stringDataProvider")
     public void shouldStoreUrl(String url)
     {
-        rv.setUrl(url);
-        assertThat(rv.getUrl()).isNotNull().isEqualTo(url);
+        sut.setUrl(url);
+        assertThat(sut.getUrl()).isNotNull().isEqualTo(url);
     }
 
     @DataProvider
@@ -176,8 +176,8 @@ public class RealVehicleTest
     @Test(dataProvider = "sensorDataProvider")
     public void should(SensorDefinition[] sensors)
     {
-        rv.setSensors(Arrays.asList(sensors));
-        assertThat(rv.getSensors()).isNotNull().containsExactly(sensors);
+        sut.setSensors(Arrays.asList(sensors));
+        assertThat(sut.getSensors()).isNotNull().containsExactly(sensors);
     }
 
     @SuppressWarnings("unchecked")
@@ -302,8 +302,6 @@ public class RealVehicleTest
     @DataProvider
     public Object[][] realVehicleDataProvider()
     {
-        // SensorDefinition sen1 = mock(SensorDefinition.class);
-        // when(sen1.hashCode()).thenReturn(1019);
         SensorDefinition sen1 = new SensorDefinition();
         sen1.setId(9174);
 
@@ -340,6 +338,15 @@ public class RealVehicleTest
             assertThat(codeSet).doesNotContain(hash);
             codeSet.add(hash);
         }
+    }
 
+    @Test
+    public void shouldStoreState()
+    {
+        RealVehicleState state = mock(RealVehicleState.class);
+
+        sut.setState(state);
+
+        assertThat(sut.getState()).isSameAs(state);
     }
 }

@@ -28,8 +28,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.RealVehicle;
-import cpcc.vvrte.services.VirtualVehicleMappingDecision;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.base.VirtualVehicleMappingDecision;
+import cpcc.vvrte.entities.Task;
 
 /**
  * VirtualVehicleMappingDecisionTest

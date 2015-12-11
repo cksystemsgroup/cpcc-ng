@@ -27,20 +27,25 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.Messages;
 import org.slf4j.Logger;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleType;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
+import cpcc.vvrte.base.VirtualVehicleMappingDecision;
+import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
+import cpcc.vvrte.services.db.TaskRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.services.js.ApplicationState;
 import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptWorker;
-import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
-import cpcc.vvrte.task.Task;
 
 /**
  * VehicleLauncherImpl
  */
-public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, JavascriptWorkerStateListener
+public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 {
     private static final String MSG_MAPPING_DECISION = "virtual.vehicle.launcher.mapping.decision";
 
@@ -53,6 +58,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
     private TimeService timeService;
     private Map<JavascriptWorker, Integer> vehicleMap = new HashMap<JavascriptWorker, Integer>();
     private Messages messages;
+    private TaskRepository taskRepository;
 
     /**
      * @param logger the application logger.
@@ -63,10 +69,11 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      * @param rvRepository the real vehicle repository.
      * @param timeService the time service.
      * @param messages the application message catalog.
+     * @param taskRepository the task repository instance.
      */
     public VirtualVehicleLauncherImpl(Logger logger, HibernateSessionManager sessionManager, JavascriptService jss
         , VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository, RealVehicleRepository rvRepository
-        , TimeService timeService, Messages messages)
+        , TimeService timeService, Messages messages, TaskRepository taskRepository)
     {
         this.logger = logger;
         this.sessionManager = sessionManager;
@@ -76,6 +83,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         this.rvRepository = rvRepository;
         this.timeService = timeService;
         this.messages = messages;
+        this.taskRepository = taskRepository;
 
         jss.addAllowedClassRegex("\\$BuiltInFunctions_.*");
     }
@@ -140,6 +148,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
         vehicle.setMigrationStartTime(null);
         vehicle.setStartTime(null);
         vehicle.setEndTime(null);
+        vehicle.setTask(null);
 
         sessionManager.getSession().saveOrUpdate(vehicle);
         sessionManager.commit();
@@ -160,10 +169,10 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
 
         VirtualVehicleState state = vehicle.getState();
 
-        if (!VirtualVehicleState.VV_STATES_FOR_RESTART.contains(state))
+        if (!VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION.contains(state))
         {
             throw new VirtualVehicleLaunchException("Got vehicle in state " + state
-                + ", but expected " + VirtualVehicleState.VV_STATES_FOR_RESTART);
+                + ", but expected " + VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION);
         }
 
         startVehicle(vehicle, true);
@@ -178,10 +187,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
     private void startVehicle(VirtualVehicle vehicle, boolean useContinuation)
         throws VirtualVehicleLaunchException, IOException
     {
-        JavascriptWorker worker = useContinuation && vehicle.getContinuation() != null
-            ? jss.createWorker(vehicle.getContinuation())
-            : jss.createWorker(vehicle.getCode().replace("\\n", "\n"), vehicle.getApiVersion());
-
+        JavascriptWorker worker = jss.createWorker(vehicle, useContinuation);
         worker.addStateListener(this);
         worker.setName("VV-" + vehicle.getId() + "-" + vehicle.getName());
         vehicleMap.put(worker, vehicle.getId());
@@ -214,9 +220,33 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      * {@inheritDoc}
      */
     @Override
+    public void notify(Task tsk)
+    {
+        logger.info("notify(): task=" + tsk.getId() + " " + tsk.getTaskState().name());
+
+        Task task = taskRepository.findTaskById(tsk.getId());
+        VirtualVehicle vehicle = task.getVehicle();
+        task.setVehicle(null);
+        sessionManager.getSession().saveOrUpdate(task);
+        sessionManager.commit();
+
+        try
+        {
+            startVehicle(vehicle, true);
+        }
+        catch (VirtualVehicleLaunchException | IOException e)
+        {
+            logger.error("Can not start virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void notify(JavascriptWorker worker, VirtualVehicleState vehicleState)
     {
-        logger.info("notify(): " + worker.getName() + ", state=" + vehicleState);
+        logger.info("notify(): worker=" + worker.getName() + ", state=" + vehicleState);
         VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleMap.get(worker));
 
         if (vehicle == null || vehicleState == null)
@@ -231,6 +261,9 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
 
         switch (vehicleState)
         {
+            case TASK_COMPLETION_AWAITED:
+                decision = handleInterruptedVehicle(worker, vehicle);
+                break;
             case INTERRUPTED:
                 decision = handleInterruptedVehicle(worker, vehicle);
                 break;
@@ -244,7 +277,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
                 break;
         }
 
-        sessionManager.getSession().saveOrUpdate(vehicle);
+        sessionManager.getSession().update(vehicle);
         sessionManager.commit();
 
         if (decision != null)
@@ -252,7 +285,6 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
             logger.info("initiate Migration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
             migrator.initiateMigration(vehicle);
         }
-
     }
 
     /**
@@ -275,9 +307,16 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
     {
         vehicle.setEndTime(timeService.newDate());
 
-        List<RealVehicle> groundStations = rvRepository.findAllConnectedGroundStations();
+        RealVehicle me = rvRepository.findOwnRealVehicle();
+
+        if (me.getType() == RealVehicleType.GROUND_STATION)
+        {
+            return new VirtualVehicleMappingDecision().setMigration(false);
+        }
 
         VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision();
+
+        List<RealVehicle> groundStations = rvRepository.findAllConnectedGroundStations();
         if (!groundStations.isEmpty())
         {
             decision.setMigration(true);
@@ -296,7 +335,14 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
     private VirtualVehicleMappingDecision handleInterruptedVehicle(JavascriptWorker worker, VirtualVehicle vehicle)
     {
         vehicle.setContinuation(worker.getSnapshot());
-        VirtualVehicleMappingDecision decision = (VirtualVehicleMappingDecision) worker.getApplicationState();
+        ApplicationState state = (ApplicationState) worker.getApplicationState();
+
+        if (!state.isMappingDecision())
+        {
+            return null;
+        }
+
+        VirtualVehicleMappingDecision decision = state.getDecision();
 
         if (decision.isMigration() && decision.getRealVehicles().size() > 0)
         {
@@ -304,6 +350,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
             RealVehicle migrationDestination = decision.getRealVehicles().get(0);
             vehicle.setMigrationDestination(migrationDestination);
             vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
+            vehicle.setTask(null);
         }
         else
         {
@@ -322,20 +369,10 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher, Javas
      */
     private String convertToStateInfoString(VirtualVehicleMappingDecision decision)
     {
-        Task task = decision.getTask();
+        PolarCoordinate position = decision.getTask().getPosition();
 
         return messages.format(MSG_MAPPING_DECISION, decision.isMigration()
-            , task.getLatitude(), task.getLongitude(), task.getAltitude());
-
-        //        StringBuilder bldr = new StringBuilder("No suitable real vehicle found to migrate to!\n\n");
-        //
-        //        bldr.append("Migration: ").append(decision.isMigration()).append("\n")
-        //            .append("Task Position: {lat: ").append(decision.getTask().getPosition().getLatitude())
-        //            .append(", lng: ").append(decision.getTask().getPosition().getLongitude())
-        //            .append(", alt: ").append(decision.getTask().getPosition().getAltitude())
-        //            .append("}\n");
-        //
-        //        return bldr.toString();
+            , position.getLatitude(), position.getLongitude(), position.getAltitude());
     }
 
 }

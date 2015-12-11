@@ -21,7 +21,9 @@ package cpcc.vvrte.services.js;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
@@ -29,6 +31,8 @@ import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cpcc.vvrte.entities.VirtualVehicle;
 
 /**
  * JavascriptServiceImpl
@@ -42,19 +46,22 @@ public class JavascriptServiceImpl implements JavascriptService
     private Set<String> allowedClasses = new HashSet<String>();
     private Set<String> allowedClassesRegex = new HashSet<String>();
 
+    private Logger logger;
     private ServiceResources serviceResources;
 
     /**
+     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param functions the built-in functions to use.
      */
-    public JavascriptServiceImpl(ServiceResources serviceResources, BuiltInFunctions functions)
+    public JavascriptServiceImpl(Logger logger, ServiceResources serviceResources, BuiltInFunctions functions)
     {
+        this.logger = logger;
         this.serviceResources = serviceResources;
-        
+
         VvRteFunctions.setVvRte(functions);
         // VvRteFunctions.setStdOut(System.out);
-        
+
         try
         {
             if (!ContextFactory.hasExplicitGlobal())
@@ -72,18 +79,10 @@ public class JavascriptServiceImpl implements JavascriptService
      * {@inheritDoc}
      */
     @Override
-    public JavascriptWorker createWorker(String script, int apiVersion) throws IOException
+    public JavascriptWorker createWorker(VirtualVehicle vehicle, boolean useContinuation) throws IOException
     {
-        return new JavascriptWorker(serviceResources, script, apiVersion, allowedClasses, allowedClassesRegex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JavascriptWorker createWorker(byte[] continuation)
-    {
-        return new JavascriptWorker(serviceResources, continuation, allowedClasses, allowedClassesRegex);
+        return new JavascriptWorker(vehicle, useContinuation, logger, serviceResources, allowedClasses
+            , allowedClassesRegex);
     }
 
     /**
@@ -110,9 +109,16 @@ public class JavascriptServiceImpl implements JavascriptService
     @Override
     public Object[] codeVerification(String script, int apiVersion) throws IOException
     {
-        JavascriptWorker w = 
-            new JavascriptWorker(serviceResources, script, apiVersion, allowedClasses, allowedClassesRegex);
-        String completedScript = w.getScript();
+        VirtualVehicle vehicle = new VirtualVehicle();
+        vehicle.setId(123456789);
+        vehicle.setCode(script);
+        vehicle.setApiVersion(apiVersion);
+        vehicle.setUuid(UUID.randomUUID().toString());
+
+        JavascriptWorker w = new JavascriptWorker(vehicle, false, logger, serviceResources, allowedClasses
+            , allowedClassesRegex);
+
+        String completedScript = StringUtils.defaultIfBlank(w.getScript(), "");
 
         Context cx = Context.enter();
         cx.setOptimizationLevel(-1);

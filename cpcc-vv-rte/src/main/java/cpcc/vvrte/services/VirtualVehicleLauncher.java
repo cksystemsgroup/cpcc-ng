@@ -21,11 +21,13 @@ package cpcc.vvrte.services;
 import java.io.IOException;
 
 import cpcc.vvrte.entities.VirtualVehicleState;
+import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
+import cpcc.vvrte.task.TaskCompletionListener;
 
 /**
  * VirtualVehicleLauncher
  */
-public interface VirtualVehicleLauncher
+public interface VirtualVehicleLauncher extends JavascriptWorkerStateListener, TaskCompletionListener
 {
     /**
      * @param vehicleId the ID of the vehicle to launch.
@@ -53,5 +55,4 @@ public interface VirtualVehicleLauncher
      * @param newState the new vehicle state.
      */
     void stateChange(int vehicleId, VirtualVehicleState newState);
-
 }

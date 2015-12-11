@@ -9,8 +9,21 @@ function($, leaflet, data, console, map, v, vl)
 
 	module.onSensorsChange = function(e, overlay)
 	{
-		console.info('sensorsChange: start ' + JSON.stringify(e.layer.cpccFeatures));
+//		cpccType : element.properties.type,
+//		cpccMapId : mapId,
+//		cpccFeatures : element,
+//		cpccOverlay : overlay,
+//		cpccRv : vehicle,
+//		cpccRvId : vehicleId,
+		
+		
+		console.info('sensorsChange: id='
+				+ e.layer.cpccRvId + ' '
+				+ JSON.stringify(e.layer.cpccFeatures));
 
+		
+		
+		
 //		if (overlay.sensors[e.layer.cpccRvId])
 //		{
 //			overlay.layer.removeLayer(overlay.sensors[e.layer.cpccRvId]);

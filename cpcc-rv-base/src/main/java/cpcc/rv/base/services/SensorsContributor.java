@@ -28,10 +28,10 @@ import org.geojson.GeoJsonObject;
 import org.geojson.GeometryCollection;
 import org.geojson.Point;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.services.CoreGeoJsonConverter;
-import cpcc.core.utils.PolarCoordinate;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.entities.Task;
 
 /**
  * Sensors contributor implementation.
@@ -74,7 +74,7 @@ public class SensorsContributor implements StateContributor
 
         for (Task task : taskList)
         {
-            Point point = jsonConverter.toPoint(task);
+            Point point = jsonConverter.toPoint(task.getPosition());
 
             Feature pointFeature = new Feature();
             pointFeature.setGeometry(point);

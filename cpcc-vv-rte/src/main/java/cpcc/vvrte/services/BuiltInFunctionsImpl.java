@@ -29,7 +29,9 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.json.JsonParser;
 import org.slf4j.Logger;
 
 import cpcc.core.entities.SensorDefinition;
@@ -41,23 +43,36 @@ import cpcc.core.services.opts.ParseException;
 import cpcc.core.services.opts.Token;
 import cpcc.ros.base.AbstractRosAdapter;
 import cpcc.ros.services.RosNodeService;
+import cpcc.vvrte.base.VirtualVehicleMappingDecision;
+import cpcc.vvrte.entities.Task;
+import cpcc.vvrte.entities.TaskState;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
+import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.services.js.ApplicationState;
 import cpcc.vvrte.services.js.BuiltInFunctions;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.services.ros.MessageConverter;
 import cpcc.vvrte.task.TaskAnalyzer;
-import cpcc.vvrte.task.TaskExecutionService;
 
 /**
  * BuiltInFunctionsImpl
  */
 public class BuiltInFunctionsImpl implements BuiltInFunctions
 {
+    private static final String SENSORS = "sensors";
+    private static final String PARAMS = "params";
+    private static final String ID = "id";
+    private static final String VISIBILITY = "visibility";
+    private static final String TYPE = "type";
+    private static final String MESSAGE_TYPE = "messageType";
+    private static final String DESCRIPTION = "description";
+    private static final String SEQUENCE = "sequence";
+    private static final String REPEAT = "repeat";
+
     private RosNodeService rns;
     private OptionsParserService opts;
     private MessageConverter conv;
     private VirtualVehicleMapper mapper;
-    private TaskExecutionService taskExecutor;
     private TaskAnalyzer taskAnalyzer;
     private VvRteRepository vvRteRepo;
     private QueryManager qm;
@@ -69,25 +84,23 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      * @param opts the options parser service-
      * @param conv the message converter service.
      * @param mapper the virtual vehicle mapper.
-     * @param taskExecutor the task executor.
      * @param taskAnalyzer the task analyzer.
      * @param vvRteRepo the virtual vehicle repository.
      * @param qm the query manager.
      * @param sessionManager the Hibernate session manager.
      * @param logger the application logger.
      */
-    public BuiltInFunctionsImpl(RosNodeService rns, OptionsParserService opts, MessageConverter conv,
-        VirtualVehicleMapper mapper, TaskExecutionService taskExecutor, TaskAnalyzer taskAnalyzer,
-        VvRteRepository vvRteRepo, QueryManager qm, HibernateSessionManager sessionManager, Logger logger)
+    public BuiltInFunctionsImpl(RosNodeService rns, OptionsParserService opts, MessageConverter conv
+        , VirtualVehicleMapper mapper, TaskAnalyzer taskAnalyzer, VvRteRepository vvRteRepo, QueryManager qm
+        , HibernateSessionManager sessionManager, Logger logger)
     {
         this.rns = rns;
         this.opts = opts;
         this.conv = conv;
         this.mapper = mapper;
-        this.taskExecutor = taskExecutor;
         this.taskAnalyzer = taskAnalyzer;
         this.vvRteRepo = vvRteRepo;
-        this.qm = qm; // vvRteRepo.getQueryManager();
+        this.qm = qm;
         this.sessionManager = sessionManager;
         this.logger = logger;
     }
@@ -142,11 +155,11 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private NativeObject convertSensorDefinition(SensorDefinition sd)
     {
         NativeObject sensor = new NativeObject();
-        sensor.put("id", sensor, sd.getId());
-        sensor.put("description", sensor, sd.getDescription());
-        sensor.put("messageType", sensor, sd.getMessageType());
-        sensor.put("type", sensor, sd.getType());
-        sensor.put("visibility", sensor, sd.getVisibility());
+        sensor.put(ID, sensor, sd.getId());
+        sensor.put(DESCRIPTION, sensor, sd.getDescription());
+        sensor.put(MESSAGE_TYPE, sensor, sd.getMessageType());
+        sensor.put(TYPE, sensor, sd.getType());
+        sensor.put(VISIBILITY, sensor, sd.getVisibility());
 
         if (sd.getParameters() != null)
         {
@@ -157,7 +170,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
                 {
                     params.put(option.getKey(), params, convertTokenList(option.getValue()));
                 }
-                sensor.put("params", sensor, params);
+                sensor.put(PARAMS, sensor, params);
             }
             catch (IOException | ParseException e)
             {
@@ -213,7 +226,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public ScriptableObject getSensorValue(ScriptableObject sensor)
     {
-        SensorDefinition sd = qm.findSensorDefinitionByDescription((String) sensor.get("description"));
+        SensorDefinition sd = qm.findSensorDefinitionByDescription((String) sensor.get(DESCRIPTION));
 
         if (sd == null || sd.getVisibility() == SensorVisibility.NO_VV)
         {
@@ -230,13 +243,28 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public void executeTask(ScriptableObject managementParameters, ScriptableObject taskParameters)
     {
-        logger.info("executeTask1");
+        logger.info("*** executeTask");
 
-        managementParameters.put("repeat", managementParameters, Boolean.FALSE);
+        String vehicleUUID = (String) managementParameters.get("vehicleUUID");
+        VirtualVehicle vehicle = vvRteRepo.findVirtualVehicleByUUID(vehicleUUID);
 
-        Number sequence = (Number) managementParameters.get("sequence");
+        if (vehicle == null)
+        {
+            logger.error("Can not find Virtual Vehicle for UUID " + vehicleUUID);
+            return;
+        }
 
-        Task task = taskAnalyzer.analyzeTaskParameters(taskParameters, sequence.intValue());
+        Task task = vehicle.getTask();
+        if (task != null && task.getTaskState() == TaskState.EXECUTED)
+        {
+            handleExecutedTask(vehicle, managementParameters, taskParameters);
+            return;
+        }
+
+        managementParameters.put(REPEAT, managementParameters, Boolean.FALSE);
+
+        Number sequence = (Number) managementParameters.get(SEQUENCE);
+        task = taskAnalyzer.analyzeTaskParameters(taskParameters, sequence.intValue());
         if (task == null)
         {
             return;
@@ -244,44 +272,115 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
 
         VirtualVehicleMappingDecision decision = mapper.findMappingDecision(task);
 
+        task.setTaskState(TaskState.PENDING);
+        vehicle.setTask(task);
+        task.setVehicle(vehicle);
+        sessionManager.getSession().saveOrUpdate(vehicle);
+        sessionManager.getSession().saveOrUpdate(task);
+
         if (decision.isMigration())
         {
-            logger.info("migration");
-            Context cx = Context.enter();
-            try
-            {
-                managementParameters.put("repeat", managementParameters, Boolean.TRUE);
-                ContinuationPending cp = cx.captureContinuation();
-                cp.setApplicationState(decision);
-                // handover the task! -> no, call execute again with same sequence number!
-                throw cp;
-            }
-            finally
-            {
-                Context.exit();
-            }
+            initiateMigration(managementParameters, decision);
+        }
+        else
+        {
+            initiateTaskExecution(managementParameters, taskParameters, task);
+        }
+    }
+
+    /**
+     * @param vehicle the virtual vehicle.
+     * @param managementParameters the management parameters.
+     * @param taskParameters the task parameters.
+     */
+    private void handleExecutedTask(VirtualVehicle vehicle, ScriptableObject managementParameters,
+        ScriptableObject taskParameters)
+    {
+        logger.info("*** handleExecutedTask");
+
+        Task task = vehicle.getTask();
+
+        Context cx = Context.getCurrentContext();
+        Scriptable sc = cx.initStandardObjects();
+
+        NativeObject sensorValues2;
+        try
+        {
+            sensorValues2 = (NativeObject) new JsonParser(cx, sc).parseValue(task.getSensorValues());
+        }
+        catch (org.mozilla.javascript.json.JsonParser.ParseException e)
+        {
+            sensorValues2 = new NativeObject();
         }
 
-        logger.info("no migration");
-
-        taskExecutor.addTask(task);
-        task.awaitCompletion();
+        Number sequence = (Number) managementParameters.get(SEQUENCE);
 
         managementParameters.put("valid", managementParameters, Boolean.TRUE);
-        managementParameters.put("sequence", managementParameters, Integer.valueOf(sequence.intValue() + 1));
+        managementParameters.put(SEQUENCE, managementParameters, Integer.valueOf(sequence.intValue() + 1));
 
-        NativeArray sensors = (NativeArray) taskParameters.get("sensors");
+        NativeArray sensors = (NativeArray) taskParameters.get(SENSORS);
         NativeArray sensorValues = new NativeArray(sensors.getLength());
 
         for (int k = 0; k < sensors.getLength(); ++k)
         {
             NativeObject s = (NativeObject) sensors.get(k);
-            sensorValues.put(k, sensorValues, getSensorValue(s));
+            String description = (String) s.get(DESCRIPTION);
+            sensorValues.put(k, sensorValues, sensorValues2.get(description));
+            // sensorValues.put(k, sensorValues, getSensorValue(node, s));
         }
 
         managementParameters.put("sensorValues", managementParameters, sensorValues);
-        managementParameters.put("repeat", managementParameters, Boolean.valueOf(!task.isLastInTaskGroup()));
-        return;
+        managementParameters.put(REPEAT, managementParameters, Boolean.FALSE);
+
+        task.setTaskState(TaskState.COMPLETED);
+        // TODO check: task.setCompletedTime();
+
+        sessionManager.getSession().saveOrUpdate(task);
+        sessionManager.commit();
+    }
+
+    /**
+     * @param vehicle the virtual vehicle.
+     * @param managementParameters the management parameters.
+     * @param taskParameters the task parameters.
+     */
+    private void initiateTaskExecution(ScriptableObject managementParameters, ScriptableObject taskParameters
+        , Task task)
+    {
+        logger.info("*** no migration (execute task).");
+
+        Context cx = Context.enter();
+        try
+        {
+            managementParameters.put(REPEAT, managementParameters, Boolean.TRUE);
+            ContinuationPending cp = cx.captureContinuation();
+            cp.setApplicationState(new ApplicationState(task));
+            // handover the task! -> no, call execute again with same sequence number!
+            throw cp;
+        }
+        finally
+        {
+            Context.exit();
+        }
+    }
+
+    private void initiateMigration(ScriptableObject managementParameters, VirtualVehicleMappingDecision decision)
+    {
+        logger.info("*** initiateMigration");
+
+        Context cx = Context.enter();
+        try
+        {
+            managementParameters.put(REPEAT, managementParameters, Boolean.TRUE);
+            ContinuationPending cp = cx.captureContinuation();
+            cp.setApplicationState(new ApplicationState(decision));
+            // handover the task! -> no, call execute again with same sequence number!
+            throw cp;
+        }
+        finally
+        {
+            Context.exit();
+        }
     }
 
     /**

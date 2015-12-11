@@ -16,11 +16,9 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.services.db;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Property;
@@ -38,15 +36,19 @@ public class VvRteRepositoryImpl implements VvRteRepository
 {
     private Logger logger;
     private Session session;
+    private TaskRepository taskRepository;
 
     /**
      * @param logger the application logger.
      * @param session the Hibernate session.
+     * @param taskRepository the task repository instance.
      */
-    public VvRteRepositoryImpl(Logger logger, Session session)
+    public VvRteRepositoryImpl(Logger logger, Session session, TaskRepository taskRepository)
     {
         this.logger = logger;
         this.session = session;
+        this.taskRepository = taskRepository;
+
         resetVirtualVehicleStates();
     }
 
@@ -115,19 +117,6 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .uniqueResult();
     }
 
-    @SuppressWarnings("serial")
-    private static final Set<VirtualVehicleState> ALLOWED_STATES_FOR_VV_DELETION = new HashSet<VirtualVehicleState>()
-    {
-        {
-            add(VirtualVehicleState.DEFECTIVE);
-            add(VirtualVehicleState.FINISHED);
-            add(VirtualVehicleState.INIT);
-            add(VirtualVehicleState.INTERRUPTED);
-            add(VirtualVehicleState.MIGRATION_COMPLETED);
-            add(VirtualVehicleState.MIGRATION_INTERRUPTED);
-        }
-    };
-
     /**
      * {@inheritDoc}
      */
@@ -139,7 +128,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
             return;
         }
 
-        if (!ALLOWED_STATES_FOR_VV_DELETION.contains(vehicle.getState()))
+        if (!VirtualVehicleState.VV_STATES_FOR_DELETE.contains(vehicle.getState()))
         {
             logger.warn("Not deleting virtual vehicle " + vehicle.getName()
                 + " (" + vehicle.getUuid() + ") because of state " + vehicle.getState());
@@ -153,6 +142,10 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .setParameter("id", vehicle.getId())
             .executeUpdate();
 
+        taskRepository.unlinkTasksFromVirtualVehicleById(vehicle.getId());
+
+        vehicle.setTask(null);
+        session.update(vehicle);
         session.delete(vehicle);
     }
 

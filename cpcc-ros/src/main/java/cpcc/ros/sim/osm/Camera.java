@@ -30,7 +30,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import cpcc.core.utils.PolarCoordinate;
+import cpcc.core.entities.PolarCoordinate;
 
 /**
  * An OpenStreetMap camera.

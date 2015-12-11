@@ -16,12 +16,12 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.base;
 
 import java.util.List;
 
 import cpcc.core.entities.RealVehicle;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.entities.Task;
 
 /**
  * VirtualVehicleMappingDecision
@@ -41,11 +41,13 @@ public class VirtualVehicleMappingDecision
     }
 
     /**
-     * @param migration the migration to set
+     * @param newMigration the migration to set
+     * @return this instance.
      */
-    public void setMigration(boolean migration)
+    public VirtualVehicleMappingDecision setMigration(boolean newMigration)
     {
-        this.migration = migration;
+        this.migration = newMigration;
+        return this;
     }
 
     /**
@@ -57,11 +59,13 @@ public class VirtualVehicleMappingDecision
     }
 
     /**
-     * @param task the task to set
+     * @param newTask the task to set
+     * @return this instance.
      */
-    public void setTask(Task task)
+    public VirtualVehicleMappingDecision setTask(Task newTask)
     {
-        this.task = task;
+        this.task = newTask;
+        return this;
     }
 
     /**
@@ -73,10 +77,12 @@ public class VirtualVehicleMappingDecision
     }
 
     /**
-     * @param realVehicles the desired real vehicles to migrate to.
+     * @param newRealVehicles the desired real vehicles to migrate to.
+     * @return this instance.
      */
-    public void setRealVehicles(List<RealVehicle> realVehicles)
+    public VirtualVehicleMappingDecision setRealVehicles(List<RealVehicle> newRealVehicles)
     {
-        this.realVehicles = realVehicles;
+        this.realVehicles = newRealVehicles;
+        return this;
     }
 }

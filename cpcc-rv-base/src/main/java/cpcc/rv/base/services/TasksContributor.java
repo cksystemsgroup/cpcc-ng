@@ -25,8 +25,8 @@ import org.geojson.FeatureCollection;
 import org.geojson.LineString;
 import org.geojson.LngLatAlt;
 
-import cpcc.core.utils.PolarCoordinate;
-import cpcc.vvrte.task.Task;
+import cpcc.core.entities.PolarCoordinate;
+import cpcc.vvrte.entities.Task;
 
 /**
  * Tasks contributor implementation.
@@ -54,7 +54,8 @@ public class TasksContributor implements StateContributor
 
         for (Task task : taskList)
         {
-            lineString.add(new LngLatAlt(task.getLongitude(), task.getLatitude(), task.getAltitude()));
+            PolarCoordinate taskPos = task.getPosition();
+            lineString.add(new LngLatAlt(taskPos.getLongitude(), taskPos.getLatitude(), taskPos.getAltitude()));
         }
 
         Feature lineStringFeature = new Feature();

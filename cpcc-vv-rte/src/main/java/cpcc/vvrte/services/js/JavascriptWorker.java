@@ -39,9 +39,9 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.serialize.ScriptableInputStream;
 import org.mozilla.javascript.serialize.ScriptableOutputStream;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import cpcc.core.utils.ExceptionFormatter;
+import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -50,10 +50,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class JavascriptWorker extends Thread
 {
-    private static final Logger LOG = LoggerFactory.getLogger(JavascriptWorker.class);
-
     private static final String VVRTE_API_FORMAT = "vvrte-api-%1$03d.js";
 
+    private Logger logger;
     private ServiceResources serviceResources;
     private VirtualVehicleState workerState;
     private String script;
@@ -63,45 +62,44 @@ public class JavascriptWorker extends Thread
     private byte[] snapshot = null;
     private int scriptStartLine;
     private Set<JavascriptWorkerStateListener> stateListeners = new HashSet<JavascriptWorkerStateListener>();
-    private Object applicationState;
+    private ApplicationState applicationState;
+    private VirtualVehicle vehicle;
 
     /**
-     * @param serviceResources the service resources.
-     * @param scriptSource the script source code.
-     * @param apiVersion the used API version.
-     * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
-     * @param allowedClassesRegex additionally allowed class names defined by regular expressions.
-     * @throws IOException thrown in case of errors.
+     * @param vehicle the Virtual Vehicle.
+     * @param useContinuation true if the available continuation data should be applied.
+     * @param logger the application logger.
+     * @param serviceResources the service resources instance.
+     * @param allowedClasses the set of allowed classes.
+     * @param allowedClassesRegex the additionally allowed class names as a regular expression.
+     * @throws IOException in case of errors.
      */
-    public JavascriptWorker(ServiceResources serviceResources, String scriptSource, int apiVersion
-        , Set<String> allowedClasses, Set<String> allowedClassesRegex) throws IOException
+    public JavascriptWorker(VirtualVehicle vehicle, boolean useContinuation, Logger logger,
+        ServiceResources serviceResources, Set<String> allowedClasses, Set<String> allowedClassesRegex)
+        throws IOException
     {
+        this.logger = logger;
         this.serviceResources = serviceResources;
         this.allowedClasses = allowedClasses;
         this.allowedClassesRegex = allowedClassesRegex;
-
-        String apiScript = loadApiScript(apiVersion);
-        scriptStartLine = StringUtils.countMatches(apiScript, "\n") + 1;
-        script = "(function(){ " + apiScript + "\n" + scriptSource + "\n})();";
-        workerState = VirtualVehicleState.INIT;
-    }
-
-    /**
-     * @param serviceResources the service resources.
-     * @param snapshot the frozen program.
-     * @param allowedClasses additionally allowed classes to be accessed via JavaScript.
-     * @param allowedClassesRegex additionally allowed class names defined by regular expressions.
-     */
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public JavascriptWorker(ServiceResources serviceResources, byte[] snapshot, Set<String> allowedClasses
-        , Set<String> allowedClassesRegex)
-    {
-        this.serviceResources = serviceResources;
-        this.snapshot = snapshot;
-        this.allowedClasses = allowedClasses;
-        this.allowedClassesRegex = allowedClassesRegex;
+        this.vehicle = vehicle;
 
         workerState = VirtualVehicleState.INIT;
+
+        if (useContinuation && vehicle.getContinuation() != null)
+        {
+            snapshot = vehicle.getContinuation();
+        }
+        else
+        {
+            String apiScript = loadApiScript();
+            scriptStartLine = StringUtils.countMatches(apiScript, "\n") + 1;
+
+            String code = vehicle.getCode();
+            script = StringUtils.isNotBlank(code)
+                ? "(function(){ " + apiScript + "\n" + code.replace("\\n", "\n") + "\n})();"
+                : null;
+        }
     }
 
     /**
@@ -110,6 +108,8 @@ public class JavascriptWorker extends Thread
     @Override
     public void run()
     {
+        HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
+
         applicationState = null;
 
         changeState(VirtualVehicleState.RUNNING);
@@ -117,6 +117,8 @@ public class JavascriptWorker extends Thread
         if (snapshot == null && script == null)
         {
             changeState(VirtualVehicleState.DEFECTIVE);
+            sessionManager.commit();
+            serviceResources.getService(PerthreadManager.class).cleanup();
             return;
         }
 
@@ -145,14 +147,14 @@ public class JavascriptWorker extends Thread
                 resultObj = cx.resumeContinuation(c, globalScope, Boolean.TRUE);
             }
 
-            LOG.info("Result obj: " + Context.toString(resultObj));
+            logger.info("Result obj: " + Context.toString(resultObj));
             result = Context.toString(resultObj);
             changeState(VirtualVehicleState.FINISHED);
         }
         catch (ContinuationPending cp)
         {
-            applicationState = cp.getApplicationState();
-            LOG.info("Application State " + applicationState);
+            logger.info("Application State " + cp.getApplicationState());
+            applicationState = (ApplicationState) cp.getApplicationState();
             try
             {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -164,8 +166,16 @@ public class JavascriptWorker extends Thread
                 baos.close();
                 snapshot = baos.toByteArray();
 
-                changeState(VirtualVehicleState.INTERRUPTED);
-                LOG.info("snapshot is " + snapshot.length + " bytes long.");
+                if (applicationState.isTask())
+                {
+                    changeState(VirtualVehicleState.TASK_COMPLETION_AWAITED);
+                }
+                else
+                {
+                    changeState(VirtualVehicleState.INTERRUPTED);
+                }
+
+                logger.info("snapshot is " + snapshot.length + " bytes long.");
             }
             catch (IOException e)
             {
@@ -188,24 +198,25 @@ public class JavascriptWorker extends Thread
         finally
         {
             Context.exit();
-            serviceResources.getService(HibernateSessionManager.class).commit();
+            sessionManager.commit();
             serviceResources.getService(PerthreadManager.class).cleanup();
         }
     }
 
     /**
-     * @return the API script or null in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    private String loadApiScript(int apiVersion) throws IOException
+    private String loadApiScript() throws IOException
     {
+        int apiVersion = vehicle.getApiVersion();
+
         InputStream apiStream = this.getClass().getResourceAsStream(String.format(VVRTE_API_FORMAT, apiVersion));
         if (apiStream == null)
         {
             throw new IOException("Can not handle API version " + apiVersion);
         }
 
-        return IOUtils.toString(apiStream, "UTF-8");
+        return IOUtils.toString(apiStream, "UTF-8").replace("%vehicleUUID%", vehicle.getUuid());
     }
 
     /**

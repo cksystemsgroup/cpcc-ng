@@ -66,7 +66,7 @@ import cpcc.vvrte.entities.VirtualVehicleStorage;
 import cpcc.vvrte.services.VirtualVehicleLauncher;
 import cpcc.vvrte.services.VirtualVehicleMigrator;
 import cpcc.vvrte.services.VirtualVehicleMigratorImpl;
-import cpcc.vvrte.services.VvRteRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
 
 public class VirtualVehicleMigratorTest
 {

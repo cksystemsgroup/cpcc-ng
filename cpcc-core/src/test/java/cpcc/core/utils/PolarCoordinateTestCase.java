@@ -19,9 +19,10 @@
 package cpcc.core.utils;
 
 import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
 
-import cpcc.core.utils.PolarCoordinate;
+import cpcc.core.entities.PolarCoordinate;
+
+import org.testng.AssertJUnit;
 
 public class PolarCoordinateTestCase
 {

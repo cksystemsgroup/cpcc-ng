@@ -12,5 +12,6 @@
 	<include file="2015-09-23.xml" relativeToChangelogFile="true" />
 	<include file="2015-10-13.xml" relativeToChangelogFile="true" />
 	<include file="2015-11-25.xml" relativeToChangelogFile="true" />
+	<include file="2015-12-07.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

@@ -1,8 +1,8 @@
 var VV = {
-    sensor : {},
-    task : {},
-    types : {},
-    storage : {},
+	sensor : {},
+	task : {},
+	types : {},
+	storage : {},
 };
 
 /**
@@ -10,18 +10,18 @@ var VV = {
  */
 VV.types.LatLng = function(lat, lng)
 {
-    this.lat = lat;
-    this.lng = lng;
+	this.lat = lat;
+	this.lng = lng;
 };
 
 VV.types.LatLng.prototype.getLat = function()
 {
-    return this.lat;
+	return this.lat;
 };
 
 VV.types.LatLng.prototype.getLng = function()
 {
-    return this.lng;
+	return this.lng;
 };
 
 /**
@@ -29,24 +29,24 @@ VV.types.LatLng.prototype.getLng = function()
  */
 VV.types.LatLngAlt = function(lat, lng, alt)
 {
-    this.lat = lat;
-    this.lng = lng;
-    this.alt = alt;
+	this.lat = lat;
+	this.lng = lng;
+	this.alt = alt;
 };
 
 VV.types.LatLngAlt.prototype.getLat = function()
 {
-    return this.lat;
+	return this.lat;
 };
 
 VV.types.LatLngAlt.prototype.getLng = function()
 {
-    return this.lng;
+	return this.lng;
 };
 
 VV.types.LatLngAlt.prototype.getAlt = function()
 {
-    return this.alt;
+	return this.alt;
 };
 
 /**
@@ -54,12 +54,12 @@ VV.types.LatLngAlt.prototype.getAlt = function()
  */
 VV.sensor.list = function()
 {
-    return getVvRte().listSensors();
+	return getVvRte().listSensors();
 };
 
 VV.sensor.get = function(name)
 {
-    return getVvRte().getSensor(name);
+	return getVvRte().getSensor(name);
 };
 
 /**
@@ -67,23 +67,25 @@ VV.sensor.get = function(name)
  */
 VV.task.execute = function(taskParams, callback)
 {
-    var helper = {
-        sequence : 0,
-        valid : false,
-        repeat : true,
-        sensorValues : [],
-    };
+	var helper = {
+		action : 'execute',
+		sequence : 0,
+		valid : false,
+		repeat : true,
+		sensorValues : [],
+		vehicleUUID : '%vehicleUUID%',
+	};
 
-    while (helper.repeat)
-    {
-        getVvRte().executeTask(helper, taskParams);
-        if (helper.valid)
-        {
-            getStdOut().println("valid");
-            callback(helper.sensorValues);
-            helper.valid = false;
-        }
-    }
+	while (helper.repeat)
+	{
+		getVvRte().executeTask(helper, taskParams);
+		if (helper.valid)
+		{
+			getStdOut().println('valid');
+			callback(helper.sensorValues);
+			helper.valid = false;
+		}
+	}
 };
 
 /**
@@ -91,20 +93,20 @@ VV.task.execute = function(taskParams, callback)
  */
 VV.storage.load = function(name)
 {
-    return getVvRte().loadObject(name);
+	return getVvRte().loadObject(name);
 }
 
 VV.storage.store = function(name, obj)
 {
-    getVvRte().storeObject(name, obj);
+	getVvRte().storeObject(name, obj);
 }
 
 VV.storage.list = function(pattern)
 {
-    return getVvRte().listObjects(pattern);
+	return getVvRte().listObjects(pattern);
 }
 
 VV.storage.remove = function(name)
 {
-    return getVvRte().removeObject(name);
+	return getVvRte().removeObject(name);
 }

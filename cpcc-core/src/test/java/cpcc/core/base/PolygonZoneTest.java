@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.core.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
@@ -25,9 +25,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.utils.PolarCoordinate;
-import cpcc.vvrte.services.PolygonZone;
-import cpcc.vvrte.services.PolygonZone.TwoTuple;
+import cpcc.core.base.PolygonZone;
+import cpcc.core.base.PolygonZone.TwoTuple;
+import cpcc.core.entities.PolarCoordinate;
 
 /**
  * PolygonZoneTest

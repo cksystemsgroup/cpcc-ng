@@ -16,16 +16,15 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.services.json;
 
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.services.CoreJsonConverter;
-import cpcc.core.utils.PolarCoordinate;
+import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.VirtualVehicle;
-import cpcc.vvrte.task.Task;
 
 /**
  * VvJsonConverterImpl
@@ -75,7 +74,7 @@ public class VvJsonConverterImpl implements VvJsonConverter
     public JSONObject toJson(Task task)
     {
         JSONObject o = new JSONObject("tolerance", Double.toString(task.getTolerance()));
-        o.put("position", pjc.toJson((PolarCoordinate)task));
+        o.put("position", pjc.toJson(task.getPosition()));
         o.put("sensors", pjc.toJsonArray(task.getSensors().toArray(new SensorDefinition[0])));
         return o;
     }

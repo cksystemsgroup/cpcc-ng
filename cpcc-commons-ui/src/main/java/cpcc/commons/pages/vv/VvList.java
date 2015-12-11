@@ -38,7 +38,7 @@ import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.VirtualVehicleLaunchException;
 import cpcc.vvrte.services.VirtualVehicleLauncher;
-import cpcc.vvrte.services.VvRteRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
 
 /**
  * Vehicle

@@ -30,8 +30,8 @@ import java.util.Map;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.ConfigUtils;
-import cpcc.core.utils.PolarCoordinate;
 
 /**
  * ConfigUtilsTest

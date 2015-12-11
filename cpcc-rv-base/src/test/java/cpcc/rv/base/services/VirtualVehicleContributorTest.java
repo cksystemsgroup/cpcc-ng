@@ -43,8 +43,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.vvrte.services.VvGeoJsonConverter;
-import cpcc.vvrte.services.VvRteRepository;
+import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.services.json.VvGeoJsonConverter;
 
 public class VirtualVehicleContributorTest
 {

@@ -20,14 +20,18 @@ package cpcc.vvrte.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -69,7 +73,7 @@ public class VirtualVehicle implements Serializable
     private VirtualVehicleState state;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = MAX_STATE_LENGTH, name ="pre_migration_state")
+    @Column(length = MAX_STATE_LENGTH, name = "pre_migration_state")
     private VirtualVehicleState preMigrationState;
 
     @ManyToOne
@@ -90,6 +94,10 @@ public class VirtualVehicle implements Serializable
     @Column(name = "state_info")
     @Lob
     private String stateInfo;
+
+    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
+    @JoinColumn(name = "task_id", referencedColumnName = "id")
+    private Task task;
 
     /**
      * @return the id
@@ -187,7 +195,6 @@ public class VirtualVehicle implements Serializable
         this.state = state;
     }
 
-    
     /**
      * @return the state before migration started.
      */
@@ -195,7 +202,7 @@ public class VirtualVehicle implements Serializable
     {
         return preMigrationState;
     }
-    
+
     /**
      * @param preMigrationState the state before migration started to set.
      */
@@ -203,8 +210,7 @@ public class VirtualVehicle implements Serializable
     {
         this.preMigrationState = preMigrationState;
     }
-    
-    
+
     /**
      * @return the real vehicle to migrate to or null.
      */
@@ -307,5 +313,21 @@ public class VirtualVehicle implements Serializable
     public void setStateInfo(String stateInfo)
     {
         this.stateInfo = stateInfo;
+    }
+
+    /**
+     * @return the currently running task.
+     */
+    public Task getTask()
+    {
+        return task;
+    }
+
+    /**
+     * @param task the currently running task to set.
+     */
+    public void setTask(Task task)
+    {
+        this.task = task;
     }
 }

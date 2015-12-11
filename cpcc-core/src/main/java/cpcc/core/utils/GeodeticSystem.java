@@ -18,6 +18,8 @@
 
 package cpcc.core.utils;
 
+import cpcc.core.entities.PolarCoordinate;
+
 /**
  * This interface provides functionality necessary to convert polar in rectangular coordinates and vice versa.
  * Additionally it provides functionality to estimate distance, speed, elevation and course between two given polar

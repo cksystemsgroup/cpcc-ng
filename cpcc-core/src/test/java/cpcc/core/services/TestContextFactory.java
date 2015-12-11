@@ -43,13 +43,14 @@ public class TestContextFactory implements InitialContextFactory
     private static class TestContext implements Context
     {
         private Map<String, Context> subContextMap = new HashMap<>();
-        private Context self = null;
-        private Object bound = null;
-        private String name;
+
+        // private Context self = null;
+        // private Object bound = null;
+        // private String name;
 
         public TestContext(String name)
         {
-            this.name = name;
+            //            this.name = name;
         }
 
         @Override
@@ -83,7 +84,7 @@ public class TestContextFactory implements InitialContextFactory
             String[] ctxs = name.split("/");
             if (ctxs.length == 1)
             {
-                bound = obj;
+                // bound = obj;
             }
             else
             {
@@ -186,13 +187,11 @@ public class TestContextFactory implements InitialContextFactory
         public Context createSubcontext(String name) throws NamingException
         {
             // http://grepcode.com/file/repo1.maven.org/maven2/org.springframework/spring-test/4.2.0.RELEASE/org/springframework/mock/jndi/SimpleNamingContext.java?av=f
-            
+
             System.out.println("MyInitialContext.createSubcontext() name=" + name);
 
             try
             {
-                
-                
                 URI uri = new URI(name);
 
                 System.out.printf("scheme=%s, host=%s, path=%s%n", uri.getScheme(), uri.getHost(), uri.getPath());

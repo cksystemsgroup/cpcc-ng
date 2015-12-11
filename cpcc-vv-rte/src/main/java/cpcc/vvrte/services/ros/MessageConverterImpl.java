@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.services;
+package cpcc.vvrte.services.ros;
 
 import static sensor_msgs.NavSatStatus.SERVICE_COMPASS;
 import static sensor_msgs.NavSatStatus.SERVICE_GALILEO;
@@ -40,8 +40,8 @@ public class MessageConverterImpl implements MessageConverter
     private static final Map<String, MessageConverter> CONVERTER_MAP = new HashMap<String, MessageConverter>()
     {
         {
-            put("MessageImpl<sensor_msgs/Image>", new ImageMessageConverter());
             put("MessageImpl<std_msgs/Float32>", new Float32MessageConverter());
+            put("MessageImpl<sensor_msgs/Image>", new ImageMessageConverter());
             put("MessageImpl<sensor_msgs/NavSatFix>", new NavSatFixMessageConverter());
         }
     };

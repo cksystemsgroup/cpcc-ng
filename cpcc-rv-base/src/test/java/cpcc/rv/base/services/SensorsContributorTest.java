@@ -37,10 +37,11 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.services.CoreGeoJsonConverter;
-import cpcc.vvrte.task.Task;
+import cpcc.vvrte.entities.Task;
 
 public class SensorsContributorTest
 {
@@ -50,6 +51,7 @@ public class SensorsContributorTest
     private SensorDefinition s2;
     private Task task;
     private Point point;
+    private PolarCoordinate position;
 
     @BeforeMethod
     public void setUp()
@@ -60,16 +62,16 @@ public class SensorsContributorTest
         s2 = mock(SensorDefinition.class);
         when(s2.getType()).thenReturn(SensorType.GPS);
 
+        position = new PolarCoordinate(1.2, 3.4, 5.6);
+        
         task = mock(Task.class);
         when(task.getSensors()).thenReturn(Arrays.asList(s1, s2));
-        when(task.getLatitude()).thenReturn(1.2);
-        when(task.getLongitude()).thenReturn(3.4);
-        when(task.getAltitude()).thenReturn(5.6);
+        when(task.getPosition()).thenReturn(position);
 
         point = new Point(111.1, 222.2, 333.3);
 
         jsonConverter = mock(CoreGeoJsonConverter.class);
-        when(jsonConverter.toPoint(task)).thenReturn(point);
+        when(jsonConverter.toPoint(position)).thenReturn(point);
 
         sut = new SensorsContributor(jsonConverter);
     }

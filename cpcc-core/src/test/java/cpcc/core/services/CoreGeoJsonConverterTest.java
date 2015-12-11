@@ -41,9 +41,9 @@ import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleType;
-import cpcc.core.utils.PolarCoordinate;
 
 public class CoreGeoJsonConverterTest
 {
