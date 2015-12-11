@@ -41,6 +41,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.internal.util.SerializationHelper;
+import org.mozilla.javascript.ScriptableObject;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
@@ -89,7 +91,7 @@ public class Task implements Serializable
 
     @Lob
     @Column(name = "sensor_values")
-    private String sensorValues;
+    private byte[] sensorValues;
 
     @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
@@ -263,17 +265,17 @@ public class Task implements Serializable
     /**
      * @return the sensor values.
      */
-    public String getSensorValues()
+    public ScriptableObject getSensorValues()
     {
-        return sensorValues;
+        return (ScriptableObject) SerializationHelper.deserialize(sensorValues);
     }
 
     /**
      * @param sensorValues the sensor values to set.
      */
-    public void setSensorValues(String sensorValues)
+    public void setSensorValues(ScriptableObject sensorValues)
     {
-        this.sensorValues = sensorValues;
+        this.sensorValues = SerializationHelper.serialize(sensorValues);
     }
 
     /**

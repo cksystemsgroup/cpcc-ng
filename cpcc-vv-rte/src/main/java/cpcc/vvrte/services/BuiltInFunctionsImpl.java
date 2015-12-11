@@ -29,9 +29,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.json.JsonParser;
 import org.slf4j.Logger;
 
 import cpcc.core.entities.SensorDefinition;
@@ -300,18 +298,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
 
         Task task = vehicle.getTask();
 
-        Context cx = Context.getCurrentContext();
-        Scriptable sc = cx.initStandardObjects();
-
-        NativeObject sensorValues2;
-        try
-        {
-            sensorValues2 = (NativeObject) new JsonParser(cx, sc).parseValue(task.getSensorValues());
-        }
-        catch (org.mozilla.javascript.json.JsonParser.ParseException e)
-        {
-            sensorValues2 = new NativeObject();
-        }
+        ScriptableObject sensorValues2 = task.getSensorValues();
 
         Number sequence = (Number) managementParameters.get(SEQUENCE);
 

@@ -26,8 +26,6 @@ import java.util.Set;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeJSON;
 import org.mozilla.javascript.NativeObject;
 import org.slf4j.Logger;
 
@@ -229,7 +227,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         task.setTaskState(TaskState.EXECUTED);
         task.setExecutionEnd(timeService.newDate());
 
-        NativeObject o = new NativeObject();
+        NativeObject sensorValues = new NativeObject();
 
         for (SensorDefinition sd : task.getSensors())
         {
@@ -239,19 +237,10 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
             }
 
             AbstractRosAdapter node = rosNodeService.findAdapterNodeBySensorDefinitionId(sd.getId());
-            o.put(sd.getDescription(), o, conv.convertMessageToJS(node.getValue()));
+            sensorValues.put(sd.getDescription(), sensorValues, conv.convertMessageToJS(node.getValue()));
         }
 
-        Context cx = Context.enter();
-        try
-        {
-            Object sensorValues = NativeJSON.stringify(cx, cx.initStandardObjects(), o, null, null);
-            task.setSensorValues((String) sensorValues);
-        }
-        finally
-        {
-            Context.exit();
-        }
+        task.setSensorValues(sensorValues);
     }
 
     /**

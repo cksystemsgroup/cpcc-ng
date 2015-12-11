@@ -47,5 +47,10 @@
 			deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"
 			referencedTableName="VIRTUALVEHICLE" />
 	</changeSet>
-
+	<changeSet author="ckrainer" id="2015-12-07-03">
+		<dropColumn tableName="TASKS" columnName="SENSOR_VALUES" />
+		<addColumn tableName="TASKS">
+			<column name="SENSOR_VALUES" type="BLOB" />
+		</addColumn>
+	</changeSet>
 </databaseChangeLog>

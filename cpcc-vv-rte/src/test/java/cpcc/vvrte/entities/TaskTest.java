@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
@@ -26,13 +26,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.ScriptableObject;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
-import cpcc.vvrte.entities.Task;
 
 /**
  * TaskTest
@@ -40,13 +41,63 @@ import cpcc.vvrte.entities.Task;
 public class TaskTest
 {
     private Task sut;
-//    private Logger logger;
+    private VirtualVehicle vehicle;
+
+    //    private Logger logger;
 
     @BeforeMethod
     public void setUp()
     {
-//        logger = mock(Logger.class);
+        vehicle = mock(VirtualVehicle.class);
+
         sut = new Task();
+    }
+
+    @DataProvider
+    public Object[][] idDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{Integer.valueOf(1)},
+            new Object[]{Integer.valueOf(2)},
+            new Object[]{Integer.valueOf(3)},
+            new Object[]{Integer.valueOf(4)},
+            new Object[]{Integer.valueOf(5)},
+        };
+    }
+
+    @Test(dataProvider = "idDataProvider")
+    public void shouldStoreId(Integer id)
+    {
+        sut.setId(id);
+
+        assertThat(sut.getId()).isEqualTo(id);
+    }
+
+    @Test(dataProvider = "idDataProvider")
+    public void shouldStoreOrder(Integer id)
+    {
+        sut.setOrder(id);
+
+        assertThat(sut.getOrder()).isEqualTo(id);
+    }
+
+    private int i = 0;
+
+    @DataProvider
+    public Object[][] stateDataProvider()
+    {
+        List<TaskState> values = Arrays.asList(TaskState.values());
+        Object[][] data = new Object[values.size()][];
+        values.stream().forEach(x -> data[i++] = new Object[]{x});
+        return data;
+    }
+
+    @Test(dataProvider = "stateDataProvider")
+    public void shouldStoreState(TaskState state)
+    {
+        sut.setTaskState(state);
+
+        assertThat(sut.getTaskState()).isEqualTo(state);
     }
 
     @DataProvider
@@ -134,12 +185,6 @@ public class TaskTest
         assertThat(sut.getTolerance()).isEqualTo(expectedTolerance, offset(1E-8));
     }
 
-    //    @Test
-    //    public void shouldHaveDefaultForLastInTaskGroup()
-    //    {
-    //        assertThat(sut.isLastInTaskGroup()).isTrue();
-    //    }
-
     @DataProvider
     public static Object[][] booleanDataProvider()
     {
@@ -148,13 +193,6 @@ public class TaskTest
             new Object[]{Boolean.TRUE},
         };
     }
-
-    //    @Test(dataProvider = "booleanDataProvider")
-    //    public void shouldStoreIsLastInTaskGroup(boolean lastInTaskGroup)
-    //    {
-    //        sut.setLastInTaskGroup(lastInTaskGroup);
-    //        assertThat(sut.isLastInTaskGroup()).isEqualTo(lastInTaskGroup);
-    //    }
 
     @DataProvider
     public Object[][] sensorListDataProvider()
@@ -178,71 +216,62 @@ public class TaskTest
         assertThat(sut.getSensors()).containsExactly(sensorList.toArray(new SensorDefinition[0]));
     }
 
-    //    @Test
-    //    public void shouldWaitForCompletion()
-    //    {
-    //        TaskFinisher finisher = new TaskFinisher(sut, 1000);
-    //        finisher.start();
-    //
-    //        long start = System.nanoTime();
-    //        TaskUtils.awaitCompletion(logger, sut);
-    //        //        sut.awaitCompletion();
-    //        long end = System.nanoTime();
-    //
-    //        assertThat(end - start).isGreaterThan(900000000);
-    //        assertThat(end - start).isLessThanOrEqualTo(1100000000);
-    //    }
-    //
-    //    @Test
-    //    public void shouldNotWaitForCompletionOfFinishedTask()
-    //    {
-    //        sut.setCompleted(true);
-    //
-    //        TaskFinisher finisher = new TaskFinisher(sut, 1000);
-    //        finisher.start();
-    //
-    //        long start = System.nanoTime();
-    //        TaskUtils.awaitCompletion(logger, sut);
-    //        //        sut.awaitCompletion();
-    //        long end = System.nanoTime();
-    //
-    //        assertThat(sut.isCompleted()).isTrue();
-    //        assertThat(end - start).isLessThanOrEqualTo(100000000);
-    //    }
-    //
-    //    /**
-    //     * TaskFinisher
-    //     */
-    //    private class TaskFinisher extends Thread
-    //    {
-    //        private Task task;
-    //        private long time;
-    //
-    //        /**
-    //         * @param task the task
-    //         * @param time the waiting time
-    //         */
-    //        public TaskFinisher(Task task, long time)
-    //        {
-    //            this.task = task;
-    //            this.time = time;
-    //        }
-    //
-    //        /**
-    //         * {@inheritDoc}
-    //         */
-    //        @Override
-    //        public void run()
-    //        {
-    //            try
-    //            {
-    //                Thread.sleep(time);
-    //            }
-    //            catch (InterruptedException e)
-    //            {
-    //                e.printStackTrace();
-    //            }
-    //            task.setCompleted(true);
-    //        }
-    //    }
+    @DataProvider
+    public Object[][] dateDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{new Date(12345678)},
+            new Object[]{new Date(12345679)},
+            new Object[]{new Date(12345680)},
+            new Object[]{new Date(12345681)},
+            new Object[]{new Date(12345682)},
+        };
+    }
+
+    @Test(dataProvider = "dateDataProvider")
+    public void shouldStoreExecutionStart(Date date)
+    {
+        sut.setExecutionStart(date);
+
+        assertThat(sut.getExecutionStart()).isSameAs(date);
+    }
+
+    @Test(dataProvider = "dateDataProvider")
+    public void shouldStoreExecutionEnd(Date date)
+    {
+        sut.setExecutionEnd(date);
+
+        assertThat(sut.getExecutionEnd()).isSameAs(date);
+    }
+
+    @Test
+    public void shouldStoreVehicle()
+    {
+        sut.setVehicle(vehicle);
+
+        assertThat(sut.getVehicle()).isSameAs(vehicle);
+    }
+
+    @DataProvider
+    public Object[][] keyValuePairsDataProvider()
+    {
+        return new Object[][]{
+            new Object[]{"a", "123"},
+            new Object[]{"b", 321},
+            new Object[]{"c", new byte[]{1, 2, 3, 4, 5, 6}},
+        };
+    }
+
+    @Test(dataProvider = "keyValuePairsDataProvider")
+    public void shouldStoreSensorValues(String name, Object expected)
+    {
+        NativeObject sensorValues = new NativeObject();
+        sensorValues.put(name, sensorValues, expected);
+
+        sut.setSensorValues(sensorValues);
+
+        ScriptableObject actual = sut.getSensorValues();
+
+        assertThat(actual.get(name)).isEqualTo(expected);
+    }
 }
