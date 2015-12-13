@@ -16,24 +16,21 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
-import java.util.List;
+import org.mozilla.javascript.ScriptableObject;
 
 import cpcc.vvrte.entities.Task;
 
 /**
- * TaskSchedulingAlgorithm
+ * TaskAnalyzer
  */
-public interface TaskSchedulingAlgorithm
+public interface TaskAnalyzer
 {
     /**
-     * This method takes pending tasks and adds them to the list of scheduled tasks. Furthermore, it sorts the scheduled
-     * tasks. Lower indices in this list indicate earlier execution.
-     * 
-     * @param scheduledTasks the already scheduled tasks.
-     * @param pendingTasks the currently pending tasks.
-     * @return true if the algorithm changed the list of scheduled tasks.
+     * @param taskParameters the task parameters.
+     * @param sequenceNumber the sequence number of the current task.
+     * @return the current task, or null.
      */
-    boolean schedule(List<Task> scheduledTasks, List<Task> pendingTasks);
+    Task analyzeTaskParameters(ScriptableObject taskParameters, int sequenceNumber);
 }

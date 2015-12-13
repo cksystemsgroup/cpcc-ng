@@ -21,7 +21,7 @@ import cpcc.core.services.opts.OptionsParserService;
 import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.services.db.VvRteRepository;
 import cpcc.vvrte.services.ros.MessageConverter;
-import cpcc.vvrte.task.TaskAnalyzer;
+import cpcc.vvrte.services.task.TaskAnalyzer;
 
 public class BuiltInFunctionsTest
 {

@@ -60,7 +60,6 @@ public final class CoreModule
         binder.bind(LiquibaseService.class, LiquibaseServiceImpl.class);
         binder.bind(QueryManager.class, QueryManagerImpl.class).eagerLoad();
         binder.bind(CoreJsonConverter.class, CoreJsonConverterImpl.class);
-        binder.bind(CoreGeoJsonConverter.class, CoreGeoJsonConverterImpl.class);
         binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class);
         binder.bind(JobService.class, JobServiceImpl.class);
         binder.bind(JobRepository.class, JobRepositoryImpl.class);

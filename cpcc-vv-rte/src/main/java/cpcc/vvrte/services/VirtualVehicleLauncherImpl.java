@@ -200,7 +200,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void stateChange(int vehicleId, VirtualVehicleState newState)
     {
-        logger.info("New vehicle state for vehicle " + vehicleId + " : " + newState);
+        logger.debug("New vehicle state for vehicle " + vehicleId + " : " + newState);
         if (newState == VirtualVehicleState.MIGRATION_COMPLETED)
         {
             VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleId);
@@ -222,7 +222,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void notify(Task tsk)
     {
-        logger.info("notify(): task=" + tsk.getId() + " " + tsk.getTaskState().name());
+        logger.debug("notify(): task=" + tsk.getId() + " " + tsk.getTaskState().name());
 
         Task task = taskRepository.findTaskById(tsk.getId());
         VirtualVehicle vehicle = task.getVehicle();
@@ -246,7 +246,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void notify(JavascriptWorker worker, VirtualVehicleState vehicleState)
     {
-        logger.info("notify(): worker=" + worker.getName() + ", state=" + vehicleState);
+        logger.debug("notify(): worker=" + worker.getName() + ", state=" + vehicleState);
         VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleMap.get(worker));
 
         if (vehicle == null || vehicleState == null)

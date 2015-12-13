@@ -27,7 +27,10 @@ public final class VvRteConstants
     public static final String MIGRATION_PATH = "/commons/vv/migration";
 
     public static final String PROP_DEFAULT_SCHEDULER = "vvrte.default.scheduler";
-    public static final String PROP_DEFAULT_SCHEDULER_CLASS_NAME = "cpcc.vvrte.task.FirstComeFirstServeAlgorithm";
+    // public static final String PROP_DEFAULT_SCHEDULER_CLASS_NAME =
+    //  "cpcc.vvrte.services.task.FirstComeFirstServeAlgorithm";
+    public static final String PROP_DEFAULT_SCHEDULER_CLASS_NAME =
+        "cpcc.vvrte.services.task.GatedTspSchedulingAlgorithm";
 
     public static final String PROP_MIN_TOLERANCE_DISTANCE = "cpcc.vvrte.task.minimumToleranceDistance";
     public static final String PROP_MIN_TOLERANCE_DISTANCE_DEFAULT = "3.0";

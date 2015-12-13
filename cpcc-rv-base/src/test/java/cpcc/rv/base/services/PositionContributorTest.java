@@ -30,7 +30,6 @@ import java.util.List;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
-import org.geojson.Point;
 import org.json.JSONException;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -45,7 +44,6 @@ import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
-import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.Task;
@@ -58,7 +56,6 @@ public class PositionContributorTest
 
     private TimeService timeService;
     private RealVehicleRepository rvRepo;
-    private CoreGeoJsonConverter jsonConv;
     private PositionContributor sut;
 
     @BeforeMethod
@@ -69,9 +66,7 @@ public class PositionContributorTest
 
         rvRepo = mock(RealVehicleRepository.class);
 
-        jsonConv = mock(CoreGeoJsonConverter.class);
-
-        sut = new PositionContributor(timeService, rvRepo, jsonConv);
+        sut = new PositionContributor(timeService, rvRepo);
     }
 
     @Test
@@ -99,7 +94,7 @@ public class PositionContributorTest
         when(rvs02.getLastUpdate()).thenReturn(new Date(TIMEOUT_TIME));
 
         Task task1 = mock(Task.class);
-        
+
         return new Object[][]{
             new Object[]{null, null, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
@@ -130,7 +125,7 @@ public class PositionContributorTest
                 + "\"rvId\":12345,\"type\":\"rvPosition\"}"
                 + "}"
             },
-            
+
             new Object[]{rv01, null, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
                 + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]},"
@@ -140,7 +135,7 @@ public class PositionContributorTest
                 + "\"rvId\":12345,\"type\":\"rvPosition\"}"
                 + "}"
             },
-            
+
             new Object[]{rv01, rvs01, Arrays.asList(task1), "{"
                 + "\"type\":\"Feature\","
                 + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]},"
@@ -157,10 +152,7 @@ public class PositionContributorTest
     public void shouldContribute(RealVehicle realVehicle, RealVehicleState state, List<Task> taskList, String expected)
         throws JsonProcessingException, JSONException
     {
-        Point point = new Point(111.1, 222.2, 333.3);
-
-        PolarCoordinate position = mock(PolarCoordinate.class);
-        when(jsonConv.toPoint(position)).thenReturn(point);
+        PolarCoordinate position = new PolarCoordinate(222.2, 111.1, 333.3);
 
         if (realVehicle != null)
         {

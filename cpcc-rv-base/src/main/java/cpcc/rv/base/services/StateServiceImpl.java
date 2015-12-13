@@ -31,7 +31,6 @@ import cpcc.core.entities.MappingAttributes;
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
-import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
@@ -67,24 +66,22 @@ public class StateServiceImpl implements StateService
      * @param qm the query manager.
      * @param rns the ROS node service.
      * @param vvRepo the virtual vehicle RTE repository.
-     * @param pjc the core GeoJSON converter.
      * @param vjc the virtual vehicle JSON converter.
      * @param rvRepo the real vehicle repository.
      * @param taskRepository the task repository.
      * @param timeService the time service.
      */
     public StateServiceImpl(Logger logger, QueryManager qm, RosNodeService rns, VvRteRepository vvRepo,
-        CoreGeoJsonConverter pjc, VvGeoJsonConverter vjc, RealVehicleRepository rvRepo, TaskRepository taskRepository,
-        TimeService timeService)
+        VvGeoJsonConverter vjc, RealVehicleRepository rvRepo, TaskRepository taskRepository, TimeService timeService)
     {
         this.qm = qm;
         this.rns = rns;
         this.taskRepository = taskRepository;
 
-        contributorMap.put(POSITION, new PositionContributor(timeService, rvRepo, pjc));
+        contributorMap.put(POSITION, new PositionContributor(timeService, rvRepo));
         contributorMap.put(VIRTUAL_VEHICLES, new VirtualVehicleContributor(vvRepo, vjc));
         contributorMap.put(TASKS, new TasksContributor());
-        contributorMap.put(SENSORS, new SensorsContributor(pjc));
+        contributorMap.put(SENSORS, new SensorsContributor());
     }
 
     /**

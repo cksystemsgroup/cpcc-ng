@@ -27,7 +27,6 @@ import java.util.Collections;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
-import org.geojson.Point;
 import org.json.JSONException;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -40,17 +39,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
-import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.vvrte.entities.Task;
 
 public class SensorsContributorTest
 {
     private SensorsContributor sut;
-    private CoreGeoJsonConverter jsonConverter;
     private SensorDefinition s1;
     private SensorDefinition s2;
     private Task task;
-    private Point point;
     private PolarCoordinate position;
 
     @BeforeMethod
@@ -63,17 +59,12 @@ public class SensorsContributorTest
         when(s2.getType()).thenReturn(SensorType.GPS);
 
         position = new PolarCoordinate(1.2, 3.4, 5.6);
-        
+
         task = mock(Task.class);
         when(task.getSensors()).thenReturn(Arrays.asList(s1, s2));
         when(task.getPosition()).thenReturn(position);
 
-        point = new Point(111.1, 222.2, 333.3);
-
-        jsonConverter = mock(CoreGeoJsonConverter.class);
-        when(jsonConverter.toPoint(position)).thenReturn(point);
-
-        sut = new SensorsContributor(jsonConverter);
+        sut = new SensorsContributor();
     }
 
     public static final String EMPTY_SENSOR_FEATURE = "{\"type\":\"Feature\""
@@ -106,7 +97,7 @@ public class SensorsContributorTest
         + ",\"geometry\":{\"type\":\"GeometryCollection\""
         + ",\"geometries\":["
         + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"ALTIMETER,GPS\",\"type\":\"rvSensor\"}"
-        + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]}}"
+        + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[3.4,1.2,5.6]}}"
         + "]}}";
 
     @Test

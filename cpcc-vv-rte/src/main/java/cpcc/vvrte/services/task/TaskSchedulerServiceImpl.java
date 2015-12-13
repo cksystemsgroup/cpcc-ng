@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -27,6 +27,7 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.UpdateConsumer;
 import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.entities.Task;
@@ -71,7 +72,7 @@ public class TaskSchedulerServiceImpl implements TaskSchedulerService
      * {@inheritDoc}
      */
     @Override
-    public Task schedule()
+    public Task schedule(PolarCoordinate position, List<PolarCoordinate> depotPositions)
     {
         if (algorithm == null)
         {
@@ -88,7 +89,7 @@ public class TaskSchedulerServiceImpl implements TaskSchedulerService
         List<Task> scheduledTasks = new ArrayList<>(taskRepository.getScheduledTasks());
         List<Task> pendingTasks = new ArrayList<>(taskRepository.getPendingTasks());
 
-        if (!pendingTasks.isEmpty() && algorithm.schedule(scheduledTasks, pendingTasks))
+        if (!pendingTasks.isEmpty() && algorithm.schedule(position, depotPositions, scheduledTasks, pendingTasks))
         {
             int order = 0;
             for (Task task : scheduledTasks)

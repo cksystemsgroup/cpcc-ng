@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
-import cpcc.vvrte.task.TaskCompletionListener;
+import cpcc.vvrte.services.task.TaskCompletionListener;
 
 /**
  * VirtualVehicleLauncher

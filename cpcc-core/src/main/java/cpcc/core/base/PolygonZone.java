@@ -19,13 +19,15 @@
 package cpcc.core.base;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.geojson.LngLatAlt;
 
 import cpcc.core.entities.PolarCoordinate;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * PolygonZone
@@ -77,11 +79,20 @@ public class PolygonZone
     /**
      * @param vertices the vertices of the polygon as two-tuples.
      */
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public PolygonZone(TwoTuple[] vertices)
     {
-        this.vertices = vertices;
+        this.vertices = ArrayUtils.clone(vertices);
         findBoundingBox();
+    }
+
+    /**
+     * @return get the vertices of this polygon.
+     */
+    public List<LngLatAlt> getVertices()
+    {
+        return Arrays.asList(vertices).stream()
+            .map(tuple -> new LngLatAlt(tuple.getY(), tuple.getX()))
+            .collect(Collectors.toList());
     }
 
     /**

@@ -18,26 +18,16 @@
 
 package cpcc.vvrte.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.geojson.Feature;
-import org.geojson.FeatureCollection;
-import org.geojson.GeoJsonObject;
-import org.geojson.LngLatAlt;
-import org.geojson.Polygon;
 import org.slf4j.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import cpcc.core.base.PolygonZone;
-import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.services.RealVehicleRepository;
+import cpcc.core.utils.RealVehicleUtils;
 import cpcc.vvrte.base.VirtualVehicleMappingDecision;
 import cpcc.vvrte.entities.Task;
 
@@ -75,7 +65,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
             return migrateTask(decision);
         }
 
-        boolean migration = !isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition());
+        boolean migration = !RealVehicleUtils.isInsideAreaOfOperation(rv.getAreaOfOperation(), task.getPosition());
 
         if (migration || !rv.getSensors().containsAll(task.getSensors()))
         {
@@ -102,82 +92,27 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
                 groundStations.add(rv);
             }
 
-            if (isInsideAreasOfOperation(rv.getAreaOfOperation(), task.getPosition()))
+            if (RealVehicleUtils.isInsideAreaOfOperation(rv.getAreaOfOperation(), task.getPosition()))
             {
                 if (rv.getSensors().containsAll(task.getSensors()))
                 {
-                    logger.info("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
+                    logger.debug("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
                     destinationRealVehicles.add(rv);
                 }
                 else
                 {
-                    logger.info("Migrate not to " + rv.getName() + " because of sensors "
+                    logger.debug("Migrate not to " + rv.getName() + " because of sensors "
                         + getSensorString(task.getSensors(), rv.getSensors()));
                 }
             }
             else
             {
-                logger.info("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
+                logger.debug("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
             }
         }
 
         decision.setRealVehicles(destinationRealVehicles.isEmpty() ? groundStations : destinationRealVehicles);
         return decision;
-    }
-
-    /**
-     * @param areaOfOperation the area of operation as a {@code String}.
-     * @return the list of {@code PolygonZone} instances.
-     * @throws IOException in case of errors.
-     */
-    private static List<PolygonZone> getPolygons(String areaOfOperation) throws IOException
-    {
-        List<PolygonZone> list = new ArrayList<PolygonZone>();
-        FeatureCollection fc = new ObjectMapper()
-            .readValue(areaOfOperation.replace("\\n", "\n"), FeatureCollection.class);
-
-        for (Feature feature : fc.getFeatures())
-        {
-            GeoJsonObject geom = feature.getGeometry();
-            if (geom instanceof Polygon)
-            {
-                List<LngLatAlt> coordinates = ((Polygon) geom).getCoordinates().get(0);
-                list.add(new PolygonZone(coordinates));
-            }
-        }
-
-        return list;
-    }
-
-    /**
-     * @param areaOfOperation the area of operation as a {@code String}.
-     * @param position the position in question.
-     * @return true if the position is inside the area of operation.
-     */
-    private static boolean isInsideAreasOfOperation(String areaOfOperation, PolarCoordinate position)
-    {
-        if (StringUtils.isBlank(areaOfOperation))
-        {
-            return false;
-        }
-
-        try
-        {
-            for (PolygonZone zone : getPolygons(areaOfOperation))
-            {
-                if (zone.isInside(position))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     /**

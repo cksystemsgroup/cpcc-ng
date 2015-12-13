@@ -24,10 +24,10 @@ import javax.inject.Inject;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
-import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.CoreJsonConverter;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.utils.MathUtils;
+import cpcc.core.utils.RealVehicleUtils;
 
 /**
  * GsViewer
@@ -40,15 +40,12 @@ public class GsViewer
     @Inject
     private CoreJsonConverter jsonConverter;
 
-    @Inject
-    private CoreGeoJsonConverter geoJsonConverter;
-
     /**
      * @return the map center coordinates.
      */
     public String getMapCenter()
     {
-        double[] bbox = geoJsonConverter.findBoundingBox(realVehicleRepository.findAllRealVehicles());
+        double[] bbox = RealVehicleUtils.findBoundingBox(realVehicleRepository.findAllRealVehicles());
 
         if (bbox.length == 4 && MathUtils.containsNoNaN(bbox))
         {

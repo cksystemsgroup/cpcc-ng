@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +50,8 @@ import cpcc.vvrte.services.db.TaskRepository;
  */
 public class TaskSchedulerServiceTest
 {
+    private PolarCoordinate rvPosition;
+
     private PolarCoordinate posA;
     private PolarCoordinate posB;
     private PolarCoordinate posC;
@@ -67,9 +70,15 @@ public class TaskSchedulerServiceTest
     private Session session;
     private TaskRepository taskRepository;
 
+    private List<PolarCoordinate> depotList;
+
     @BeforeMethod
     public void setUp()
     {
+        depotList = Collections.<PolarCoordinate> emptyList();
+
+        rvPosition = mock(PolarCoordinate.class);
+
         posA = mock(PolarCoordinate.class);
         when(posA.getLatitude()).thenReturn(47.1234);
         when(posA.getLongitude()).thenReturn(13.7897);
@@ -134,31 +143,14 @@ public class TaskSchedulerServiceTest
         pendingTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
         when(taskRepository.getCurrentRunningTask()).thenReturn(null);
 
-        Task actual = scheduler.schedule();
+        Task actual = scheduler.schedule(rvPosition, depotList);
 
-        assertThat(actual).isSameAs(taskA);
+        assertThat(actual).isNotNull();
 
-        InOrder io = inOrder(taskA, taskB, taskC, taskD, session);
-
-        io.verify(taskA).setOrder(1);
-        io.verify(taskA).setTaskState(TaskState.SCHEDULED);
-
-        io.verify(taskB).setOrder(2);
-        io.verify(taskB).setTaskState(TaskState.SCHEDULED);
-
-        io.verify(taskC).setOrder(3);
-        io.verify(taskC).setTaskState(TaskState.SCHEDULED);
-
-        io.verify(taskD).setOrder(4);
-        io.verify(taskD).setTaskState(TaskState.SCHEDULED);
-
-        io.verify(taskA).setOrder(0);
-        io.verify(taskA).setTaskState(TaskState.RUNNING);
-
-        io.verify(session).update(taskA);
-        io.verify(session).update(taskB);
-        io.verify(session).update(taskC);
-        io.verify(session).update(taskD);
+        verify(session).update(taskA);
+        verify(session).update(taskB);
+        verify(session).update(taskC);
+        verify(session).update(taskD);
     }
 
     @Test
@@ -167,7 +159,7 @@ public class TaskSchedulerServiceTest
         scheduledTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
         when(taskRepository.getCurrentRunningTask()).thenReturn(null);
 
-        Task actual = scheduler.schedule();
+        Task actual = scheduler.schedule(rvPosition, depotList);
 
         assertThat(actual).isSameAs(taskA);
 
@@ -190,7 +182,7 @@ public class TaskSchedulerServiceTest
 
         scheduler.setAlgorithm(ReverseScheduler.class.getName());
 
-        Task actual = scheduler.schedule();
+        Task actual = scheduler.schedule(rvPosition, depotList);
 
         assertThat(actual).isSameAs(taskD);
 
@@ -225,7 +217,7 @@ public class TaskSchedulerServiceTest
 
         when(taskRepository.getCurrentRunningTask()).thenReturn(taskA);
 
-        Task actual = scheduler.schedule();
+        Task actual = scheduler.schedule(rvPosition, depotList);
 
         assertThat(actual).isSameAs(taskA);
 
@@ -241,7 +233,7 @@ public class TaskSchedulerServiceTest
     @Test
     public void shouldReturnNullOnNoTasksToHandle()
     {
-        Task actual = scheduler.schedule();
+        Task actual = scheduler.schedule(rvPosition, depotList);
 
         assertThat(actual).isNull();
 
@@ -265,7 +257,7 @@ public class TaskSchedulerServiceTest
 
         verify(logger).error(anyString(), any(ClassNotFoundException.class));
 
-        Task actual = scheduler2.schedule();
+        Task actual = scheduler2.schedule(rvPosition, depotList);
 
         assertThat(actual).isNull();
 
@@ -287,7 +279,8 @@ public class TaskSchedulerServiceTest
          * {@inheritDoc}
          */
         @Override
-        public boolean schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
+        public boolean schedule(PolarCoordinate position, List<PolarCoordinate> depot, List<Task> scheduledTasks
+            , List<Task> pendingTasks)
         {
             for (int k = pendingTasks.size(); k > 0; --k)
             {

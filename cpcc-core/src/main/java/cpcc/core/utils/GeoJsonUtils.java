@@ -18,13 +18,20 @@
 
 package cpcc.core.utils;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.geojson.Feature;
 import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
+
+import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.entities.RealVehicle;
 
 /**
  * GeoJSON Utilities.
@@ -127,5 +134,47 @@ public final class GeoJsonUtils
         {
             boundingBox[3] = other[3];
         }
+    }
+
+    /**
+     * @param rv the real vehicle to be converted.
+     * @return the real vehicle as GeoJSON Feature object.
+     * @throws IOException thrown in case of errors.
+     */
+    public static Feature toFeature(RealVehicle rv) throws IOException
+    {
+        Feature feature = new Feature();
+        feature.setId(Integer.toString(rv.getId()));
+        feature.setProperty("type", "rv");
+        feature.setProperty("rvtype", rv.getType().name());
+        feature.setProperty("name", rv.getName());
+
+        return feature;
+    }
+
+    /**
+     * @param position the position.
+     * @return the position as a GeoJSON Point object.
+     */
+    public static Point toPoint(PolarCoordinate position)
+    {
+        return new Point(position.getLongitude(), position.getLatitude(), position.getAltitude());
+    }
+
+    /**
+     * @param position the position.
+     * @return the position as a Map object.
+     */
+    @SuppressWarnings("serial")
+    public static Map<String, Double> toPosition(final PolarCoordinate position)
+    {
+        return new HashMap<String, Double>()
+        {
+            {
+                put("lat", position.getLatitude());
+                put("lon", position.getLongitude());
+                put("alt", position.getAltitude());
+            }
+        };
     }
 }

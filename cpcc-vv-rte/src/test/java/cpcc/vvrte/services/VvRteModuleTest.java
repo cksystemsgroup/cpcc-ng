@@ -51,12 +51,12 @@ import cpcc.vvrte.services.json.VvJsonConverter;
 import cpcc.vvrte.services.json.VvJsonConverterImpl;
 import cpcc.vvrte.services.ros.MessageConverter;
 import cpcc.vvrte.services.ros.MessageConverterImpl;
-import cpcc.vvrte.task.TaskAnalyzer;
-import cpcc.vvrte.task.TaskAnalyzerImpl;
-import cpcc.vvrte.task.TaskExecutionService;
-import cpcc.vvrte.task.TaskExecutionServiceImpl;
-import cpcc.vvrte.task.TaskSchedulerService;
-import cpcc.vvrte.task.TaskSchedulerServiceImpl;
+import cpcc.vvrte.services.task.TaskAnalyzer;
+import cpcc.vvrte.services.task.TaskAnalyzerImpl;
+import cpcc.vvrte.services.task.TaskExecutionService;
+import cpcc.vvrte.services.task.TaskExecutionServiceImpl;
+import cpcc.vvrte.services.task.TaskSchedulerService;
+import cpcc.vvrte.services.task.TaskSchedulerServiceImpl;
 
 /**
  * VvRteModuleTest

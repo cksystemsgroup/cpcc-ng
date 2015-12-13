@@ -16,31 +16,51 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
 import java.util.List;
 
+import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.utils.GeodeticSystem;
 import cpcc.vvrte.entities.Task;
 
 /**
- * First Come First Serve Scheduling Algorithm
+ * Gated TSP scheduling algorithm implementation.
  */
-public class FirstComeFirstServeAlgorithm implements TaskSchedulingAlgorithm
+public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
 {
+    private AcoTspTasks tspSolver;
+
+    /**
+     * Default constructor.
+     */
+    public GatedTspSchedulingAlgorithm()
+    {
+        GeodeticSystem gs = new FlatWorld();
+        tspSolver = new AcoTspTasks(gs);
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean schedule(List<Task> scheduledTasks, List<Task> pendingTasks)
+    public boolean schedule(PolarCoordinate position, List<PolarCoordinate> depots, List<Task> scheduledTasks
+        , List<Task> pendingTasks)
     {
-        if (pendingTasks.isEmpty())
+        if (!scheduledTasks.isEmpty())
         {
             return false;
         }
 
-        scheduledTasks.addAll(pendingTasks);
+        if (depots.isEmpty())
+        {
+            scheduledTasks.addAll(tspSolver.calculateBestPathWithoutDepot(position, pendingTasks));
+        }
+        else
+        {
+            scheduledTasks.addAll(tspSolver.calculateBestPathWithDepot(position, depots.get(0), pendingTasks));
+        }
         pendingTasks.clear();
         return true;
     }
-
 }

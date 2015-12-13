@@ -33,10 +33,10 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.hibernate.Session;
 
 import cpcc.core.entities.RealVehicle;
-import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.CoreJsonConverter;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.utils.MathUtils;
+import cpcc.core.utils.RealVehicleUtils;
 import cpcc.core.utils.ResourceStreamResponse;
 import cpcc.rv.base.services.StateSynchronizer;
 
@@ -53,9 +53,6 @@ public class RvEditAreaOfOperations
 
     @Inject
     private CoreJsonConverter jsonConverter;
-
-    @Inject
-    private CoreGeoJsonConverter geoJsonConverter;
 
     @Inject
     protected StateSynchronizer confSync;
@@ -144,7 +141,7 @@ public class RvEditAreaOfOperations
      */
     public String getMapCenter()
     {
-        double[] bbox = geoJsonConverter.findBoundingBox(Arrays.asList(realVehicle));
+        double[] bbox = RealVehicleUtils.findBoundingBox(Arrays.asList(realVehicle));
         if (bbox.length == 4 && MathUtils.containsNoNaN(bbox))
         {
             return "[" + MathUtils.avg(bbox[1], bbox[3]) + "," + MathUtils.avg(bbox[0], bbox[2]) + "]";

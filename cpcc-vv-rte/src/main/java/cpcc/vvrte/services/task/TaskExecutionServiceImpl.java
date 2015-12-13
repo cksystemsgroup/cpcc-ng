@@ -16,12 +16,15 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
@@ -30,10 +33,13 @@ import org.mozilla.javascript.NativeObject;
 import org.slf4j.Logger;
 
 import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorVisibility;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.core.utils.GeodeticSystem;
+import cpcc.core.utils.RealVehicleUtils;
 import cpcc.core.utils.WGS84;
 import cpcc.ros.actuators.AbstractActuatorAdapter;
 import cpcc.ros.actuators.ActuatorType;
@@ -69,6 +75,9 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     private AltimeterAdapter altimeter;
     private GeodeticSystem gs = new WGS84();
     private Set<TaskCompletionListener> listeners = new HashSet<>();
+    private RealVehicleRepository rvRepo;
+
+    private List<PolarCoordinate> depotPositions;
 
     /**
      * @param logger the application logger.
@@ -77,9 +86,10 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
      * @param rosNodeService the ROS node service instance.
      * @param conv the ROS message converter instance.
      * @param timeService the time service instance.
+     * @param rvRepo the Real Vehicle repository instance.
      */
     public TaskExecutionServiceImpl(Logger logger, ServiceResources serviceResources, TaskSchedulerService scheduler
-        , RosNodeService rosNodeService, MessageConverter conv, TimeService timeService)
+        , RosNodeService rosNodeService, MessageConverter conv, TimeService timeService, RealVehicleRepository rvRepo)
     {
         this.serviceResources = serviceResources;
         this.logger = logger;
@@ -87,6 +97,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         this.rosNodeService = rosNodeService;
         this.conv = conv;
         this.timeService = timeService;
+        this.rvRepo = rvRepo;
         init();
     }
 
@@ -116,6 +127,22 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
                     initSensors(adapter);
                 }
             }
+        }
+
+        RealVehicle myself = rvRepo.findOwnRealVehicle();
+
+        String areaOfOperation = myself != null ? myself.getAreaOfOperation() : "";
+
+        try
+        {
+            depotPositions = RealVehicleUtils
+                .getDepotPositions(areaOfOperation)
+                .stream().map(x -> new PolarCoordinate(x.getLatitude(), x.getLongitude(), 0.0))
+                .collect(Collectors.toList());
+        }
+        catch (IOException e)
+        {
+            depotPositions = Collections.emptyList();
         }
     }
 
@@ -157,6 +184,8 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
         TaskRepository taskRepository = serviceResources.getService(TaskRepository.class);
 
+        PolarCoordinate vehiclePosition = getCurrentVehiclePosition();
+
         if (currentRunningTask == null)
         {
             currentRunningTask = taskRepository.getCurrentRunningTask();
@@ -164,7 +193,8 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
 
         if (currentRunningTask == null)
         {
-            currentRunningTask = scheduler.schedule();
+
+            currentRunningTask = scheduler.schedule(vehiclePosition, depotPositions);
         }
 
         if (currentRunningTask == null)
@@ -179,12 +209,8 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
 
         wayPointController.setPosition(currentRunningTask.getPosition());
 
-        NavSatFix pos = gpsReceiver.getPosition();
-        if (pos != null)
+        if (vehiclePosition != null)
         {
-            PolarCoordinate vehiclePosition = new PolarCoordinate(pos.getLatitude(), pos.getLongitude(),
-                altimeter != null ? altimeter.getValue().getData() : pos.getAltitude());
-
             double distance = gs.calculateDistance(currentRunningTask.getPosition(), vehiclePosition);
             currentRunningTask.setDistanceToTarget(distance);
 
@@ -217,6 +243,19 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         }
 
         tm.cleanup();
+    }
+
+    /**
+     * @return the current vehicle position or null
+     */
+    private PolarCoordinate getCurrentVehiclePosition()
+    {
+        NavSatFix pos = gpsReceiver.getPosition();
+
+        return pos == null
+            ? null
+            : new PolarCoordinate(pos.getLatitude(), pos.getLongitude(),
+                altimeter != null ? altimeter.getValue().getData() : pos.getAltitude());
     }
 
     /**

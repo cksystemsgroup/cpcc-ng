@@ -28,9 +28,9 @@ import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
-import cpcc.core.services.CoreGeoJsonConverter;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
+import cpcc.core.utils.GeoJsonUtils;
 import cpcc.vvrte.entities.Task;
 
 /**
@@ -40,19 +40,16 @@ public class PositionContributor implements StateContributor
 {
     private RealVehicleRepository rvRepo;
     private TimeService timeService;
-    private CoreGeoJsonConverter jsonConv;
     private long connectionTimeout;
 
     /**
      * @param timeService the time service.
      * @param rvRepo the real vehicle repository.
-     * @param jsonConv the core GeoJSON converter.
      */
-    public PositionContributor(TimeService timeService, RealVehicleRepository rvRepo, CoreGeoJsonConverter jsonConv)
+    public PositionContributor(TimeService timeService, RealVehicleRepository rvRepo)
     {
         this.rvRepo = rvRepo;
         this.timeService = timeService;
-        this.jsonConv = jsonConv;
         this.connectionTimeout = 10000L;
     }
 
@@ -67,7 +64,7 @@ public class PositionContributor implements StateContributor
             return;
         }
 
-        Point point = jsonConv.toPoint(rvPosition);
+        Point point = GeoJsonUtils.toPoint(rvPosition);
         Feature pointFeature = new Feature();
         pointFeature.setGeometry(point);
         pointFeature.setProperty("type", "rvPosition");

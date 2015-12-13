@@ -16,9 +16,11 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,12 +35,14 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.hibernate.Session;
+import org.mockito.ArgumentCaptor;
 import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.ros.actuators.AbstractActuatorAdapter;
 import cpcc.ros.actuators.ActuatorType;
@@ -52,6 +56,10 @@ import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.services.db.TaskRepository;
 import cpcc.vvrte.services.ros.MessageConverter;
+import cpcc.vvrte.services.task.TaskCompletionListener;
+import cpcc.vvrte.services.task.TaskExecutionService;
+import cpcc.vvrte.services.task.TaskExecutionServiceImpl;
+import cpcc.vvrte.services.task.TaskSchedulerService;
 import sensor_msgs.NavSatFix;
 import std_msgs.Float32;
 
@@ -78,6 +86,7 @@ public class TaskExecutionServiceTest
 
     private NavSatFix position;
     private Float32 float32altitude;
+    private PolarCoordinate posVehicle;
     private PolarCoordinate posA;
     private PolarCoordinate posB;
     private PolarCoordinate posC;
@@ -90,6 +99,7 @@ public class TaskExecutionServiceTest
     private Session session;
     private MessageConverter conv;
     private TimeService timeService;
+    private RealVehicleRepository rvRepo;
 
     /**
      * Test setup.
@@ -97,10 +107,14 @@ public class TaskExecutionServiceTest
     @BeforeMethod
     public void setUp()
     {
+        posVehicle = mock(PolarCoordinate.class);
+        when(posVehicle.toString()).thenReturn("posVehicle");
+
         posA = mock(PolarCoordinate.class);
         when(posA.getLatitude()).thenReturn(47.1234);
         when(posA.getLongitude()).thenReturn(13.7897);
         when(posA.getAltitude()).thenReturn(8.0);
+        when(posA.toString()).thenReturn("posA");
 
         taskA = mock(Task.class);
         when(taskA.getPosition()).thenReturn(posA);
@@ -112,6 +126,7 @@ public class TaskExecutionServiceTest
         when(posB.getLatitude()).thenReturn(47.2345);
         when(posB.getLongitude()).thenReturn(13.1234);
         when(posB.getAltitude()).thenReturn(23.0);
+        when(posB.toString()).thenReturn("posB");
 
         taskB = mock(Task.class);
         when(taskB.getPosition()).thenReturn(posB);
@@ -123,6 +138,7 @@ public class TaskExecutionServiceTest
         when(posC.getLatitude()).thenReturn(47.3345);
         when(posC.getLongitude()).thenReturn(13.5234);
         when(posC.getAltitude()).thenReturn(13.0);
+        when(posC.toString()).thenReturn("posC");
 
         taskC = mock(Task.class);
         when(taskC.getPosition()).thenReturn(posC);
@@ -134,6 +150,7 @@ public class TaskExecutionServiceTest
         when(posD.getLatitude()).thenReturn(47.4345);
         when(posD.getLongitude()).thenReturn(13.3234);
         when(posD.getAltitude()).thenReturn(18.0);
+        when(posD.toString()).thenReturn("posD");
 
         taskD = mock(Task.class);
         when(taskD.getPosition()).thenReturn(posD);
@@ -152,24 +169,6 @@ public class TaskExecutionServiceTest
         wpc = mock(SimpleWayPointControllerAdapter.class);
         when(wpc.getType()).thenReturn(ActuatorType.SIMPLE_WAYPOINT_CONTROLLER);
         when(wpc.isConnectedToAutopilot()).thenReturn(true);
-
-        //        doAnswer(new Answer<Object>()
-        //        {
-        //            /**
-        //             * {@inheritDoc}
-        //             */
-        //            @Override
-        //            public Object answer(InvocationOnMock invocation) throws Throwable
-        //            {
-        //                Object[] args = invocation.getArguments();
-        //                PolarCoordinate pos = (PolarCoordinate) args[0];
-        //                position.setLatitude(pos.getLatitude());
-        //                position.setLongitude(pos.getLongitude());
-        //                position.setAltitude(pos.getAltitude());
-        //                float32altitude.setData((float) pos.getAltitude());
-        //                return null;
-        //            }
-        //        }).when(wpc).setPosition((PolarCoordinate) anyObject());
 
         gps = mock(AbstractGpsSensorAdapter.class);
         when(gps.getPosition()).thenReturn(position);
@@ -201,27 +200,10 @@ public class TaskExecutionServiceTest
         when(rosNodeService.getAdapterNodes()).thenReturn(adapterNodes);
 
         conv = mock(MessageConverter.class);
-        
+
         timeService = mock(TimeService.class);
 
         scheduler = mock(TaskSchedulerService.class);
-
-        //        doAnswer(new Answer<Object>()
-        //        {
-        //            /**
-        //             * {@inheritDoc}
-        //             */
-        //            @Override
-        //            public Object answer(InvocationOnMock invocation) throws Throwable
-        //            {
-        //                Object[] args = invocation.getArguments();
-        //                List<Task> a = (List<Task>) args[0];
-        //                List<Task> b = (List<Task>) args[1];
-        //                a.addAll(b);
-        //                b.clear();
-        //                return null;
-        //            }
-        //        }).when(scheduler).schedule();
 
         logger = mock(Logger.class);
 
@@ -239,7 +221,10 @@ public class TaskExecutionServiceTest
         when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
         when(serviceResources.getService(TaskRepository.class)).thenReturn(taskRepository);
 
-        sut = new TaskExecutionServiceImpl(logger, serviceResources, scheduler, rosNodeService, conv, timeService);
+        rvRepo = mock(RealVehicleRepository.class);
+
+        sut = new TaskExecutionServiceImpl(logger, serviceResources, scheduler, rosNodeService, conv, timeService
+            , rvRepo);
     }
 
     /**
@@ -299,8 +284,9 @@ public class TaskExecutionServiceTest
     @Test
     public void shouldLoadNewTaskFromScheduler()
     {
+        // TODO check
         // when(taskRepository.getCurrentRunningTask()).thenReturn(taskB);
-        when(scheduler.schedule()).thenReturn(taskB);
+        when(scheduler.schedule(any(), any())).thenReturn(taskB);
 
         sut.executeTasks();
 
@@ -317,13 +303,18 @@ public class TaskExecutionServiceTest
     {
         when(altimeter.getValue()).thenReturn(float32altitude);
         // when(taskRepository.getCurrentRunningTask()).thenReturn(taskB);
-        when(scheduler.schedule()).thenReturn(taskA);
+        when(scheduler.schedule(any(), any())).thenReturn(taskA);
+
+        TaskCompletionListener listener = mock(TaskCompletionListener.class);
+
+        sut.addListener(listener);
 
         sut.executeTasks();
 
         verify(taskRepository).getCurrentRunningTask();
         verify(wpc).setPosition(posA);
         verify(gps).getPosition();
+        verify(listener).notify(any());
 
         verify(sessionManager).commit();
         verify(threadManager).cleanup();
@@ -335,7 +326,15 @@ public class TaskExecutionServiceTest
         sut.executeTasks();
 
         verify(taskRepository).getCurrentRunningTask();
-        verify(scheduler).schedule();
+
+        ArgumentCaptor<PolarCoordinate> pos = ArgumentCaptor.forClass(PolarCoordinate.class);
+
+        verify(scheduler).schedule(pos.capture(), any());
+
+        PolarCoordinate actual = pos.getValue();
+        assertThat(actual.getLatitude()).isEqualTo(position.getLatitude(), offset(1E-8));
+        assertThat(actual.getLongitude()).isEqualTo(position.getLongitude(), offset(1E-8));
+        assertThat(actual.getAltitude()).isEqualTo(position.getAltitude(), offset(1E-8));
 
         verify(sessionManager).commit();
         verify(threadManager).cleanup();

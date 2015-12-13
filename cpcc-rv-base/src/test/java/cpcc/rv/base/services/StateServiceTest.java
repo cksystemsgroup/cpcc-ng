@@ -44,8 +44,6 @@ import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
-import cpcc.core.services.CoreGeoJsonConverter;
-import cpcc.core.services.CoreGeoJsonConverterImpl;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
@@ -86,7 +84,6 @@ public class StateServiceTest
     private QueryManager qm;
     private RosNodeService rns;
     private VvRteRepository vvRepo;
-    private CoreGeoJsonConverter pjc;
     private VvGeoJsonConverter vjc;
     private AbstractGpsSensorAdapter adapter;
     private NavSatFix position;
@@ -177,7 +174,6 @@ public class StateServiceTest
         vvRepo = mock(VvRteRepository.class);
         when(vvRepo.findAllVehicles()).thenReturn(vvList);
 
-        pjc = new CoreGeoJsonConverterImpl();
         vjc = new VvGeoJsonConverterImpl();
 
         PolarCoordinate pos1 = mock(PolarCoordinate.class);
@@ -203,7 +199,7 @@ public class StateServiceTest
 
         timeService = mock(TimeService.class);
 
-        sut = new StateServiceImpl(logger, qm, rns, vvRepo, pjc, vjc, rvRepo, taskRepo, timeService);
+        sut = new StateServiceImpl(logger, qm, rns, vvRepo, vjc, rvRepo, taskRepo, timeService);
     }
 
     @DataProvider

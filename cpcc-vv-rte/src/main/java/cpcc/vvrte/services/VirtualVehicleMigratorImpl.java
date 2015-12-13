@@ -245,7 +245,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     {
         for (VirtualVehicleStorage se : storageChunk)
         {
-            logger.info("Writing storage entry '" + se.getName() + "'");
+            logger.debug("Writing storage entry '" + se.getName() + "'");
 
             byte[] content = se.getContentAsByteArray();
             TarArchiveEntry entry = new TarArchiveEntry("storage/" + se.getName());
@@ -270,26 +270,22 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         Properties props = new Properties();
         props.setProperty("name", virtualVehicle.getName());
         props.setProperty("uuid", virtualVehicle.getUuid());
-        // props.setProperty("api.version", Integer.toString(virtualVehicle.getApiVersion()));
         PropertyUtils.setProperty(props, "api.version", virtualVehicle.getApiVersion());
         PropertyUtils.setProperty(props, "state", virtualVehicle.getPreMigrationState());
 
         if (virtualVehicle.getStartTime() != null)
         {
             PropertyUtils.setProperty(props, "start.time", virtualVehicle.getStartTime().getTime());
-            // props.setProperty("start.time", Long.toString(virtualVehicle.getStartTime().getTime()));
         }
 
         if (virtualVehicle.getEndTime() != null)
         {
             PropertyUtils.setProperty(props, "end.time", virtualVehicle.getEndTime().getTime());
-            // props.setProperty("end.time", Long.toString(virtualVehicle.getEndTime().getTime()));
         }
 
         if (lastChunk)
         {
             PropertyUtils.setProperty(props, "last.chunk", Boolean.TRUE);
-            // props.setProperty("last.chunk", Boolean.TRUE.toString());
         }
 
         return props;
@@ -347,7 +343,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private void logMigratedChunk(String chunkName, VirtualVehicle virtualVehicle)
     {
         String name = virtualVehicle != null ? " name=" + virtualVehicle.getName() : "";
-        logger.info("Migration of " + chunkName + name);
+        logger.debug("Migration of " + chunkName + name);
     }
 
     /**
@@ -420,7 +416,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
                 + "is being migrated and can not be a migration target.");
         }
 
-        logger.info("pre-migration:  " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last="
+        logger.debug("pre-migration:  " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last="
             + lastChunk);
 
         if (lastChunk)
@@ -440,7 +436,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         //        }
         sessionManager.getSession().saveOrUpdate(vv);
 
-        logger.info("post-migration: " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last="
+        logger.debug("post-migration: " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last="
             + lastChunk);
     }
 

@@ -16,21 +16,28 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
-import org.mozilla.javascript.ScriptableObject;
+import java.util.List;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.vvrte.entities.Task;
 
 /**
- * AbstractTaskAnalyzer
+ * TaskSchedulingAlgorithm
  */
-public abstract class AbstractTaskAnalyzer
+public interface TaskSchedulingAlgorithm
 {
     /**
-     * @param taskParameters the task parameters.
-     * @param sequenceNumber the sequence number of the current task.
-     * @return the current task, or null.
+     * This method takes pending tasks and adds them to the list of scheduled tasks. Furthermore, it sorts the scheduled
+     * tasks. Lower indices in this list indicate earlier execution.
+     * 
+     * @param position the current position of the Real Vehicle.
+     * @param depotPositions the positions of the vehicle depots.
+     * @param scheduledTasks the already scheduled tasks.
+     * @param pendingTasks the currently pending tasks.
+     * @return true if the algorithm changed the list of scheduled tasks.
      */
-    public abstract Task analyzeTaskParameters(ScriptableObject taskParameters, int sequenceNumber);
+    boolean schedule(PolarCoordinate position, List<PolarCoordinate> depotPositions, List<Task> scheduledTasks
+        , List<Task> pendingTasks);
 }

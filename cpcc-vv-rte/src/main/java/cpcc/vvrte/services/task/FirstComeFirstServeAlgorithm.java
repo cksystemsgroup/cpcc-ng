@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,21 +16,33 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
-import org.mozilla.javascript.ScriptableObject;
+import java.util.List;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.vvrte.entities.Task;
 
 /**
- * TaskAnalyzer
+ * First Come First Serve Scheduling Algorithm
  */
-public interface TaskAnalyzer
+public class FirstComeFirstServeAlgorithm implements TaskSchedulingAlgorithm
 {
     /**
-     * @param taskParameters the task parameters.
-     * @param sequenceNumber the sequence number of the current task.
-     * @return the current task, or null.
+     * {@inheritDoc}
      */
-    Task analyzeTaskParameters(ScriptableObject taskParameters, int sequenceNumber);
+    @Override
+    public boolean schedule(PolarCoordinate position, List<PolarCoordinate> depot, List<Task> scheduledTasks
+        , List<Task> pendingTasks)
+    {
+        if (pendingTasks.isEmpty())
+        {
+            return false;
+        }
+
+        scheduledTasks.addAll(pendingTasks);
+        pendingTasks.clear();
+        return true;
+    }
+
 }

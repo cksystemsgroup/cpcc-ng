@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,17 +16,21 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
+
+import org.mozilla.javascript.ScriptableObject;
 
 import cpcc.vvrte.entities.Task;
 
 /**
- * Task Completion Listener interface.
+ * AbstractTaskAnalyzer
  */
-public interface TaskCompletionListener
+public abstract class AbstractTaskAnalyzer
 {
     /**
-     * @param task the completed {@code Task}.
+     * @param taskParameters the task parameters.
+     * @param sequenceNumber the sequence number of the current task.
+     * @return the current task, or null.
      */
-    void notify(Task task);
+    public abstract Task analyzeTaskParameters(ScriptableObject taskParameters, int sequenceNumber);
 }

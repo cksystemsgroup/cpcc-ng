@@ -16,10 +16,12 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
+import cpcc.core.entities.PolarCoordinate;
 import cpcc.vvrte.entities.Task;
 
 /**
@@ -41,7 +43,9 @@ public interface TaskSchedulerService
         InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
     /**
+     * @param currentPosition the current position of the Real Vehicle.
+     * @param depotPositions the positions of the Real Vehicle's depots.
      * @return the next {@code Task} to be executed.
      */
-    Task schedule();
+    Task schedule(PolarCoordinate currentPosition, List<PolarCoordinate> depotPositions);
 }

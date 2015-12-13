@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.vvrte.task;
+package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
@@ -34,7 +34,7 @@ import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.QueryManager;
 import cpcc.vvrte.entities.Task;
-import cpcc.vvrte.task.TaskAnalyzerImpl;
+import cpcc.vvrte.services.task.TaskAnalyzerImpl;
 
 /**
  * TaskAnalyzerTest

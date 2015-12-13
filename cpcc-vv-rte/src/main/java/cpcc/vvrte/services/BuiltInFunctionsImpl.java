@@ -50,7 +50,7 @@ import cpcc.vvrte.services.db.VvRteRepository;
 import cpcc.vvrte.services.js.ApplicationState;
 import cpcc.vvrte.services.js.BuiltInFunctions;
 import cpcc.vvrte.services.ros.MessageConverter;
-import cpcc.vvrte.task.TaskAnalyzer;
+import cpcc.vvrte.services.task.TaskAnalyzer;
 
 /**
  * BuiltInFunctionsImpl
@@ -109,7 +109,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public List<ScriptableObject> listSensors()
     {
-        logger.info("listSensors start");
+        logger.debug("listSensors start");
         List<SensorDefinition> asd = qm.findAllVisibleSensorDefinitions();
         return converToScriptableObjectList(asd);
     }
@@ -120,7 +120,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public List<ScriptableObject> listActiveSensors()
     {
-        logger.info("listActiveSensors start");
+        logger.debug("listActiveSensors start");
         List<SensorDefinition> asd = qm.findAllActiveSensorDefinitions();
         return converToScriptableObjectList(asd);
     }
@@ -241,7 +241,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public void executeTask(ScriptableObject managementParameters, ScriptableObject taskParameters)
     {
-        logger.info("*** executeTask");
+        logger.debug("*** executeTask");
 
         String vehicleUUID = (String) managementParameters.get("vehicleUUID");
         VirtualVehicle vehicle = vvRteRepo.findVirtualVehicleByUUID(vehicleUUID);
@@ -294,7 +294,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private void handleExecutedTask(VirtualVehicle vehicle, ScriptableObject managementParameters,
         ScriptableObject taskParameters)
     {
-        logger.info("*** handleExecutedTask");
+        logger.debug("*** handleExecutedTask");
 
         Task task = vehicle.getTask();
 
@@ -334,7 +334,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private void initiateTaskExecution(ScriptableObject managementParameters, ScriptableObject taskParameters
         , Task task)
     {
-        logger.info("*** no migration (execute task).");
+        logger.debug("*** no migration (execute task).");
 
         Context cx = Context.enter();
         try
@@ -353,7 +353,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
 
     private void initiateMigration(ScriptableObject managementParameters, VirtualVehicleMappingDecision decision)
     {
-        logger.info("*** initiateMigration");
+        logger.debug("*** initiateMigration");
 
         Context cx = Context.enter();
         try

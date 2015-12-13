@@ -60,6 +60,7 @@ public class VirtualVehicleStateTest
             new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
+            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
         };
     }
@@ -101,6 +102,7 @@ public class VirtualVehicleStateTest
             new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED},
             new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
+            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
         };
     }
@@ -142,6 +144,7 @@ public class VirtualVehicleStateTest
             new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
+            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
         };
     }
@@ -183,6 +186,7 @@ public class VirtualVehicleStateTest
             new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
+            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
         };
     }
@@ -224,6 +228,7 @@ public class VirtualVehicleStateTest
             new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
+            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
         };
     }
@@ -265,6 +270,7 @@ public class VirtualVehicleStateTest
             new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
+            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
         };
     }
@@ -289,6 +295,7 @@ public class VirtualVehicleStateTest
             new Object[]{VirtualVehicleState.MIGRATION_COMPLETED},
             new Object[]{VirtualVehicleState.FINISHED},
             new Object[]{VirtualVehicleState.INTERRUPTED},
+            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
             new Object[]{VirtualVehicleState.DEFECTIVE},
         };
     }
@@ -320,6 +327,16 @@ public class VirtualVehicleStateTest
     public void shouldDetectValidTransitionsFromInterrupted(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.INTERRUPTED.canTraverseTo(state);
+        assertThat(result).isTrue();
+    }
+
+    /*
+     * VirtualVehicleState.TASK_COMPLETION_AWAITED
+     */
+    @Test(dataProvider = "allStatesDataprovider")
+    public void shouldDetectValidTransitionsFromTaskCompletionAwaited(VirtualVehicleState state)
+    {
+        boolean result = VirtualVehicleState.TASK_COMPLETION_AWAITED.canTraverseTo(state);
         assertThat(result).isTrue();
     }
 

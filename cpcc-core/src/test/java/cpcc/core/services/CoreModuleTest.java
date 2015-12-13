@@ -48,14 +48,6 @@ import org.slf4j.Logger;
 import org.testng.annotations.Test;
 
 import cpcc.core.base.CoreConstants;
-import cpcc.core.services.CoreGeoJsonConverter;
-import cpcc.core.services.CoreGeoJsonConverterImpl;
-import cpcc.core.services.CoreJsonConverter;
-import cpcc.core.services.CoreJsonConverterImpl;
-import cpcc.core.services.CoreModule;
-import cpcc.core.services.LiquibaseService;
-import cpcc.core.services.QueryManager;
-import cpcc.core.services.QueryManagerImpl;
 import cpcc.core.services.jobs.JobExecutionException;
 import cpcc.core.services.jobs.JobService;
 import cpcc.core.services.opts.OptionsParserService;
@@ -82,14 +74,12 @@ public class CoreModuleTest
         ServiceBinder binder = mock(ServiceBinder.class);
         when(binder.bind(QueryManager.class, QueryManagerImpl.class)).thenReturn(options);
         when(binder.bind(CoreJsonConverter.class, CoreJsonConverterImpl.class)).thenReturn(options);
-        when(binder.bind(CoreGeoJsonConverter.class, CoreGeoJsonConverterImpl.class)).thenReturn(options);
         when(binder.bind(OptionsParserService.class, OptionsParserServiceImpl.class)).thenReturn(options);
 
         CoreModule.bind(binder);
 
         verify(binder).bind(QueryManager.class, QueryManagerImpl.class);
         verify(binder).bind(CoreJsonConverter.class, CoreJsonConverterImpl.class);
-        verify(binder).bind(CoreGeoJsonConverter.class, CoreGeoJsonConverterImpl.class);
         verify(binder).bind(OptionsParserService.class, OptionsParserServiceImpl.class);
         verify(options, times(1)).eagerLoad();
     }
@@ -167,7 +157,7 @@ public class CoreModuleTest
 
         argument1.getValue().run();
         inOrder.verify(jobService).executeJobs();
-        
+
         doThrow(JobExecutionException.class).when(jobService).executeJobs();
         argument1.getValue().run();
         inOrder.verify(jobService).executeJobs();
