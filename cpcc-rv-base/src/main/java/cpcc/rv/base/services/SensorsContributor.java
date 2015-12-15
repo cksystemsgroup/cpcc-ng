@@ -81,8 +81,8 @@ public class SensorsContributor implements StateContributor
      * @param sensorList the list of sensor definitions.
      * @return the sensor definitions as a {@code String}.
      */
-    private String toSensorList(List<SensorDefinition> sensorList)
+    private List<String> toSensorList(List<SensorDefinition> sensorList)
     {
-        return sensorList.stream().map(x -> x.getType().name()).collect(Collectors.joining(","));
+        return sensorList.stream().map(x -> x.getType().name()).collect(Collectors.toList());
     }
 }

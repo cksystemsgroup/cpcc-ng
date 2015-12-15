@@ -33,7 +33,7 @@
 
 .vehicle-planned-path {
 	color: gray
-} 
+}
 
 .task-info {
 	position: relative;
@@ -116,4 +116,23 @@
 
 .vv-info-defective {
 	color: red
+}
+
+.sensor-marker {
+	
+}
+
+.sensor-table {
+	background: transparent;
+	background-color: #bbbbbb;
+	border-style: solid;
+	border-color: #bbbbbb;
+	border: 0px;
+	margin: 0px;
+	opacity: 0.5;
+}
+
+.sensor-info {
+	opacity: 1;
+	padding: 2px;
 }
