@@ -7,7 +7,7 @@
 	<t:If test="virtualVehicle">&quot;${virtualVehicle.name}&quot; (${virtualVehicle.id})</t:If>
 </h4>
 
-<t:Grid t:source="storageList" t:row="storageItem"
+<t:Grid t:source="storageList" t:row="storageItem" t:rowsPerPage="10"
 	t:reorder="id,name,modificationTime" t:add="content"
 	class="table table-striped table-condensed topic-table">
 
