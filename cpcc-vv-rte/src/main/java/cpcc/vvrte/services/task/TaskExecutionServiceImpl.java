@@ -193,7 +193,6 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
 
         if (currentRunningTask == null)
         {
-
             currentRunningTask = scheduler.schedule(vehiclePosition, depotPositions);
         }
 

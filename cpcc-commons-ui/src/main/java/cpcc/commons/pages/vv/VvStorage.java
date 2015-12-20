@@ -23,8 +23,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.ioc.Messages;
 
-import cpcc.commons.services.StorageContentTagService;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
 import cpcc.vvrte.services.db.VvRteRepository;
@@ -35,17 +35,20 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class VvStorage
 {
+    private static final String MSG_STORAGE_CONTENT_TITLE = "storage.content.title";
+    private static final String MSG_STORAGE_CONTENT_ALT = "storage.content.alt";
+
+    @Inject
+    protected Messages messages;
+
     @Inject
     protected VvRteRepository vvRteRepo;
 
-    @Inject
-    protected StorageContentTagService storageTagService;
-
-    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "VehicleStorage.tml uses this variable.")
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "The template uses this variable.")
     @Property
     private VirtualVehicle virtualVehicle;
 
-    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "VehicleStorage.tml uses this variable.")
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "The template uses this variable.")
     @Property
     private List<VirtualVehicleStorage> storageList;
 
@@ -67,10 +70,19 @@ public class VvStorage
     }
 
     /**
-     * @return the content link
+     * @return the content alt text.
      */
-    public String getContentLink()
+    public String getContentAlt()
     {
-        return storageTagService.getStorageContentTag(storageItem);
+        return messages.format(MSG_STORAGE_CONTENT_ALT, storageItem.getId(), storageItem.getName());
     }
+
+    /**
+     * @return the content title text.
+     */
+    public String getContentTitle()
+    {
+        return messages.format(MSG_STORAGE_CONTENT_TITLE, storageItem.getId(), storageItem.getName());
+    }
+
 }

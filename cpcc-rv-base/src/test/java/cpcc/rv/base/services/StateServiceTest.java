@@ -233,9 +233,9 @@ public class StateServiceTest
                     + "{\"type\":\"Feature\""
                     + ",\"properties\":{\"type\":\"sensors\"}"
                     + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
-                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"GPS\""
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"GPS\"]"
                     + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"ALTIMETER,BAROMETER\""
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"ALTIMETER\",\"BAROMETER\"]"
                     + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[7.4,9.5,5.3]}}"
                     + "]}}"
                     + "]}"
@@ -306,9 +306,9 @@ public class StateServiceTest
                     + "{\"type\":\"Feature\""
                     + ",\"properties\":{\"type\":\"sensors\"}"
                     + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
-                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"GPS\",\"type\":\"rvSensor\"}"
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"GPS\"],\"type\":\"rvSensor\"}"
                     + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"ALTIMETER,BAROMETER\""
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"ALTIMETER\",\"BAROMETER\"]"
                     + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[7.4,9.5,5.3]}}"
                     + "]}}"
                     + "]}"
@@ -327,9 +327,9 @@ public class StateServiceTest
                     + ",\"properties\":{\"type\":\"sensors\"}"
                     + ",\"geometry\":{\"type\":\"GeometryCollection\""
                     + ",\"geometries\":["
-                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"GPS\""
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"GPS\"]"
                     + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
-                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"ALTIMETER,BAROMETER\""
+                    + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"ALTIMETER\",\"BAROMETER\"]"
                     + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[7.4,9.5,5.3]}}"
                     + "]}}"
                     + "]}"
@@ -338,7 +338,8 @@ public class StateServiceTest
     }
 
     @Test(dataProvider = "stateDataProvider")
-    public void should(String what, long now, String expected) throws IOException, JSONException
+    public void shouldGetStateAsFeatureCollection(String what, long now, String expected)
+        throws IOException, JSONException
     {
         when(timeService.currentTimeMillis()).thenReturn(now);
 

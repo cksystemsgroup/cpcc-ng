@@ -1,39 +1,49 @@
-<html t:type="layout" title="${message:incompleteTasks}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+<html t:type="layout" title="${message:incompleteTasks}"
+	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-	<t:Zone t:id="zone1" t:mixins="ZoneRefresh" ZoneRefresh.period="1">
-		<h4>${message:incompleteTasks}</h4>
-		<t:Grid t:source="taskRepo.findAllIncompleteTasks()" t:row="currentTask" t:add="position,sensors"
-			t:reorder="taskState,executionStart,position,tolerance,distanceToTarget,sensors" t:exclude="creationTime,executionEnd,sensorValues,order,id"
-			class="table table-striped table-condensed topic-table">
+<t:Zone t:id="zone1" t:mixins="ZoneRefresh" ZoneRefresh.period="1">
+	<h4>${message:incompleteTasks}</h4>
+	<t:Grid t:source="taskRepo.findAllIncompleteTasks()"
+		t:row="currentTask" t:add="position,sensors,virtualVehicle"
+		t:reorder="taskState,virtualVehicle,executionStart,position,tolerance,distanceToTarget,sensors"
+		t:exclude="creationTime,executionEnd,sensorValues,order,id"
+		class="table table-striped table-condensed topic-table">
 
-			<p:positionCell>
+		<p:virtualVehicleCell>
+				${currentTask?.vehicle?.name} (${currentTask?.vehicle?.uuid}) 
+		</p:virtualVehicleCell>
+
+		<p:positionCell>
 				${currentTask.position.toString()}
-			</p:positionCell>
+		</p:positionCell>
 
-			<p:executionStartCell>
-				<t:Output t:format="message:dateFormat" t:value="currentTask?.executionStart" />
-			</p:executionStartCell>
+		<p:executionStartCell>
+			<t:Output t:format="message:dateFormat"
+				t:value="currentTask?.executionStart" />
+		</p:executionStartCell>
 
-			<p:executionEndCell>
-				<t:Output t:format="message:dateFormat" t:value="currentTask?.executionEnd" />
-			</p:executionEndCell>
+		<p:executionEndCell>
+			<t:Output t:format="message:dateFormat"
+				t:value="currentTask?.executionEnd" />
+		</p:executionEndCell>
 
-			<p:toleranceCell>
-				<t:Output t:format="distanceFormat" t:value="currentTask?.tolerance" />
-			</p:toleranceCell>
+		<p:toleranceCell>
+			<t:Output t:format="distanceFormat" t:value="currentTask?.tolerance" />
+		</p:toleranceCell>
 
-			<p:distanceToTargetCell>
-				<t:Output t:format="distanceFormat" t:value="currentTask?.distanceToTarget" />
-			</p:distanceToTargetCell>
+		<p:distanceToTargetCell>
+			<t:Output t:format="distanceFormat"
+				t:value="currentTask?.distanceToTarget" />
+		</p:distanceToTargetCell>
 
-			<p:sensorsCell>
-				<t:Output t:format="sensorFormat" t:value="currentTask?.sensors" />
-			</p:sensorsCell>
+		<p:sensorsCell>
+			<t:Output t:format="sensorFormat" t:value="currentTask?.sensors" />
+		</p:sensorsCell>
 
-			<p:empty>
-				<p>${message:noIncompleteTaskFound}</p>
-			</p:empty>
-		</t:Grid>
-	</t:Zone>
+		<p:empty>
+			<p>${message:noIncompleteTaskFound}</p>
+		</p:empty>
+	</t:Grid>
+</t:Zone>
 </html>

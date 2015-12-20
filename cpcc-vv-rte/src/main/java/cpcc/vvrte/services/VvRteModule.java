@@ -37,8 +37,6 @@ import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptServiceImpl;
 import cpcc.vvrte.services.json.VvGeoJsonConverter;
 import cpcc.vvrte.services.json.VvGeoJsonConverterImpl;
-import cpcc.vvrte.services.json.VvJsonConverter;
-import cpcc.vvrte.services.json.VvJsonConverterImpl;
 import cpcc.vvrte.services.ros.MessageConverter;
 import cpcc.vvrte.services.ros.MessageConverterImpl;
 import cpcc.vvrte.services.task.TaskAnalyzer;
@@ -73,7 +71,6 @@ public final class VvRteModule
         binder.bind(TaskExecutionService.class, TaskExecutionServiceImpl.class).eagerLoad();
         binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class).eagerLoad();
         binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class).scope(ScopeConstants.PERTHREAD);
-        binder.bind(VvJsonConverter.class, VvJsonConverterImpl.class);
         binder.bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class);
         binder.bind(TaskRepository.class, TaskRepositoryImpl.class);
     }

@@ -1,0 +1,36 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
+
+<t:content>
+	<t:If t:test="prop:isImage()">
+		<a id="link_${clientId}" href="#" data-toggle="modal"
+			data-target="#dialog_${clientId}"> <img src="${imgSource}"
+			alt="${titleText}" title="${altText}" height="60" width="80" />
+		</a>
+
+		<div id="dialog_${clientId}" class="modal fade" tabindex="-1"
+			role="dialog" aria-labelledby="label_${clientId}">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title" id="label_${clientId}">${titleText}</h4>
+					</div>
+					<div class="modal-body">
+						<img class="storage-image-detail" src="${imgSource}"
+							alt="${titleText}" title="${titleText}" />
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<p:else>
+			${prop:jsonString}
+		</p:else>
+	</t:If>
+</t:content>
+
+</html>

@@ -96,7 +96,7 @@ public class SensorsContributorTest
         + ",\"properties\":{\"type\":\"sensors\"}"
         + ",\"geometry\":{\"type\":\"GeometryCollection\""
         + ",\"geometries\":["
-        + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":\"ALTIMETER,GPS\",\"type\":\"rvSensor\"}"
+        + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"ALTIMETER\",\"GPS\"],\"type\":\"rvSensor\"}"
         + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[3.4,1.2,5.6]}}"
         + "]}}";
 

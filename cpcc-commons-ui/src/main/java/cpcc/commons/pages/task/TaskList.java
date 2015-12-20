@@ -55,35 +55,4 @@ public class TaskList
         sensorFormat = new SensorDescriptionListFormat();
         distanceFormat = new DecimalFormat("0.0  m");
     }
-
-    //    /**
-    //     * @param task the task.
-    //     * @return the sensor descriptions as a string.
-    //     */
-    //    public String getSortedSensorList(Task task)
-    //    {
-    //        if (task == null || task.getSensors().isEmpty())
-    //        {
-    //            return "";
-    //        }
-    //
-    //        String[] a = new String[task.getSensors().size()];
-    //        for (int k = 0, l = task.getSensors().size(); k < l; ++k)
-    //        {
-    //            a[k] = task.getSensors().get(k).getDescription();
-    //        }
-    //
-    //        Arrays.sort(a);
-    //
-    //        return StringUtils.join(a, ", ");
-    //    }
-
-    //    /**
-    //     * @param task the task.
-    //     * @return the task position as a {@code String}.
-    //     */
-    //    public String getPositionString(Task task)
-    //    {
-    //        return task.getPosition().toString();
-    //    }
 }

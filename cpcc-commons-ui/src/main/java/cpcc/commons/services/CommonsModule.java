@@ -42,7 +42,6 @@ public final class CommonsModule
     public static void bind(ServiceBinder binder)
     {
         binder.bind(ImageTagService.class, ImageTagServiceImpl.class);
-        binder.bind(StorageContentTagService.class, StorageContentTagServiceImpl.class);
     }
 
     /**

@@ -47,8 +47,6 @@ import cpcc.vvrte.services.js.JavascriptService;
 import cpcc.vvrte.services.js.JavascriptServiceImpl;
 import cpcc.vvrte.services.json.VvGeoJsonConverter;
 import cpcc.vvrte.services.json.VvGeoJsonConverterImpl;
-import cpcc.vvrte.services.json.VvJsonConverter;
-import cpcc.vvrte.services.json.VvJsonConverterImpl;
 import cpcc.vvrte.services.ros.MessageConverter;
 import cpcc.vvrte.services.ros.MessageConverterImpl;
 import cpcc.vvrte.services.task.TaskAnalyzer;
@@ -88,7 +86,6 @@ public class VvRteModuleTest
         when(binder.bind(TaskExecutionService.class, TaskExecutionServiceImpl.class)).thenReturn(options);
         when(binder.bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class)).thenReturn(options);
         when(binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class)).thenReturn(options);
-        when(binder.bind(VvJsonConverter.class, VvJsonConverterImpl.class)).thenReturn(options);
         when(binder.bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class)).thenReturn(options);
 
         VvRteModule.bind(binder);
@@ -103,7 +100,6 @@ public class VvRteModuleTest
         verify(binder).bind(TaskExecutionService.class, TaskExecutionServiceImpl.class);
         verify(binder).bind(TaskSchedulerService.class, TaskSchedulerServiceImpl.class);
         verify(binder).bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class);
-        verify(binder).bind(VvJsonConverter.class, VvJsonConverterImpl.class);
         verify(binder).bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class);
         verify(options, times(9)).eagerLoad();
     }
