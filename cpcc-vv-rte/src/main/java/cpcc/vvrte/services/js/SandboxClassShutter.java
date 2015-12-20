@@ -32,6 +32,7 @@ public class SandboxClassShutter implements ClassShutter
     private static final Set<String> ALLOWED_CLASSES = new HashSet<String>()
     {
         {
+            add(java.lang.Math.class.getName());
             add(java.io.PrintStream.class.getName());
             add(cpcc.vvrte.services.js.BuiltInFunctions.class.getName());
             add(java.util.ArrayList.class.getName());

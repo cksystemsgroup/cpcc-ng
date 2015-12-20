@@ -44,7 +44,7 @@ public class SandboxClassShutterTest
             add("cpcc\\.vvrte\\.services\\.js\\.BuiltInFunctions_.*");
         }
     };
-    
+
     private static final Set<String> EXTRA_ALLOWED_CLASSES = new HashSet<String>();
 
     @BeforeMethod
@@ -57,6 +57,7 @@ public class SandboxClassShutterTest
     public Object[][] basicallyAllowedClasses()
     {
         return new Object[][]{
+            new Object[]{java.lang.Math.class.getName()},
             new Object[]{java.io.PrintStream.class.getName()},
             new Object[]{cpcc.vvrte.services.js.BuiltInFunctions.class.getName()},
             new Object[]{java.util.ArrayList.class.getName()},
