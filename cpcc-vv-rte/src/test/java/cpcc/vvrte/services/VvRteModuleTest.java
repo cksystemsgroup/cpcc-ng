@@ -140,22 +140,14 @@ public class VvRteModuleTest
     @Test
     public void shouldSchedulePeriodicJobs()
     {
+        VvRteRepository vvRteRepo = mock(VvRteRepository.class);
         PeriodicExecutor executor = mock(PeriodicExecutor.class);
         TaskExecutionService taskExecutionService = mock(TaskExecutionService.class);
+        VirtualVehicleLauncher launcher = mock(VirtualVehicleLauncher.class);
 
-        VvRteModule.scheduleJobs(executor, taskExecutionService);
+        VvRteModule.scheduleJobs(vvRteRepo, executor, taskExecutionService, launcher);
 
-        verify(executor).addJob(any(CronSchedule.class), anyString(), any(Runnable.class));
-    }
-
-    @Test
-    public void shouldResetVirtualVehicleStates()
-    {
-        VvRteRepository vvRteRepo = mock(VvRteRepository.class);
-
-        VvRteModule.resetVirtualVehicleStates(vvRteRepo);
-
-        verify(vvRteRepo).resetVirtualVehicleStates();
+        verify(executor, times(2)).addJob(any(CronSchedule.class), anyString(), any(Runnable.class));
     }
 
     @Test
@@ -166,5 +158,16 @@ public class VvRteModuleTest
         VvRteModule.setupCommunicationService(communicationService);
 
         verify(communicationService).addConnector(eq(VvRteConstants.MIGRATION_CONNECTOR), anyString());
+    }
+
+    @Test
+    public void shouldSetupTaskExecutionService()
+    {
+        TaskExecutionService tes = mock(TaskExecutionService.class);
+        VirtualVehicleLauncher vvl = mock(VirtualVehicleLauncher.class);
+
+        VvRteModule.setupTaskExecutionService(tes, vvl);
+
+        verify(tes).addListener(vvl);
     }
 }

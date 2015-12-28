@@ -99,12 +99,17 @@ public final class VvRteModule
     }
 
     /**
+     * @param vvRteRepo the Virtual Vehicle repository.
      * @param executor the periodic executor service.
      * @param taskExecutionService the task executor service.
+     * @param launcher the Virtual Vehicle launcher.
      */
     @Startup
-    public static void scheduleJobs(PeriodicExecutor executor, final TaskExecutionService taskExecutionService)
+    public static void scheduleJobs(VvRteRepository vvRteRepo, PeriodicExecutor executor
+        , final TaskExecutionService taskExecutionService, final VirtualVehicleLauncher launcher)
     {
+        vvRteRepo.resetVirtualVehicleStates();
+
         // TODO check cycle
         executor.addJob(new CronSchedule("* * * * * ?"), "VvRte Task execution.", new Runnable()
         {
@@ -114,15 +119,16 @@ public final class VvRteModule
                 taskExecutionService.executeTasks();
             }
         });
-    }
 
-    /**
-     * @param vvRteRepo the virtual vehicle repository.
-     */
-    @Startup
-    public static void resetVirtualVehicleStates(VvRteRepository vvRteRepo)
-    {
-        vvRteRepo.resetVirtualVehicleStates();
+        // TODO check cycle
+        executor.addJob(new CronSchedule("30 * * * * ?"), "VvRte handle stuck migrations.", new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                launcher.handleStuckMigrations();
+            }
+        });
     }
 
     /**
@@ -135,7 +141,7 @@ public final class VvRteModule
             VvRteConstants.MIGRATION_CONNECTOR,
             VvRteConstants.MIGRATION_PATH);
     }
-    
+
     /**
      * @param tes the task execution service instance.
      * @param vvl the virtual vehicle launcher instance.

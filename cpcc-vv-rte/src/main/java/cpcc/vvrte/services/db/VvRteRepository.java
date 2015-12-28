@@ -19,10 +19,12 @@
 package cpcc.vvrte.services.db;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
 import cpcc.vvrte.entities.VirtualVehicle;
+import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
 
 /**
@@ -40,6 +42,15 @@ public interface VvRteRepository
      * @return the available virtual vehicles.
      */
     List<VirtualVehicle> findAllVehicles();
+
+    /**
+     * @return the stuck virtual vehicles.
+     */
+    /**
+     * @param allowedStates the allowed virtual vehicle states.
+     * @return the stuck virtual vehicles.
+     */
+    List<VirtualVehicle> findAllStuckVehicles(Set<VirtualVehicleState> allowedStates);
 
     /**
      * @param id the virtual vehicle ID

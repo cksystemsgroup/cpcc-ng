@@ -19,9 +19,11 @@
 package cpcc.vvrte.services;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.Messages;
@@ -56,7 +58,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     private VvRteRepository vvRteRepository;
     private RealVehicleRepository rvRepository;
     private TimeService timeService;
-    private Map<JavascriptWorker, Integer> vehicleMap = new HashMap<JavascriptWorker, Integer>();
+    private Map<JavascriptWorker, Integer> vehicleMap =
+        Collections.synchronizedMap(new HashMap<JavascriptWorker, Integer>());
     private Messages messages;
     private TaskRepository taskRepository;
 
@@ -169,10 +172,10 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         VirtualVehicleState state = vehicle.getState();
 
-        if (!VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION.contains(state))
+        if (!VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION_FROM_RV.contains(state))
         {
             throw new VirtualVehicleLaunchException("Got vehicle in state " + state
-                + ", but expected " + VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION);
+                + ", but expected " + VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION_FROM_RV);
         }
 
         startVehicle(vehicle, true);
@@ -280,10 +283,19 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
         sessionManager.getSession().update(vehicle);
         sessionManager.commit();
 
-        if (decision != null)
+        if (decision != null && vehicle.getMigrationDestination() != null)
         {
-            logger.info("initiate Migration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
-            migrator.initiateMigration(vehicle);
+            if (rvRepository.isRealVehicleConnected(vehicle.getMigrationDestination().getId()))
+            {
+                logger.info("initiate Migration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
+                migrator.initiateMigration(vehicle);
+            }
+            else
+            {
+                logger.info(String.format("Not migrating VV %s (%d/%s), because RV %s (%d) is not reachable"
+                    , vehicle.getName(), vehicle.getId(), vehicle.getUuid()
+                    , vehicle.getMigrationDestination().getName(), vehicle.getMigrationDestination().getId()));
+            }
         }
     }
 
@@ -375,4 +387,56 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
             , position.getLatitude(), position.getLongitude(), position.getAltitude());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void handleStuckMigrations()
+    {
+        RealVehicle me = rvRepository.findOwnRealVehicle();
+        // TODO fix me!
+        if (me.getType() == RealVehicleType.GROUND_STATION)
+        {
+            return;
+        }
+
+        List<RealVehicle> groundStations = rvRepository.findAllConnectedGroundStations();
+
+        Set<VirtualVehicleState> requiredStates = me.getType() == RealVehicleType.GROUND_STATION
+            ? VirtualVehicleState.VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_GS
+            : VirtualVehicleState.VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_RV;
+
+        for (VirtualVehicle vehicle : vvRteRepository.findAllStuckVehicles(requiredStates))
+        {
+            if (!requiredStates.contains(vehicle.getState()))
+            {
+                continue;
+            }
+
+            boolean migrate = vehicle.getMigrationDestination() == null
+                || rvRepository.isRealVehicleConnected(vehicle.getMigrationDestination().getId());
+
+            if (migrate && setDestinationAndSaveVehicle(groundStations, vehicle))
+            {
+                migrator.initiateMigration(vehicle);
+            }
+        }
+    }
+
+    /**
+     * @param groundStations the list of connected ground stations.
+     * @param vehicle the vehicle to be migrated.
+     */
+    private boolean setDestinationAndSaveVehicle(List<RealVehicle> groundStations, VirtualVehicle vehicle)
+    {
+        if (groundStations.isEmpty())
+        {
+            return false;
+        }
+
+        vehicle.setMigrationDestination(groundStations.get(0));
+        sessionManager.getSession().update(vehicle);
+        sessionManager.commit();
+        return true;
+    }
 }

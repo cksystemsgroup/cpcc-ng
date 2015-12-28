@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
@@ -300,7 +301,8 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
 
             for (RealVehicleState state : statesList)
             {
-                stateMap.put(state.getId().toString(), state.getState());
+                String s = StringUtils.isBlank(state.getState()) ? "{\"features\":[]}" : state.getState();
+                stateMap.put(state.getId().toString(), s);
             }
 
             return JSONUtils.toJsonString(stateMap);

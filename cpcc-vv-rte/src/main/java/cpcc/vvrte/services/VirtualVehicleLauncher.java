@@ -55,4 +55,9 @@ public interface VirtualVehicleLauncher extends JavascriptWorkerStateListener, T
      * @param newState the new vehicle state.
      */
     void stateChange(int vehicleId, VirtualVehicleState newState);
+
+    /**
+     * Handle unsuccessful migrations.
+     */
+    void handleStuckMigrations();
 }

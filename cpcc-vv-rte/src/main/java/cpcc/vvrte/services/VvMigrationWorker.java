@@ -174,7 +174,7 @@ public class VvMigrationWorker extends Thread
             return false;
         }
 
-        if (!VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION.contains(vehicle.getState()))
+        if (!VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION_FROM_RV.contains(vehicle.getState()))
         {
             logger.error(String.format(LOG_MIG_WRONG_STATE, vehicle.getName(), vehicle.getState().name()));
             return false;

@@ -112,11 +112,11 @@ public class JavascriptWorker extends Thread
 
         applicationState = null;
 
-        changeState(VirtualVehicleState.RUNNING);
+        changeState(sessionManager, VirtualVehicleState.RUNNING);
 
         if (snapshot == null && script == null)
         {
-            changeState(VirtualVehicleState.DEFECTIVE);
+            changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
             sessionManager.commit();
             serviceResources.getService(PerthreadManager.class).cleanup();
             return;
@@ -149,7 +149,8 @@ public class JavascriptWorker extends Thread
 
             logger.info("Result obj: " + Context.toString(resultObj));
             result = Context.toString(resultObj);
-            changeState(VirtualVehicleState.FINISHED);
+
+            changeState(sessionManager, VirtualVehicleState.FINISHED);
         }
         catch (ContinuationPending cp)
         {
@@ -168,11 +169,11 @@ public class JavascriptWorker extends Thread
 
                 if (applicationState.isTask())
                 {
-                    changeState(VirtualVehicleState.TASK_COMPLETION_AWAITED);
+                    changeState(sessionManager, VirtualVehicleState.TASK_COMPLETION_AWAITED);
                 }
                 else
                 {
-                    changeState(VirtualVehicleState.INTERRUPTED);
+                    changeState(sessionManager, VirtualVehicleState.INTERRUPTED);
                 }
 
                 logger.info("snapshot is " + snapshot.length + " bytes long.");
@@ -181,19 +182,19 @@ public class JavascriptWorker extends Thread
             {
                 result = ExceptionFormatter.toString(e);
                 snapshot = null;
-                changeState(VirtualVehicleState.DEFECTIVE);
+                changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
             }
         }
         catch (RhinoException e)
         {
             result = e.getMessage() + ", line=" + (e.lineNumber() - scriptStartLine) + ":" + e.columnNumber()
                 + ", source='" + e.lineSource() + "'";
-            changeState(VirtualVehicleState.DEFECTIVE);
+            changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
         }
         catch (ClassNotFoundException | IOException | NoSuchMethodError e)
         {
             result = ExceptionFormatter.toString(e);
-            changeState(VirtualVehicleState.DEFECTIVE);
+            changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
         }
         finally
         {
@@ -269,12 +270,15 @@ public class JavascriptWorker extends Thread
     }
 
     /**
+     * @param sessionManager the Hibernate session manager.
      * @param newState the new state.
      */
-    private void changeState(VirtualVehicleState newState)
+    private void changeState(HibernateSessionManager sessionManager, VirtualVehicleState newState)
     {
         if (workerState != newState)
         {
+            sessionManager.commit();
+
             for (JavascriptWorkerStateListener listener : stateListeners)
             {
                 listener.notify(this, newState);

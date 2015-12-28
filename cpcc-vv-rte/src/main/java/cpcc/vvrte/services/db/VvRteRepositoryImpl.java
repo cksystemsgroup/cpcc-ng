@@ -19,12 +19,15 @@
 package cpcc.vvrte.services.db;
 
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.slf4j.Logger;
 
+import cpcc.vvrte.entities.TaskState;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
@@ -48,8 +51,6 @@ public class VvRteRepositoryImpl implements VvRteRepository
         this.logger = logger;
         this.session = session;
         this.taskRepository = taskRepository;
-
-        resetVirtualVehicleStates();
     }
 
     /**
@@ -66,8 +67,22 @@ public class VvRteRepositoryImpl implements VvRteRepository
 
         session
             .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
+            .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED)
+            .setParameter("oldState", VirtualVehicleState.MIGRATION_AWAITED)
+            .executeUpdate();
+
+        session
+            .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
             .setParameter("newState", VirtualVehicleState.INTERRUPTED)
             .setParameter("oldState", VirtualVehicleState.RUNNING)
+            .executeUpdate();
+
+        session
+            .createQuery("UPDATE VirtualVehicle SET task = null")
+            .executeUpdate();
+
+        session
+            .createQuery("UPDATE Task SET vehicle = null")
             .executeUpdate();
     }
 
@@ -81,6 +96,20 @@ public class VvRteRepositoryImpl implements VvRteRepository
         return (List<VirtualVehicle>) session
             .createCriteria(VirtualVehicle.class)
             .addOrder(Property.forName("id").asc())
+            .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<VirtualVehicle> findAllStuckVehicles(Set<VirtualVehicleState> allowedStates)
+    {
+        return (List<VirtualVehicle>) session
+            .createCriteria(VirtualVehicle.class, "v")
+            .add(Restrictions.in("state", allowedStates))
+            .createCriteria("v.task", "t", JoinType.LEFT_OUTER_JOIN, Restrictions.eq("taskState", TaskState.COMPLETED))
             .list();
     }
 
@@ -215,8 +244,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName,
-        int maxEntries)
+    public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName, int maxEntries)
     {
         return (List<VirtualVehicleStorage>) session
             .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id AND name > :name ORDER BY name")

@@ -38,6 +38,9 @@
 		<addForeignKeyConstraint baseColumnNames="SENSOR_ID" baseTableName="TASKS_SENSORS"
 			constraintName="FK_TS_SENSOR" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
 			referencedColumnNames="ID" referencedTableName="SENSORDEFINITION" />
+		<modifySql dbms="hsqldb">
+			<regExpReplace replace="FLOAT8" with="DOUBLE" />
+		</modifySql>
 	</changeSet>
 	<changeSet author="ckrainer" id="2015-12-07-02">
 		<addForeignKeyConstraint baseColumnNames="TASK_ID" baseTableName="VIRTUALVEHICLE"

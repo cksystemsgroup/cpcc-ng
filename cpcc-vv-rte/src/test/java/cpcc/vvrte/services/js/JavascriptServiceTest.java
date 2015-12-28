@@ -97,7 +97,7 @@ public class JavascriptServiceTest
         assertThat(workerListener.getWorker()).isNotNull().isEqualTo(sut);
         assertThat(workerListener.getState()).isNotNull().isEqualTo(VirtualVehicleState.FINISHED);
 
-        verify(sessionManager).commit();
+        verify(sessionManager, times(3)).commit();
         verify(perthreadManager).cleanup();
     }
 
@@ -118,7 +118,7 @@ public class JavascriptServiceTest
         assertThat(sut.getResult()).isNotNull().startsWith(
             "TypeError: Cannot call property currentTimeMillis in object");
 
-        verify(sessionManager).commit();
+        verify(sessionManager, times(3)).commit();
         verify(perthreadManager).cleanup();
     }
 
@@ -193,7 +193,7 @@ public class JavascriptServiceTest
         expectedResult = IOUtils.toString(resultStream, "UTF-8");
         assertThat(out.toString("UTF-8")).isNotNull().isEqualTo(expectedResult);
 
-        verify(sessionManager, times(2)).commit();
+        verify(sessionManager, times(6)).commit();
         verify(perthreadManager, times(2)).cleanup();
     }
 
@@ -232,7 +232,7 @@ public class JavascriptServiceTest
 
         assertThat(out.toString("UTF-8")).isNotNull().isEqualTo(expectedResult);
 
-        verify(sessionManager).commit();
+        verify(sessionManager, times(3)).commit();
         verify(perthreadManager).cleanup();
     }
 
@@ -261,7 +261,7 @@ public class JavascriptServiceTest
         sut.run();
         assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.DEFECTIVE);
 
-        verify(sessionManager).commit();
+        verify(sessionManager, times(3)).commit();
         verify(perthreadManager).cleanup();
     }
 
@@ -288,7 +288,7 @@ public class JavascriptServiceTest
         sut.run();
         assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.DEFECTIVE);
 
-        verify(sessionManager).commit();
+        verify(sessionManager, times(3)).commit();
         verify(perthreadManager).cleanup();
     }
 

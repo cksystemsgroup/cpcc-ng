@@ -49,8 +49,6 @@ import cpcc.vvrte.services.db.VvRteRepository;
  */
 public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 {
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
     private Logger logger;
     private HibernateSessionManager sessionManager;
     private VvRteRepository vvRepository;
@@ -84,6 +82,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     @Override
     public void initiateMigration(VirtualVehicle vehicle)
     {
+        // TODO use a thread pool.
         VvMigrationWorker worker = new VvMigrationWorker(logger, serviceResources, vehicle.getId());
         worker.start();
     }
@@ -124,12 +123,6 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
         List<VirtualVehicleStorage> storageChunk =
             vvRepository.findStorageItemsByVirtualVehicle(virtualVehicle.getId(), name, chunkSize);
-
-        if (storageChunk.size() == 0 && chunkNumber > 1)
-        {
-            virtualVehicle.setState(VirtualVehicleState.MIGRATION_COMPLETED);
-            return EMPTY_BYTE_ARRAY;
-        }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ArchiveStreamFactory factory = new ArchiveStreamFactory();
@@ -311,12 +304,12 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             if (chunkName.startsWith("vv/"))
             {
                 lastChunk |= storeVirtualVehicleEntry(ais, entry, virtualVehicleHolder);
-                logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle());
+                logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle(), lastChunk);
             }
             else if (chunkName.startsWith("storage/"))
             {
                 storeStorageEntry(ais, entry, virtualVehicleHolder.getVirtualVehicle());
-                logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle());
+                logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle(), lastChunk);
             }
             // TODO message queue
             else
@@ -340,10 +333,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * @param chunkName the name of the migrated chunk.
      * @param virtualVehicleHolder the virtual vehicle.
      */
-    private void logMigratedChunk(String chunkName, VirtualVehicle virtualVehicle)
+    private void logMigratedChunk(String chunkName, VirtualVehicle virtualVehicle, boolean lastChunk)
     {
         String name = virtualVehicle != null ? " name=" + virtualVehicle.getName() : "";
-        logger.debug("Migration of " + chunkName + name);
+        logger.debug("Migration of " + chunkName + name + (lastChunk ? " (last)" : " (not last)"));
     }
 
     /**

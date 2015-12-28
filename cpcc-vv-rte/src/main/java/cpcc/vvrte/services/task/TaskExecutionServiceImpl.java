@@ -52,7 +52,6 @@ import cpcc.ros.sensors.SensorType;
 import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.TaskState;
-import cpcc.vvrte.services.db.TaskRepository;
 import cpcc.vvrte.services.ros.MessageConverter;
 import sensor_msgs.NavSatFix;
 
@@ -182,14 +181,8 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     {
         PerthreadManager tm = serviceResources.getService(PerthreadManager.class);
         HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
-        TaskRepository taskRepository = serviceResources.getService(TaskRepository.class);
 
         PolarCoordinate vehiclePosition = getCurrentVehiclePosition();
-
-        if (currentRunningTask == null)
-        {
-            currentRunningTask = taskRepository.getCurrentRunningTask();
-        }
 
         if (currentRunningTask == null)
         {
@@ -224,10 +217,17 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
                 currentRunningTask.setExecutionStart(timeService.newDate());
             }
 
-            sessionManager.getSession().saveOrUpdate(currentRunningTask);
-        }
+            sessionManager.getSession().update(currentRunningTask);
 
-        sessionManager.commit();
+            try
+            {
+                sessionManager.commit();
+            }
+            catch (RuntimeException e)
+            {
+                logger.error("Buggerit!", e);
+            }
+        }
 
         if (completed)
         {

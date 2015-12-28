@@ -262,13 +262,36 @@ public enum VirtualVehicleState
         });
 
     @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION = Collections.unmodifiableSet(
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION_FROM_RV = Collections.unmodifiableSet(
         new HashSet<VirtualVehicleState>()
         {
             {
                 add(DEFECTIVE);
                 add(FINISHED);
+                add(INTERRUPTED);
                 add(MIGRATION_AWAITED);
+                add(MIGRATION_INTERRUPTED);
+            }
+        });
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_RV =
+        Collections.unmodifiableSet(new HashSet<VirtualVehicleState>()
+        {
+            {
+                add(INIT);
+                add(DEFECTIVE);
+                add(FINISHED);
+                add(INTERRUPTED);
+                add(MIGRATION_INTERRUPTED);
+            }
+        });
+
+    @SuppressWarnings("serial")
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_GS =
+        Collections.unmodifiableSet(new HashSet<VirtualVehicleState>()
+        {
+            {
                 add(MIGRATION_INTERRUPTED);
             }
         });

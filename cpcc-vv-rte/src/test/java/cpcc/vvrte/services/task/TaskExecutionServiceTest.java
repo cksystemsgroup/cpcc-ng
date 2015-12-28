@@ -54,12 +54,7 @@ import cpcc.ros.sensors.AltimeterAdapter;
 import cpcc.ros.sensors.SensorType;
 import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.entities.Task;
-import cpcc.vvrte.services.db.TaskRepository;
 import cpcc.vvrte.services.ros.MessageConverter;
-import cpcc.vvrte.services.task.TaskCompletionListener;
-import cpcc.vvrte.services.task.TaskExecutionService;
-import cpcc.vvrte.services.task.TaskExecutionServiceImpl;
-import cpcc.vvrte.services.task.TaskSchedulerService;
 import sensor_msgs.NavSatFix;
 import std_msgs.Float32;
 
@@ -93,7 +88,6 @@ public class TaskExecutionServiceTest
     private PolarCoordinate posD;
     private Logger logger;
     private ServiceResources serviceResources;
-    private TaskRepository taskRepository;
     private PerthreadManager threadManager;
     private HibernateSessionManager sessionManager;
     private Session session;
@@ -214,12 +208,9 @@ public class TaskExecutionServiceTest
         sessionManager = mock(HibernateSessionManager.class);
         when(sessionManager.getSession()).thenReturn(session);
 
-        taskRepository = mock(TaskRepository.class);
-
         serviceResources = mock(ServiceResources.class);
         when(serviceResources.getService(PerthreadManager.class)).thenReturn(threadManager);
         when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
-        when(serviceResources.getService(TaskRepository.class)).thenReturn(taskRepository);
 
         rvRepo = mock(RealVehicleRepository.class);
 
@@ -267,30 +258,13 @@ public class TaskExecutionServiceTest
     }
 
     @Test
-    public void shouldLoadCurrentlyRunningTaskFromRepository()
-    {
-        when(taskRepository.getCurrentRunningTask()).thenReturn(taskB);
-
-        sut.executeTasks();
-
-        verify(taskRepository).getCurrentRunningTask();
-        verify(wpc).setPosition(posB);
-        verify(gps).getPosition();
-
-        verify(sessionManager).commit();
-        verify(threadManager).cleanup();
-    }
-
-    @Test
     public void shouldLoadNewTaskFromScheduler()
     {
         // TODO check
-        // when(taskRepository.getCurrentRunningTask()).thenReturn(taskB);
         when(scheduler.schedule(any(), any())).thenReturn(taskB);
 
         sut.executeTasks();
 
-        verify(taskRepository).getCurrentRunningTask();
         verify(wpc).setPosition(posB);
         verify(gps).getPosition();
 
@@ -302,7 +276,6 @@ public class TaskExecutionServiceTest
     public void shouldLoadCompletedTaskFromScheduler()
     {
         when(altimeter.getValue()).thenReturn(float32altitude);
-        // when(taskRepository.getCurrentRunningTask()).thenReturn(taskB);
         when(scheduler.schedule(any(), any())).thenReturn(taskA);
 
         TaskCompletionListener listener = mock(TaskCompletionListener.class);
@@ -311,7 +284,6 @@ public class TaskExecutionServiceTest
 
         sut.executeTasks();
 
-        verify(taskRepository).getCurrentRunningTask();
         verify(wpc).setPosition(posA);
         verify(gps).getPosition();
         verify(listener).notify(any());
@@ -325,8 +297,6 @@ public class TaskExecutionServiceTest
     {
         sut.executeTasks();
 
-        verify(taskRepository).getCurrentRunningTask();
-
         ArgumentCaptor<PolarCoordinate> pos = ArgumentCaptor.forClass(PolarCoordinate.class);
 
         verify(scheduler).schedule(pos.capture(), any());
@@ -339,288 +309,4 @@ public class TaskExecutionServiceTest
         verify(sessionManager).commit();
         verify(threadManager).cleanup();
     }
-
-    //    /**
-    //     * The task executor should accept a single task for processing.
-    //     */
-    //    @SuppressWarnings("unchecked")
-    //    @Test
-    //    public void shouldAcceptTasksForProcessing()
-    //    {
-    //        executor.addTask(taskA);
-    //        List<Task> taskList = executor.getScheduledTasks();
-    //        verify(scheduler).schedule(anyList(), anyList());
-    //        assertThat(taskList).isNotEmpty().containsExactly(taskA);
-    //    }
-    //
-    //    /**
-    //     * The task executor should accept multiple tasks for processing.
-    //     */
-    //    @SuppressWarnings("unchecked")
-    //    @Test
-    //    public void shouldAcceptMultipleTasksForProcessing()
-    //    {
-    //        executor.addTask(taskA);
-    //        executor.addTask(taskB);
-    //        verify(scheduler, times(2)).schedule(anyList(), anyList());
-    //
-    //        List<Task> taskList = executor.getScheduledTasks();
-    //        assertThat(taskList).isNotEmpty().containsExactly(taskA, taskB);
-    //    }
-    //
-    //    /**
-    //     * The task executor should execute a single task.
-    //     */
-    //    @Test
-    //    public void shouldExecuteASingleTask()
-    //    {
-    //        executor.addTask(taskA);
-    //
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskA);
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("did not return expected task A")
-    //            .isNull();
-    //
-    //        executor.executeTasks();
-    //
-    //        verify(wpc).setPosition(posA);
-    //
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("returned an unexpected task")
-    //            .isNull();
-    //    }
-    //
-    //    /**
-    //     * The task executor should execute a single task.
-    //     */
-    //    @Test
-    //    public void shouldExecuteASingleTaskWithoutAltimeter()
-    //    {
-    //        adapterNodes.put("/mav01", Arrays.asList(wpc, gps));
-    //        executor = new TaskExecutionServiceImpl(scheduler, rosNodeService);
-    //        assertThat(executor.getAltimeter()).isNull();
-    //
-    //        executor.addTask(taskA);
-    //
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskA);
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("did not return expected task A")
-    //            .isNull();
-    //
-    //        executor.executeTasks();
-    //
-    //        verify(wpc).setPosition(posA);
-    //
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("returned an unexpected task")
-    //            .isNull();
-    //    }
-    //
-    //    /**
-    //     * The task executor should execute multiple tasks
-    //     */
-    //    @Test
-    //    public void shouldExecuteMultipleTask()
-    //    {
-    //        executor.addTask(taskA);
-    //        executor.addTask(taskB);
-    //
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskA, taskB);
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should not return a current task")
-    //            .isNull();
-    //
-    //        executor.executeTasks();
-    //
-    //        verify(wpc).setPosition(posA);
-    //
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskB);
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should not return a current task")
-    //            .isNull();
-    //
-    //        executor.executeTasks();
-    //
-    //        verify(wpc).setPosition(posB);
-    //
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).isEmpty();
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should have processed all tasks")
-    //            .isNull();
-    //    }
-    //
-    //    /**
-    //     * The task executor should execute multiple tasks in the correct order
-    //     */
-    //    @SuppressWarnings("unchecked")
-    //    @Test
-    //    public void shouldExecuteMultipleTasksInCorrectOrder()
-    //    {
-    //        doAnswer(new MultipleTasksOrderedByCreationTime()).when(scheduler).schedule(anyList(), anyList());
-    //
-    //        executor.addTask(taskA);
-    //        executor.addTask(taskB);
-    //
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskB, taskA);
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should not return a current task")
-    //            .isNull();
-    //
-    //        executor.executeTasks();
-    //
-    //        verify(wpc).setPosition(posB);
-    //
-    //        executor.addTask(taskC);
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskC, taskA);
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should not return a current task")
-    //            .isNull();
-    //
-    //        executor.executeTasks();
-    //
-    //        verify(wpc).setPosition(posC);
-    //
-    //        executor.addTask(taskD);
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskD, taskA);
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should not return a current task")
-    //            .isNull();
-    //
-    //        executor.executeTasks();
-    //
-    //        verify(wpc).setPosition(posD);
-    //
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskA);
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should not return a current task")
-    //            .isNull();
-    //
-    //        executor.executeTasks();
-    //
-    //        verify(wpc).setPosition(posA);
-    //
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).isEmpty();
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should have processed all tasks")
-    //            .isNull();
-    //    }
-    //
-    //    /**
-    //     * The task executor should do nothing, if there is nothing to do.
-    //     */
-    //    @Test
-    //    public void shouldHandleEmptyTaskListCorrectly()
-    //    {
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).isEmpty();
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should not return a current task")
-    //            .isNull();
-    //
-    //        executor.executeTasks();
-    //
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //        assertThat(executor.getScheduledTasks()).isEmpty();
-    //        assertThat(executor.getCurrentRunningTask())
-    //            .overridingErrorMessage("should not return a current task")
-    //            .isNull();
-    //    }
-    //
-    //    @Test
-    //    public void shouldWaitForEndOfTravelling()
-    //    {
-    //        assertThat(executor.getCurrentRunningTask()).isNull();
-    //        assertThat(executor.getScheduledTasks()).isEmpty();
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //
-    //        NavSatFix position2 = NodeConfiguration.newPrivate().getTopicMessageFactory().newFromType(NavSatFix._TYPE);
-    //        position2.setLatitude(posA.getLatitude());
-    //        position2.setLongitude(posA.getLongitude() + 22.0);
-    //        position2.setAltitude(posA.getAltitude());
-    //        when(gps.getPosition()).thenReturn(position2);
-    //
-    //        executor.addTask(taskA);
-    //        assertThat(executor.getCurrentRunningTask()).isNull();
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskA);
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //
-    //        executor.executeTasks();
-    //        assertThat(executor.getCurrentRunningTask()).isNotNull();
-    //        assertThat(executor.getScheduledTasks()).isEmpty();
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //
-    //        when(gps.getPosition()).thenReturn(position);
-    //
-    //        executor.executeTasks();
-    //        assertThat(executor.getCurrentRunningTask()).isNull();
-    //        assertThat(executor.getScheduledTasks()).isEmpty();
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //    }
-    //
-    //    @Test
-    //    public void shouldDoNothingIfGpsIsUnavailable()
-    //    {
-    //        assertThat(executor.getCurrentRunningTask()).isNull();
-    //        assertThat(executor.getScheduledTasks()).isEmpty();
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //
-    //        when(gps.getPosition()).thenReturn(null);
-    //
-    //        executor.addTask(taskA);
-    //        assertThat(executor.getCurrentRunningTask()).isNull();
-    //        assertThat(executor.getScheduledTasks()).containsExactly(taskA);
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //
-    //        executor.executeTasks();
-    //
-    //        assertThat(executor.getCurrentRunningTask()).isNotNull();
-    //        assertThat(executor.getScheduledTasks()).isEmpty();
-    //        assertThat(executor.getPendingTasks()).isEmpty();
-    //    }
-    //
-    //    /**
-    //     * MultipleTasksOrderedByCreationTime
-    //     */
-    //    private static class MultipleTasksOrderedByCreationTime implements Answer<Object>
-    //    {
-    //        /**
-    //         * {@inheritDoc}
-    //         */
-    //        @SuppressWarnings("unchecked")
-    //        @Override
-    //        public Object answer(InvocationOnMock invocation) throws Throwable
-    //        {
-    //            Object[] args = invocation.getArguments();
-    //            List<Task> a = (List<Task>) args[0];
-    //            List<Task> b = (List<Task>) args[1];
-    //            a.addAll(b);
-    //            b.clear();
-    //            Collections.sort(a, new TaskCreationTimeComparator());
-    //            return null;
-    //        }
-    //    }
-    //
-    //    /**
-    //     * TaskCreationTimeComparator
-    //     */
-    //    private static class TaskCreationTimeComparator implements Comparator<Task>
-    //    {
-    //        /**
-    //         * {@inheritDoc}
-    //         */
-    //        @Override
-    //        public int compare(Task a, Task b)
-    //        {
-    //            return (int) (b.getCreationTime().getTime() - a.getCreationTime().getTime());
-    //        }
-    //
-    //    };
 }

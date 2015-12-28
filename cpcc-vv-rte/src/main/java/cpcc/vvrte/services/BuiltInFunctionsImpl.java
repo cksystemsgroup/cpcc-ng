@@ -270,18 +270,17 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
 
         VirtualVehicleMappingDecision decision = mapper.findMappingDecision(task);
 
-        task.setTaskState(TaskState.PENDING);
-        vehicle.setTask(task);
-        task.setVehicle(vehicle);
-        sessionManager.getSession().saveOrUpdate(vehicle);
-        sessionManager.getSession().saveOrUpdate(task);
-
         if (decision.isMigration())
         {
             initiateMigration(managementParameters, decision);
         }
         else
         {
+            task.setTaskState(TaskState.PENDING);
+            vehicle.setTask(task);
+            task.setVehicle(vehicle);
+            sessionManager.getSession().saveOrUpdate(vehicle);
+            sessionManager.getSession().saveOrUpdate(task);
             initiateTaskExecution(managementParameters, taskParameters, task);
         }
     }

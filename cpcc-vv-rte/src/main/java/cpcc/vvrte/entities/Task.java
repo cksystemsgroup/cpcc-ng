@@ -37,6 +37,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Fetch;
@@ -51,7 +52,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Task
  */
-@Entity(name = "tasks")
+@Entity
+@Table(name = "tasks")
 public class Task implements Serializable
 {
     private static final long serialVersionUID = -3100648860303007085L;
