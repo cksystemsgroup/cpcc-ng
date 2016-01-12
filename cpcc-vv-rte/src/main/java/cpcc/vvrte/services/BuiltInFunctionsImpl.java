@@ -156,8 +156,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         sensor.put(ID, sensor, sd.getId());
         sensor.put(DESCRIPTION, sensor, sd.getDescription());
         sensor.put(MESSAGE_TYPE, sensor, sd.getMessageType());
-        sensor.put(TYPE, sensor, sd.getType());
-        sensor.put(VISIBILITY, sensor, sd.getVisibility());
+        sensor.put(TYPE, sensor, sd.getType().name());
+        sensor.put(VISIBILITY, sensor, sd.getVisibility().name());
 
         if (sd.getParameters() != null)
         {
@@ -182,7 +182,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      * @param tokenList the token list.
      * @return the converted token list.
      */
-    private Object convertTokenList(List<Token> tokenList)
+    static Object convertTokenList(List<Token> tokenList)
     {
         if (tokenList.isEmpty())
         {
@@ -195,10 +195,11 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         }
 
         NativeArray a = new NativeArray(tokenList.size());
-        for (Token token : tokenList)
+        for (int k=0; k < tokenList.size(); ++k)
         {
-            a.add(token.getValue());
+            a.put(k, a, tokenList.get(k).getValue());
         }
+        
         return a;
     }
 

@@ -32,6 +32,9 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import cpcc.core.entities.SensorType;
+import cpcc.core.entities.SensorVisibility;
+
 /**
  * Java Script utilities tests.
  */
@@ -74,6 +77,30 @@ public class JavaScriptUtilsTest
                 },
                 "{\"six\":false,\"seven\":7.900000095367432,\"five\":\"FIVE\"}"
             },
+            new Object[]{
+                new HashMap<String, Object>()
+                {
+                    {
+                        put("two", "FIVE");
+                        put("one", Boolean.FALSE);
+                        put("six", Float.valueOf(7.9f));
+                        put("nine", "bugger=lala looney=3.141592 caspar='xxx uu'");
+                    }
+                },
+                "{\"nine\":\"bugger=lala looney=3.141592 caspar='xxx uu'\""
+                    + ",\"six\":7.900000095367432,\"one\":false,\"two\":\"FIVE\"}"
+            },
+            new Object[]{
+                new HashMap<String, Object>()
+                {
+                    {
+                        put("eleven", "FIVE");
+                        put("sen", SensorType.CAMERA.name());
+                        put("vis", SensorVisibility.PRIVILEGED_VV.name());
+                    }
+                },
+                "{\"vis\":\"PRIVILEGED_VV\",\"eleven\":\"FIVE\",\"sen\":\"CAMERA\"}"
+            },
         };
     }
 
@@ -87,7 +114,7 @@ public class JavaScriptUtilsTest
         }
 
         String actual = JavaScriptUtils.toJsonString(obj);
-        System.out.println("actual " + actual);
+        System.out.println("actual " + actual.replace("\"", "\\\""));
 
         JSONAssert.assertEquals(expected, actual, false);
         JSONAssert.assertEquals(actual, expected, false);
