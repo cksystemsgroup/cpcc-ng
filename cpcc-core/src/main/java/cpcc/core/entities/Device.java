@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -35,7 +36,7 @@ import javax.validation.constraints.Size;
  * Device
  */
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"topicRoot"})})
+@Table(name = "devices", uniqueConstraints = {@UniqueConstraint(columnNames = {"topic_root"})})
 public class Device implements ITreeNode, Serializable
 {
     private static final long serialVersionUID = 459696306908391949L;
@@ -45,7 +46,7 @@ public class Device implements ITreeNode, Serializable
     private Integer id;
 
     @NotNull
-    @Size(max = 50)
+    @Column(name = "topic_root", length = 50)
     private String topicRoot;
 
     @NotNull

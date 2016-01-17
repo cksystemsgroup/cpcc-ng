@@ -20,18 +20,20 @@ package cpcc.core.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * Topic
  */
 @Entity
+@Table(name = "topics")
 public class Topic implements Serializable
 {
     private static final long serialVersionUID = -195728103332481446L;
@@ -42,17 +44,18 @@ public class Topic implements Serializable
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "node_type", length = 255)
     private RosNodeType nodeType;
 
-    @Size(max = 50)
+    @Column(name = "sub_path", length = 50)
     private String subpath;
 
     @NotNull
-    @Size(max = 50)
+    @Column(name = "message_type", length = 50)
     private String messageType;
 
     @NotNull
-    @Size(max = 120)
+    @Column(name = "adapter_class_name", length = 120)
     private String adapterClassName;
 
     @NotNull

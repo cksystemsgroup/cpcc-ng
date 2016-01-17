@@ -21,16 +21,19 @@ package cpcc.core.entities;
 import java.io.Serializable;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
  * MappingAttributes
  */
 @Entity
+@Table(name = "mapping_attributes")
 public class MappingAttributes implements Serializable
 {
     private static final long serialVersionUID = -1681551157732297163L;
@@ -39,9 +42,11 @@ public class MappingAttributes implements Serializable
     private MappingAttributesPK pk;
 
     @NotNull
+    @Column(name="vv_visible")
     private Boolean vvVisible;
 
     @NotNull
+    @Column(name="connected_to_autopilot")
     private Boolean connectedToAutopilot;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)

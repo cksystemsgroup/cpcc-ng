@@ -37,7 +37,7 @@ import javax.validation.constraints.Size;
  * Device
  */
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@Table(name = "device_types", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 public class DeviceType implements Serializable
 {
     private static final long serialVersionUID = -3688447694342721194L;

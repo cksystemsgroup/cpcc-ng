@@ -20,11 +20,13 @@ package cpcc.core.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -38,6 +40,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * SensorDefinition
  */
 @Entity
+@Table(name = "sensor_definitions")
 public class SensorDefinition implements Serializable
 {
     private static final long serialVersionUID = -1329539207093921742L;
@@ -64,9 +67,10 @@ public class SensorDefinition implements Serializable
 
     @NotNull
     @Type(type = "timestamp")
+    @Column(name = "last_update")
     private java.util.Date lastUpdate;
 
-    @Size(max = 50)
+    @Column(name = "message_type", length = 50)
     private String messageType;
 
     @NotNull

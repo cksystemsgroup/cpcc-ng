@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * RealVehicle
  */
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"url"})})
+@Table(name = "real_vehicles", uniqueConstraints = {@UniqueConstraint(columnNames = {"url"})})
 public class RealVehicle implements Serializable
 {
     private static final long serialVersionUID = 1765647234477466288L;
@@ -71,6 +71,7 @@ public class RealVehicle implements Serializable
     private String url;
 
     @Lob
+    @Column(name = "area_of_operation")
     private String areaOfOperation;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -78,6 +79,7 @@ public class RealVehicle implements Serializable
 
     @NotNull
     @Type(type = "timestamp")
+    @Column(name = "last_update")
     private java.util.Date lastUpdate;
 
     @NotNull

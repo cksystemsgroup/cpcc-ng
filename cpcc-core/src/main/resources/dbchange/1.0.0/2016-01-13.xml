@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+	<changeSet author="ckrainer" id="2016-01-13-01">
+		<renameTable oldTableName="DEVICE" newTableName="DEVICES" />
+		<renameColumn tableName="DEVICES" columnDataType="VARCHAR(50)" oldColumnName="TOPICROOT" newColumnName="TOPIC_ROOT" />
+
+		<renameTable oldTableName="DEVICETYPE" newTableName="DEVICE_TYPES" />
+
+		<renameTable oldTableName="MAPPINGATTRIBUTES" newTableName="MAPPING_ATTRIBUTES" />
+		<renameColumn tableName="MAPPING_ATTRIBUTES" columnDataType="BOOLEAN(1)" oldColumnName="CONNECTEDTOAUTOPILOT"
+			newColumnName="CONNECTED_TO_AUTOPILOT" />
+		<renameColumn tableName="MAPPING_ATTRIBUTES" columnDataType="BOOLEAN(1)" oldColumnName="VVVISIBLE"
+			newColumnName="VV_VISIBLE" />
+
+		<renameTable oldTableName="PARAMETER" newTableName="PARAMETERS" />
+
+		<renameTable oldTableName="REALVEHICLE" newTableName="REAL_VEHICLES" />
+		<renameColumn tableName="REAL_VEHICLES" columnDataType="CLOB" oldColumnName="AREAOFOPERATION"
+			newColumnName="AREA_OF_OPERATION" />
+		<renameColumn tableName="REAL_VEHICLES" columnDataType="TIMESTAMP" oldColumnName="LASTUPDATE"
+			newColumnName="LAST_UPDATE" />
+
+		<renameTable oldTableName="sensordefinition" newTableName="sensor_definitions" />
+		<renameColumn tableName="SENSOR_DEFINITIONS" columnDataType="TIMESTAMP" oldColumnName="LASTUPDATE"
+			newColumnName="LAST_UPDATE" />
+		<renameColumn tableName="SENSOR_DEFINITIONS" columnDataType="VARCHAR(50)" oldColumnName="MESSAGETYPE"
+			newColumnName="MESSAGE_TYPE" />
+
+		<renameTable oldTableName="TOPIC" newTableName="TOPICS" />
+		<renameColumn tableName="TOPICS" columnDataType="VARCHAR(120)" oldColumnName="ADAPTERCLASSNAME"
+			newColumnName="ADAPTER_CLASS_NAME" />
+		<renameColumn tableName="TOPICS" columnDataType="VARCHAR(255)" oldColumnName="NODETYPE" newColumnName="NODE_TYPE" />
+		<renameColumn tableName="TOPICS" columnDataType="VARCHAR(50)" oldColumnName="MESSAGETYPE" newColumnName="MESSAGE_TYPE" />
+		<renameColumn tableName="TOPICS" columnDataType="VARCHAR(50)" oldColumnName="SUBPATH" newColumnName="SUB_PATH" />
+
+		<renameTable oldTableName="VIRTUALVEHICLE" newTableName="VIRTUAL_VEHICLES" />
+		<renameColumn tableName="VIRTUAL_VEHICLES" columnDataType="INT(10)" oldColumnName="APIVERSION"
+			newColumnName="API_VERSION" />
+		<renameColumn tableName="VIRTUAL_VEHICLES" columnDataType="TIMESTAMP" oldColumnName="MIGRATIONSTARTTIME"
+			newColumnName="MIGRATION_START_TIME" />
+		<renameColumn tableName="VIRTUAL_VEHICLES" columnDataType="TIMESTAMP" oldColumnName="STARTTIME"
+			newColumnName="START_TIME" />
+		<renameColumn tableName="VIRTUAL_VEHICLES" columnDataType="TIMESTAMP" oldColumnName="ENDTIME"
+			newColumnName="END_TIME" />
+
+		<renameTable oldTableName="VIRTUALVEHICLESTORAGE" newTableName="VIRTUAL_VEHICLE_STORAGE" />
+		<renameColumn tableName="VIRTUAL_VEHICLE_STORAGE" columnDataType="TIMESTAMP" oldColumnName="MODIFICATIONTIME"
+			newColumnName="MODIFICATION_TIME" />
+
+		<renameTable oldTableName="DEVICETYPE_TOPIC" newTableName="DEVICE_TYPES_TOPICS" />
+		<renameColumn tableName="DEVICE_TYPES_TOPICS" columnDataType="INT(10)" oldColumnName="DEVICETYPE_ID"
+			newColumnName="DEVICE_TYPES_ID" />
+
+
+		<renameTable oldTableName="REALVEHICLE_SENSORDEFINITION" newTableName="REAL_VEHICLES_SENSOR_DEFINITIONS" />
+		<renameColumn tableName="REAL_VEHICLES_SENSOR_DEFINITIONS" columnDataType="INT(10)" oldColumnName="REALVEHICLE_ID"
+			newColumnName="REAL_VEHICLES_ID" />
+
+		<modifySql dbms="hsqldb">
+			<regExpReplace replace="FLOAT8" with="DOUBLE" />
+		</modifySql>
+	</changeSet>
+</databaseChangeLog>

@@ -23,6 +23,7 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -30,6 +31,7 @@ import javax.validation.constraints.Size;
  * Parameter
  */
 @Entity
+@Table(name = "parameters")
 public class Parameter implements Serializable
 {
     private static final long serialVersionUID = -3149631712982577428L;

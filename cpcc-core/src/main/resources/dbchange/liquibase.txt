@@ -3,7 +3,7 @@
 #########################################################################
 # 1. Generate initial change log:
 
-cd ~/work/cpcc-ng-workspace/cpcc-ng/core/src/main/resources
+cd ~/work/cpcc-ng-workspace/cpcc-ng/cpcc-core/src/main/resources
 
 mkdir -p dbchange/1.0.0
 
@@ -41,7 +41,7 @@ perl -pi \
 #########################################################################
 # 2. Create local database and run diff against original database.
 
-cd ~/work/cpcc-ng-workspace/cpcc-ng/core/src/main/resources
+cd ~/work/cpcc-ng-workspace/cpcc-ng/cpcc-core/src/main/resources
 
 mkdir -p dbchange/1.0.0
 
