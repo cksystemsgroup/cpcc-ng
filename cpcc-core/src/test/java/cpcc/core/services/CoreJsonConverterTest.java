@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -36,12 +37,11 @@ import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
-import cpcc.core.services.CoreJsonConverter;
-import cpcc.core.services.CoreJsonConverterImpl;
 
 public class CoreJsonConverterTest
 {
@@ -607,4 +607,77 @@ public class CoreJsonConverterTest
 
         assertThat(actual).isEqualTo(expected);
     }
+
+    @DataProvider
+    public Object[][] statesDataProvicer()
+    {
+        RealVehicleState rvs1 = mock(RealVehicleState.class);
+        when(rvs1.getId()).thenReturn(10101);
+        when(rvs1.getRealVehicleName()).thenReturn("RV01");
+        when(rvs1.getLastUpdate()).thenReturn(new Date(1010101L));
+        when(rvs1.toString()).thenReturn("RV01");
+        when(rvs1.getState()).thenReturn(
+            "{\"type\":\"FeatureCollection\",\"features\":["
+                + "{\"type\":\"Feature\",\"properties\":{"
+                + "\"rvPosition\":{\"coordinates\":[-122.42649999999999,37.808499999754275,9.999978839419782]},"
+                + "\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,\"rvId\":1,"
+                + "\"type\":\"rvPosition\",\"rvTime\":1453047531086},\"geometry\":"
+                + "{\"type\":\"Point\",\"coordinates\":[-122.42649999999999,37.808499999754275,9.999978839419782]}},"
+                + "{\"type\":\"Feature\",\"properties\":{\"type\":\"vvs\"},\"geometry\":"
+                + "{\"type\":\"GeometryCollection\",\"geometries\":[]}},"
+                + "{\"type\":\"Feature\",\"properties\":"
+                + "{\"type\":\"rvPath\"},\"geometry\":{\"type\":\"LineString\","
+                + "\"coordinates\":[[-122.42649999999999,37.808499999754275,9.999978839419782]]}},"
+                + "{\"type\":\"Feature\",\"properties\":"
+                + "{\"type\":\"sensors\"},\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[]}}]}");
+
+        RealVehicleState rvs2 = mock(RealVehicleState.class);
+        when(rvs2.getId()).thenReturn(20202);
+        when(rvs2.getRealVehicleName()).thenReturn("RV02");
+        when(rvs2.getLastUpdate()).thenReturn(new Date(2020202L));
+        when(rvs2.toString()).thenReturn("RV02");
+        when(rvs2.getState()).thenReturn("");
+
+        return new Object[][]{
+            new Object[]{Collections.<RealVehicleState> emptyList(), "{}"},
+
+            new Object[]{Arrays.asList(rvs1), "{\"10101\":{\"type\":\"FeatureCollection\",\"features\":["
+                + "{\"type\":\"Feature\",\"properties\":{"
+                + "\"rvPosition\":{\"coordinates\":[-122.42649999999999,37.808499999754275,9.999978839419782]},"
+                + "\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,\"rvId\":1,"
+                + "\"type\":\"rvPosition\",\"rvTime\":1453047531086},\"geometry\":"
+                + "{\"type\":\"Point\",\"coordinates\":[-122.42649999999999,37.808499999754275,9.999978839419782]}},"
+                + "{\"type\":\"Feature\",\"properties\":{\"type\":\"vvs\"},\"geometry\":"
+                + "{\"type\":\"GeometryCollection\",\"geometries\":[]}},{\"type\":\"Feature\",\"properties\":"
+                + "{\"type\":\"rvPath\"},\"geometry\":{\"type\":\"LineString\","
+                + "\"coordinates\":[[-122.42649999999999,37.808499999754275,9.999978839419782]]}},"
+                + "{\"type\":\"Feature\",\"properties\":{\"type\":\"sensors\"},\"geometry\":"
+                + "{\"type\":\"GeometryCollection\",\"geometries\":[]}}]}}"},
+
+            new Object[]{Arrays.asList(rvs2), "{\"20202\":{\"features\":[]}}"},
+        };
+    }
+
+    @Test(dataProvider = "statesDataProvicer")
+    public void shouldConvertoToRvSTateJson(List<RealVehicleState> statesList, String expected)
+    {
+        String actual = sut.toRealVehicleStateJson(statesList);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    //    @Test
+    //    public void shouldReturnEmptyJsonObjectOnCorruptedState()
+    //    {
+    //        RealVehicleState rvs = mock(RealVehicleState.class);
+    //        when(rvs.getId()).thenReturn(30303);
+    //        when(rvs.getRealVehicleName()).thenReturn("RV03");
+    //        when(rvs.getLastUpdate()).thenReturn(new Date(3030303L));
+    //        when(rvs.toString()).thenReturn("RV03");
+    //        when(rvs.getState()).thenReturn("{");
+    //        
+    //        String actual = sut.toRealVehicleStateJson(Arrays.asList(rvs));
+    //
+    //        assertThat(actual).isEqualTo("{\"30303\":{}}");
+    //    }
 }

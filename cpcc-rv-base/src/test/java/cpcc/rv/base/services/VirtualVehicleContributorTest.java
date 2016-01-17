@@ -78,7 +78,7 @@ public class VirtualVehicleContributorTest
     public void shouldAddEmptyFeatureOnEmptyVirtualVehicleList(List<VirtualVehicle> emptyList)
         throws JsonProcessingException, JSONException
     {
-        when(vvRepo.findAllVehicles()).thenReturn(emptyList);
+        when(vvRepo.findAllActiveVehicles(10)).thenReturn(emptyList);
 
         FeatureCollection featureCollection = mock(FeatureCollection.class);
 

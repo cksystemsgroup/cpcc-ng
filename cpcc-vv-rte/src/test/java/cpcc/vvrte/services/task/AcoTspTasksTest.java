@@ -22,7 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.testng.annotations.BeforeMethod;
@@ -31,8 +33,6 @@ import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.vvrte.entities.Task;
-import cpcc.vvrte.services.task.AcoTspTasks;
-import cpcc.vvrte.services.task.FlatWorld;
 
 /**
  * AcoTspTasksTest implementation.
@@ -149,5 +149,40 @@ public class AcoTspTasksTest
         List<Task> actual = sut.calculateBestPathWithDepot(position, depot, path);
 
         assertThat(actual).has(new TspListCondition<Task>(expected));
+    }
+
+    @Test
+    public void shouldReturnUnchangedPathIfDepotPositionIsNull()
+    {
+        List<Task> path = new ArrayList<>();
+
+        List<Task> actual = sut.calculateBestPathWithDepot(null, null, path);
+
+        assertThat(actual).isSameAs(path);
+    }
+
+    @DataProvider
+    public Object[][] shortPathDataProvider()
+    {
+        Task taskA = mock(Task.class);
+        when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1, 13.2, 5.0));
+        when(taskA.toString()).thenReturn("taskA");
+
+        return new Object[][]{
+            new Object[]{
+                Collections.<Task> emptyList()
+            },
+            new Object[]{
+                Arrays.asList(taskA)
+            },
+        };
+    }
+
+    @Test(dataProvider = "shortPathDataProvider")
+    public void shouldReturnUnchangedPathIfPathHasLessThanTwoTasks(List<Task> path)
+    {
+        List<Task> actual = sut.calculateBestPathWithDepot(null, null, path);
+
+        assertThat(actual).isSameAs(path);
     }
 }

@@ -51,6 +51,8 @@ public class VirtualVehicleTest
         Date startTime = new Date(1385063517000L);
         Date endTime = new Date(1385069517000L);
         String stateInfo = "The State Info";
+        Task task = mock(Task.class);
+        VirtualVehicleState preMigrationState = mock(VirtualVehicleState.class);
 
         VirtualVehicle v = new VirtualVehicle();
         v.setId(id);
@@ -65,6 +67,8 @@ public class VirtualVehicleTest
         v.setStartTime(startTime);
         v.setEndTime(endTime);
         v.setStateInfo(stateInfo);
+        v.setTask(task);
+        v.setPreMigrationState(preMigrationState);
 
         assertThat(v.getId()).isNotNull().isEqualTo(10);
         assertThat(v.getUuid()).isNotNull().isEqualTo(uuid.toString());
@@ -74,9 +78,11 @@ public class VirtualVehicleTest
         assertThat(v.getMigrationStartTime()).isNotNull().isEqualTo(migStart);
         assertThat(v.getContinuation()).isNotNull().isEqualTo(blob);
         assertThat(v.getApiVersion()).isNotNull().isEqualTo(apiVersion);
-        assertThat(v.getState()).isNotNull().isEqualTo(state);
-        assertThat(v.getStartTime()).isNotNull().isEqualTo(startTime);
-        assertThat(v.getEndTime()).isNotNull().isEqualTo(endTime);
-        assertThat(v.getStateInfo()).isNotNull().isEqualTo(stateInfo);
+        assertThat(v.getState()).isNotNull().isSameAs(state);
+        assertThat(v.getStartTime()).isNotNull().isSameAs(startTime);
+        assertThat(v.getEndTime()).isNotNull().isSameAs(endTime);
+        assertThat(v.getStateInfo()).isNotNull().isSameAs(stateInfo);
+        assertThat(v.getTask()).isNotNull().isSameAs(task);
+        assertThat(v.getPreMigrationState()).isNotNull().isSameAs(preMigrationState);
     }
 }

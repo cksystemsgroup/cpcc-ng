@@ -295,22 +295,14 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
     @Override
     public String toRealVehicleStateJson(List<RealVehicleState> statesList)
     {
-        try
-        {
-            Map<String, String> stateMap = new HashMap<String, String>();
+        Map<String, String> stateMap = new HashMap<String, String>();
 
-            for (RealVehicleState state : statesList)
-            {
-                String s = StringUtils.isBlank(state.getState()) ? "{\"features\":[]}" : state.getState();
-                stateMap.put(state.getId().toString(), s);
-            }
-
-            return JSONUtils.toJsonString(stateMap);
-        }
-        catch (Throwable t)
+        for (RealVehicleState state : statesList)
         {
-            t.printStackTrace();
-            return "{}";
+            String s = StringUtils.isBlank(state.getState()) ? "{\"features\":[]}" : state.getState();
+            stateMap.put(state.getId().toString(), s);
         }
+
+        return JSONUtils.toJsonString(stateMap);
     }
 }
