@@ -32,6 +32,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -44,6 +45,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Vehicle
  */
 @Entity
+@Table(name = "virtual_vehicles")
 public class VirtualVehicle implements Serializable
 {
     private static final long serialVersionUID = 8974799441897681454L;
@@ -61,7 +63,7 @@ public class VirtualVehicle implements Serializable
     @Size(max = 36)
     private String name;
 
-    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 1")
+    @Column(name = "api_version", nullable = false, columnDefinition = "INTEGER DEFAULT 1")
     private Integer apiVersion;
 
     @Lob
@@ -73,22 +75,25 @@ public class VirtualVehicle implements Serializable
     private VirtualVehicleState state;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = MAX_STATE_LENGTH, name = "pre_migration_state")
+    @Column(name = "pre_migration_state", length = MAX_STATE_LENGTH)
     private VirtualVehicleState preMigrationState;
 
     @ManyToOne
     private RealVehicle migrationDestination;
 
     @Type(type = "timestamp")
+    @Column(name = "migration_start_time")
     private java.util.Date migrationStartTime;
 
     @Lob
     private byte[] continuation;
 
     @Type(type = "timestamp")
+    @Column(name = "start_time")
     private java.util.Date startTime;
 
     @Type(type = "timestamp")
+    @Column(name = "end_time")
     private java.util.Date endTime;
 
     @Column(name = "state_info")

@@ -70,6 +70,7 @@ public class PositionContributor implements StateContributor
         pointFeature.setProperty("type", "rvPosition");
         pointFeature.setProperty("rvHeading", 0);
         pointFeature.setProperty("rvPosition", point);
+        pointFeature.setProperty("rvTime", timeService.currentTimeMillis());
 
         RealVehicle rv = rvRepo.findOwnRealVehicle();
 

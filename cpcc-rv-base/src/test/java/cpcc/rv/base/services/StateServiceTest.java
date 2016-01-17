@@ -18,6 +18,7 @@
 
 package cpcc.rv.base.services;
 
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -172,7 +173,7 @@ public class StateServiceTest
         vvList = Arrays.asList(vv1, vv2);
 
         vvRepo = mock(VvRteRepository.class);
-        when(vvRepo.findAllVehicles()).thenReturn(vvList);
+        when(vvRepo.findAllActiveVehicles(anyInt())).thenReturn(vvList);
 
         vjc = new VvGeoJsonConverterImpl();
 
@@ -212,7 +213,7 @@ public class StateServiceTest
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\""
                     + ",\"properties\":{\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]},\"rvType\":\"QUADROCOPTER\""
-                    + ",\"rvName\":\"RV01\",\"rvState\":\"busy\",\"rvHeading\":0,\"rvId\":1001,\"type\":\"rvPosition\"}"
+                    + ",\"rvName\":\"RV01\",\"rvState\":\"busy\",\"rvHeading\":0,\"rvId\":1001,\"type\":\"rvPosition\",\"rvTime\":123456790}"
                     + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
                     + ""
                     + "{\"type\":\"Feature\""
@@ -248,7 +249,7 @@ public class StateServiceTest
                     + "{\"type\":\"Feature\""
                     + ",\"properties\":{\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]}"
                     + ",\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"none\""
-                    + ",\"rvHeading\":0,\"rvId\":1001,\"type\":\"rvPosition\"}"
+                    + ",\"rvHeading\":0,\"rvId\":1001,\"type\":\"rvPosition\",\"rvTime\":200000000}"
                     + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
                     + ""
                     + "{\"type\":\"Feature\""
@@ -269,7 +270,7 @@ public class StateServiceTest
                     + "{\"type\":\"Feature\",\"properties\":{"
                     + "\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]},"
                     + "\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"busy\",\"rvHeading\":0,"
-                    + "\"rvId\":1001,\"type\":\"rvPosition\"},"
+                    + "\"rvId\":1001,\"type\":\"rvPosition\",\"rvTime\":123456790},"
                     + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}}"
                     + "]}"
             },

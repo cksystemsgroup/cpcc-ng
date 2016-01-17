@@ -104,6 +104,21 @@ public class VvRteRepositoryImpl implements VvRteRepository
      */
     @SuppressWarnings("unchecked")
     @Override
+    public List<VirtualVehicle> findAllActiveVehicles(int maxResults)
+    {
+        return (List<VirtualVehicle>) session
+            .createCriteria(VirtualVehicle.class)
+            .add(Restrictions.eq("state", VirtualVehicleState.RUNNING))
+            .addOrder(Property.forName("id").asc())
+            .setMaxResults(maxResults)
+            .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
     public List<VirtualVehicle> findAllStuckVehicles(Set<VirtualVehicleState> allowedStates)
     {
         return (List<VirtualVehicle>) session

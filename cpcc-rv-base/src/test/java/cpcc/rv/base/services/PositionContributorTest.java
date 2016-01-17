@@ -102,7 +102,7 @@ public class PositionContributorTest
                 + "\"properties\":{"
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"UNKNOWN\",\"rvName\":\"unknown\",\"rvState\":\"none\",\"rvHeading\":0,"
-                + "\"rvId\":-1,\"type\":\"rvPosition\"}"
+                + "\"rvId\":-1,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
             },
 
@@ -112,7 +112,7 @@ public class PositionContributorTest
                 + "\"properties\":{"
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,"
-                + "\"rvId\":12345,\"type\":\"rvPosition\"}"
+                + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
             },
 
@@ -122,7 +122,7 @@ public class PositionContributorTest
                 + "\"properties\":{"
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"none\",\"rvHeading\":0,"
-                + "\"rvId\":12345,\"type\":\"rvPosition\"}"
+                + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
             },
 
@@ -132,7 +132,7 @@ public class PositionContributorTest
                 + "\"properties\":{"
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"none\",\"rvHeading\":0,"
-                + "\"rvId\":12345,\"type\":\"rvPosition\"}"
+                + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
             },
 
@@ -142,7 +142,7 @@ public class PositionContributorTest
                 + "\"properties\":{"
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"busy\",\"rvHeading\":0,"
-                + "\"rvId\":12345,\"type\":\"rvPosition\"}"
+                + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
             },
         };

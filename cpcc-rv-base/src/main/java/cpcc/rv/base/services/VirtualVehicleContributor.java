@@ -55,7 +55,7 @@ public class VirtualVehicleContributor implements StateContributor
     @Override
     public void contribute(FeatureCollection featureCollection, PolarCoordinate rvPosition, List<Task> taskList)
     {
-        List<VirtualVehicle> vvList = vvRepo.findAllVehicles();
+        List<VirtualVehicle> vvList = vvRepo.findAllActiveVehicles(10);
         if (vvList == null)
         {
             vvList = Collections.emptyList();

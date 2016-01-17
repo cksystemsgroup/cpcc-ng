@@ -20,11 +20,13 @@ package cpcc.vvrte.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -38,6 +40,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * VirtualVehicleStorage
  */
 @Entity
+@Table(name = "virtual_vehicle_storage")
 public class VirtualVehicleStorage implements Serializable
 {
     private static final long serialVersionUID = -5013965520648254955L;
@@ -51,6 +54,7 @@ public class VirtualVehicleStorage implements Serializable
     private VirtualVehicle virtualVehicle;
 
     @Type(type = "timestamp")
+    @Column(name = "modification_time")
     private java.util.Date modificationTime;
 
     @Size(max = 128)

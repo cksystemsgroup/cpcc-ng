@@ -44,6 +44,12 @@ public interface VvRteRepository
     List<VirtualVehicle> findAllVehicles();
 
     /**
+     * @param maxResults the maximum number of virtual vehicles to return.
+     * @return the virtual vehicles.
+     */
+    List<VirtualVehicle> findAllActiveVehicles(int maxResults);
+
+    /**
      * @return the stuck virtual vehicles.
      */
     /**
