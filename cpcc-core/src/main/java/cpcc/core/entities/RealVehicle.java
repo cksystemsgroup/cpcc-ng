@@ -31,6 +31,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
@@ -75,6 +76,9 @@ public class RealVehicle implements Serializable
     private String areaOfOperation;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "real_vehicles_sensor_definitions"
+        , joinColumns = {@JoinColumn(name = "real_vehicles_id")}
+        , inverseJoinColumns = {@JoinColumn(name = "sensors_id")})
     private List<SensorDefinition> sensors = new ArrayList<SensorDefinition>();
 
     @NotNull

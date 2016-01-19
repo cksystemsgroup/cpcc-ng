@@ -26,8 +26,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -51,13 +53,16 @@ public class DeviceType implements Serializable
     private String name;
 
     @NotNull
-    @ManyToOne
+    @OneToOne
     private Topic mainTopic;
 
     @Size(max = 120)
     private String className;
 
     @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "device_types_topics"
+        , joinColumns = {@JoinColumn(name = "device_types_id")}
+        , inverseJoinColumns = {@JoinColumn(name = "subtopics_id")})
     private List<Topic> subTopics = new ArrayList<Topic>();
 
     /**

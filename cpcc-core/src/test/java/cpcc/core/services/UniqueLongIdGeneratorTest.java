@@ -35,8 +35,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.services.UniqueLongIdGenerator;
-
 public class UniqueLongIdGeneratorTest
 {
     private UniqueLongIdGenerator sut;

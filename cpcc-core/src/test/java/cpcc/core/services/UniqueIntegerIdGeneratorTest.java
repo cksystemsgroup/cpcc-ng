@@ -35,8 +35,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.services.UniqueIntegerIdGenerator;
-
 public class UniqueIntegerIdGeneratorTest
 {
     private UniqueIntegerIdGenerator sut;
