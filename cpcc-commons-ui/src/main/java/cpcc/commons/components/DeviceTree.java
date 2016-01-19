@@ -18,6 +18,7 @@
 
 package cpcc.commons.components;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.tapestry5.BindingConstants;
@@ -70,8 +71,10 @@ public class DeviceTree
                 return null;
             }
         };
+        
+        List<ITreeNode> deviceList = devices != null ? devices : Collections.emptyList();
 
-        return new DefaultTreeModel<ITreeNode>(encoder, new TreeNodeAdapter(), devices);
+        return new DefaultTreeModel<ITreeNode>(encoder, new TreeNodeAdapter(), deviceList);
     }
 
     /**
