@@ -3,6 +3,33 @@
 
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
 
+	<New id="jdbc_RV" class="org.eclipse.jetty.plus.jndi.Resource">
+		<Arg></Arg>
+		<Arg>jdbc/RV</Arg>
+		<Arg>
+			<New class="com.mchange.v2.c3p0.ComboPooledDataSource">
+				<Set name="driverClass"><Env name="CPCC_DRV" /></Set>
+				<Set name="jdbcUrl"><Env name="CPCC_URL" /></Set>
+				<Set name="user"><Env name="CPCC_USR" /></Set>
+				<Set name="password"><Env name="CPCC_PWD" /></Set>
+				<Set name="maxPoolSize">30</Set>
+			</New>
+		</Arg>
+	</New>
+
+	<New id="jdbc_LIQUIBASE" class="org.eclipse.jetty.plus.jndi.Resource">
+		<Arg></Arg>
+		<Arg>jdbc/LIQUIBASE</Arg>
+		<Arg>
+			<New class="com.mchange.v2.c3p0.ComboPooledDataSource">
+				<Set name="driverClass"><Env name="CPCC_DRV" /></Set>
+				<Set name="jdbcUrl"><Env name="CPCC_URL" /></Set>
+				<Set name="user"><Env name="CPCC_USR" /></Set>
+				<Set name="password"><Env name="CPCC_PWD" /></Set>
+			</New>
+		</Arg>
+	</New>
+
 	<!-- <New id="jdbc_RV" class="org.eclipse.jetty.plus.jndi.Resource"> -->
 	<!-- <Arg></Arg> -->
 	<!-- <Arg>jdbc/RV</Arg> -->
@@ -33,32 +60,32 @@
 	<!-- </Arg> -->
 	<!-- </New> -->
 
-	<New id="jdbc_RV" class="org.eclipse.jetty.plus.jndi.Resource">
-		<Arg></Arg>
-		<Arg>jdbc/RV</Arg>
-		<Arg>
-			<New class="com.mchange.v2.c3p0.ComboPooledDataSource">
-				<Set name="driverClass">org.h2.Driver</Set>
-				<Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/RV01;MVCC=true;AUTOCOMMIT=OFF</Set>
-				<Set name="user">sa</Set>
-				<Set name="password"></Set>
-				<Set name="maxPoolSize">30</Set>
-			</New>
-		</Arg>
-	</New>
-	
-	<New id="jdbc_LIQUIBASE" class="org.eclipse.jetty.plus.jndi.Resource">
-		<Arg></Arg>
-		<Arg>jdbc/LIQUIBASE</Arg>
-		<Arg>
-			<New class="com.mchange.v2.c3p0.ComboPooledDataSource">
-				<Set name="driverClass">org.h2.Driver</Set>
-				<Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/RV01;MVCC=true;AUTOCOMMIT=OFF</Set>
-				<Set name="user">sa</Set>
-				<Set name="password"></Set>
-			</New>
-		</Arg>
-	</New>
+	<!-- <New id="jdbc_RV" class="org.eclipse.jetty.plus.jndi.Resource"> -->
+	<!-- <Arg></Arg> -->
+	<!-- <Arg>jdbc/RV</Arg> -->
+	<!-- <Arg> -->
+	<!-- <New class="com.mchange.v2.c3p0.ComboPooledDataSource"> -->
+	<!-- <Set name="driverClass">org.h2.Driver</Set> -->
+	<!-- <Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/RV01;MVCC=true;AUTOCOMMIT=OFF</Set> -->
+	<!-- <Set name="user">sa</Set> -->
+	<!-- <Set name="password"></Set> -->
+	<!-- <Set name="maxPoolSize">30</Set> -->
+	<!-- </New> -->
+	<!-- </Arg> -->
+	<!-- </New> -->
+
+	<!-- <New id="jdbc_LIQUIBASE" class="org.eclipse.jetty.plus.jndi.Resource"> -->
+	<!-- <Arg></Arg> -->
+	<!-- <Arg>jdbc/LIQUIBASE</Arg> -->
+	<!-- <Arg> -->
+	<!-- <New class="com.mchange.v2.c3p0.ComboPooledDataSource"> -->
+	<!-- <Set name="driverClass">org.h2.Driver</Set> -->
+	<!-- <Set name="jdbcUrl">jdbc:h2:tcp://localhost:9095/RV01;MVCC=true;AUTOCOMMIT=OFF</Set> -->
+	<!-- <Set name="user">sa</Set> -->
+	<!-- <Set name="password"></Set> -->
+	<!-- </New> -->
+	<!-- </Arg> -->
+	<!-- </New> -->
 
 	<!-- <New id="jdbc_RV" class="org.eclipse.jetty.plus.jndi.Resource"> -->
 	<!-- <Arg></Arg> -->
