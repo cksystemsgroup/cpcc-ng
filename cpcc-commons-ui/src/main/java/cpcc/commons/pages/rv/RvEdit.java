@@ -32,12 +32,4 @@ public class RvEdit extends AbstractModifyRealVehicle
     {
         realVehicle = rvRepo.findRealVehicleById(vehicleId);
     }
-
-    /**
-     * Callback function for validating form data.
-     */
-    void onValidateFromForm()
-    {
-        checkAreaOfOperation();
-    }
 }

@@ -35,7 +35,7 @@ public class RvNew extends AbstractModifyRealVehicle
      */
     void onValidateFromForm()
     {
-        checkAreaOfOperation();
+        // checkAreaOfOperation();
 
         RealVehicle rv = rvRepo.findRealVehicleByName(realVehicle.getName());
         if (rv != null)

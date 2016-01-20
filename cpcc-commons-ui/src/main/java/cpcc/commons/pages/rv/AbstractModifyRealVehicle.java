@@ -23,6 +23,7 @@ import java.util.Date;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import org.apache.tapestry5.alerts.AlertManager;
 import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
@@ -46,6 +47,8 @@ public class AbstractModifyRealVehicle
     protected static final String ERROR_REAL_VEHICLE_NAME_ALREADY_EXISTS = "error.real.vehicle.name.already.exists";
     protected static final String ERROR_REAL_VEHICLE_URL_ALREADY_EXISTS = "error.real.vehicle.url.already.exists";
 
+    protected static final String MSG_DEFINE_AOO = "info.define.areaOfOperations";
+
     @Inject
     protected HibernateSessionManager sessionManager;
 
@@ -57,6 +60,9 @@ public class AbstractModifyRealVehicle
 
     @Inject
     protected Messages messages;
+
+    @Inject
+    protected AlertManager alertManager;
 
     @Valid
     @Property
@@ -78,40 +84,11 @@ public class AbstractModifyRealVehicle
         sessionManager.getSession().saveOrUpdate(realVehicle);
         sessionManager.commit();
 
-        // TODO
-        //        rvss.notifyConfigurationChange();
-        //        confSync.notifyConfigurationChange();
-        return RvList.class;
-    }
-
-    /**
-     * Check the parameters of the sensor definition.
-     */
-    protected void checkAreaOfOperation()
-    {
-        // TODO check
-        //        if (sensor.getParameters() != null)
-        //        {
-        //            try
-        //            {
-        //                parserService.parse(sensor.getParameters());
-        //            }
-        //            catch (ParseException e)
-        //            {
-        //                String msg = parserService.formatParserErrorMessage(sensor.getParameters(),
-        //                    messages.get(ERROR_PARSING_SYNTAX), e);
-        //                form.recordError(msg);
-        //            }
-        //            catch (IOException e)
-        //            {
-        //                String msg = String.format(messages.get(ERROR_PARSING), e.getMessage());
-        //                form.recordError(msg);
-        //            }
-        //        }
         if (realVehicle.getAreaOfOperation() == null)
         {
-            String msg = messages.get(ERROR_AREA_OF_OPERATIUONS_IS_NULL);
-            form.recordError(msg);
+            alertManager.info(messages.get(MSG_DEFINE_AOO));
         }
+
+        return RvList.class;
     }
 }
