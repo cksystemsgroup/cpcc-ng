@@ -52,6 +52,14 @@ public class DeviceTree
     @SessionState(create = false)
     private TreeExpansionModel<ITreeNode> expansionModel;
 
+    @Property
+    private List<ITreeNode> deviceList;
+
+    void setupRender()
+    {
+        deviceList = devices != null ? devices : Collections.emptyList();
+    }
+
     /**
      * @return the tree model
      */
@@ -71,8 +79,6 @@ public class DeviceTree
                 return null;
             }
         };
-        
-        List<ITreeNode> deviceList = devices != null ? devices : Collections.emptyList();
 
         return new DefaultTreeModel<ITreeNode>(encoder, new TreeNodeAdapter(), deviceList);
     }

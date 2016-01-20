@@ -1,23 +1,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
-	xmlns:p="tapestry:parameter">
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
 
-<t:content>
-	<t:Tree t:id="tree" t:model="treeModel" t:value="currentNode"
-		t:expansionModel="expansionModel" t:node="treeNode">
-		<p:Label>
-			<t:If test="treeNode.leaf">
-				&nbsp;
-				<t:PageLink t:page="commons/ros/deviceDetail"
-					t:context="currentNode.label">
-					${currentNode.label}
-				</t:PageLink>
-				<p:else>
-					&nbsp;<!-- ${currentNode.label} -->
-				</p:else>
-			</t:If>
-		</p:Label>
-	</t:Tree>
-</t:content>
+	<t:content>
+		<t:If t:test="deviceList">
+			<t:Tree t:id="tree" t:model="treeModel" t:value="currentNode" t:expansionModel="expansionModel" t:node="treeNode">
+				<p:Label>
+					<t:If test="treeNode.leaf">
+						&nbsp;
+						<t:PageLink t:page="commons/ros/deviceDetail" t:context="currentNode.label">
+							${currentNode.label}
+						</t:PageLink>
+						<p:else>
+							&nbsp;<!-- ${currentNode.label} -->
+						</p:else>
+					</t:If>
+				</p:Label>
+			</t:Tree>
+		</t:If>
+	</t:content>
 
 </html>
