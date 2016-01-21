@@ -39,7 +39,10 @@ public class TasksContributor implements StateContributor
     @Override
     public void contribute(FeatureCollection featureCollection, PolarCoordinate rvPosition, List<Task> taskList)
     {
-        featureCollection.add(toTaskFeature(rvPosition, taskList));
+        if (rvPosition != null)
+        {
+            featureCollection.add(toTaskFeature(rvPosition, taskList));
+        }
     }
 
     /**
