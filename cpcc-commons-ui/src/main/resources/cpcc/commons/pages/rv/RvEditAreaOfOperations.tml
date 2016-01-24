@@ -4,11 +4,10 @@
 	<l:LeafletMap t:id="rvMap" t:drawControl="true" t:center="prop:mapCenter" t:zoom="prop:zoomLevel"
 		t:cssClass="fullMap" />
 
+	<l:LeafletEmptyLayer t:mapId="rvMap" t:name="message:emptyLayer.name" />
+
 	<l:LeafletTileLayer t:mapId="rvMap" t:name="message:tile.layerOne.name" t:urlTemplate="message:tile.layerOne.urlTemplate"
 		t:options="message:tile.layerOne.options" />
-
-	<l:LeafletTileLayer t:mapId="rvMap" t:name="message:tile.layerTwo.name" t:urlTemplate="message:tile.layerTwo.urlTemplate"
-		t:options="message:tile.layerTwo.options" />
 
 	<l:LeafletDrawControl t:id="drawControl" t:mapId="rvMap" t:data="prop:realVehicleRegions"
 		t:position="topleft" t:polygonEnabled="true" t:rectangleEnabled="false" t:polylineEnabled="false" t:circleEnabled="false" />

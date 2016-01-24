@@ -78,7 +78,7 @@ public class RvEditAreaOfOperations
     public String getRealVehicleRegions()
     {
         String regions = realVehicle.getAreaOfOperation();
-        regions = regions.replaceAll("\\\\n\\s*", "");
+        regions = regions != null ? regions.replaceAll("\\\\n\\s*", "") : "{}";
         return regions;
     }
 

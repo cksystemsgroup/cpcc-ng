@@ -29,6 +29,11 @@
 			<artifactId>tapestry-beanvalidator</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-upload</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>at.uni-salzburg.cs.cpcc</groupId>
 			<artifactId>cpcc-tapestry-ace</artifactId>
 			<version>${project.parent.version}</version>

@@ -16,23 +16,15 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.demo.launcher;
+package cpcc.rv.base.services;
 
 /**
- * Launcher implementation.
+ * Setup Service interface.
  */
-public class Launcher
+public interface SetupService
 {
-    private void execute()
-    {
-        System.out.println("Hello world!");
-    }
-
     /**
-     * @param args the program arguments.
+     * Set up the hosting real vehicle that it may participate in a vehicle network.
      */
-    public static void main(String[] args)
-    {
-        new Launcher().execute();
-    }
+    void setupRealVehicle();
 }

@@ -35,6 +35,7 @@ import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
@@ -85,7 +86,7 @@ public class SensorsContributorTest
 
         Feature argument = captor.getValue();
 
-        String actual = new ObjectMapper().writeValueAsString(argument);
+        String actual = new ObjectMapper().disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(argument);
         System.out.println("actual: " + actual.replace("\"", "\\\""));
 
         JSONAssert.assertEquals(EMPTY_SENSOR_FEATURE, actual, false);
@@ -113,7 +114,7 @@ public class SensorsContributorTest
 
         Feature argument = captor.getValue();
 
-        String actual = new ObjectMapper().writeValueAsString(argument);
+        String actual = new ObjectMapper().disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(argument);
         // System.out.println("actual: " + actual.replace("\"", "\\\""));
 
         JSONAssert.assertEquals(EXPECTED_01, actual, false);

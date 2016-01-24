@@ -27,6 +27,7 @@ import org.apache.tapestry5.services.Response;
 import org.geojson.FeatureCollection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * GeoJsonStreamResponse
@@ -58,7 +59,9 @@ public class GeoJsonStreamResponse implements StreamResponse
     @Override
     public InputStream getStream() throws IOException
     {
-        byte[] byteArray = new ObjectMapper().writeValueAsBytes(featureCollection);
+        byte[] byteArray = new ObjectMapper()
+            .disable(SerializationFeature.INDENT_OUTPUT)
+            .writeValueAsBytes(featureCollection);
         return new ByteArrayInputStream(byteArray);
     }
 

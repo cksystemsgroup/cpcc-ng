@@ -33,5 +33,6 @@ public class VvNew extends AbstractModifyVv
         vehicle = new VirtualVehicle();
         vehicle.setUuid(UUID.randomUUID().toString());
         vehicle.setState(VirtualVehicleState.INIT);
+        vehicle.setApiVersion(1);
     }
 }

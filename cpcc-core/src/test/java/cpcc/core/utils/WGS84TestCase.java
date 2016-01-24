@@ -21,14 +21,24 @@ package cpcc.core.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.geojson.Feature;
+import org.geojson.FeatureCollection;
+import org.geojson.LngLatAlt;
+import org.geojson.Point;
+import org.geojson.Polygon;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import cpcc.core.entities.PolarCoordinate;
-import cpcc.core.utils.CartesianCoordinate;
-import cpcc.core.utils.GeodeticSystem;
-import cpcc.core.utils.WGS84;
 
 /**
  * This class verifies the implementation of the WGS84 class.
@@ -230,4 +240,88 @@ public class WGS84TestCase
         assertThat(gs.calculateDistance(a, b)).isEqualTo(distance, offset(delta));
     }
 
+    private static final double COS_60 = 0.5;
+    private static final double SIN_60 = 0.8660;
+    private static final double DIAMETER = 100.0;
+
+    @DataProvider
+    public Object[][] startPositionDataProvider()
+    {
+        WGS84 mygs = new WGS84();
+        PolarCoordinate origin = new PolarCoordinate(47.8220, 13.0408, 50);
+        PolarCoordinate rv01 = mygs.walk(origin, -DIAMETER, -DIAMETER * (2.0 + COS_60), 0.0);
+        PolarCoordinate rv02 = mygs.walk(rv01, -DIAMETER * SIN_60, DIAMETER * (1.0 + COS_60), 0.0);
+        PolarCoordinate rv03 = mygs.walk(rv01, 0.0, DIAMETER * 3.0, 0.0);
+        PolarCoordinate rv04 = mygs.walk(rv01, 2.0 * DIAMETER * SIN_60, DIAMETER * 3.0, 0.0);
+        PolarCoordinate rv05 = mygs.walk(rv01, 3.0 * DIAMETER * SIN_60, DIAMETER * (1.0 + COS_60), 0.0);
+        PolarCoordinate rv06 = mygs.walk(rv01, 2.0 * DIAMETER * SIN_60, 0.0, 0.0);
+        PolarCoordinate rv07 = mygs.walk(rv01, DIAMETER * SIN_60, DIAMETER * (1.0 + COS_60), 0.0);
+
+        return new Object[][]{
+            new Object[]{"RV01", rv01},
+            new Object[]{"RV02", rv02},
+            new Object[]{"RV03", rv03},
+            new Object[]{"RV04", rv04},
+            new Object[]{"RV05", rv05},
+            new Object[]{"RV06", rv06},
+            new Object[]{"RV07", rv07},
+        };
+    }
+
+    @Test(dataProvider = "startPositionDataProvider")
+    public void shouldRunAroundALittleBit(String name, PolarCoordinate startPosition)
+        throws JsonProcessingException
+    {
+        PolarCoordinate depotPos = gs.walk(startPosition, 0.0, DIAMETER, 0.0);
+        PolarCoordinate p1 = gs.walk(startPosition, -DIAMETER * SIN_60, DIAMETER * COS_60, 0.0);
+        PolarCoordinate p2 = gs.walk(startPosition, -DIAMETER * SIN_60, DIAMETER * COS_60 + DIAMETER, 0.0);
+        PolarCoordinate p3 = gs.walk(startPosition, 0.0, DIAMETER * 2.0, 0.0);
+        PolarCoordinate p4 = gs.walk(startPosition, DIAMETER * SIN_60, DIAMETER * COS_60 + DIAMETER, 0.0);
+        PolarCoordinate p5 = gs.walk(startPosition, DIAMETER * SIN_60, DIAMETER * COS_60, 0.0);
+
+        Polygon poly = new Polygon();
+        poly.add(Arrays.asList(toLLA(startPosition), toLLA(p1), toLLA(p2), toLLA(p3), toLLA(p4), toLLA(p5),
+            toLLA(startPosition)));
+
+        Feature aooPolygon = new Feature();
+        aooPolygon.setGeometry(poly);
+        aooPolygon.setProperty("minAlt", 0);
+        aooPolygon.setProperty("maxAlt", 20);
+
+        Point depotPoint = new Point();
+        depotPoint.setCoordinates(toLLA(depotPos));
+
+        Feature depot = new Feature();
+        depot.setProperty("type", "depot");
+        depot.setGeometry(depotPoint);
+
+        FeatureCollection fc = new FeatureCollection();
+        fc.setProperty("center", toLL(depotPos));
+        fc.setProperty("zoom", 18);
+        fc.setProperty("layer", "Minimal");
+        fc.add(aooPolygon);
+        fc.add(depot);
+
+        String actual = new ObjectMapper().disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(fc);
+        System.out.println("var " + name + " = " + actual);
+        System.out.println();
+    }
+
+    private static LngLatAlt toLLA(PolarCoordinate pos)
+    {
+        // return new LngLatAlt(pos.getLongitude(), pos.getLatitude(), pos.getAltitude());
+        return new LngLatAlt(pos.getLongitude(), pos.getLatitude());
+    }
+
+    @SuppressWarnings("serial")
+    private static Map<String, Object> toLL(PolarCoordinate pos)
+    {
+        return new HashMap<String, Object>(2)
+        {
+            {
+                put("lat", pos.getLatitude());
+                put("lng", pos.getLongitude());
+            }
+        };
+    }
 }

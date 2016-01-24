@@ -269,6 +269,11 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         buff.append("{");
         for (RealVehicle rv : rvList)
         {
+            if (StringUtils.isBlank(rv.getAreaOfOperation()))
+            {
+                continue;
+            }
+
             if (first)
             {
                 first = false;

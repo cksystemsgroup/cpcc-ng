@@ -40,6 +40,7 @@ import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
@@ -90,7 +91,7 @@ public class VirtualVehicleContributorTest
 
         Feature argument = captor.getValue();
 
-        String actual = new ObjectMapper().writeValueAsString(argument);
+        String actual = new ObjectMapper().disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(argument);
         System.out.println("actual: " + actual.replace("\"", "\\\""));
 
         JSONAssert.assertEquals(EMPTY_VV_FEATURE, actual, false);
@@ -168,7 +169,7 @@ public class VirtualVehicleContributorTest
 
         Feature argument = captor.getValue();
 
-        String actual = new ObjectMapper().writeValueAsString(argument);
+        String actual = new ObjectMapper().disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(argument);
         System.out.println("actual: " + actual.replace("\"", "\\\""));
 
         JSONAssert.assertEquals(expected, actual, false);

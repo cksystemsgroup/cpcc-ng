@@ -36,6 +36,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import cpcc.core.entities.MappingAttributes;
 import cpcc.core.entities.Parameter;
@@ -346,7 +347,7 @@ public class StateServiceTest
 
         FeatureCollection fc = sut.getState(what);
 
-        String actual = new ObjectMapper().writeValueAsString(fc);
+        String actual = new ObjectMapper().disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(fc);
 
         System.out.println("actual: \"" + actual.replaceAll("\"", "\\\\\"") + "\"");
 

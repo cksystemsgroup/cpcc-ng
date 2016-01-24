@@ -30,6 +30,7 @@ import org.geojson.FeatureCollection;
 import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import cpcc.core.utils.GeoJsonStreamResponse;
 
@@ -40,7 +41,9 @@ public class GeoJsonStreamResponseTest
     public void shouldReturnFeatureCollectionAsJsonStream() throws IOException
     {
         FeatureCollection featureCollection = new FeatureCollection();
-        byte[] expected = new ObjectMapper().writeValueAsBytes(featureCollection);
+        byte[] expected = new ObjectMapper()
+            .disable(SerializationFeature.INDENT_OUTPUT)
+            .writeValueAsBytes(featureCollection);
 
         GeoJsonStreamResponse sut = new GeoJsonStreamResponse(featureCollection);
 
@@ -54,7 +57,9 @@ public class GeoJsonStreamResponseTest
     public void shouldIgnoreCallsToPrepareResponse() throws IOException
     {
         FeatureCollection featureCollection = new FeatureCollection();
-        byte[] expected = new ObjectMapper().writeValueAsBytes(featureCollection);
+        byte[] expected = new ObjectMapper()
+            .disable(SerializationFeature.INDENT_OUTPUT)
+            .writeValueAsBytes(featureCollection);
 
         GeoJsonStreamResponse sut = new GeoJsonStreamResponse(featureCollection);
 

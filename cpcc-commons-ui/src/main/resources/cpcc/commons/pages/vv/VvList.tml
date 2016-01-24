@@ -1,127 +1,137 @@
 <html t:type="layout" title="${message:virtualVehicleOverview}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
-	<t:PageLink t:page="commons/vv/new" class="btn btn-primary">${message:createNewVehicle}
-	</t:PageLink>
+	<ul class="list-inline">
+		<li>
+			<t:PageLink t:page="commons/vv/new" class="btn btn-primary">
+				${message:createNewVehicle}
+			</t:PageLink>
+		</li>
+		<li>
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#codeUploadModal">
+				${message:uploadCode}
+			</button>
+		</li>
+	</ul>
+
+	<c:VvCodeUploadModal t:id="codeUploadModal" />
 
 	<h4>${message:virtualVehicleList}</h4>
+	<!-- t:mixins="ZoneRefresh" ZoneRefresh.period="5" -->
+	<t:Zone t:id="paneZone" id="stateInfoPaneZone">
+		<t:Grid t:source="virtualVehicleList" t:exclude="code,continuation,apiVersion,stateInfo,preMigrationState"
+			t:reorder="id,name,state,uuid,startTime,endTime,migrationStartTime,migrationDestination" t:row="virtualVehicle"
+			t:add="migrationDestination,vehicleActions" class="table table-striped table-condensed topic-table">
 
-	<t:Zone t:id="paneZone" id="stateInfoPaneZone" t:mixins="ZoneRefresh" ZoneRefresh.period="5">
-		<t:Form t:id="virtualVehicleForm" t:zone="^">
-			<t:Grid t:source="virtualVehicleList" t:exclude="code,continuation,apiVersion,stateInfo"
-				t:reorder="id,name,state,uuid,startTime,endTime,migrationStartTime,migrationDestination" t:row="virtualVehicle"
-				t:add="migrationDestination,vehicleActions" class="table table-striped table-condensed topic-table">
+			<p:uuidCell>
+				<t:Output format="uuidFormat" value="virtualVehicle.uuid" />
+			</p:uuidCell>
 
-				<p:uuidCell>
-					<t:Output format="uuidFormat" value="virtualVehicle.uuid" />
-				</p:uuidCell>
+			<p:startTimeCell>
+				<t:output t:format="message:dateFormat" t:value="virtualVehicle.startTime" />
+			</p:startTimeCell>
 
-				<p:startTimeCell>
-					<t:output t:format="message:dateFormat" t:value="virtualVehicle.startTime" />
-				</p:startTimeCell>
+			<p:endTimeCell>
+				<t:output t:format="message:dateFormat" t:value="virtualVehicle.endTime" />
+			</p:endTimeCell>
 
-				<p:endTimeCell>
-					<t:output t:format="message:dateFormat" t:value="virtualVehicle.endTime" />
-				</p:endTimeCell>
+			<p:migrationStartTimeCell>
+				<t:output t:format="message:dateFormat" t:value="virtualVehicle.migrationStartTime" />
+			</p:migrationStartTimeCell>
 
-				<p:migrationStartTimeCell>
-					<t:output t:format="message:dateFormat" t:value="virtualVehicle.migrationStartTime" />
-				</p:migrationStartTimeCell>
+			<p:migrationDestinationCell>
+				<t:If test="virtualVehicle.migrationDestination">
+					${virtualVehicle.migrationDestination.name}
+				</t:If>
+			</p:migrationDestinationCell>
 
-				<p:migrationDestinationCell>
-					<t:If test="virtualVehicle.migrationDestination">
-						${virtualVehicle.migrationDestination.name}
-					</t:If>
-				</p:migrationDestinationCell>
-
-				<p:vehicleActionsCell>
-					<ul class="list-inline">
-						<t:If test="isRestartMigration()">
-							<li>
-								<t:EventLink t:event="restartMigration" t:context="virtualVehicle.id" t:title="${message:restartMigration}">
-									<span class="glyphicon glyphicon-share-alt" />
-								</t:EventLink>
-							</li>
-						</t:If>
-
-						<t:If test="isEdit()">
-							<li>
-								<t:PageLink t:page="commons/vv/edit" t:context="virtualVehicle.id" t:title="${message:editVehicle}">
-									<span class="glyphicon glyphicon-pencil" />
-								</t:PageLink>
-							</li>
-						</t:If>
-
-						<t:If test="isStart()">
-							<li>
-								<t:EventLink t:event="startVehicle" t:context="virtualVehicle.id" title="${message:startVehicle}">
-									<span class="glyphicon glyphicon-play" />
-								</t:EventLink>
-							</li>
-						</t:If>
-
-						<t:If test="isRestart()">
-							<li>
-								<t:EventLink t:event="restartVehicle" t:context="virtualVehicle.id" title="${message:restartVehicle}">
-									<span class="glyphicon glyphicon-repeat" />
-								</t:EventLink>
-							</li>
-						</t:If>
-
-						<t:If test="isPause()">
-							<li>
-								<t:EventLink t:event="pauseVehicle" t:context="virtualVehicle.id" title="${message:pauseVehicle}">
-									<span class="glyphicon glyphicon-pause" />
-								</t:EventLink>
-							</li>
-						</t:If>
-
-						<t:If test="isStop()">
-							<li>
-								<t:EventLink t:event="stopVehicle" t:context="virtualVehicle.id" title="${message:stopVehicle}">
-									<span class="glyphicon glyphicon-stop" />
-								</t:EventLink>
-							</li>
-						</t:If>
-
+			<p:vehicleActionsCell>
+				<ul class="list-inline">
+					<t:If test="isRestartMigration()">
 						<li>
-							<t:PageLink t:page="commons/vv/storage" t:context="virtualVehicle.id" t:title="${message:showVehicleStorage}">
-								<span class="glyphicon glyphicon-folder-close" />
+							<t:EventLink t:event="restartMigration" t:context="virtualVehicle.id" t:title="${message:restartMigration}">
+								<span class="glyphicon glyphicon-share-alt" />
+							</t:EventLink>
+						</li>
+					</t:If>
+
+					<t:If test="isEdit()">
+						<li>
+							<t:PageLink t:page="commons/vv/edit" t:context="virtualVehicle.id" t:title="${message:editVehicle}">
+								<span class="glyphicon glyphicon-pencil" />
 							</t:PageLink>
 						</li>
+					</t:If>
 
-						<t:If test="virtualVehicle.stateInfo">
-							<li>
-								<t:EventLink t:event="showStateInfo" t:zone="^" t:context="virtualVehicle.id" title="${message:showStateInfo}">
-									<span class="glyphicon glyphicon-file" />
-								</t:EventLink>
-							</li>
-						</t:If>
+					<t:If test="isStart()">
+						<li>
+							<t:EventLink t:event="startVehicle" t:context="virtualVehicle.id" title="${message:startVehicle}">
+								<span class="glyphicon glyphicon-play" />
+							</t:EventLink>
+						</li>
+					</t:If>
 
-						<t:If test="isDelete()">
-							<li>
-								<t:EventLink t:event="deleteVehicle" t:context="virtualVehicle.id" title="${message:deleteVehicle}"
-									t:mixins="Confirm" Confirm.message="${message:virtualVehicle.confirmDelete} ${virtualVehicle.name}?">
-									<span class="glyphicon glyphicon-remove" />
-								</t:EventLink>
-							</li>
-						</t:If>
-					</ul>
-				</p:vehicleActionsCell>
+					<t:If test="isRestart()">
+						<li>
+							<t:EventLink t:event="restartVehicle" t:context="virtualVehicle.id" title="${message:restartVehicle}">
+								<span class="glyphicon glyphicon-repeat" />
+							</t:EventLink>
+						</li>
+					</t:If>
 
-				<p:empty>
-					<p>${message:noVirtualVehicleFound}</p>
-				</p:empty>
-			</t:Grid>
-		</t:Form>
+					<t:If test="isPause()">
+						<li>
+							<t:EventLink t:event="pauseVehicle" t:context="virtualVehicle.id" title="${message:pauseVehicle}">
+								<span class="glyphicon glyphicon-pause" />
+							</t:EventLink>
+						</li>
+					</t:If>
+
+					<t:If test="isStop()">
+						<li>
+							<t:EventLink t:event="stopVehicle" t:context="virtualVehicle.id" title="${message:stopVehicle}">
+								<span class="glyphicon glyphicon-stop" />
+							</t:EventLink>
+						</li>
+					</t:If>
+
+					<li>
+						<t:PageLink t:page="commons/vv/storage" t:context="virtualVehicle.id" t:title="${message:showVehicleStorage}">
+							<span class="glyphicon glyphicon-folder-close" />
+						</t:PageLink>
+					</li>
+
+					<t:If test="virtualVehicle.stateInfo">
+						<li>
+							<t:EventLink t:event="showStateInfo" t:zone="^" t:context="virtualVehicle.id" title="${message:showStateInfo}">
+								<span class="glyphicon glyphicon-file" />
+							</t:EventLink>
+						</li>
+					</t:If>
+
+					<t:If test="isDelete()">
+						<li>
+							<t:EventLink t:event="deleteVehicle" t:context="virtualVehicle.id" title="${message:deleteVehicle}"
+								t:mixins="Confirm" Confirm.message="${message:virtualVehicle.confirmDelete} ${virtualVehicle.name}?">
+								<span class="glyphicon glyphicon-remove" />
+							</t:EventLink>
+						</li>
+					</t:If>
+				</ul>
+			</p:vehicleActionsCell>
+
+			<p:empty>
+				<p>${message:noVirtualVehicleFound}</p>
+			</p:empty>
+		</t:Grid>
 	</t:Zone>
 
-	<t:zone t:id="modalZone" id="stateInfoModalZone">
+	<t:Zone t:id="modalZone" id="stateInfoModalZone">
 		<t:if test="isFunction('view_modal')">
-			<c:SimpleModal t:id="stateInfoModal">
-				<h3>${virtualVehicle?.name} (${virtualVehicle?.id})</h3>
+			<c:SimpleModal t:id="stateInfoModal" t:large="true">
+				<h3>${virtualVehicle?.name} (${virtualVehicle?.id}) - <t:Output format="uuidFormat" value="virtualVehicle?.uuid" /></h3>
 				<pre>${virtualVehicle?.stateInfo}</pre>
 			</c:SimpleModal>
 		</t:if>
-	</t:zone>
+	</t:Zone>
 </html>

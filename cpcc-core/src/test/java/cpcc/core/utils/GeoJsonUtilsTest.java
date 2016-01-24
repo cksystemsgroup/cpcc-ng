@@ -41,6 +41,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
@@ -281,7 +282,7 @@ public class GeoJsonUtilsTest
     {
         Feature feature = GeoJsonUtils.toFeature(rv);
 
-        String actual = new ObjectMapper().writeValueAsString(feature);
+        String actual = new ObjectMapper().disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(feature);
 
         assertThat(actual).isNotNull();
         JSONAssert.assertEquals(expected, actual, false);

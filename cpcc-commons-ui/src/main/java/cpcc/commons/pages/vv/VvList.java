@@ -56,7 +56,7 @@ public class VvList
 
     @Inject
     private Logger logger;
-    
+
     @Inject
     private HibernateSessionManager sessionManager;
 
@@ -202,7 +202,7 @@ public class VvList
         {
             logger.error("Can not restart migration of virtual vehicle " + id, e);
         }
-        
+
         handleXhrRequest(paneZone);
     }
 

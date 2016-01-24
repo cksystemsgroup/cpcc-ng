@@ -1,50 +1,57 @@
-<html t:type="layout" title="${message:realVehicleNew}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+<html t:type="layout" title="${message:realVehicleNew}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<!-- <div class="row"> -->
-<!-- 	<div class="col-md-12"> -->
-<t:Form t:validate="realVehicle" t:id="form">
-	<t:Errors />
-
-	<t:BeanEditor t:object="realVehicle"
-		t:exclude="id,lastUpdate,areaOfOperation" t:reorder="name,type,url">
-
-		<p:name>
-			<t:Label for="name" />
-			<t:TextField t:id="name" t:value="realVehicle.name"
-				t:validate="maxlength=50" />
-		</p:name>
-
-		<p:type>
-			<t:Label for="type" />
-			<t:Select t:id="type" t:value="realVehicle.type" />
-		</p:type>
-
-		<p:url>
-			<t:Label for="url" />
-			<t:TextField t:id="url" t:value="realVehicle.url"
-				t:validate="maxlength=255" />
-		</p:url>
-
-		<!--
-				<p:areaOfOperation>
-					<t:label for="areaOfOperation" />
-					<t:textarea t:id="areaOfOperation" rows="5" t:class="span4" value="realVehicle.areaOfOperation" />
-				</p:areaOfOperation>
-				-->
-	</t:BeanEditor>
-
-	<div class="form-actions">
-		<ul class="list-inline">
-			<li><t:Submit t:type="submit" t:value="${message:btn.create}"
-					t:class="btn btn-primary" /></li>
-			<li><t:PageLink t:page="commons/rv/list"
-					t:class="btn btn-default">${message:btn.cancel}</t:PageLink></li>
-		</ul>
+	<div class="row">
+		<div class="col-sm-offset-3 col-sm-6">
+			<h4>${message:realVehicleNew}</h4>
+		</div>
 	</div>
-</t:Form>
-<!-- 	</div> -->
-<!-- </div> -->
+
+	<t:Form t:validate="realVehicle" t:id="form" class="form-horizontal">
+		<t:Errors />
+
+		<t:BeanEditor t:object="realVehicle" t:exclude="id,lastUpdate,areaOfOperation,deleted" t:reorder="name,type,url">
+
+			<p:name>
+				<div class="form-group">
+					<t:Label class="col-sm-3 control-label" for="name" />
+					<div class="col-sm-6">
+						<t:TextField t:id="name" t:value="realVehicle.name" t:validate="maxlength=50" />
+					</div>
+				</div>
+			</p:name>
+
+			<p:type>
+				<div class="form-group">
+					<t:Label class="col-sm-3 control-label" for="type" />
+					<div class="col-sm-6">
+						<t:Select t:id="type" t:value="realVehicle.type" />
+					</div>
+				</div>
+			</p:type>
+
+			<p:url>
+				<div class="form-group">
+					<t:Label class="col-sm-3 control-label" for="url" />
+					<div class="col-sm-6">
+						<t:TextField t:id="url" t:value="realVehicle.url" t:validate="maxlength=255" />
+					</div>
+				</div>
+			</p:url>
+		</t:BeanEditor>
+
+		<div class="form-group">
+			<div class="col-sm-offset-3 col-sm-6">
+				<ul class="list-inline">
+					<li>
+						<t:Submit t:type="submit" t:value="${message:btn.create}" t:class="btn btn-primary" />
+					</li>
+					<li>
+						<t:PageLink t:page="commons/rv/list" t:class="btn btn-default">${message:btn.cancel}</t:PageLink>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</t:Form>
 
 </html>

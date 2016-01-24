@@ -34,6 +34,7 @@ import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.vvrte.entities.VirtualVehicle;
@@ -83,7 +84,9 @@ public class VvGeoJsonConverterTest
     {
         Feature feature = sut.toFeature(virtualVehicle);
 
-        String actual = new ObjectMapper().writeValueAsString(feature);
+        String actual = new ObjectMapper()
+            .disable(SerializationFeature.INDENT_OUTPUT)
+            .writeValueAsString(feature);
 
         JSONAssert.assertEquals(expected, actual, false);
         JSONAssert.assertEquals(actual, expected, false);
@@ -156,7 +159,9 @@ public class VvGeoJsonConverterTest
         FeatureCollection featureCollection = new FeatureCollection();
         featureCollection.add(feature);
 
-        String actual = new ObjectMapper().writeValueAsString(featureCollection);
+        String actual = new ObjectMapper()
+            .disable(SerializationFeature.INDENT_OUTPUT)
+            .writeValueAsString(featureCollection);
 
         JSONAssert.assertEquals(expected, actual, false);
         JSONAssert.assertEquals(actual, expected, false);

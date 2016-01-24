@@ -38,6 +38,9 @@ public class SimpleModal implements ClientElement
         , defaultPrefix = BindingConstants.LITERAL)
     private String componentClientId;
 
+    @Parameter(value = "false", defaultPrefix = BindingConstants.LITERAL)
+    private boolean large;
+
     @Inject
     private JavaScriptSupport javaScriptSupport;
 
@@ -51,6 +54,11 @@ public class SimpleModal implements ClientElement
     public String getClientId()
     {
         return componentClientId;
+    }
+    
+    public String getModalClass()
+    {
+        return large ? "modal-lg" : "";
     }
 
     void afterRender()
