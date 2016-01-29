@@ -1,45 +1,80 @@
-<html t:type="layout" title="${message:rosNewDevice}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+<html t:type="layout" title="${message:rosNewDevice}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter">
 
-<!-- <section id="deviceNew"> -->
-<t:Form t:validate="device" t:id="form">
-	<t:Errors />
+	<div class="row">
+		<t:Form t:validate="device" t:id="form">
+			<div class="form-group">
+				<div class="col-sm-12">
+					<h4>${message:rosNewDevice}</h4>
+				</div>
+			</div>
 
-	<div class="form-group">
-		<t:BeanEditor t:object="device" t:exclude="id" t:add="deviceTypeName"
-			t:reorder="topicRoot,deviceTypeName,configuration">
+			<t:Errors />
 
-			<p:topicRoot>
-				<t:Label t:type="label" for="topicRoot" />
-				<t:TextField t:id="topicRoot" t:value="device.topicRoot"
-					t:validate="maxlength=100" />
-			</p:topicRoot>
+			<t:BeanEditor t:object="device" t:exclude="id" t:add="deviceTypeName" t:reorder="topicRoot,deviceTypeName,configuration">
 
-			<p:deviceTypeName>
-				<t:Label t:type="label" for="deviceTypeName" />
-				<t:Select t:type="select" t:id="deviceTypeName"
-					t:model="deviceTypeNameSelectModel"
-					t:encoder="deviceTypeNameEncoder" t:value="device.type" />
-			</p:deviceTypeName>
+				<p:topicRoot>
+					<div class="col-sm-6">
+						<t:Label t:type="label" for="topicRoot" />
+						<t:TextField t:id="topicRoot" t:value="device.topicRoot" t:validate="maxlength=100" />
+					</div>
+				</p:topicRoot>
 
-			<p:configuration>
-				<t:Label for="configuration" />
-				<t:Textarea t:id="configuration" rows="5"
-					t:value="device.configuration" />
-			</p:configuration>
-		</t:BeanEditor>
+				<p:deviceTypeName>
+					<div class="col-sm-6">
+						<t:Label t:type="label" for="deviceTypeName" />
+						<t:Select t:id="deviceTypeName" t:model="deviceTypeNameSelectModel" t:encoder="deviceTypeNameEncoder"
+							t:value="device.type" />
+					</div>
+				</p:deviceTypeName>
+
+				<p:configuration>
+					<div class="col-sm-12">
+						<t:Label for="configuration" />
+						<t:Textarea t:id="configuration" rows="5" t:value="device.configuration" />
+					</div>
+				</p:configuration>
+			</t:BeanEditor>
+
+			<div class="form-actions">
+				<div class="col-sm-12">
+					<br />
+					<ul class="list-inline">
+						<li>
+							<t:Submit t:type="submit" t:value="${message:btn.create}" t:class="btn btn-primary" />
+						</li>
+						<li>
+							<t:PageLink t:page="commons/configuration/edit" t:class="btn btn-default">
+								${message:btn.cancel}
+							</t:PageLink>
+						</li>
+						<li>
+							<button type="button" class="btn btn-info" data-toggle="modal" data-target="#helpModal">
+								${message:showHelpModal}
+							</button>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</t:Form>
 	</div>
 
-	<div class="form-actions">
-		<ul class="list-inline">
-			<li><t:Submit t:type="submit" t:value="${message:btn.create}"
-					t:class="btn btn-primary" /></li>
-			<li><t:PageLink t:page="commons/configuration/edit"
-					t:class="btn btn-default">${message:btn.cancel}</t:PageLink></li>
-		</ul>
+	<!-- Modal -->
+	<div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;
+						</span>
+					</button>
+					<h4 class="modal-title" id="helpModalLabel">${message:help.rosDevices.title}</h4>
+				</div>
+				<div class="modal-body">
+					<t:OutputRaw t:value="message:help.rosDevices.text" />
+				</div>
+			</div>
+		</div>
 	</div>
-</t:Form>
-<!-- </section> -->
 
 </html>

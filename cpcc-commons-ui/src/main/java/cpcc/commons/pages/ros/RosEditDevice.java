@@ -18,6 +18,7 @@
 
 package cpcc.commons.pages.ros;
 
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.PageActivationContext;
 
 import cpcc.core.entities.Device;
@@ -25,6 +26,7 @@ import cpcc.core.entities.Device;
 /**
  * RosEditDevice
  */
+@Import(module = "bootstrap/modal")
 public class RosEditDevice extends AbstractRosModifyDevice
 {
     @PageActivationContext
