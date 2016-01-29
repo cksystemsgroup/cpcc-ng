@@ -60,5 +60,7 @@ public class RealVehicleInitJobRunnable implements JobRunnable
         }
 
         logger.error("Own vehicle name not configured!");
+        SetupService setup = serviceResources.getService(SetupService.class);
+        setup.setupRealVehicle();
     }
 }

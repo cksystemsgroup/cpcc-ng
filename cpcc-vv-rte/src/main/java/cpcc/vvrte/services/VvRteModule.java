@@ -20,6 +20,7 @@ package cpcc.vvrte.services;
 
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ScopeConstants;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Startup;
@@ -96,6 +97,14 @@ public final class VvRteModule
             VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE, System.getProperty(
                 VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE,
                 VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE_DEFAULT));
+    }
+
+    /**
+     * @param configuration the IoC configuration.
+     */
+    public static void contributeComponentMessagesSource(OrderedConfiguration<String> configuration)
+    {
+        configuration.add("cpccVvRteMessages", "cpcc/vvrte/VvRteMessages");
     }
 
     /**

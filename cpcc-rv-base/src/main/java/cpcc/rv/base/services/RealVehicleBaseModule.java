@@ -66,15 +66,12 @@ public final class RealVehicleBaseModule
     }
 
     /**
-     * @param setup the real vehicle setup service.
      * @param executor the periodic executor service.
      * @param stateSync the state synchronization service.
      */
     @Startup
-    public static void scheduleJobs(SetupService setup, PeriodicExecutor executor, final StateSynchronizer stateSync)
+    public static void scheduleJobs(PeriodicExecutor executor, final StateSynchronizer stateSync)
     {
-        setup.setupRealVehicle();
-
         // TODO check cycle time!
         executor.addJob(new CronSchedule("* * * * * ?"), "Real Vehicle status update", new Runnable()
         {

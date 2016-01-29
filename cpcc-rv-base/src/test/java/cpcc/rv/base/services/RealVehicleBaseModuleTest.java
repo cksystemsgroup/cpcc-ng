@@ -92,17 +92,14 @@ public class RealVehicleBaseModuleTest
     @Test
     public void shouldScheduleJobs() throws JobExecutionException
     {
-        SetupService setupService = mock(SetupService.class);
         PeriodicExecutor executor = mock(PeriodicExecutor.class);
         Logger logger = mock(Logger.class);
 
         StateSynchronizer stateSyncService = mock(StateSynchronizer.class);
 
-        RealVehicleBaseModule.scheduleJobs(setupService, executor, stateSyncService);
+        RealVehicleBaseModule.scheduleJobs(executor, stateSyncService);
 
-        InOrder inOrder = Mockito.inOrder(setupService, executor, stateSyncService, logger);
-
-        inOrder.verify(setupService).setupRealVehicle();
+        InOrder inOrder = Mockito.inOrder(executor, stateSyncService, logger);
 
         ArgumentCaptor<Runnable> argument1 = ArgumentCaptor.forClass(Runnable.class);
         ArgumentCaptor<Runnable> argument2 = ArgumentCaptor.forClass(Runnable.class);

@@ -91,6 +91,14 @@ public final class CoreModule
     /**
      * @param configuration the IoC configuration.
      */
+    public static void contributeComponentMessagesSource(OrderedConfiguration<String> configuration)
+    {
+        configuration.add("cpccCoreMessages", "cpcc/core/CoreMessages");
+    }
+
+    /**
+     * @param configuration the IoC configuration.
+     */
     public static void contributeHibernateEntityPackageManager(Configuration<String> configuration)
     {
         configuration.add("cpcc.core.entities");

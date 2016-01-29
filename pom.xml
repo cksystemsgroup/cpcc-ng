@@ -60,13 +60,13 @@
 		<argLine>-XX:-UseSplitVerifier</argLine>
 		<assertj-version>3.3.0</assertj-version>
 		<c3p0.version>0.9.5.1</c3p0.version>
-		<com.h2database.version>1.4.190</com.h2database.version>
+		<com.h2database.version>1.4.191</com.h2database.version>
 		<com.hsqldb.version>2.3.3</com.hsqldb.version>
 		<easymock-version>3.4</easymock-version>
 		<java-version>1.8</java-version>
 		<javax.mail.version>1.4.7</javax.mail.version>
 		<!-- <jmockit-version>1.19</jmockit-version> -->
-		<liquibase-version>3.4.1</liquibase-version>
+		<liquibase-version>3.4.2</liquibase-version>
 		<mockito-all-version>1.10.19</mockito-all-version>
 		<powermock-version>1.6.3</powermock-version>
 		<rosjava-version>0.0.6</rosjava-version>
