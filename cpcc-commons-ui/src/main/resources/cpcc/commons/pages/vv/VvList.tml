@@ -47,6 +47,12 @@
 
 			<p:vehicleActionsCell>
 				<ul class="list-inline">
+					<li>
+						<t:PageLink t:page="commons/vv/download" t:context="virtualVehicle.id" t:title="${message:downloadVehicle}">
+							<span class="glyphicon glyphicon-download-alt" />
+						</t:PageLink>
+					</li>
+
 					<t:If test="isRestartMigration()">
 						<li>
 							<t:EventLink t:event="restartMigration" t:context="virtualVehicle.id" t:title="${message:restartMigration}">
@@ -129,7 +135,10 @@
 	<t:Zone t:id="modalZone" id="stateInfoModalZone">
 		<t:if test="isFunction('view_modal')">
 			<c:SimpleModal t:id="stateInfoModal" t:large="true">
-				<h3>${virtualVehicle?.name} (${virtualVehicle?.id}) - <t:Output format="uuidFormat" value="virtualVehicle?.uuid" /></h3>
+				<h3>
+					${virtualVehicle?.name} (${virtualVehicle?.id}) -
+					<t:Output format="uuidFormat" value="virtualVehicle?.uuid" />
+				</h3>
 				<pre>${virtualVehicle?.stateInfo}</pre>
 			</c:SimpleModal>
 		</t:if>
