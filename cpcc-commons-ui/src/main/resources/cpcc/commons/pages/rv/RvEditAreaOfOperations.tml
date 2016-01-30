@@ -17,4 +17,5 @@
 
 	<l:LeafletLayerControl t:mapId="rvMap" t:id="layerControl" />
 
+	<l:LeafletCoordinates t:mapId="rvMap" />
 </html>
