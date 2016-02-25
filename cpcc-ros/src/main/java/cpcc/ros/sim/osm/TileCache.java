@@ -87,7 +87,7 @@ public class TileCache
 
         String tileDownloadUrl = String.format(Locale.US, tileServerUrl, zoom, x, y);
 
-        LOG.info(String.format("Downloading tile for zoom=%d, x=%d, y=%d, url=%s", zoom, x, y, tileDownloadUrl));
+        LOG.debug(String.format("Downloading tile for zoom=%d, x=%d, y=%d, url=%s", zoom, x, y, tileDownloadUrl));
 
         downloadFile(tileDownloadUrl, tileCacheFile);
 

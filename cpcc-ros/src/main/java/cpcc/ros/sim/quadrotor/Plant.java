@@ -67,7 +67,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         plantState.setPosition(new PolarCoordinate(o.getLatitude(), o.getLongitude(), o.getAltitude()));
         plantState.setTarget(new PolarCoordinate(plantState.getPosition()));
         plantState.getTarget().setAltitude(config.getTakeOffHeight());
-        estimator = new PlantStateEstimator(config, plantState, State.TAKE_OFF);
+        estimator = new PlantStateEstimatorImpl(config, plantState, State.TAKE_OFF);
     }
     
     /**
@@ -134,7 +134,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         PolarCoordinate target =
             new PolarCoordinate(position.getLatitude(), position.getLongitude(), position.getAltitude());
         plantState.setTarget(target);
-        estimator = new PlantStateEstimator(config, plantState, State.FLIGHT);
+        estimator = new PlantStateEstimatorImpl(config, plantState, State.FLIGHT);
     }
 
     /**
@@ -145,7 +145,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         LatLngAlt o = config.getOrigin();
         PolarCoordinate target = new PolarCoordinate(o.getLatitude(), o.getLongitude(), o.getAltitude());
         plantState.setTarget(target);
-        estimator = new PlantStateEstimator(config, plantState, State.DEPOT_FLIGHT);
+        estimator = new PlantStateEstimatorImpl(config, plantState, State.DEPOT_FLIGHT);
     }
 
     /**

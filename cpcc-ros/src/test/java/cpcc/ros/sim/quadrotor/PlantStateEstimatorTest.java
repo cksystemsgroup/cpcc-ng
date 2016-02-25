@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.ros.node.NodeConfiguration;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -93,7 +92,7 @@ public class PlantStateEstimatorTest
     public void shouldTakeOffPlant() throws IOException
     {
         PlantState plantState = new PlantState(initialPlantState);
-        PlantStateEstimator e = new PlantStateEstimator(config, plantState, State.TAKE_OFF);
+        PlantStateEstimator e = new PlantStateEstimatorImpl(config, plantState, State.TAKE_OFF);
 
         PrintWriter writer = new PrintWriter("target/takeoff.csv");
         writer.println("posLat;posLon;posAlt;flyTime;heading;dstLat;dstLon;dstAlt;v;a;elevation;remCap");
@@ -103,18 +102,22 @@ public class PlantStateEstimatorTest
         {
             ++iterationCounter;
             printStateToFile(plantState, writer);
-            Assert.assertEquals(plantState.getPosition().getLatitude(), plantState.getTarget().getLatitude(), 1E-5);
-            Assert.assertEquals(plantState.getPosition().getLongitude(), plantState.getTarget().getLongitude(), 1E-5);
-            Assert.assertTrue(plantState.getTarget().getAltitude() - plantState.getPosition().getAltitude() <= 10.0);
-            Assert.assertTrue(plantState.getTarget().getAltitude() - plantState.getPosition().getAltitude() >= 0.0);
+            assertThat(plantState.getPosition().getLatitude())
+                .isEqualTo(plantState.getTarget().getLatitude(), offset(1E-5));
+            assertThat(plantState.getPosition().getLongitude())
+                .isEqualTo(plantState.getTarget().getLongitude(), offset(1E-5));
+            assertThat(plantState.getTarget().getAltitude() - plantState.getPosition().getAltitude())
+                .isLessThanOrEqualTo(10.0);
+            assertThat(plantState.getTarget().getAltitude() - plantState.getPosition().getAltitude())
+                .isGreaterThanOrEqualTo(0.0);
         } while (!e.calculateState());
 
         writer.close();
 
-        Assert.assertEquals(plantState.getElevation(), 0.5 * Math.PI, 1E-3);
-        Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
-        Assert.assertEquals(plantState.getPosition().getAltitude(), 10.0, 1E-3);
-        Assert.assertEquals(iterationCounter, 549);
+        assertThat(plantState.getElevation()).isEqualTo(0.5 * Math.PI, offset(1E-3));
+        assertThat(plantState.getVelocity()).isEqualTo(0.0, offset(1E-3));
+        assertThat(plantState.getPosition().getAltitude()).isEqualTo(10.0, offset(1E-3));
+        assertThat(iterationCounter).isEqualTo(549);
     }
 
     /**
@@ -127,7 +130,7 @@ public class PlantStateEstimatorTest
     {
         PlantState plantState = new PlantState(initialPlantState);
         plantState.getPosition().setAltitude(20.0);
-        PlantStateEstimator e = new PlantStateEstimator(config, plantState, State.LAND);
+        PlantStateEstimator e = new PlantStateEstimatorImpl(config, plantState, State.LAND);
 
         PrintWriter writer = new PrintWriter("target/land.csv");
         writer.println("posLat;posLon;posAlt;flyTime;heading;dstLat;dstLon;dstAlt;v;a;elevation;remCap");
@@ -137,18 +140,22 @@ public class PlantStateEstimatorTest
         {
             ++iterationCounter;
             printStateToFile(plantState, writer);
-            Assert.assertEquals(plantState.getPosition().getLatitude(), plantState.getTarget().getLatitude(), 1E-5);
-            Assert.assertEquals(plantState.getPosition().getLongitude(), plantState.getTarget().getLongitude(), 1E-5);
-            Assert.assertTrue(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude() <= 20.0);
-            Assert.assertTrue(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude() >= -1E-3);
+            assertThat(plantState.getPosition().getLatitude())
+                .isEqualTo(plantState.getTarget().getLatitude(), offset(1E-5));
+            assertThat(plantState.getPosition().getLongitude())
+                .isEqualTo(plantState.getTarget().getLongitude(), offset(1E-5));
+            assertThat(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude())
+                .isLessThanOrEqualTo(20.0);
+            assertThat(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude())
+                .isGreaterThanOrEqualTo(-1E-3);
         } while (!e.calculateState());
 
         writer.close();
 
-        Assert.assertEquals(plantState.getElevation(), -0.5 * Math.PI, 1E-3);
-        Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
-        Assert.assertEquals(plantState.getPosition().getAltitude(), 0.0, 1E-3);
-        Assert.assertEquals(iterationCounter, 751);
+        assertThat(plantState.getElevation()).isEqualTo(-0.5 * Math.PI, offset(1E-3));
+        assertThat(plantState.getVelocity()).isEqualTo(0.0, offset(1E-3));
+        assertThat(plantState.getPosition().getAltitude()).isEqualTo(0.0, offset(1E-3));
+        assertThat(iterationCounter).isEqualTo(635);
     }
 
     /**
@@ -162,7 +169,7 @@ public class PlantStateEstimatorTest
         PlantState plantState = new PlantState(initialPlantState);
         plantState.getPosition().setAltitude(20.0);
         plantState.setTarget(new PolarCoordinate(47.82146, 13.04085, 20.0));
-        PlantStateEstimator e = new PlantStateEstimator(config, plantState, State.FLIGHT);
+        PlantStateEstimator e = new PlantStateEstimatorImpl(config, plantState, State.FLIGHT);
 
         PrintWriter writer = new PrintWriter("target/flyHorizontallyNorthSouth.csv");
         writer.println("posLat;posLon;posAlt;flyTime;heading;dstLat;dstLon;dstAlt;v;a;elevation;remCap");
@@ -172,16 +179,20 @@ public class PlantStateEstimatorTest
         {
             ++iterationCounter;
             printStateToFile(plantState, writer);
-            Assert.assertTrue(
-                Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 1E-3);
+            assertThat(Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()))
+                .isLessThanOrEqualTo(1.02E-3);
         } while (!e.calculateState());
 
         writer.close();
 
-        Assert.assertEquals(plantState.getElevation(), 0.0, 1E-3);
-        Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
-        Assert.assertEquals(plantState.getPosition().getAltitude(), 20.0, 1E-3);
-        Assert.assertEquals(iterationCounter, 544);
+        assertThat(plantState.getElevation())
+            .isEqualTo(0.0, offset(1E-3));
+        assertThat(plantState.getVelocity())
+            .isEqualTo(0.0, offset(1E-3));
+        assertThat(plantState.getPosition().getAltitude())
+            .isEqualTo(20.0, offset(1E-3));
+        assertThat(iterationCounter)
+            .isEqualTo(544);
     }
 
     /**
@@ -195,7 +206,7 @@ public class PlantStateEstimatorTest
         PlantState plantState = new PlantState(initialPlantState);
         plantState.getPosition().setAltitude(20.0);
         plantState.setTarget(new PolarCoordinate(47.82199, 13.04000, 20.0));
-        PlantStateEstimator e = new PlantStateEstimator(config, plantState, State.FLIGHT);
+        PlantStateEstimator e = new PlantStateEstimatorImpl(config, plantState, State.FLIGHT);
 
         PrintWriter writer = new PrintWriter("target/flyHorizontallyEastWest.csv");
         writer.println("posLat;posLon;posAlt;flyTime;heading;dstLat;dstLon;dstAlt;v;a;elevation;remCap");
@@ -210,16 +221,20 @@ public class PlantStateEstimatorTest
             //{
             //    System.out.println ("bugger");
             //}
-            Assert.assertTrue(
-                Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 1E-3);
+            assertThat(Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()))
+                .isLessThanOrEqualTo(1.04E-3);
         } while (!e.calculateState());
 
         writer.close();
 
-        Assert.assertEquals(plantState.getElevation(), 0.0, 1E-3);
-        Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
-        Assert.assertEquals(plantState.getPosition().getAltitude(), 20.0, 1E-3);
-        Assert.assertEquals(iterationCounter, 566);
+        assertThat(plantState.getElevation())
+            .isEqualTo(0.0, offset(1E-3));
+        assertThat(plantState.getVelocity())
+            .isEqualTo(0.0, offset(1E-3));
+        assertThat(plantState.getPosition().getAltitude())
+            .isEqualTo(20.0, offset(1E-3));
+        assertThat(iterationCounter)
+            .isEqualTo(566);
     }
 
     /**
@@ -235,7 +250,7 @@ public class PlantStateEstimatorTest
         plantState.setHeading(-0.75 * Math.PI);
         plantState.setVelocity(15.0);
         plantState.setTarget(new PolarCoordinate(47.82146, 13.04321, 20.0));
-        PlantStateEstimator e = new PlantStateEstimator(config, plantState, State.FLIGHT);
+        PlantStateEstimator e = new PlantStateEstimatorImpl(config, plantState, State.FLIGHT);
 
         PrintWriter writer = new PrintWriter("target/breakBeforeNewPoint.csv");
         writer.println("posLat;posLon;posAlt;flyTime;heading;dstLat;dstLon;dstAlt;v;a;elevation;remCap");
@@ -245,16 +260,20 @@ public class PlantStateEstimatorTest
         {
             ++iterationCounter;
             printStateToFile(plantState, writer);
-            Assert.assertTrue(
-                Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()) <= 2E-3);
+            assertThat(Math.abs(plantState.getPosition().getAltitude() - plantState.getTarget().getAltitude()))
+                .isLessThanOrEqualTo(2E-3);
         } while (!e.calculateState());
 
         writer.close();
 
-        Assert.assertEquals(plantState.getElevation(), 0.0, 1E-3);
-        Assert.assertEquals(plantState.getVelocity(), 0.0, 1E-3);
-        Assert.assertEquals(plantState.getPosition().getAltitude(), 20.0, 1E-3);
-        Assert.assertEquals(iterationCounter, 1217);
+        assertThat(plantState.getElevation())
+            .isEqualTo(0.0, offset(1E-3));
+        assertThat(plantState.getVelocity())
+            .isEqualTo(0.0, offset(1E-3));
+        assertThat(plantState.getPosition().getAltitude())
+            .isEqualTo(20.0, offset(1E-3));
+        assertThat(iterationCounter)
+            .isEqualTo(1217);
     }
 
     @DataProvider
@@ -273,7 +292,8 @@ public class PlantStateEstimatorTest
     {
         PlantState plantState = new PlantState(initialPlantState);
         plantState.setRemainingBatteryCapacity(capacity);
-        assertThat(plantState.getRemainingBatteryCapacity()).isNotNull().isEqualTo(capacity, offset(1E-6));
+        assertThat(plantState.getRemainingBatteryCapacity())
+            .isNotNull().isEqualTo(capacity, offset(1E-6));
     }
 
     @Test
@@ -288,17 +308,22 @@ public class PlantStateEstimatorTest
             .contains("test.acceleration", "test.elevation", "test.flyingTime", "test.heading",
                 "test.position", "test.batteryCapacity", "test.target", "test.velocity");
 
-        assertThat(map.get("test.acceleration")).isNotNull().isNotEmpty().containsExactly("0.00");
-        assertThat(map.get("test.elevation")).isNotNull().isNotEmpty().containsExactly("0.000");
-        assertThat(map.get("test.flyingTime")).isNotNull().isNotEmpty().containsExactly("0.00");
-        assertThat(map.get("test.heading")).isNotNull().isNotEmpty().containsExactly("0");
-        assertThat(map.get("test.position")).isNotNull().isNotEmpty()
-            .containsExactly("47.82199000", "13.04085000", "0.000");
-        assertThat(map.get("test.batteryCapacity")).isNotNull().isNotEmpty().containsExactly("0.0");
-        assertThat(map.get("test.target")).isNotNull().isNotEmpty()
-            .containsExactly("0.00000000", "0.00000000", "0.000");
-        assertThat(map.get("test.velocity")).isNotNull().isNotEmpty().containsExactly("0.00");
-
+        assertThat(map.get("test.acceleration"))
+            .isNotNull().isNotEmpty().containsExactly("0.00");
+        assertThat(map.get("test.elevation"))
+            .isNotNull().isNotEmpty().containsExactly("0.000");
+        assertThat(map.get("test.flyingTime"))
+            .isNotNull().isNotEmpty().containsExactly("0.00");
+        assertThat(map.get("test.heading"))
+            .isNotNull().isNotEmpty().containsExactly("0");
+        assertThat(map.get("test.position"))
+            .isNotNull().isNotEmpty().containsExactly("47.82199000", "13.04085000", "0.000");
+        assertThat(map.get("test.batteryCapacity"))
+            .isNotNull().isNotEmpty().containsExactly("0.0");
+        assertThat(map.get("test.target"))
+            .isNotNull().isNotEmpty().containsExactly("0.00000000", "0.00000000", "0.000");
+        assertThat(map.get("test.velocity"))
+            .isNotNull().isNotEmpty().containsExactly("0.00");
     }
 
     /**

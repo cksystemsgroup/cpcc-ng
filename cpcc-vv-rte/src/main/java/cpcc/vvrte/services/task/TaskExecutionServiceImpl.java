@@ -197,7 +197,6 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
             return;
         }
 
-        boolean completed = false;
 
         wayPointController.setPosition(currentRunningTask.getPosition());
 
@@ -206,6 +205,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
             double distance = gs.calculateDistance(currentRunningTask.getPosition(), vehiclePosition);
             currentRunningTask.setDistanceToTarget(distance);
 
+            boolean completed = false;
             if (distance < currentRunningTask.getTolerance())
             {
                 logger.info("Task executed: " + currentRunningTask.getPosition() + " distance=" + distance);
@@ -227,17 +227,17 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
             {
                 logger.error("Buggerit!", e);
             }
-        }
 
-        if (completed)
-        {
-            try
+            if (completed)
             {
-                notify(currentRunningTask);
-            }
-            finally
-            {
-                currentRunningTask = null;
+                try
+                {
+                    notify(currentRunningTask);
+                }
+                finally
+                {
+                    currentRunningTask = null;
+                }
             }
         }
 

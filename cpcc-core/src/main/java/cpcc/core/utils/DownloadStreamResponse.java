@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2014 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2009-2016 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ public class DownloadStreamResponse extends ByteArrayStreamResponse
     /**
      * @param contentType the content type to be reported to the client.
      * @param data the data to be transmitted to the client.
+     * @param fileName the download file name.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposed on purpose!")
     public DownloadStreamResponse(String contentType, byte[] data, String fileName)

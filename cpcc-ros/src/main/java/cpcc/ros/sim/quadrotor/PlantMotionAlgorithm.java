@@ -18,14 +18,31 @@
 
 package cpcc.ros.sim.quadrotor;
 
-/** 
- * Plant State Estimator interface.
+/**
+ * Plant motion algorithm interface.
  */
-public interface PlantStateEstimator
+interface PlantMotionAlgorithm
 {
     /**
-     * @return true if the target has been reached, false otherwise.
+     * @param time the current flight time.
+     * @return the distance at the given flight time.
      */
-    boolean calculateState();
-    
+    double distance(double time);
+
+    /**
+     * @param time the current flight time.
+     * @return the acceleration at the given flight time.
+     */
+    double acceleration(double time);
+
+    /**
+     * @param time the current flight time.
+     * @return the velocity at the given flight time.
+     */
+    double velocity(double time);
+
+    /**
+     * @return the total flight time of the current flight segment.
+     */
+    double getTotalTime();
 }
