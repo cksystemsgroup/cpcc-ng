@@ -8,15 +8,46 @@
 	<fileSets>
 		<fileSet>
 			<directory>src/main/scripts</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>cpcc-demo-${project.parent.version}/bin</outputDirectory>
 			<includes>
-				<include>run.sh</include>
+				<include>db-update.sh</include>
+				<include>liquibase-update.sh</include>
+				<include>setup_databases.sh</include>
+				<include>start_rv.sh</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/scripts</directory>
+			<outputDirectory>cpcc-demo-${project.parent.version}/bin</outputDirectory>
+			<filtered>true</filtered>
+			<includes>
+				<include>profile.sh</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/config</directory>
+			<outputDirectory>cpcc-demo-${project.parent.version}/conf</outputDirectory>
+			<includes>
+				<include>catalina.properties</include>
+				<include>context.xml</include>
+				<include>db-setup-all.sql</include>
+				<include>db-setup-GS01.sql</include>
+				<include>db-setup-RV01.sql</include>
+				<include>db-setup-RV02.sql</include>
+				<include>db-setup-RV03.sql</include>
+				<include>db-setup-RV04.sql</include>
+				<include>db-setup-RV05.sql</include>
+				<include>db-setup-RV06.sql</include>
+				<include>db-setup-RV07.sql</include>
+				<include>logging.properties</include>
+				<include>server.xml</include>
+				<include>web.xml</include>
 			</includes>
 		</fileSet>
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>war</outputDirectory>
+			<outputDirectory>cpcc-demo-${project.parent.version}/war</outputDirectory>
 			<includes>
 				<include>at.uni-salzburg.cs.cpcc:cpcc-gs-web:war</include>
 				<include>at.uni-salzburg.cs.cpcc:cpcc-rv-web:war</include>
@@ -24,9 +55,11 @@
 			<unpack>false</unpack>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
+			<outputDirectory>cpcc-demo-${project.parent.version}/lib</outputDirectory>
 			<includes>
 				<include>at.uni-salzburg.cs.cpcc:cpcc-demo:jar</include>
+				<include>com.mchange:c3p0</include>
+				<include>com.mchange:mchange-commons-java</include>
 				<include>org.apache.tomcat:tomcat-annotations-api</include>
 				<include>org.apache.tomcat:tomcat-api</include>
 				<include>org.apache.tomcat:tomcat-catalina-ant</include>
@@ -40,14 +73,32 @@
 				<include>org.apache.tomcat:tomcat-jdbc</include>
 				<include>org.apache.tomcat:tomcat-jni</include>
 				<include>org.apache.tomcat:tomcat-jsp-api</include>
+				<include>org.apache.tomcat:tomcat-juli</include>
 				<include>org.apache.tomcat:tomcat-servlet-api</include>
 				<include>org.apache.tomcat:tomcat-storeconfig</include>
 				<include>org.apache.tomcat:tomcat-tribes</include>
 				<include>org.apache.tomcat:tomcat-util</include>
 				<include>org.apache.tomcat:tomcat-util-scan</include>
 				<include>org.apache.tomcat:tomcat-websocket-api</include>
+				<include>com.h2database:h2</include>
+				<include>org.hsqldb:hsqldb</include>
+				<include>org.hsqldb:sqltool</include>
+				<include>org.liquibase:liquibase-core</include>
+				<include>org.yaml:snakeyaml</include>
 			</includes>
 			<unpack>false</unpack>
+		</dependencySet>
+		<dependencySet>
+			<outputDirectory>cpcc-demo-${project.parent.version}/classes</outputDirectory>
+			<includes>
+				<include>at.uni-salzburg.cs.cpcc:cpcc-core</include>
+			</includes>
+			<unpack>true</unpack>
+			<unpackOptions>
+				<includes>
+					<include>dbchange/**/*</include>
+				</includes>
+			</unpackOptions>
 		</dependencySet>
 	</dependencySets>
 

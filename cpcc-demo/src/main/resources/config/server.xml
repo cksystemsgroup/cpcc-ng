@@ -1,0 +1,36 @@
+<Server port="${shutdown.port}" shutdown="SHUTDOWN">
+	<Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="off" />
+	<Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
+	<Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+	<Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+
+	<Service name="Catalina">
+		<Connector port="${http.connector.port}" URIEncoding="UTF-8" connectionTimeout="30000" keepAliveTimeout="30000" />
+		<Engine name="Catalina" defaultHost="localhost">
+			<Host name="localhost" appBase="${app.base}" autoDeploy="false" copyXML="false">
+				<Context path="/" docBase="${app.war.file}" privileged="false" cookies="false" antiResourceLocking="false"
+					antiJARLocking="false" useHttpOnly="true">
+
+					<Resource name="jdbc/GS" auth="Container" type="javax.sql.DataSource" username="sa" password=""
+						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
+					<Resource name="jdbc/RV" auth="Container" type="javax.sql.DataSource" username="sa" password=""
+						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
+					<Resource name="jdbc/LIQUIBASE" auth="Container" type="javax.sql.DataSource" username="sa" password=""
+						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
+
+<!--
+					<Resource name="jdbc/GS" auth="Container" type="javax.sql.DataSource" username="sa" password=""
+						driverClassName="org.hsqldb.jdbc.JDBCDriver" url="jdbc:hsqldb:file://${db.directory}/${app.context.path}"
+						maxTotal="30" />
+					<Resource name="jdbc/RV" auth="Container" type="javax.sql.DataSource" username="sa" password=""
+						driverClassName="org.hsqldb.jdbc.JDBCDriver" url="jdbc:hsqldb:file://${db.directory}/${app.context.path}"
+						maxTotal="30" />
+					<Resource name="jdbc/LIQUIBASE" auth="Container" type="javax.sql.DataSource" username="sa" password=""
+						driverClassName="org.hsqldb.jdbc.JDBCDriver" url="jdbc:hsqldb:file://${db.directory}/${app.context.path}"
+						maxTotal="30" />
+-->
+				</Context>
+			</Host>
+		</Engine>
+	</Service>
+</Server>

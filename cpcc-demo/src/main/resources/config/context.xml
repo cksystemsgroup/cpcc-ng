@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+	<WatchedResource>WEB-INF/web.xml</WatchedResource>
+
+	<Resource name="jdbc/RV" auth="Container" type="javax.sql.DataSource" username="${db.user}" password="${db.password}"
+		driverClassName="${db.driver.class}" url="${db.url}" maxTotal="30" />
+
+	<Resource name="jdbc/LIQUIBASE" auth="Container" type="javax.sql.DataSource" username="${db.user}" password="${db.password}"
+		driverClassName="${db.driver.class}" url="${db.url}" maxTotal="30" />
+
+</Context>
