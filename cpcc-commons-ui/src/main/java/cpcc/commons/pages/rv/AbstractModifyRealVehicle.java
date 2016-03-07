@@ -34,7 +34,6 @@ import org.apache.tapestry5.ioc.Messages;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.opts.OptionsParserService;
-import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * AbstractModifyRealVehicle
@@ -67,9 +66,6 @@ public class AbstractModifyRealVehicle
     @Valid
     @Property
     protected RealVehicle realVehicle;
-
-    @Inject
-    protected StateSynchronizer confSync;
 
     @Component(id = "form")
     protected Form form;

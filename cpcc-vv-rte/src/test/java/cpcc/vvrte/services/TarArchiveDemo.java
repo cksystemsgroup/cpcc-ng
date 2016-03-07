@@ -57,8 +57,7 @@ public class TarArchiveDemo
 
         FileOutputStream fos = new FileOutputStream("bugger1.tar");
 
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
         ArchiveOutputStream outStream = factory.createArchiveOutputStream("tar", fos);
 
         TarArchiveEntry archiveEntry1 = new TarArchiveEntry("entry1");
@@ -89,8 +88,8 @@ public class TarArchiveDemo
         TarArchiveEntry entry1 = (TarArchiveEntry) inStream.getNextEntry();
         assertThat(entry1.getModTime()).isEqualTo(t1);
         assertThat(entry1.getSize()).isEqualTo(c1.length);
-        assertThat(entry1.getUserId()).isEqualTo(STORAGE_ID_ONE);
-        assertThat(entry1.getGroupId()).isEqualTo(CHUNK_ID_ONE);
+        assertThat(entry1.getLongUserId()).isEqualTo(STORAGE_ID_ONE);
+        assertThat(entry1.getLongGroupId()).isEqualTo(CHUNK_ID_ONE);
         assertThat(entry1.getUserName()).isEqualTo(USER_NAME_ONE);
         assertThat(entry1.getGroupName()).isEqualTo(GROUP_NAME_ONE);
         ByteArrayOutputStream b1 = new ByteArrayOutputStream();
@@ -102,8 +101,8 @@ public class TarArchiveDemo
         TarArchiveEntry entry2 = (TarArchiveEntry) inStream.getNextEntry();
         assertThat(entry2.getModTime()).isEqualTo(t2);
         assertThat(entry2.getSize()).isEqualTo(c2.length);
-        assertThat(entry2.getUserId()).isEqualTo(STORAGE_ID_TWO);
-        assertThat(entry2.getGroupId()).isEqualTo(CHUNK_ID_TWO);
+        assertThat(entry2.getLongUserId()).isEqualTo(STORAGE_ID_TWO);
+        assertThat(entry2.getLongGroupId()).isEqualTo(CHUNK_ID_TWO);
         assertThat(entry2.getUserName()).isEqualTo(USER_NAME_TWO);
         assertThat(entry2.getGroupName()).isEqualTo(GROUP_NAME_TWO);
         ByteArrayOutputStream b2 = new ByteArrayOutputStream();

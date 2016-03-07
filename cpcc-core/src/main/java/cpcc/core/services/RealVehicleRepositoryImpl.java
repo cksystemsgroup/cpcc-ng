@@ -70,6 +70,20 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
             .addOrder(Property.forName("id").asc())
             .list();
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<RealVehicle> findAllActiveRealVehicles()
+    {
+        return (List<RealVehicle>) session
+            .createCriteria(RealVehicle.class)
+            .add(Restrictions.eq("deleted", Boolean.FALSE))
+            .addOrder(Property.forName("id").asc())
+            .list();
+    }
 
     /**
      * {@inheritDoc}

@@ -63,9 +63,6 @@ import cpcc.core.services.QueryManager;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
-import cpcc.vvrte.services.VirtualVehicleLauncher;
-import cpcc.vvrte.services.VirtualVehicleMigrator;
-import cpcc.vvrte.services.VirtualVehicleMigratorImpl;
 import cpcc.vvrte.services.db.VvRteRepository;
 
 public class VirtualVehicleMigratorTest
@@ -592,8 +589,7 @@ public class VirtualVehicleMigratorTest
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
         assertThat(vv).isNotNull();
 
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
         byte[] firstChunk = migrator.findFirstChunk(vv);
         verifyChunk(params, factory, 0, firstChunk);
@@ -639,8 +635,8 @@ public class VirtualVehicleMigratorTest
             assertThat(entry.getSize())
                 .overridingErrorMessage("Expected %d but was %d in chunk %d", length, entry.getSize(), chunkNumber)
                 .isNotNull().isEqualTo(length);
-            assertThat(entry.getUserId()).isNotNull().isEqualTo(storageId);
-            assertThat(entry.getGroupId()).isNotNull().isEqualTo(chunkId);
+            assertThat(entry.getLongUserId()).isNotNull().isEqualTo(storageId);
+            assertThat(entry.getLongGroupId()).isNotNull().isEqualTo(chunkId);
             assertThat(entry.getUserName()).isNotNull().isEqualTo(userName);
             assertThat(entry.getGroupName()).isNotNull().isEqualTo(groupName);
             assertThat(content.length).isEqualTo(length);
@@ -679,8 +675,7 @@ public class VirtualVehicleMigratorTest
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
         assertThat(vv).isNotNull();
 
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
         byte[] firstChunk = migrator.findFirstChunk(vv);
         verifyChunk(params, factory, 0, firstChunk);
@@ -744,8 +739,7 @@ public class VirtualVehicleMigratorTest
         expectedExceptionsMessageRegExp = "Can not store unknown type of entry .*")
     public void shouldThrowIOEOnUnknownEntryType(String entryName, byte[] content) throws ArchiveException, IOException
     {
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ArchiveOutputStream os = factory.createArchiveOutputStream("tar", baos);
@@ -773,8 +767,7 @@ public class VirtualVehicleMigratorTest
     public void shouldThrowIOEOnUnknownVirtualVehicleEntry(String entryName, byte[] content) throws ArchiveException,
         IOException
     {
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ArchiveOutputStream os = factory.createArchiveOutputStream("tar", baos);
@@ -829,8 +822,7 @@ public class VirtualVehicleMigratorTest
         st4.setVirtualVehicle(vv);
         virtualVehicleStorageMap.put("storage4", st4);
 
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
         assertThat(virtualVehicleStorageMap.entrySet().size()).isEqualTo(4);
 
@@ -892,8 +884,7 @@ public class VirtualVehicleMigratorTest
 
         virtualVehicleMap.put(vv.getUuid(), vv);
 
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
         for (int chunkNumber = 1; chunkNumber < numberOfChunks; ++chunkNumber)
         {
@@ -925,8 +916,7 @@ public class VirtualVehicleMigratorTest
 
         virtualVehicleMap.put(vv.getUuid(), vv);
 
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
         for (int chunkNumber = 1; chunkNumber < numberOfChunks; ++chunkNumber)
         {
@@ -949,8 +939,7 @@ public class VirtualVehicleMigratorTest
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
         assertThat(vv).isNotNull();
 
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
         byte[] firstChunk = migrator.findFirstChunk(vv);
         verifyChunk(params, factory, 0, firstChunk);

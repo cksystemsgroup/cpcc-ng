@@ -88,6 +88,9 @@ public class VvCodeUploadModal implements ClientElement
     @Property
     private VirtualVehicle vehicle;
 
+    @Property
+    private int instances;
+
     @Persist(PersistenceConstants.FLASH)
     @Property
     private UploadedFile uploadedFile;
@@ -120,6 +123,7 @@ public class VvCodeUploadModal implements ClientElement
         vehicle.setApiVersion(1);
         vehicle.setUuid(UUID.randomUUID().toString());
         vehicle.setState(VirtualVehicleState.INIT);
+        instances = 1;
     }
 
     /**
@@ -170,6 +174,22 @@ public class VvCodeUploadModal implements ClientElement
     @CommitAfter
     void onSuccessFromForm()
     {
-        session.save(vehicle);
+        if (instances == 1)
+        {
+            session.save(vehicle);
+        }
+        else
+        {
+            for (int k = 0; k < instances; ++k)
+            {
+                VirtualVehicle vv = new VirtualVehicle();
+                vv.setApiVersion(vehicle.getApiVersion());
+                vv.setCode(vehicle.getCode());
+                vv.setName(String.format("%s-%02d", vehicle.getName(), k));
+                vv.setUuid(UUID.randomUUID().toString());
+                vv.setState(VirtualVehicleState.INIT);
+                session.save(vv);
+            }
+        }
     }
 }

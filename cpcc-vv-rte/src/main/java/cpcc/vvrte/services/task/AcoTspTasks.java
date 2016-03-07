@@ -97,7 +97,7 @@ public class AcoTspTasks
             o = 2;
         }
 
-        List<Integer> bestPath = AcoTspSimple.calculateBestPath(costMatrix, 2000, 3);
+        List<Integer> bestPath = AcoTspSimple.calculateBestPath(costMatrix, getIterations(cList.size()), 3);
         bestPath = reorderPath(bestPath, START_POINT_INDEX, depot != null ? END_POINT_INDEX : START_POINT_INDEX);
 
         List<Task> r = new ArrayList<Task>();
@@ -110,6 +110,16 @@ public class AcoTspTasks
         }
 
         return r;
+    }
+
+    /**
+     * @param size the number of points to visit in a TSP run.
+     * @return the number of required ant iteration cycles.
+     */
+    private int getIterations(int size)
+    {
+        int i = size * size * size * 200 + 1000;
+        return i > 400000 ? 400000 : i;
     }
 
     /**

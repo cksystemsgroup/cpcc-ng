@@ -124,7 +124,7 @@ public class ConfigurationEdit
     @Property
     private MappingAttributes mappingConfig;
 
-    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "RegisterUserDetail.tml uses this formatter.")
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "The Tapestry template uses this formatter.")
     @Property
     private Format enumFormat;
 

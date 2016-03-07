@@ -34,6 +34,11 @@ public interface RealVehicleRepository
     List<RealVehicle> findAllRealVehicles();
 
     /**
+     * @return the list of active (not deleted) real vehicles
+     */
+    List<RealVehicle> findAllActiveRealVehicles();
+
+    /**
      * @return the list of available ground stations.
      */
     List<RealVehicle> findAllConnectedGroundStations();

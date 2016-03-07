@@ -95,9 +95,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
-
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
         ArchiveOutputStream outStream = factory.createArchiveOutputStream("tar", baos);
 
         writeVirtualVehicleProperties(virtualVehicle, outStream, 0, false);
@@ -125,8 +123,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             vvRepository.findStorageItemsByVirtualVehicle(virtualVehicle.getId(), name, chunkSize);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-        factory.setEntryEncoding("UTF-8");
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
         boolean lastChunk = storageChunk.size() == 0 || storageChunk.size() < chunkSize;
 

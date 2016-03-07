@@ -92,13 +92,8 @@ public class StateSynchronizerImpl implements StateSynchronizer
             return;
         }
 
-        for (RealVehicle rv : realVehicleRepository.findAllRealVehicles())
+        for (RealVehicle rv : realVehicleRepository.findAllActiveRealVehicles())
         {
-            if (rv.getDeleted())
-            {
-                continue;
-            }
-
             try
             {
                 jobService.addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME

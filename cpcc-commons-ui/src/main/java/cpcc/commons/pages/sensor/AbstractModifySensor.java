@@ -35,7 +35,6 @@ import cpcc.core.entities.SensorDefinition;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.opts.OptionsParserService;
 import cpcc.core.services.opts.ParseException;
-import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * AbstractModifySensor
@@ -53,9 +52,6 @@ public class AbstractModifySensor
 
     @Inject
     protected OptionsParserService parserService;
-
-    @Inject
-    protected StateSynchronizer confSync;
 
     @Inject
     protected Messages messages;

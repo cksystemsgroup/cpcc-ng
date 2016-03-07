@@ -76,8 +76,8 @@ public class StateSynchronizerTest
         qm = mock(QueryManager.class);
 
         realVehicleRepository = mock(RealVehicleRepository.class);
-        when(realVehicleRepository.findAllRealVehicles()).thenReturn(Arrays.asList(rv01, rv02));
-
+        when(realVehicleRepository.findAllActiveRealVehicles()).thenReturn(Arrays.asList(rv01, rv02));
+        
         jobService = mock(JobService.class);
 
         sut = new StateSynchronizerImpl(logger, qm, jobService, realVehicleRepository);
@@ -91,7 +91,7 @@ public class StateSynchronizerTest
         sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
-        verify(realVehicleRepository).findAllRealVehicles();
+        verify(realVehicleRepository).findAllActiveRealVehicles();
 
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_1);
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_2);
@@ -124,7 +124,7 @@ public class StateSynchronizerTest
         sut.realVehicleStatusUpdate();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
-        verify(realVehicleRepository).findAllRealVehicles();
+        verify(realVehicleRepository).findAllActiveRealVehicles();
 
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_RV_PARAMETERS);
         verifyZeroInteractions(logger);

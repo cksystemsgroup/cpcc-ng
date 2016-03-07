@@ -38,7 +38,6 @@ import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.utils.MathUtils;
 import cpcc.core.utils.RealVehicleUtils;
 import cpcc.core.utils.ResourceStreamResponse;
-import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * RvEditAreaOfOperations
@@ -53,9 +52,6 @@ public class RvEditAreaOfOperations
 
     @Inject
     private CoreJsonConverter jsonConverter;
-
-    @Inject
-    protected StateSynchronizer confSync;
 
     @Valid
     @Property

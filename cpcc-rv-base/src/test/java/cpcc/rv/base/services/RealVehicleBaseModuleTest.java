@@ -68,14 +68,11 @@ public class RealVehicleBaseModuleTest
     {
         ServiceBindingOptions options = mock(ServiceBindingOptions.class);
         ServiceBinder binder = mock(ServiceBinder.class);
-        when(binder.bind(StateSynchronizer.class, StateSynchronizerImpl.class)).thenReturn(options);
-        when(binder.bind(StateService.class, StateServiceImpl.class)).thenReturn(options);
 
         RealVehicleBaseModule.bind(binder);
 
         verify(binder).bind(StateSynchronizer.class, StateSynchronizerImpl.class);
         verify(binder).bind(StateService.class, StateServiceImpl.class);
-        verify(options, times(1)).scope(ScopeConstants.PERTHREAD);
     }
 
     @Test

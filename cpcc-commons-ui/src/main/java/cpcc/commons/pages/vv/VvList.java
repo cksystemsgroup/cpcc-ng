@@ -23,12 +23,14 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
+import org.apache.tapestry5.alerts.AlertManager;
 import org.apache.tapestry5.annotations.InjectComponent;
 import org.apache.tapestry5.annotations.OnEvent;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.slf4j.Logger;
@@ -59,6 +61,12 @@ public class VvList
 
     @Inject
     private HibernateSessionManager sessionManager;
+
+    @Inject
+    private AlertManager alert;
+
+    @Inject
+    private Messages messages;
 
     @Inject
     protected Request request;
@@ -128,6 +136,27 @@ public class VvList
     {
         VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
         repository.deleteVirtualVehicleById(vehicle);
+        handleXhrRequest(paneZone);
+    }
+
+    void onPrepareForSubmit()
+    {
+        virtualVehicleList = repository.findAllVehicles();
+    }
+
+    @CommitAfter
+    void onSubmitFromForm()
+    {
+        if (virtualVehicleList != null)
+        {
+            long counter = virtualVehicleList.stream()
+                .filter(vv -> vv.isSelected())
+                .map(vv -> {
+                    repository.deleteVirtualVehicleById(vv);
+                    return 1;
+                }).count();
+            alert.success(messages.format("numberOfDeletedVVs", counter));
+        }
 
         handleXhrRequest(paneZone);
     }
@@ -211,8 +240,19 @@ public class VvList
     void restartVehicle(Integer id)
     {
         VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
+        restartVirtualVehicle(vehicle);
+        handleXhrRequest(paneZone);
+    }
+
+    /**
+     * @param vehicle the virtual vehicle to restart.
+     */
+    private void restartVirtualVehicle(VirtualVehicle vehicle)
+    {
         if (!VirtualVehicleState.VV_STATES_FOR_RESTART.contains(vehicle.getState()))
         {
+            logger.info("Can not restart virtual vehicle " + vehicle.getId()
+                + " because of state " + vehicle.getState());
             return;
         }
 
@@ -221,13 +261,12 @@ public class VvList
             vehicle.setState(VirtualVehicleState.INIT);
             sessionManager.commit();
             launcher.start(vehicle.getId());
+            logger.info("Virtual vehicle " + vehicle.getId() + " restarted.");
         }
         catch (VirtualVehicleLaunchException | IOException e)
         {
-            logger.error("Can not restart virtual vehicle " + id, e);
+            logger.error("Can not restart virtual vehicle " + vehicle.getId(), e);
         }
-
-        handleXhrRequest(paneZone);
     }
 
     @OnEvent("showStateInfo")
@@ -238,6 +277,14 @@ public class VvList
         virtualVehicle = repository.findVirtualVehicleById(id);
 
         handleXhrRequest(paneZone, modalZone);
+    }
+
+    @OnEvent("startAllVehicles")
+    @CommitAfter
+    void startAllVehicles()
+    {
+        repository.findAllVehicles().stream().forEach(vv -> restartVirtualVehicle(vv));
+        handleXhrRequest(paneZone);
     }
 
     /**

@@ -16,7 +16,7 @@
 							<t:Errors />
 
 							<t:BeanEditor t:object="vehicle" t:reorder="name,apiVersion,code"
-								t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime,stateInfo,preMigrationState">
+								t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime,stateInfo,preMigrationState,selected">
 
 								<p:name>
 									<div class="form-group">
@@ -27,21 +27,27 @@
 
 								<p:apiVersion>
 									<div class="form-group">
-										<t:Label class="control-label" for="apiVersion" />
-										<t:Select t:id="apiVersion" class="col-sm-1" disabled="true" t:value="vehicle.apiVersion" t:model="literal:1"
-											t:blankOption="never" />
+										<div class="row">
+											<div class="col-sm-6">
+												<t:Label class="control-label" for="apiVersion" />
+												<t:Select t:id="apiVersion" class="col-sm-12" disabled="true" t:value="vehicle.apiVersion" t:model="literal:1"
+													t:blankOption="never" />
+											</div>
+											<div class="col-sm-6">
+												<t:Label class="control-label" for="instances" />
+												<t:Select t:id="instances" class="col-sm-12" t:value="instances" t:model="literal:1,2,3,4,5,10,20,50,100" t:blankOption="never" />
+											</div>
+										</div>
 									</div>
 								</p:apiVersion>
 
 								<p:code>
 									<div class="form-group">
 										<t:Label class="control-label" for="uploadedFile" />
-
 										<div class="input-group">
 											<span class="input-group-btn">
 												<span class="btn btn-primary btn-file">
-													Browse ...
-<!-- 													<input t:type="upload" t:id="uploadedFile" t:value="uploadedFile" /> -->
+													${message:browse-Label}
 													<t:Upload t:id="uploadedFile" t:value="uploadedFile" />
 												</span>
 											</span>

@@ -96,18 +96,18 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
             {
                 if (rv.getSensors().containsAll(task.getSensors()))
                 {
-                    logger.debug("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
+                    logger.info("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
                     destinationRealVehicles.add(rv);
                 }
                 else
                 {
-                    logger.debug("Migrate not to " + rv.getName() + " because of sensors "
+                    logger.info("Migrate not to " + rv.getName() + " because of sensors "
                         + getSensorString(task.getSensors(), rv.getSensors()));
                 }
             }
             else
             {
-                logger.debug("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
+                logger.info("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
             }
         }
 

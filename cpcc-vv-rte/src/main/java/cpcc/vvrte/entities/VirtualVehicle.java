@@ -33,6 +33,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -103,6 +104,9 @@ public class VirtualVehicle implements Serializable
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinColumn(name = "task_id", referencedColumnName = "id")
     private Task task;
+
+    @Transient
+    private boolean selected;
 
     /**
      * @return the id
@@ -334,5 +338,21 @@ public class VirtualVehicle implements Serializable
     public void setTask(Task task)
     {
         this.task = task;
+    }
+
+    /**
+     * @return true if this virtual vehicle has been selected, false otherwise.
+     */
+    public boolean isSelected()
+    {
+        return selected;
+    }
+
+    /**
+     * @param selected the selected value to set.
+     */
+    public void setSelected(boolean selected)
+    {
+        this.selected = selected;
     }
 }

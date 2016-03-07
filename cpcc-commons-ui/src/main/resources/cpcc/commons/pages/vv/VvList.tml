@@ -1,136 +1,156 @@
 <html t:type="layout" title="${message:virtualVehicleOverview}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
-	<ul class="list-inline">
-		<li>
-			<t:PageLink t:page="commons/vv/new" class="btn btn-primary">
-				${message:createNewVehicle}
-			</t:PageLink>
-		</li>
-		<li>
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#codeUploadModal">
-				${message:uploadCode}
-			</button>
-		</li>
-	</ul>
+	<t:Form t:id="form">
+		<ul class="list-inline">
+			<li>
+				<t:PageLink t:page="commons/vv/new" class="btn btn-primary">
+					${message:createNewVehicle}
+				</t:PageLink>
+			</li>
+			<li>
+				<button type="button" class="btn btn-success" data-toggle="modal" data-target="#codeUploadModal">
+					${message:uploadCode}
+				</button>
+			</li>
+			<li>
+				<t:EventLink t:event="startAllVehicles">
+					<button type="button" class="btn btn-warning">
+						${message:startAllVehicles}
+					</button>
+				</t:EventLink>
+			</li>
+			<li>
+				<t:Submit t:id="deleteVehiclesBtn" t:value="${message:deleteVehicles}" class="btn btn-danger" t:mixins="Confirm"
+					Confirm.message="${message:virtualVehicle.confirmDeleteSelected}?" />
+			</li>
+		</ul>
 
-	<c:VvCodeUploadModal t:id="codeUploadModal" />
 
-	<h4>${message:virtualVehicleList}</h4>
-	<!-- t:mixins="ZoneRefresh" ZoneRefresh.period="5" -->
-	<t:Zone t:id="paneZone" id="stateInfoPaneZone">
-		<t:Grid t:source="virtualVehicleList" t:exclude="code,continuation,apiVersion,stateInfo,preMigrationState"
-			t:reorder="id,name,state,uuid,startTime,endTime,migrationStartTime,migrationDestination" t:row="virtualVehicle"
-			t:add="migrationDestination,vehicleActions" class="table table-striped table-condensed topic-table">
+		<h4>${message:virtualVehicleList}</h4>
+		<!-- t:mixins="ZoneRefresh" ZoneRefresh.period="5" -->
+		<t:Zone t:id="paneZone" id="stateInfoPaneZone">
+			<t:Grid t:source="virtualVehicleList" t:exclude="code,continuation,apiVersion,stateInfo,preMigrationState"
+				t:reorder="selected,id,name,state,uuid,startTime,endTime,migrationStartTime,migrationDestination" t:row="virtualVehicle"
+				t:add="migrationDestination,vehicleActions" class="table table-striped table-condensed topic-table" t:mixins="commons/GridCheckboxHelper"
+				GridCheckboxHelper.checkBoxId="vvCB" GridCheckboxHelper.enableIds="deleteVehiclesBtn"
+				GridCheckboxHelper.allCheckboxColumn="0" GridCheckboxHelper.allCheckboxChecked="false">
 
-			<p:uuidCell>
-				<t:Output format="uuidFormat" value="virtualVehicle.uuid" />
-			</p:uuidCell>
+				<p:selectedCell>
+					<t:CheckBox t:id="vvCB" t:value="virtualVehicle.selected" />
+				</p:selectedCell>
 
-			<p:startTimeCell>
-				<t:output t:format="message:dateFormat" t:value="virtualVehicle.startTime" />
-			</p:startTimeCell>
+				<p:uuidCell>
+					<t:Output format="uuidFormat" value="virtualVehicle.uuid" />
+				</p:uuidCell>
 
-			<p:endTimeCell>
-				<t:output t:format="message:dateFormat" t:value="virtualVehicle.endTime" />
-			</p:endTimeCell>
+				<p:startTimeCell>
+					<t:output t:format="message:dateFormat" t:value="virtualVehicle.startTime" />
+				</p:startTimeCell>
 
-			<p:migrationStartTimeCell>
-				<t:output t:format="message:dateFormat" t:value="virtualVehicle.migrationStartTime" />
-			</p:migrationStartTimeCell>
+				<p:endTimeCell>
+					<t:output t:format="message:dateFormat" t:value="virtualVehicle.endTime" />
+				</p:endTimeCell>
 
-			<p:migrationDestinationCell>
-				<t:If test="virtualVehicle.migrationDestination">
-					${virtualVehicle.migrationDestination.name}
-				</t:If>
-			</p:migrationDestinationCell>
+				<p:migrationStartTimeCell>
+					<t:output t:format="message:dateFormat" t:value="virtualVehicle.migrationStartTime" />
+				</p:migrationStartTimeCell>
 
-			<p:vehicleActionsCell>
-				<ul class="list-inline">
-					<li>
-						<t:PageLink t:page="commons/vv/download" t:context="virtualVehicle.id" t:title="${message:downloadVehicle}">
-							<span class="glyphicon glyphicon-download-alt" />
-						</t:PageLink>
-					</li>
-
-					<t:If test="isRestartMigration()">
-						<li>
-							<t:EventLink t:event="restartMigration" t:context="virtualVehicle.id" t:title="${message:restartMigration}">
-								<span class="glyphicon glyphicon-share-alt" />
-							</t:EventLink>
-						</li>
+				<p:migrationDestinationCell>
+					<t:If test="virtualVehicle.migrationDestination">
+						${virtualVehicle.migrationDestination.name}
 					</t:If>
+				</p:migrationDestinationCell>
 
-					<t:If test="isEdit()">
+				<p:vehicleActionsCell>
+					<ul class="list-inline">
 						<li>
-							<t:PageLink t:page="commons/vv/edit" t:context="virtualVehicle.id" t:title="${message:editVehicle}">
-								<span class="glyphicon glyphicon-pencil" />
+							<t:PageLink t:page="commons/vv/download" t:context="virtualVehicle.id" t:title="${message:downloadVehicle}">
+								<span class="glyphicon glyphicon-download-alt" />
 							</t:PageLink>
 						</li>
-					</t:If>
 
-					<t:If test="isStart()">
+						<t:If test="isRestartMigration()">
+							<li>
+								<t:EventLink t:event="restartMigration" t:context="virtualVehicle.id" t:title="${message:restartMigration}">
+									<span class="glyphicon glyphicon-share-alt" />
+								</t:EventLink>
+							</li>
+						</t:If>
+
+						<t:If test="isEdit()">
+							<li>
+								<t:PageLink t:page="commons/vv/edit" t:context="virtualVehicle.id" t:title="${message:editVehicle}">
+									<span class="glyphicon glyphicon-pencil" />
+								</t:PageLink>
+							</li>
+						</t:If>
+
+						<t:If test="isStart()">
+							<li>
+								<t:EventLink t:event="startVehicle" t:context="virtualVehicle.id" title="${message:startVehicle}">
+									<span class="glyphicon glyphicon-play" />
+								</t:EventLink>
+							</li>
+						</t:If>
+
+						<t:If test="isRestart()">
+							<li>
+								<t:EventLink t:event="restartVehicle" t:context="virtualVehicle.id" title="${message:restartVehicle}">
+									<span class="glyphicon glyphicon-repeat" />
+								</t:EventLink>
+							</li>
+						</t:If>
+
+						<t:If test="isPause()">
+							<li>
+								<t:EventLink t:event="pauseVehicle" t:context="virtualVehicle.id" title="${message:pauseVehicle}">
+									<span class="glyphicon glyphicon-pause" />
+								</t:EventLink>
+							</li>
+						</t:If>
+
+						<t:If test="isStop()">
+							<li>
+								<t:EventLink t:event="stopVehicle" t:context="virtualVehicle.id" title="${message:stopVehicle}">
+									<span class="glyphicon glyphicon-stop" />
+								</t:EventLink>
+							</li>
+						</t:If>
+
 						<li>
-							<t:EventLink t:event="startVehicle" t:context="virtualVehicle.id" title="${message:startVehicle}">
-								<span class="glyphicon glyphicon-play" />
-							</t:EventLink>
+							<t:PageLink t:page="commons/vv/storage" t:context="virtualVehicle.id" t:title="${message:showVehicleStorage}">
+								<span class="glyphicon glyphicon-folder-close" />
+							</t:PageLink>
 						</li>
-					</t:If>
 
-					<t:If test="isRestart()">
-						<li>
-							<t:EventLink t:event="restartVehicle" t:context="virtualVehicle.id" title="${message:restartVehicle}">
-								<span class="glyphicon glyphicon-repeat" />
-							</t:EventLink>
-						</li>
-					</t:If>
+						<t:If test="virtualVehicle.stateInfo">
+							<li>
+								<t:EventLink t:event="showStateInfo" t:zone="^" t:context="virtualVehicle.id" title="${message:showStateInfo}">
+									<span class="glyphicon glyphicon-file" />
+								</t:EventLink>
+							</li>
+						</t:If>
 
-					<t:If test="isPause()">
-						<li>
-							<t:EventLink t:event="pauseVehicle" t:context="virtualVehicle.id" title="${message:pauseVehicle}">
-								<span class="glyphicon glyphicon-pause" />
-							</t:EventLink>
-						</li>
-					</t:If>
+						<t:If test="isDelete()">
+							<li>
+								<t:EventLink t:event="deleteVehicle" t:context="virtualVehicle.id" title="${message:deleteVehicle}"
+									t:mixins="Confirm" Confirm.message="${message:virtualVehicle.confirmDelete} ${virtualVehicle.name}?">
+									<span class="glyphicon glyphicon-remove" />
+								</t:EventLink>
+							</li>
+						</t:If>
+					</ul>
+				</p:vehicleActionsCell>
 
-					<t:If test="isStop()">
-						<li>
-							<t:EventLink t:event="stopVehicle" t:context="virtualVehicle.id" title="${message:stopVehicle}">
-								<span class="glyphicon glyphicon-stop" />
-							</t:EventLink>
-						</li>
-					</t:If>
+				<p:empty>
+					<p>${message:noVirtualVehicleFound}</p>
+				</p:empty>
+			</t:Grid>
+		</t:Zone>
+	</t:Form>
 
-					<li>
-						<t:PageLink t:page="commons/vv/storage" t:context="virtualVehicle.id" t:title="${message:showVehicleStorage}">
-							<span class="glyphicon glyphicon-folder-close" />
-						</t:PageLink>
-					</li>
-
-					<t:If test="virtualVehicle.stateInfo">
-						<li>
-							<t:EventLink t:event="showStateInfo" t:zone="^" t:context="virtualVehicle.id" title="${message:showStateInfo}">
-								<span class="glyphicon glyphicon-file" />
-							</t:EventLink>
-						</li>
-					</t:If>
-
-					<t:If test="isDelete()">
-						<li>
-							<t:EventLink t:event="deleteVehicle" t:context="virtualVehicle.id" title="${message:deleteVehicle}"
-								t:mixins="Confirm" Confirm.message="${message:virtualVehicle.confirmDelete} ${virtualVehicle.name}?">
-								<span class="glyphicon glyphicon-remove" />
-							</t:EventLink>
-						</li>
-					</t:If>
-				</ul>
-			</p:vehicleActionsCell>
-
-			<p:empty>
-				<p>${message:noVirtualVehicleFound}</p>
-			</p:empty>
-		</t:Grid>
-	</t:Zone>
+	<c:VvCodeUploadModal t:id="codeUploadModal" />
 
 	<t:Zone t:id="modalZone" id="stateInfoModalZone">
 		<t:if test="isFunction('view_modal')">

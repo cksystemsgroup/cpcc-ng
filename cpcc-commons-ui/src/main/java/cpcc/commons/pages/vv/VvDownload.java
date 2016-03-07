@@ -46,7 +46,7 @@ public class VvDownload
             return null;
         }
 
-        String fileName = String.format("vv-%s-%d.js", vv.getName(), vv.getId());
+        String fileName = String.format("vv-%s-%d.js", vv.getName().replaceAll("\\s+", "_"), vv.getId());
         return new DownloadStreamResponse("text/javascript", vv.getCode().getBytes("UTF-8"), fileName);
     }
 }

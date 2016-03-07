@@ -18,9 +18,9 @@
 
 package cpcc.vvrte.entities;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * VehicleState
@@ -200,121 +200,45 @@ public enum VirtualVehicleState
         }
     };
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_DELETE = Collections.unmodifiableSet(
-        new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(DEFECTIVE);
-                add(FINISHED);
-                add(INIT);
-                add(INTERRUPTED);
-                add(TASK_COMPLETION_AWAITED);
-                add(MIGRATION_COMPLETED);
-                add(MIGRATION_INTERRUPTED);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_DELETE = Stream.of(
+        DEFECTIVE, FINISHED, INIT, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_COMPLETED, MIGRATION_INTERRUPTED
+        ).collect(Collectors.toSet());
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_EDIT = Collections.unmodifiableSet(
-        new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(DEFECTIVE);
-                add(FINISHED);
-                add(INIT);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_EDIT = Stream.of(
+        DEFECTIVE, FINISHED, INIT
+        ).collect(Collectors.toSet());
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_START = Collections.unmodifiableSet(
-        new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(INIT);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_START = Stream.of(
+        INIT
+        ).collect(Collectors.toSet());
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_STOP = Collections.unmodifiableSet(
-        new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(DEFECTIVE);
-                add(INTERRUPTED);
-                add(TASK_COMPLETION_AWAITED);
-                add(MIGRATION_INTERRUPTED);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_STOP = Stream.of(
+        DEFECTIVE, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_INTERRUPTED
+        ).collect(Collectors.toSet());
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART = Collections.unmodifiableSet(
-        new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(DEFECTIVE);
-                add(FINISHED);
-                add(INTERRUPTED);
-                add(TASK_COMPLETION_AWAITED);
-                add(MIGRATION_COMPLETED);
-                add(MIGRATION_INTERRUPTED);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART = Stream.of(
+        INIT, DEFECTIVE, FINISHED, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_COMPLETED, MIGRATION_INTERRUPTED
+        ).collect(Collectors.toSet());
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION_FROM_RV = Collections.unmodifiableSet(
-        new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(DEFECTIVE);
-                add(FINISHED);
-                add(INTERRUPTED);
-                add(MIGRATION_AWAITED);
-                add(MIGRATION_INTERRUPTED);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION_FROM_RV = Stream.of(
+        DEFECTIVE, FINISHED, INTERRUPTED, MIGRATION_AWAITED, MIGRATION_INTERRUPTED
+        ).collect(Collectors.toSet());
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_RV =
-        Collections.unmodifiableSet(new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(INIT);
-                add(DEFECTIVE);
-                add(FINISHED);
-                add(INTERRUPTED);
-                add(MIGRATION_INTERRUPTED);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_RV = Stream.of(
+        INIT, DEFECTIVE, FINISHED, INTERRUPTED, MIGRATION_INTERRUPTED
+        ).collect(Collectors.toSet());
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_GS =
-        Collections.unmodifiableSet(new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(MIGRATION_INTERRUPTED);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_GS = Stream.of(
+        MIGRATION_INTERRUPTED
+        ).collect(Collectors.toSet());
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_NO_CHANGE_AFTER_MIGRATION = Collections.unmodifiableSet(
-        new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(DEFECTIVE);
-                add(FINISHED);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_NO_CHANGE_AFTER_MIGRATION = Stream.of(
+        DEFECTIVE, FINISHED
+        ).collect(Collectors.toSet());
 
-    @SuppressWarnings("serial")
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_MIGRATION = Collections.unmodifiableSet(
-        new HashSet<VirtualVehicleState>()
-        {
-            {
-                add(MIGRATING);
-                add(MIGRATION_INTERRUPTED);
-            }
-        });
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_MIGRATION = Stream.of(
+        MIGRATING, MIGRATION_INTERRUPTED
+        ).collect(Collectors.toSet());
 
     /**
      * @param newState the new state to traverse to.

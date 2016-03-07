@@ -22,7 +22,6 @@ import java.util.Arrays;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.Configuration;
-import org.apache.tapestry5.ioc.ScopeConstants;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
@@ -52,7 +51,7 @@ public final class RealVehicleBaseModule
      */
     public static void bind(ServiceBinder binder)
     {
-        binder.bind(StateSynchronizer.class, StateSynchronizerImpl.class).scope(ScopeConstants.PERTHREAD);
+        binder.bind(StateSynchronizer.class, StateSynchronizerImpl.class);
         binder.bind(StateService.class, StateServiceImpl.class);
         binder.bind(SetupService.class, SetupServiceImpl.class);
     }

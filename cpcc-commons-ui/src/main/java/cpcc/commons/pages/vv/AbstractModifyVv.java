@@ -31,7 +31,6 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
-import cpcc.rv.base.services.StateSynchronizer;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.db.VvRteRepository;
@@ -58,9 +57,6 @@ public class AbstractModifyVv
 
     @Inject
     protected Messages messages;
-
-    @Inject
-    protected StateSynchronizer confSync;
 
     @Valid
     @Property

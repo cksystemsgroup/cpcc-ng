@@ -8,7 +8,7 @@
 			<t:Errors />
 
 			<t:BeanEditor t:object="vehicle" t:reorder="name,apiVersion,code"
-				t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime,stateInfo,preMigrationState">
+				t:exclude="id,uuid,state,continuation,startTime,endTime,migrationStartTime,stateInfo,preMigrationState,selected">
 
 				<p:name>
 					<t:Label class="control-label" for="name" />

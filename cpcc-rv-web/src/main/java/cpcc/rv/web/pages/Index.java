@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 
 import cpcc.core.entities.Device;
 import cpcc.core.services.QueryManager;
-import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * Start page of real-vehicle web application.
@@ -35,8 +34,8 @@ public class Index
     @Inject
     private QueryManager qm;
 
-    @Inject
-    private StateSynchronizer stateSyncService;
+//    @Inject
+//    private StateSynchronizer stateSyncService;
 
     @Inject
     private Logger logger;

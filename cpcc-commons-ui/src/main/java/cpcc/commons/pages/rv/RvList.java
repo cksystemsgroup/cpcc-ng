@@ -29,7 +29,6 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.RealVehicleRepository;
-import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * Real Vehicle List
@@ -41,9 +40,6 @@ public class RvList
 
     @Inject
     private RealVehicleRepository rvRepo;
-
-    @Inject
-    protected StateSynchronizer confSync;
 
     @Property
     private List<RealVehicle> realVehicleList;
