@@ -36,7 +36,7 @@ import cpcc.core.entities.PolarCoordinate;
 public class Plant extends CancellableLoop implements MessageListener<big_actor_msgs.LatLngAlt>
 {
     private static final Logger LOG = LoggerFactory.getLogger(Plant.class);
-    
+
     private Configuration config;
     private ConnectedNode connectedNode;
     private Publisher<NavSatFix> gpsPublisher;
@@ -46,7 +46,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
     private Automaton automaton = new Automaton();
     private PlantState plantState = new PlantState();
     private PlantStateEstimator estimator;
-    
+
     /**
      * @param config the configuration.
      * @param connectedNode the connected node.
@@ -59,7 +59,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         String sonarTopic = config.getTopicRoot() + "/sonar";
         gpsPublisher = connectedNode.newPublisher(gpsTopic, sensor_msgs.NavSatFix._TYPE);
         sonarPublisher = connectedNode.newPublisher(sonarTopic, std_msgs.Float32._TYPE);
-        
+
         automaton.transition(Event.UNLOCK);
         automaton.transition(Event.START);
 
@@ -69,7 +69,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         plantState.getTarget().setAltitude(config.getTakeOffHeight());
         estimator = new PlantStateEstimatorImpl(config, plantState, State.TAKE_OFF);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -79,7 +79,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
         super.setup();
         LOG.info("setup()");
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -87,9 +87,9 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
     protected void loop() throws InterruptedException
     {
         calculateNewPosition();
-        
+
         PolarCoordinate currentPosition = plantState.getPosition();
-       
+
         NavSatFix gpsPosition = connectedNode.getTopicMessageFactory().newFromType(NavSatFix._TYPE);
         gpsPosition.setLatitude(currentPosition.getLatitude());
         gpsPosition.setLongitude(currentPosition.getLongitude());
@@ -160,7 +160,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
             plantState.setElevation(0);
         }
     }
-    
+
     /**
      * calculate flight position
      */
@@ -186,7 +186,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
             plantState.setElevation(0);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -201,13 +201,21 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
     }
 
     /**
+     * @param batteryLow set to true to indicate that the battery is low.
+     */
+    public void setBatteryLow(boolean batteryLow)
+    {
+        this.batteryLow = batteryLow;
+    }
+
+    /**
      * @return true if the destination has been reached.
      */
     public boolean isDestinationReached()
     {
         return automaton.getCurrentState() == State.HOVER;
     }
-    
+
     /**
      * @return the plant state
      */
@@ -215,7 +223,7 @@ public class Plant extends CancellableLoop implements MessageListener<big_actor_
     {
         return plantState;
     }
-    
+
     /**
      * @return the current state.
      */

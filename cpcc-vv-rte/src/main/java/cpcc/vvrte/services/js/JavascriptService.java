@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2009-2016 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -34,11 +34,6 @@ public interface JavascriptService
      * @throws IOException thrown in case of errors.
      */
     JavascriptWorker createWorker(VirtualVehicle vehicle, boolean useContinuation) throws IOException;
-
-    /**
-     * @param string the name of the class to permit access to.
-     */
-    void addAllowedClass(String string);
 
     /**
      * @param string the regular expression of the name of the classes to permit access to.

@@ -24,6 +24,11 @@
 				<t:Submit t:id="deleteVehiclesBtn" t:value="${message:deleteVehicles}" class="btn btn-danger" t:mixins="Confirm"
 					Confirm.message="${message:virtualVehicle.confirmDeleteSelected}?" />
 			</li>
+			<li>
+				<t:PageLink t:page="commons/vv/downloadAll" class="btn btn-primary">
+					${message:downloadAllVehicles}
+				</t:PageLink>
+			</li>
 		</ul>
 
 

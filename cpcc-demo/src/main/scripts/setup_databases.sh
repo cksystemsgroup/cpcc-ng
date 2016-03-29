@@ -1,14 +1,14 @@
 #!/bin/sh
 # -----------------------------------------------------------------------------
-# @(#) setup_databases.sh - Database setup
+# @(#) setup_databases.sh - Database setup script
 # -----------------------------------------------------------------------------
 #
 # Usage: setup_databases.sh
 #
 
-cd $(dirname $0);
+cd $(dirname $0)/..;
 
-. ./profile.sh
+. bin/profile.sh
 
 ensureDir "$DBDIR" || exit 1;
 ensureDir "$LOGDIR" || exit 1;
@@ -20,5 +20,5 @@ do
 	# url="jdbc:hsqldb:file://$DBDIR/$DB";
 	url="jdbc:h2:file:$DBDIR/$DB;create=true"
 	$CPCC_DIR/bin/liquibase-update.sh "$url";
-	$CPCC_DIR/bin/db-update.sh "$url" "$CPCC_DIR/conf/db-setup-all.sql" "$CPCC_DIR/conf/db-setup-${DB}.sql"
+	$CPCC_DIR/bin/db-update.sh "$url" "$CPCC_DIR/conf/db-setup-all.sql" "$CPCC_DIR/conf/db-setup-${DB}-rv.sql" "$CPCC_DIR/conf/db-setup-${DB}-cam.sql"
 done

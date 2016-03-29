@@ -1,14 +1,16 @@
 #!/bin/sh
 # -----------------------------------------------------------------------------
-# @(#) db-update.sh - Database update
+# @(#) db-update.sh - Database update script
 # -----------------------------------------------------------------------------
 #
 # Usage: db-update.sh dbUrl file1 [file2 ...]
 #
 
-cd $(dirname $0);
+cd $(dirname $0)/..;
 
-. ./profile.sh
+. bin/profile.sh
+
+[ "x$*" = "x" ] && die "Usage:  $(basename $0) dbUrl file1 [file2 ...]";
 
 update_hsqldb () {
 	URL="$1"; shift; CP="$CPCC_DIR/lib/sqltool-${COM_HSQLDB_VERSION}.jar";

@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
-import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
@@ -197,7 +196,6 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
             return;
         }
 
-
         wayPointController.setPosition(currentRunningTask.getPosition());
 
         if (vehiclePosition != null)
@@ -267,16 +265,11 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
 
         NativeObject sensorValues = new NativeObject();
 
-        for (SensorDefinition sd : task.getSensors())
-        {
-            if (sd == null || sd.getVisibility() == SensorVisibility.NO_VV)
-            {
-                continue;
-            }
-
-            AbstractRosAdapter node = rosNodeService.findAdapterNodeBySensorDefinitionId(sd.getId());
-            sensorValues.put(sd.getDescription(), sensorValues, conv.convertMessageToJS(node.getValue()));
-        }
+        task.getSensors().stream()
+            .filter(sd -> sd != null)
+            .filter(sd -> sd.getVisibility() != SensorVisibility.NO_VV)
+            .forEach(sd -> sensorValues.put(sd.getDescription(), sensorValues,
+                conv.convertMessageToJS(rosNodeService.findAdapterNodeBySensorDefinitionId(sd.getId()).getValue())));
 
         task.setSensorValues(sensorValues);
     }

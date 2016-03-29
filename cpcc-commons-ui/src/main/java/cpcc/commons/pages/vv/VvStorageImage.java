@@ -20,21 +20,17 @@ package cpcc.commons.pages.vv;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.ByteOrder;
 
 import javax.inject.Inject;
 
 import org.apache.tapestry5.StreamResponse;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.mozilla.javascript.ScriptableObject;
-import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
 
 import cpcc.core.utils.PngImageStreamResponse;
 import cpcc.ros.services.RosImageConverter;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
 import cpcc.vvrte.services.db.VvRteRepository;
+import cpcc.vvrte.utils.VirtualVehicleStorageUtils;
 
 /**
  * Vehicle storage image page.
@@ -58,24 +54,7 @@ public class VvStorageImage
     public StreamResponse onActivate(Integer time, Integer storageId)
     {
         VirtualVehicleStorage item = vvRteRepo.findStorageItemById(storageId);
-
-        ScriptableObject obj = item.getContent();
-        String encoding = (String) obj.get("encoding", obj);
-        int height = (int) obj.get("height", obj);
-        int width = (int) obj.get("width", obj);
-        int step = (int) obj.get("step", obj);
-        byte[] data = (byte[]) obj.get("data", obj);
-        ChannelBuffer cb = ChannelBuffers.copiedBuffer(ByteOrder.LITTLE_ENDIAN, data);
-
-        sensor_msgs.Image image = (sensor_msgs.Image) NodeConfiguration.newPrivate().getTopicMessageFactory()
-            .newFromType(sensor_msgs.Image._TYPE);
-        image.setEncoding(encoding);
-        image.setHeight(height);
-        image.setWidth(width);
-        image.setStep(step);
-        image.setIsBigendian((byte) 0);
-        image.setData(cb);
-
+        sensor_msgs.Image image = VirtualVehicleStorageUtils.itemToRosImageMessage(item);
         BufferedImage bufferedImage = imageConverter.messageToBufferedImage(image);
 
         try
@@ -88,4 +67,5 @@ public class VvStorageImage
             return new PngImageStreamResponse();
         }
     }
+
 }

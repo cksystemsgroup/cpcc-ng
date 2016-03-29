@@ -22,7 +22,7 @@ import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 
 /**
- * SandboxNativeJavaObject
+ * Sandbox Native Java Object
  */
 public class SandboxNativeJavaObject extends NativeJavaObject
 {
@@ -44,11 +44,8 @@ public class SandboxNativeJavaObject extends NativeJavaObject
     @Override
     public Object get(String name, Scriptable start)
     {
-        if ("getClass".equals(name))
-        {
-            return NOT_FOUND;
-        }
-
-        return super.get(name, start);
+        return "getClass".equals(name)
+            ? NOT_FOUND
+            : super.get(name, start);
     }
 }

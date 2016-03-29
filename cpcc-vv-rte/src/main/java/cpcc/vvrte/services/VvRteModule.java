@@ -29,6 +29,8 @@ import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 
 import cpcc.com.services.CommunicationService;
 import cpcc.vvrte.base.VvRteConstants;
+import cpcc.vvrte.services.db.DownloadService;
+import cpcc.vvrte.services.db.DownloadServiceImpl;
 import cpcc.vvrte.services.db.TaskRepository;
 import cpcc.vvrte.services.db.TaskRepositoryImpl;
 import cpcc.vvrte.services.db.VvRteRepository;
@@ -74,6 +76,7 @@ public final class VvRteModule
         binder.bind(VirtualVehicleMigrator.class, VirtualVehicleMigratorImpl.class).scope(ScopeConstants.PERTHREAD);
         binder.bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class);
         binder.bind(TaskRepository.class, TaskRepositoryImpl.class);
+        binder.bind(DownloadService.class, DownloadServiceImpl.class);
     }
 
     /**

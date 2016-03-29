@@ -18,10 +18,12 @@
 
 package cpcc.vvrte.services.db;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
@@ -81,8 +83,12 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .createQuery("UPDATE VirtualVehicle SET task = null")
             .executeUpdate();
 
+        // session
+        //    .createQuery("UPDATE Task SET vehicle = null")
+        //    .executeUpdate();
+
         session
-            .createQuery("UPDATE Task SET vehicle = null")
+            .createQuery("DELETE Task")
             .executeUpdate();
     }
 
@@ -121,11 +127,20 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<VirtualVehicle> findAllStuckVehicles(Set<VirtualVehicleState> allowedStates)
     {
-        return (List<VirtualVehicle>) session
+        List<VirtualVehicle> vvs = new ArrayList<VirtualVehicle>();
+
+        vvs.addAll((List<VirtualVehicle>) session
             .createCriteria(VirtualVehicle.class, "v")
             .add(Restrictions.in("state", allowedStates))
             .createCriteria("v.task", "t", JoinType.LEFT_OUTER_JOIN, Restrictions.eq("taskState", TaskState.COMPLETED))
-            .list();
+            .list());
+
+        vvs.addAll((List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
+            .add(Restrictions.eqOrIsNull("state", VirtualVehicleState.TASK_COMPLETION_AWAITED))
+            .add(Restrictions.isNull("task"))
+            .list());
+
+        return vvs;
     }
 
     /**
@@ -244,14 +259,11 @@ public class VvRteRepositoryImpl implements VvRteRepository
     public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id)
     {
         return (List<VirtualVehicleStorage>) session
-            .createQuery("from VirtualVehicleStorage where virtualVehicle.id = :id")
-            .setInteger("id", id)
+            .createCriteria(VirtualVehicleStorage.class)
+            .addOrder(Order.asc("modificationTime"))
+            .createCriteria("virtualVehicle", "vv", JoinType.INNER_JOIN)
+            .add(Restrictions.eq("id", id))
             .list();
-
-        //        return (VirtualVehicleStorage) session
-        //            .createCriteria(VirtualVehicleStorage.class)
-        //            .add(Restrictions.eq("virtualVehicle.id", vehicle.getId()))
-        //            .uniqueResult(); 
     }
 
     /**
@@ -268,4 +280,5 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .setMaxResults(maxEntries)
             .list();
     }
+
 }

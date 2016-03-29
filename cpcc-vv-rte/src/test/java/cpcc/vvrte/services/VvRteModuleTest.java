@@ -31,10 +31,12 @@ import java.lang.reflect.Constructor;
 
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.ServiceBindingOptions;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
+import org.mockito.ArgumentCaptor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -137,6 +139,17 @@ public class VvRteModuleTest
         verify(configuration).add(VvRteConstants.PROP_DEFAULT_SCHEDULER, className);
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldContributeComponentMessagesSource()
+    {
+        OrderedConfiguration<String> configuration = mock(OrderedConfiguration.class);
+
+        VvRteModule.contributeComponentMessagesSource(configuration);
+
+        verify(configuration).add("cpccVvRteMessages", "cpcc/vvrte/VvRteMessages");
+    }
+
     @Test
     public void shouldSchedulePeriodicJobs()
     {
@@ -147,7 +160,14 @@ public class VvRteModuleTest
 
         VvRteModule.scheduleJobs(vvRteRepo, executor, taskExecutionService, launcher);
 
-        verify(executor, times(2)).addJob(any(CronSchedule.class), anyString(), any(Runnable.class));
+        ArgumentCaptor<Runnable> argument = ArgumentCaptor.forClass(Runnable.class);
+
+        verify(executor, times(2)).addJob(any(CronSchedule.class), anyString(), argument.capture());
+
+        argument.getAllValues().stream().forEach(x -> x.run());
+
+        verify(taskExecutionService).executeTasks();
+        verify(launcher).handleStuckMigrations();
     }
 
     @Test

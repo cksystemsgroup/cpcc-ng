@@ -1,5 +1,4 @@
-<html t:type="layout" title="${message:rosList}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+<html t:type="layout" title="${message:rosList}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
 <div class="row">
@@ -35,14 +34,11 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr t:type="loop" t:source="deviceParameterList"
-								t:value="deviceParameter">
+							<tr t:type="loop" t:source="deviceParameterList" t:value="deviceParameter">
 								<td>${deviceParameter}</td>
 							</tr>
-
 						</tbody>
 					</table>
-
 					<p:else>
 						<div class="panel-body">
 							<div class="cpcc-panel-body">${message:noDeviceFound}</div>
@@ -81,9 +77,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr t:type="loop" t:source="adapterParameterList"
-									t:value="adapterParameter">
-
+								<tr t:type="loop" t:source="adapterParameterList" t:value="adapterParameter">
 									<t:if test="adapterParameter">
 										<td>${adapterParameter}</td>
 									</t:if>

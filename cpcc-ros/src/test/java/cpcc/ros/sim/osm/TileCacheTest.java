@@ -41,12 +41,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.assertj.core.api.Fail;
 import org.easymock.EasyMock;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -54,9 +52,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
- * TileCacheTest
+ * Tile Cache Test
  */
-@RunWith(PowerMockRunner.class)
 @PrepareForTest(HttpClientBuilder.class)
 public class TileCacheTest extends PowerMockTestCase
 {
@@ -121,7 +118,7 @@ public class TileCacheTest extends PowerMockTestCase
     @BeforeMethod
     public void setUp() throws Exception
     {
-        File path = new File("/tmp/");
+        File path = new File("target/");
         tempDirectory = Files.createTempDirectory(path.toPath(), "tmp-test").toFile();
         assertThat(tempDirectory).exists();
 

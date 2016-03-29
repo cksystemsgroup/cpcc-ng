@@ -56,10 +56,10 @@ public class Float32SensorAdapter extends AbstractSensorAdapter
         super.onStart(connectedNode);
         LOG.debug("onStart()");
 
-        Subscriber<std_msgs.Float32> cameraInfoSubscriber =
+        Subscriber<std_msgs.Float32> float32Subscriber =
             connectedNode.newSubscriber(getTopic().getName(), std_msgs.Float32._TYPE);
 
-        cameraInfoSubscriber.addMessageListener(new MessageListener<std_msgs.Float32>()
+        float32Subscriber.addMessageListener(new MessageListener<std_msgs.Float32>()
         {
             @Override
             public void onNewMessage(std_msgs.Float32 message)

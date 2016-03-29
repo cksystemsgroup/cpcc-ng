@@ -44,9 +44,7 @@ public class AcoTspTasksTest
     @BeforeMethod
     public void setUp()
     {
-        FlatWorld gs = new FlatWorld();
-
-        sut = new AcoTspTasks(gs);
+        sut = new AcoTspTasks();
     }
 
     @DataProvider
@@ -91,10 +89,9 @@ public class AcoTspTasksTest
     }
 
     @Test(dataProvider = "pathDataProvider")
-    public void shouldCalculateBestPathWithoutDepot(PolarCoordinate position, List<Task> path
-        , List<Task> expected)
+    public void shouldCalculateBestPathWithoutDepot(PolarCoordinate position, List<Task> path, List<Task> expected)
     {
-        List<Task> actual = sut.calculateBestPathWithoutDepot(position, path);
+        List<Task> actual = sut.calculateBestPath(position, path);
 
         assertThat(actual).has(new TspListCondition<Task>(expected));
     }
@@ -129,13 +126,13 @@ public class AcoTspTasksTest
         return new Object[][]{
             new Object[]{
                 new PolarCoordinate(47.4, 13.2, 5.0),
-                new PolarCoordinate(47.75, 13.1, 5.0),
+                // new PolarCoordinate(47.75, 13.1, 5.0),
                 Arrays.asList(taskA, taskB, taskC, taskD, taskE, taskF),
                 Arrays.asList(taskA, taskD, taskE, taskF, taskB, taskC)
             },
             new Object[]{
                 new PolarCoordinate(47.4, 13.2, 5.0),
-                new PolarCoordinate(47.75, 13.1, 5.0),
+                // new PolarCoordinate(47.75, 13.1, 5.0),
                 Arrays.asList(taskA, taskC, taskB, taskD),
                 Arrays.asList(taskA, taskD, taskB, taskC)
             },
@@ -143,10 +140,9 @@ public class AcoTspTasksTest
     }
 
     @Test(dataProvider = "pathWithDepotDataProvider")
-    public void shouldCalculateBestPathWithDepot(PolarCoordinate position, PolarCoordinate depot, List<Task> path
-        , List<Task> expected)
+    public void shouldCalculateBestPathWithDepot(PolarCoordinate position, List<Task> path, List<Task> expected)
     {
-        List<Task> actual = sut.calculateBestPathWithDepot(position, depot, path);
+        List<Task> actual = sut.calculateBestPath(position, path);
 
         assertThat(actual).has(new TspListCondition<Task>(expected));
     }
@@ -156,7 +152,7 @@ public class AcoTspTasksTest
     {
         List<Task> path = new ArrayList<>();
 
-        List<Task> actual = sut.calculateBestPathWithDepot(null, null, path);
+        List<Task> actual = sut.calculateBestPath(null, path);
 
         assertThat(actual).isSameAs(path);
     }
@@ -181,7 +177,7 @@ public class AcoTspTasksTest
     @Test(dataProvider = "shortPathDataProvider")
     public void shouldReturnUnchangedPathIfPathHasLessThanTwoTasks(List<Task> path)
     {
-        List<Task> actual = sut.calculateBestPathWithDepot(null, null, path);
+        List<Task> actual = sut.calculateBestPath(null, path);
 
         assertThat(actual).isSameAs(path);
     }

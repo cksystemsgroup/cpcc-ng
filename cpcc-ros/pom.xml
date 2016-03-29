@@ -49,12 +49,11 @@
 			<classifier>full</classifier>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.powermock</groupId> -->
-		<!-- <artifactId>powermock-module-junit4</artifactId> -->
-		<!-- <version>1.5.1</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-testng-agent</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.easymock</groupId>
 			<artifactId>easymock</artifactId>

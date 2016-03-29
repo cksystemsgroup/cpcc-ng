@@ -184,11 +184,9 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     /**
      * @param vehicle the virtual vehicle to start
      * @param useContinuation use the continuation data if true
-     * @throws VirtualVehicleLaunchException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    private void startVehicle(VirtualVehicle vehicle, boolean useContinuation)
-        throws VirtualVehicleLaunchException, IOException
+    private void startVehicle(VirtualVehicle vehicle, boolean useContinuation) throws IOException
     {
         JavascriptWorker worker = jss.createWorker(vehicle, useContinuation);
         worker.addStateListener(this);
@@ -212,7 +210,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
             {
                 startVehicle(vehicle, true);
             }
-            catch (VirtualVehicleLaunchException | IOException e)
+            catch (IOException e)
             {
                 logger.error("Can not start virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")", e);
             }
@@ -237,7 +235,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
         {
             startVehicle(vehicle, true);
         }
-        catch (VirtualVehicleLaunchException | IOException e)
+        catch (IOException e)
         {
             logger.error("Can not start virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")", e);
         }
@@ -408,6 +406,23 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         for (VirtualVehicle vehicle : vvRteRepository.findAllStuckVehicles(requiredStates))
         {
+            if (vehicle.getState() == VirtualVehicleState.TASK_COMPLETION_AWAITED)
+            {
+                try
+                {
+                    startVehicle(vehicle, true);
+                }
+                catch (IOException e)
+                {
+                    logger.error("Can not restart virtual vehicle " + vehicle.getUuid()
+                        + ", id=" + vehicle.getId() + ", name=" + vehicle.getName(), e);
+                    vehicle.setState(VirtualVehicleState.DEFECTIVE);
+                    sessionManager.getSession().update(vehicle);
+                }
+
+                continue;
+            }
+
             if (!requiredStates.contains(vehicle.getState()))
             {
                 continue;

@@ -23,14 +23,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Script;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import cpcc.vvrte.entities.VirtualVehicle;
 
@@ -39,11 +38,6 @@ import cpcc.vvrte.entities.VirtualVehicle;
  */
 public class JavascriptServiceImpl implements JavascriptService
 {
-    private static final Logger LOG = LoggerFactory.getLogger(JavascriptServiceImpl.class);
-
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-
-    private Set<String> allowedClasses = new HashSet<String>();
     private Set<String> allowedClassesRegex = new HashSet<String>();
 
     private Logger logger;
@@ -71,7 +65,7 @@ public class JavascriptServiceImpl implements JavascriptService
         }
         catch (IllegalStateException e)
         {
-            LOG.debug("ContextFactory already initialized");
+            logger.debug("ContextFactory already initialized");
         }
     }
 
@@ -81,17 +75,7 @@ public class JavascriptServiceImpl implements JavascriptService
     @Override
     public JavascriptWorker createWorker(VirtualVehicle vehicle, boolean useContinuation) throws IOException
     {
-        return new JavascriptWorker(vehicle, useContinuation, logger, serviceResources, allowedClasses
-            , allowedClassesRegex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addAllowedClass(String className)
-    {
-        allowedClasses.add(className);
+        return new JavascriptWorker(vehicle, useContinuation, logger, serviceResources, allowedClassesRegex);
     }
 
     /**
@@ -115,8 +99,7 @@ public class JavascriptServiceImpl implements JavascriptService
         vehicle.setApiVersion(apiVersion);
         vehicle.setUuid(UUID.randomUUID().toString());
 
-        JavascriptWorker w = new JavascriptWorker(vehicle, false, logger, serviceResources, allowedClasses
-            , allowedClassesRegex);
+        JavascriptWorker w = new JavascriptWorker(vehicle, false, logger, serviceResources, allowedClassesRegex);
 
         String completedScript = StringUtils.defaultIfBlank(w.getScript(), "");
 
@@ -125,11 +108,9 @@ public class JavascriptServiceImpl implements JavascriptService
 
         try
         {
-            Script compiledScript = cx.compileString(completedScript, "<check>", 1, null);
-            if (compiledScript != null)
-            {
-                return EMPTY_OBJECT_ARRAY;
-            }
+            return cx.compileString(completedScript, "<check>", 1, null) != null
+                ? ArrayUtils.EMPTY_OBJECT_ARRAY
+                : new Object[]{0, 0, "Can not compile script!", ""};
         }
         catch (RhinoException e)
         {
@@ -139,7 +120,5 @@ public class JavascriptServiceImpl implements JavascriptService
         {
             Context.exit();
         }
-
-        return new Object[]{0, 0, "Can not compile script!", ""};
     }
 }

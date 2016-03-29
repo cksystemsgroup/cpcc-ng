@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2009-2016 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,7 +57,6 @@ public class JavascriptWorker extends Thread
     private ServiceResources serviceResources;
     private VirtualVehicleState workerState;
     private String script;
-    private Set<String> allowedClasses;
     private Set<String> allowedClassesRegex;
     private String result = null;
     private byte[] snapshot = null;
@@ -70,17 +70,15 @@ public class JavascriptWorker extends Thread
      * @param useContinuation true if the available continuation data should be applied.
      * @param logger the application logger.
      * @param serviceResources the service resources instance.
-     * @param allowedClasses the set of allowed classes.
      * @param allowedClassesRegex the additionally allowed class names as a regular expression.
      * @throws IOException in case of errors.
      */
     public JavascriptWorker(VirtualVehicle vehicle, boolean useContinuation, Logger logger,
-        ServiceResources serviceResources, Set<String> allowedClasses, Set<String> allowedClassesRegex)
+        ServiceResources serviceResources, Set<String> allowedClassesRegex)
         throws IOException
     {
         this.logger = logger;
         this.serviceResources = serviceResources;
-        this.allowedClasses = allowedClasses;
         this.allowedClassesRegex = allowedClassesRegex;
         this.vehicle = vehicle;
 
@@ -127,7 +125,7 @@ public class JavascriptWorker extends Thread
         ScriptableObject scope = cx.initStandardObjects();
         try
         {
-            cx.setClassShutter(new SandboxClassShutter(allowedClasses, allowedClassesRegex));
+            cx.setClassShutter(new SandboxClassShutter(Collections.emptySet(), allowedClassesRegex));
             scope.defineFunctionProperties(VvRteFunctions.FUNCTIONS, VvRteFunctions.class, ScriptableObject.DONTENUM);
 
             Object resultObj;

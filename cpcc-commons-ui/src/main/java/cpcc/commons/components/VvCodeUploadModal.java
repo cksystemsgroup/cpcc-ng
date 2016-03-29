@@ -185,7 +185,7 @@ public class VvCodeUploadModal implements ClientElement
                 VirtualVehicle vv = new VirtualVehicle();
                 vv.setApiVersion(vehicle.getApiVersion());
                 vv.setCode(vehicle.getCode());
-                vv.setName(String.format("%s-%02d", vehicle.getName(), k));
+                vv.setName(String.format("%s-%04d", vehicle.getName(), k));
                 vv.setUuid(UUID.randomUUID().toString());
                 vv.setState(VirtualVehicleState.INIT);
                 session.save(vv);

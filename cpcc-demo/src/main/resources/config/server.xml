@@ -17,18 +17,6 @@
 						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
 					<Resource name="jdbc/LIQUIBASE" auth="Container" type="javax.sql.DataSource" username="sa" password=""
 						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
-
-<!--
-					<Resource name="jdbc/GS" auth="Container" type="javax.sql.DataSource" username="sa" password=""
-						driverClassName="org.hsqldb.jdbc.JDBCDriver" url="jdbc:hsqldb:file://${db.directory}/${app.context.path}"
-						maxTotal="30" />
-					<Resource name="jdbc/RV" auth="Container" type="javax.sql.DataSource" username="sa" password=""
-						driverClassName="org.hsqldb.jdbc.JDBCDriver" url="jdbc:hsqldb:file://${db.directory}/${app.context.path}"
-						maxTotal="30" />
-					<Resource name="jdbc/LIQUIBASE" auth="Container" type="javax.sql.DataSource" username="sa" password=""
-						driverClassName="org.hsqldb.jdbc.JDBCDriver" url="jdbc:hsqldb:file://${db.directory}/${app.context.path}"
-						maxTotal="30" />
--->
 				</Context>
 			</Host>
 		</Engine>

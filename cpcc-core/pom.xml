@@ -51,7 +51,6 @@
 		<dependency>
 			<groupId>de.grundid.opendatalab</groupId>
 			<artifactId>geojson-jackson</artifactId>
-			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.mchange</groupId>
@@ -104,6 +103,11 @@
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-mockito</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-testng-agent</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

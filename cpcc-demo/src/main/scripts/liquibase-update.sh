@@ -1,6 +1,6 @@
 #!/bin/sh
 # -----------------------------------------------------------------------------
-# @(#) liquibase-update.sh - Liquibase update
+# @(#) liquibase-update.sh - Liquibase update script
 # -----------------------------------------------------------------------------
 #
 # Usage: liquibase-update.sh dbUrl
@@ -8,9 +8,11 @@
 
 URL="$1";
 
-cd $(dirname $0);
+cd $(dirname $0)/..;
 
-. ./profile.sh
+. bin/profile.sh
+
+[ "x$*" = "x" ] && die "Usage:  $(basename $0) dbUrl";
 
 cd $CPCC_DIR/classes;
 

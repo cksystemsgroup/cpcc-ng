@@ -91,6 +91,11 @@ public class ImagePublisherNodeTest
     @Test
     public void shouldReceiveMessage() throws InterruptedException
     {
+        sut.onNewMessage(message);
+
+        assertThat(sut.getReceivedMessage()).isSameAs(message);
+        assertThat(sut.getLoop()).isNull();
+
         sut.onStart(connectedNode);
         sut.onNewMessage(message);
 

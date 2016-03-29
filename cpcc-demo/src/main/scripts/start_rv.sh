@@ -1,29 +1,35 @@
 #!/bin/sh
 # -----------------------------------------------------------------------------
-# @(#) start_rv.sh - Start Script Database
+# @(#) start_rv.sh - real vehicle start script.
 # -----------------------------------------------------------------------------
 #
-# Usage: start_rv.sh <RV name>
+# Usage: start_rv.sh RV-name
 #
 
-cd $(dirname $0);
+cd $(dirname $0)/..;
    
-. ./profile.sh
+. bin/profile.sh
+
+[ "x$*" = "x" ] && die "Usage:  $(basename $0) RV-name";
 
 APP_CONTEXT_PATH=$1;
 case "$APP_CONTEXT_PATH" in
-   GS01)  APP_WAR_FILE="$(ls $CPCC_DIR/war/cpcc-gs-web*.war | tail -1)"; IX=00; ;;
-   RV0[1-7])  APP_WAR_FILE="$(ls $CPCC_DIR/war/cpcc-rv-web*.war | tail -1)"; IX=${1/RV/}; ;;
-   *) echo "Can not start Real Vehicle $1" >&2; exit 1; ;;
+	GS01)  APP_WAR_FILE="$(ls $CPCC_DIR/war/cpcc-gs-web*.war | tail -1)"; IX=00; OPTS="-Xmx400m"; ;;
+	RV0[1-7])  APP_WAR_FILE="$(ls $CPCC_DIR/war/cpcc-rv-web*.war | tail -1)"; IX=${1/RV/}; OPTS="-Xmx300m"; ;;
+	*) echo "Can not start Real Vehicle $1" >&2; exit 1; ;;
 esac
 
 CATALINA_BASE=$CPCC_DIR/work/$APP_CONTEXT_PATH;
-rm -rf $CATALINA_BASE
+
+[ -f $CATALINA_BASE/logs/jvm.pid ] && die "$APP_CONTEXT_PATH is already running.";
+
+echo "Removing old setup in $CATALINA_BASE";
+rm -rf $CATALINA_BASE/conf/* $CATALINA_BASE/webapps/* $CATALINA_BASE/temp/*;
 
 for d in $CATALINA_BASE $CATALINA_BASE/conf $CATALINA_BASE/webapps $CATALINA_BASE/logs $CATALINA_BASE/work $CATALINA_BASE/temp; do ensureDir $d; done
 cp $CPCC_DIR/conf/*.xml $CPCC_DIR/conf/*.properties $CATALINA_BASE/conf
 
-OPTS="-Xmx300m -Xss256k -Duser.timezone=CET -Dfile.encoding=UTF-8 -Djava.awt.headless=true";
+OPTS="$OPTS -Xss256k -Duser.timezone=CET -Dfile.encoding=UTF-8 -Djava.awt.headless=true";
 OPTS="$OPTS -Dcatalina.base=$CATALINA_BASE -Dshutdown.port=8${IX}5 -Dhttp.connector.port=8${IX}0"; 
 # OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE -Ddb.directory=$DBDIR -Dhibernate.dialect=org.hibernate.dialect.HSQLDialect";
 OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE"
@@ -61,4 +67,8 @@ CP="$CP:$LIBDIR/tomcat-websocket-api-${TOMCAT_VERSION}.jar";
 
 [ -f "$LIBDIR/scrutiny-javaagent-1.2.1.jar" ] && AGENT="-javaagent:$LIBDIR/scrutiny-javaagent-1.2.1.jar=scrutiny.logs.dir=$CPCC_DIR/work/javaagent-$APP_CONTEXT_PATH"
 
-exec "$JAVA_HOME/bin/java" -cp $CP $AGENT $OPTS org.apache.catalina.startup.Bootstrap start
+# exec "$JAVA_HOME/bin/java" -cp $CP $AGENT $OPTS org.apache.catalina.startup.Bootstrap start
+"$JAVA_HOME/bin/java" -cp $CP $AGENT $OPTS org.apache.catalina.startup.Bootstrap start >> $CATALINA_BASE/logs/catalina.out 2>&1 &
+echo $! > $CATALINA_BASE/logs/jvm.pid
+
+echo "$APP_CONTEXT_PATH started as PID $(cat $CATALINA_BASE/logs/jvm.pid)";

@@ -54,6 +54,8 @@ public class TaskRepositoryImpl implements TaskRepository
             .add(Restrictions.not(Restrictions.eq("taskState", TaskState.COMPLETED)))
             .add(Restrictions.not(Restrictions.eq("taskState", TaskState.EXECUTED)))
             .addOrder(Order.desc("executionStart"))
+            .addOrder(Order.desc("order"))
+            .addOrder(Order.desc("creationTime"))
             .list();
     }
 
@@ -77,6 +79,7 @@ public class TaskRepositoryImpl implements TaskRepository
     {
         return session.createCriteria(Task.class)
             .add(Restrictions.eq("taskState", TaskState.PENDING))
+            .addOrder(Order.asc("creationTime"))
             .list();
     }
 

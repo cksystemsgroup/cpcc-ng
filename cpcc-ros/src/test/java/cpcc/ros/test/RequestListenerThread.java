@@ -137,7 +137,7 @@ public class RequestListenerThread extends Thread
             }
             catch (ConnectionClosedException ex)
             {
-                System.err.println("Client closed connection");
+                // System.err.println("Client closed connection");
             }
             catch (IOException ex)
             {

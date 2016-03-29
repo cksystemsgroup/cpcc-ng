@@ -24,6 +24,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
@@ -40,9 +41,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.easymock.EasyMock;
 import org.mockito.Mockito;
-import org.powermock.api.easymock.PowerMock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
@@ -54,23 +53,22 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import sensor_msgs.NavSatFix;
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.WGS84;
+import sensor_msgs.NavSatFix;
 
-// @RunWith(PowerMockRunner.class)
 @PrepareForTest({ImagePublisherNodeLoop.class, HttpClientBuilder.class, Camera.class})
 public class ImagePublisherNodeLoopTest extends PowerMockTestCase
 {
     private static final String TOPIC_ROOT = "/topicRoot";
     private static final String INFO_TOPIC = TOPIC_ROOT + "/camera_info";
     private static final String IMAGE_TOPIC = TOPIC_ROOT + "/image";
+    private static final String RESPONSE_DATA = "this is just a test.";
 
-    private ImagePublisherNodeLoop sut;
     private Configuration config;
     private ConnectedNode connectedNode;
-    private Publisher<sensor_msgs.Image> publisher1;
-    private Publisher<sensor_msgs.CameraInfo> publisher2;
+    private Publisher<sensor_msgs.Image> imagePublisher;
+    private Publisher<sensor_msgs.CameraInfo> infoPublisher;
     private NavSatFix message;
     private File tileDir;
     private MessageFactory messageFactory;
@@ -80,30 +78,8 @@ public class ImagePublisherNodeLoopTest extends PowerMockTestCase
     private CloseableHttpResponse response;
     private CloseableHttpClient client;
     private HttpClientBuilder httpClientBuilderMock;
-    private String responseData = "this is just a test.";
-    private Camera camera;
     private Logger logger;
-
-    private StatusLine statusLine200ok = new StatusLine()
-    {
-        @Override
-        public int getStatusCode()
-        {
-            return HttpStatus.SC_OK;
-        }
-
-        @Override
-        public String getReasonPhrase()
-        {
-            return "200 OK";
-        }
-
-        @Override
-        public ProtocolVersion getProtocolVersion()
-        {
-            return new ProtocolVersion("HTTP", 1, 0);
-        }
-    };
+    private StatusLine statusLine200ok;
 
     @SuppressWarnings("unchecked")
     @BeforeMethod
@@ -114,7 +90,7 @@ public class ImagePublisherNodeLoopTest extends PowerMockTestCase
         tileDir = File.createTempFile("tile", "dir");
         tileDir.delete();
         tileDir.mkdir();
-        assertThat(tileDir).exists().isDirectory();
+        assertThat(tileDir).exists().isDirectory().canWrite();
 
         config = mock(Configuration.class);
         when(config.getTopicRoot()).thenReturn(TOPIC_ROOT);
@@ -135,21 +111,26 @@ public class ImagePublisherNodeLoopTest extends PowerMockTestCase
         when(messageFactory.newFromType(sensor_msgs.Image._TYPE)).thenReturn(imageMessage);
         when(messageFactory.newFromType(sensor_msgs.CameraInfo._TYPE)).thenReturn(cameraInfoMessage);
 
-        publisher1 = (Publisher<sensor_msgs.Image>) mock(Publisher.class);
-        publisher2 = (Publisher<sensor_msgs.CameraInfo>) mock(Publisher.class);
+        imagePublisher = (Publisher<sensor_msgs.Image>) mock(Publisher.class);
+        infoPublisher = (Publisher<sensor_msgs.CameraInfo>) mock(Publisher.class);
 
         connectedNode = mock(ConnectedNode.class);
         when(connectedNode.getTopicMessageFactory()).thenReturn(messageFactory);
         when(connectedNode.<sensor_msgs.Image>
-            newPublisher(IMAGE_TOPIC, sensor_msgs.Image._TYPE)).thenReturn(publisher1);
+            newPublisher(IMAGE_TOPIC, sensor_msgs.Image._TYPE)).thenReturn(imagePublisher);
         when(connectedNode.<sensor_msgs.CameraInfo>
-            newPublisher(INFO_TOPIC, sensor_msgs.CameraInfo._TYPE)).thenReturn(publisher2);
+            newPublisher(INFO_TOPIC, sensor_msgs.CameraInfo._TYPE)).thenReturn(infoPublisher);
 
         message = mock(NavSatFix.class);
         when(message.getAltitude()).thenReturn(8.76);
 
+        statusLine200ok = mock(StatusLine.class);
+        when(statusLine200ok.getStatusCode()).thenReturn(HttpStatus.SC_OK);
+        when(statusLine200ok.getReasonPhrase()).thenReturn("200 OK");
+        when(statusLine200ok.getProtocolVersion()).thenReturn(new ProtocolVersion("HTTP", 1, 0));
+
         entity = Mockito.mock(HttpEntity.class);
-        when(entity.getContent()).thenReturn(new ByteArrayInputStream(responseData.getBytes("UTF-8")));
+        when(entity.getContent()).thenReturn(new ByteArrayInputStream(RESPONSE_DATA.getBytes("UTF-8")));
 
         response = PowerMockito.mock(CloseableHttpResponse.class);
         PowerMockito.when(response.getStatusLine()).thenReturn(statusLine200ok);
@@ -158,13 +139,11 @@ public class ImagePublisherNodeLoopTest extends PowerMockTestCase
         client = PowerMockito.mock(CloseableHttpClient.class);
         PowerMockito.doReturn(response).when(client).execute((HttpUriRequest) anyObject());
 
-        httpClientBuilderMock = PowerMock.createMock(HttpClientBuilder.class);
+        httpClientBuilderMock = mock(HttpClientBuilder.class);
+        when(httpClientBuilderMock.build()).thenReturn(client);
 
-        PowerMock.mockStatic(HttpClientBuilder.class);
-        EasyMock.expect(HttpClientBuilder.create()).andReturn(httpClientBuilderMock).anyTimes();
-        PowerMock.replay(HttpClientBuilder.class);
-        EasyMock.expect(httpClientBuilderMock.build()).andReturn(client).anyTimes();
-        PowerMock.replay(HttpClientBuilder.class, httpClientBuilderMock);
+        PowerMockito.mockStatic(HttpClientBuilder.class);
+        when(HttpClientBuilder.create()).thenReturn(httpClientBuilderMock);
     }
 
     @AfterMethod
@@ -176,11 +155,11 @@ public class ImagePublisherNodeLoopTest extends PowerMockTestCase
     @Test
     public void shouldReceiveMessage() throws Exception
     {
-        camera = PowerMock.createMockAndExpectNew(Camera.class, config);
-        EasyMock.expect(camera.getImage(EasyMock.isA(PolarCoordinate.class))).andReturn(ArrayUtils.EMPTY_BYTE_ARRAY);
-        PowerMock.replay(Camera.class, camera);
+        Camera camera = PowerMockito.mock(Camera.class);
+        PowerMockito.when(camera.getImage(any(PolarCoordinate.class))).thenReturn(ArrayUtils.EMPTY_BYTE_ARRAY);
+        PowerMockito.whenNew(Camera.class).withArguments(config).thenReturn(camera);
 
-        sut = new ImagePublisherNodeLoop(logger, config, connectedNode);
+        ImagePublisherNodeLoop sut = new ImagePublisherNodeLoop(logger, config, connectedNode);
 
         sut.loop();
         assertThat(sut.getMessage()).isNull();
@@ -190,27 +169,52 @@ public class ImagePublisherNodeLoopTest extends PowerMockTestCase
 
         sut.loop();
 
-        verify(connectedNode).newPublisher(IMAGE_TOPIC, sensor_msgs.Image._TYPE);
         verify(connectedNode).newPublisher(INFO_TOPIC, sensor_msgs.CameraInfo._TYPE);
         assertThat(sut.getMessage()).isSameAs(message);
-        verify(publisher1).publish(imageMessage);
-        verify(publisher2).publish(cameraInfoMessage);
+        verify(imagePublisher).publish(imageMessage);
+        verify(infoPublisher).publish(cameraInfoMessage);
     }
 
     @Test
     public void shouldHandleIOExceptionInCamera() throws Exception
     {
-        camera = PowerMock.createMockAndExpectNew(Camera.class, config);
-        EasyMock.expect(camera.getImage(EasyMock.isA(PolarCoordinate.class))).andThrow(new IOException());
-        PowerMock.replay(camera, Camera.class);
+        Camera camera = PowerMockito.mock(Camera.class);
+        PowerMockito.when(camera.getImage(any(PolarCoordinate.class))).thenThrow(new IOException("Thrown on purpose!"));
+        PowerMockito.whenNew(Camera.class).withArguments(config).thenReturn(camera);
 
-        sut = new ImagePublisherNodeLoop(logger, config, connectedNode);
-
+        ImagePublisherNodeLoop sut = new ImagePublisherNodeLoop(logger, config, connectedNode);
         sut.setMessage(message);
         sut.loop();
 
         verify(connectedNode).newPublisher(IMAGE_TOPIC, sensor_msgs.Image._TYPE);
         verify(connectedNode).newPublisher(INFO_TOPIC, sensor_msgs.CameraInfo._TYPE);
         verify(logger).error(eq("Can not get camera image."), any(IOException.class));
+    }
+
+    @Test
+    public void shouldHandleMissingPosition() throws InterruptedException
+    {
+        ImagePublisherNodeLoop sut = new ImagePublisherNodeLoop(logger, config, connectedNode);
+
+        sut.setMessage(null);
+        sut.loop();
+
+        verifyZeroInteractions(imagePublisher);
+        verifyZeroInteractions(infoPublisher);
+    }
+
+    @Test
+    public void shouldPublishImage() throws Exception
+    {
+        Camera camera = PowerMockito.mock(Camera.class);
+        PowerMockito.when(camera.getImage(any(PolarCoordinate.class))).thenReturn(ArrayUtils.EMPTY_BYTE_ARRAY);
+        PowerMockito.whenNew(Camera.class).withArguments(config).thenReturn(camera);
+
+        ImagePublisherNodeLoop sut = new ImagePublisherNodeLoop(logger, config, connectedNode);
+        sut.setMessage(message);
+        sut.loop();
+
+        verify(imagePublisher).publish(imageMessage);
+        verify(infoPublisher).publish(cameraInfoMessage);
     }
 }

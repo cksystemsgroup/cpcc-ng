@@ -152,7 +152,7 @@ public class JavascriptServiceTest
     {
         MyBuiltInFunctions functions = new MyBuiltInFunctions();
         JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, functions);
-        jss.addAllowedClass("cpcc.vvrte.services.js.JavascriptServiceTest$MyBuiltInFunctions");
+        jss.addAllowedClassRegex("cpcc.vvrte.services.js.JavascriptServiceTest\\$MyBuiltInFunctions");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream stdOut = new PrintStream(out, true);
@@ -202,7 +202,7 @@ public class JavascriptServiceTest
     {
         MyBuiltInFunctions functions = new MyBuiltInFunctions();
         JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, functions);
-        jss.addAllowedClass("cpcc.vvrte.services.js.JavascriptServiceTest$MyBuiltInFunctions");
+        jss.addAllowedClassRegex("cpcc.vvrte.services.js.JavascriptServiceTest\\$MyBuiltInFunctions");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream stdOut = new PrintStream(out, true);

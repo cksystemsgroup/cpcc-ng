@@ -35,6 +35,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -114,7 +115,7 @@ public class CameraTest
     @BeforeMethod
     public void setUp() throws Exception
     {
-        int port = 10000 + (int) (20000.0 * Math.random());
+        int port = RandomUtils.nextInt(10000, 30000); 
 
         gs = new WGS84();
 

@@ -1,6 +1,5 @@
 #!/bin/echo Source this script instead of running it!
 
-cd $(dirname $0)/..;
 export CPCC_DIR=$(pwd);
 export DBDIR=$CPCC_DIR/db;
 export LOGDIR=$CPCC_DIR/logs;

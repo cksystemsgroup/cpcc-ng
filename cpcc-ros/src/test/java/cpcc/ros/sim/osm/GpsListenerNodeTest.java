@@ -18,6 +18,7 @@
 
 package cpcc.ros.sim.osm;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,6 +30,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import cpcc.ros.sim.AnonymousNodeMain;
+import sensor_msgs.NavSatFix;
 
 public class GpsListenerNodeTest
 {
@@ -68,5 +70,23 @@ public class GpsListenerNodeTest
 
         verify(connectedNode).newSubscriber(LISTEN_TOPIC, sensor_msgs.NavSatFix._TYPE);
         verify(subscriber).addMessageListener(publisherNode);
+    }
+
+    @Test
+    public void shouldPublishMessage()
+    {
+        NavSatFix message = mock(NavSatFix.class);
+
+        sut.onNewMessage(message);
+
+        verify(publisherNode).onNewMessage(message);
+
+        assertThat(sut.getReceivedMessage()).isSameAs(message);
+    }
+
+    @Test
+    public void shouldHaveDefaultNodeName()
+    {
+        assertThat(sut.getDefaultNodeName().toString()).matches("anonymous_\\d+");
     }
 }

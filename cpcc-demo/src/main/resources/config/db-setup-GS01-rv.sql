@@ -7,5 +7,4 @@ INSERT INTO PARAMETERS (ID,NAME,SORT,VALUE) VALUES (1,'realVehicleName',0,'GS01'
 INSERT INTO PARAMETERS (ID,NAME,SORT,VALUE) VALUES (2,'masterServerURI',0,'http://localhost:13000');
 INSERT INTO PARAMETERS (ID,NAME,SORT,VALUE) VALUES (3,'useInternalRosCore',0,'true');
 
-UPDATE real_vehicles SET last_update = SYSDATE WHERE name = 'GS01';
-
+-- UPDATE real_vehicles SET last_update = SYSDATE WHERE name = 'GS01';

@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import cpcc.core.entities.Parameter;
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
@@ -54,8 +55,10 @@ import cpcc.vvrte.services.VirtualVehicleMapperImpl;
  */
 public class VirtualVehicleMapperTest
 {
+    private static final String GS_01 = "gs01";
     private static final String REAL_VEHICLE_ONE_NAME = "rv001";
     private static final String REAL_VEHICLE_TWO_NAME = "rv002";
+    private static final String REAL_VEHICLE_THREE_NAME = "rv003";
 
     @SuppressWarnings("serial")
     private static final SensorDefinition altimeter = new SensorDefinition()
@@ -127,10 +130,14 @@ public class VirtualVehicleMapperTest
             + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
             + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[14,47],[15,47],[15,48],[14,48],[14,47]]]}}]}";
 
+    private Parameter gsName1;
+    private RealVehicle gs01;
     private Parameter rvName1;
     private RealVehicle realVehicle1;
     private Parameter rvName2;
     private RealVehicle realVehicle2;
+    private Parameter rvName3;
+    private RealVehicle realVehicle3;
     private QueryManager qm;
     private VirtualVehicleMapperImpl sut;
     private RealVehicleRepository realVehicleRepository;
@@ -141,15 +148,30 @@ public class VirtualVehicleMapperTest
     {
         logger = mock(Logger.class);
 
+        gs01 = mock(RealVehicle.class);
+        when(gs01.toString()).thenReturn(GS_01);
+        when(gs01.getName()).thenReturn(GS_01);
+        when(gs01.getType()).thenReturn(RealVehicleType.GROUND_STATION);
+
         realVehicle1 = mock(RealVehicle.class);
+        when(realVehicle1.toString()).thenReturn(REAL_VEHICLE_ONE_NAME);
+        when(realVehicle1.getName()).thenReturn(REAL_VEHICLE_ONE_NAME);
         when(realVehicle1.getAreaOfOperation()).thenReturn(AREA_OF_OPERATION_RV1);
         when(realVehicle1.getSensors()).thenReturn(Arrays.asList(altimeter, barometer, co2Sensor));
-        when(realVehicle1.getName()).thenReturn(REAL_VEHICLE_ONE_NAME);
 
         realVehicle2 = mock(RealVehicle.class);
+        when(realVehicle2.toString()).thenReturn(REAL_VEHICLE_TWO_NAME);
+        when(realVehicle2.getName()).thenReturn(REAL_VEHICLE_TWO_NAME);
         when(realVehicle2.getAreaOfOperation()).thenReturn(AREA_OF_OPERATION_RV2);
         when(realVehicle2.getSensors()).thenReturn(Arrays.asList(altimeter, barometer, co2Sensor));
-        when(realVehicle2.getName()).thenReturn(REAL_VEHICLE_TWO_NAME);
+
+        realVehicle3 = mock(RealVehicle.class);
+        when(realVehicle3.toString()).thenReturn(REAL_VEHICLE_THREE_NAME);
+        when(realVehicle3.getName()).thenReturn(REAL_VEHICLE_THREE_NAME);
+        when(realVehicle3.getAreaOfOperation()).thenReturn(AREA_OF_OPERATION_RV2);
+
+        gsName1 = new Parameter();
+        gsName1.setValue(GS_01);
 
         rvName1 = new Parameter();
         rvName1.setValue(REAL_VEHICLE_ONE_NAME);
@@ -157,15 +179,22 @@ public class VirtualVehicleMapperTest
         rvName2 = new Parameter();
         rvName2.setValue(REAL_VEHICLE_TWO_NAME);
 
+        rvName3 = new Parameter();
+        rvName3.setValue(REAL_VEHICLE_THREE_NAME);
+
         qm = mock(QueryManager.class);
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(rvName1);
 
         realVehicleRepository = mock(RealVehicleRepository.class);
+        when(realVehicleRepository.findRealVehicleByName(GS_01)).thenReturn(gs01);
         when(realVehicleRepository.findRealVehicleByName(REAL_VEHICLE_ONE_NAME)).thenReturn(realVehicle1);
         when(realVehicleRepository.findRealVehicleByName(REAL_VEHICLE_TWO_NAME)).thenReturn(realVehicle2);
-        when(realVehicleRepository.findAllRealVehicles()).thenReturn(Arrays.asList(realVehicle1, realVehicle2));
+        when(realVehicleRepository.findRealVehicleByName(REAL_VEHICLE_THREE_NAME)).thenReturn(realVehicle3);
+        when(realVehicleRepository.findAllRealVehicles())
+            .thenReturn(Arrays.asList(gs01, realVehicle1, realVehicle2, realVehicle3));
         when(realVehicleRepository.findOwnRealVehicle()).thenReturn(realVehicle1);
-        when(realVehicleRepository.findAllRealVehiclesExceptOwn()).thenReturn(Arrays.asList(realVehicle2));
+        when(realVehicleRepository.findAllRealVehiclesExceptOwn())
+            .thenReturn(Arrays.asList(gs01, realVehicle2, realVehicle3));
 
         sut = new VirtualVehicleMapperImpl(logger, realVehicleRepository);
     }
@@ -195,7 +224,7 @@ public class VirtualVehicleMapperTest
 
         assertThat(decision).isNotNull();
         assertThat(decision.isMigration()).isTrue();
-        assertThat(decision.getRealVehicles()).isNotNull().isEmpty();
+        assertThat(decision.getRealVehicles()).containsExactly(gs01);
     }
 
     @DataProvider
@@ -277,7 +306,7 @@ public class VirtualVehicleMapperTest
 
         assertThat(decision).isNotNull();
         assertThat(decision.isMigration()).isTrue();
-        assertThat(decision.getRealVehicles()).isNotNull().isEmpty();
+        assertThat(decision.getRealVehicles()).containsExactly(gs01);
     }
 
     @DataProvider

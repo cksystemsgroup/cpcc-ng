@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2009-2016 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ import cpcc.core.services.opts.OptionsParserService;
 import cpcc.core.services.opts.OptionsParserServiceImpl;
 
 /**
- * PersistenceModuleTest
+ * CoreModuleTest
  */
 public class CoreModuleTest
 {
@@ -93,6 +93,17 @@ public class CoreModuleTest
         CoreModule.contributeApplicationDefaults(configuration);
 
         verify(configuration).add(eq(CoreConstants.PROP_MAX_JOB_AGE), anyString());
+    }
+
+    @Test
+    public void shouldContributeComponentMessagesSource()
+    {
+        @SuppressWarnings("unchecked")
+        OrderedConfiguration<String> configuration = mock(OrderedConfiguration.class);
+
+        CoreModule.contributeComponentMessagesSource(configuration);
+
+        verify(configuration).add(eq("cpccCoreMessages"), eq("cpcc/core/CoreMessages"));
     }
 
     @Test

@@ -23,25 +23,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.geojson.FeatureCollection;
 import org.slf4j.Logger;
 
-import cpcc.core.entities.MappingAttributes;
 import cpcc.core.entities.PolarCoordinate;
-import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
-import cpcc.ros.base.AbstractRosAdapter;
 import cpcc.ros.sensors.AbstractGpsSensorAdapter;
+import cpcc.ros.sensors.AbstractSensorAdapter;
 import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.services.db.TaskRepository;
 import cpcc.vvrte.services.db.VvRteRepository;
 import cpcc.vvrte.services.json.VvGeoJsonConverter;
-import sensor_msgs.NavSatFix;
 
 /**
  * State service implementation.
@@ -102,13 +101,10 @@ public class StateServiceImpl implements StateService
 
         FeatureCollection fc = new FeatureCollection();
 
-        for (String x : what != null ? what.split("-") : ALL_CONTRIBUTORS)
-        {
-            if (contributorMap.containsKey(x))
-            {
-                contributorMap.get(x).contribute(fc, position, tasks);
-            }
-        }
+        Stream.of(what != null ? what.split("-") : ALL_CONTRIBUTORS)
+            .map(w -> contributorMap.get(w))
+            .filter(c -> c != null)
+            .forEach(c -> c.contribute(fc, position, tasks));
 
         return fc;
     }
@@ -118,30 +114,21 @@ public class StateServiceImpl implements StateService
      */
     private PolarCoordinate findRealVehiclePosition()
     {
-        for (MappingAttributes attr : qm.findAllMappingAttributes())
-        {
-            if (!attr.getConnectedToAutopilot())
-            {
-                continue;
-            }
+        Optional<PolarCoordinate> coordinate = qm.findAllMappingAttributes().stream()
+            .filter(attr -> attr.getConnectedToAutopilot())
+            .map(attr -> attr.getSensorDefinition())
+            .filter(sd -> sd != null)
+            .filter(sd -> sd.getType() == SensorType.GPS)
+            .map(sd -> rns.findAdapterNodeBySensorDefinitionId(sd.getId()))
+            .filter(adapter -> adapter != null)
+            .filter(adapter -> adapter instanceof AbstractSensorAdapter)
+            .map(adapter -> ((AbstractGpsSensorAdapter) adapter).getPosition())
+            .filter(pos -> pos != null)
+            .map(pos -> new PolarCoordinate(pos.getLatitude(), pos.getLongitude(), pos.getAltitude()))
+            .findFirst();
 
-            SensorDefinition sd = attr.getSensorDefinition();
-            if (sd == null || sd.getType() != SensorType.GPS)
-            {
-                continue;
-            }
-
-            AbstractRosAdapter adapter = rns.findAdapterNodeBySensorDefinitionId(sd.getId());
-            if (adapter != null && adapter instanceof AbstractGpsSensorAdapter)
-            {
-                NavSatFix pos = ((AbstractGpsSensorAdapter) adapter).getPosition();
-                if (pos != null)
-                {
-                    return new PolarCoordinate(pos.getLatitude(), pos.getLongitude(), pos.getAltitude());
-                }
-            }
-        }
-
-        return null;
+        return coordinate.isPresent()
+            ? coordinate.get()
+            : null;
     }
 }

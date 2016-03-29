@@ -18,10 +18,10 @@
 
 package cpcc.vvrte.services.task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cpcc.core.entities.PolarCoordinate;
-import cpcc.core.utils.GeodeticSystem;
 import cpcc.vvrte.entities.Task;
 
 /**
@@ -29,15 +29,16 @@ import cpcc.vvrte.entities.Task;
  */
 public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
 {
-    private AcoTspTasks tspSolver;
+    private int maxTasks;
+    private TspSolver tspSolver;
 
     /**
      * Default constructor.
      */
     public GatedTspSchedulingAlgorithm()
     {
-        GeodeticSystem gs = new FlatWorld();
-        tspSolver = new AcoTspTasks(gs);
+        maxTasks = 30;
+        tspSolver = new HeldKarpTspSolver();
     }
 
     /**
@@ -52,15 +53,13 @@ public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
             return false;
         }
 
-        if (depots.isEmpty())
+        List<Task> taskList = new ArrayList<>();
+        for (int k = 0, l = Math.min(maxTasks, pendingTasks.size()); k < l; ++k)
         {
-            scheduledTasks.addAll(tspSolver.calculateBestPathWithoutDepot(position, pendingTasks));
+            taskList.add(pendingTasks.remove(0));
         }
-        else
-        {
-            scheduledTasks.addAll(tspSolver.calculateBestPathWithDepot(position, depots.get(0), pendingTasks));
-        }
-        pendingTasks.clear();
+
+        scheduledTasks.addAll(tspSolver.calculateBestPath(position, taskList));
         return true;
     }
 }

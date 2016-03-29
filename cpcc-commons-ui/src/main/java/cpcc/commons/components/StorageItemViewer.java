@@ -30,6 +30,7 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 
 import cpcc.vvrte.entities.VirtualVehicleStorage;
 import cpcc.vvrte.utils.JavaScriptUtils;
+import cpcc.vvrte.utils.VirtualVehicleStorageUtils;
 
 /**
  * Storage Item Viewer implementation.
@@ -67,9 +68,7 @@ public class StorageItemViewer
      */
     public boolean isImage()
     {
-        String messageType = (String) item.getContent().get("messageType", item.getContent());
-
-        return "sensor_msgs/Image".equals(messageType);
+        return VirtualVehicleStorageUtils.isItemAnImage(item);
     }
 
     /**

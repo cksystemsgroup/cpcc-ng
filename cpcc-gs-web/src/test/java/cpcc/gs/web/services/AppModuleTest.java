@@ -19,9 +19,15 @@
 package cpcc.gs.web.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Constructor;
 
+import org.apache.tapestry5.SymbolConstants;
+import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.testng.annotations.Test;
 
 import cpcc.gs.web.services.AppModule;
@@ -38,5 +44,29 @@ public class AppModuleTest
         assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
+    }
+    
+    @Test
+    public void shouldContributreFactoryDefaults()
+    {
+        @SuppressWarnings("unchecked")
+        MappedConfiguration<String, Object> configuration = mock(MappedConfiguration.class);
+
+        AppModule.contributeFactoryDefaults(configuration);
+
+        verify(configuration).override(eq(SymbolConstants.APPLICATION_VERSION), any());
+    }
+
+    @Test
+    public void shouldContributreApplicationDefaults()
+    {
+        @SuppressWarnings("unchecked")
+        MappedConfiguration<String, Object> configuration = mock(MappedConfiguration.class);
+
+        AppModule.contributeApplicationDefaults(configuration);
+
+        verify(configuration).add(eq(SymbolConstants.SUPPORTED_LOCALES), any());
+        verify(configuration).add(eq(SymbolConstants.MINIFICATION_ENABLED), any());
+        verify(configuration).add(eq(SymbolConstants.HMAC_PASSPHRASE), any());
     }
 }

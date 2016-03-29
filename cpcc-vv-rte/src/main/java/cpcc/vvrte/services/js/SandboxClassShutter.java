@@ -20,6 +20,8 @@ package cpcc.vvrte.services.js;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.mozilla.javascript.ClassShutter;
 
@@ -28,22 +30,18 @@ import org.mozilla.javascript.ClassShutter;
  */
 public class SandboxClassShutter implements ClassShutter
 {
-    @SuppressWarnings("serial")
-    private static final Set<String> ALLOWED_CLASSES = new HashSet<String>()
-    {
-        {
-            add(java.lang.Math.class.getName());
-            add(java.io.PrintStream.class.getName());
-            add(cpcc.vvrte.services.js.BuiltInFunctions.class.getName());
-            add(java.util.ArrayList.class.getName());
-            add(java.util.List.class.getName());
-            add(java.util.Map.class.getName());
-            add(java.util.HashMap.class.getName());
-            add(java.util.Set.class.getName());
-            add(java.util.HashSet.class.getName());
-            add(cpcc.core.utils.NullPrintStream.class.getName());
-        }
-    };
+    private static final Set<String> ALLOWED_CLASSES = Stream.of(
+        cpcc.core.utils.NullPrintStream.class.getName(),
+        cpcc.vvrte.services.js.BuiltInFunctions.class.getName(),
+        java.io.PrintStream.class.getName(),
+        java.lang.Math.class.getName(),
+        java.util.ArrayList.class.getName(),
+        java.util.HashMap.class.getName(),
+        java.util.HashSet.class.getName(),
+        java.util.List.class.getName(),
+        java.util.Map.class.getName(),
+        java.util.Set.class.getName()
+        ).collect(Collectors.toSet());
 
     private Set<String> allowedClasses = new HashSet<String>();
 
