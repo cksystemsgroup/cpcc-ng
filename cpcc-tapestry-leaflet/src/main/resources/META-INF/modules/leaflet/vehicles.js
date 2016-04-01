@@ -27,6 +27,7 @@ function(leaflet, console)
 		createIcon : function()
 		{
 			var div = document.createElement('div');
+
 			this.img = this._createImg(this.options.iconUrl);
 			div.appendChild(this.img);
 
@@ -41,7 +42,7 @@ function(leaflet, console)
 					geometries : []
 				}
 			});
-			this.setVehicleState('0', 'none');
+
 			this._setIconStyles(div, 'icon');
 			return div;
 		},
@@ -102,8 +103,9 @@ function(leaflet, console)
 	leaflet.VehicleMarker = leaflet.Marker.extend({
 		options : {
 			baseUrl : 'images',
-			icon : new leaflet.Icon.Default(),
-
+			icon : new leaflet.VehicleIcon({
+				iconUrl : 'images/VehicleGrey_32.png'
+			}),
 			iconImages : {
 				busy : 'VehicleBlack_32.png',
 				idle : 'VehicleGreen_32.png',
@@ -117,36 +119,21 @@ function(leaflet, console)
 
 		setVehicleState : function(id, state, heading, name)
 		{
-			if (!this.icons.busy)
-			{
-				this.icons.busy = new leaflet.VehicleIcon({
-					iconUrl : this.options.baseUrl + '/' + this.options.iconImages.busy
-				});
-
-				this.icons.idle = new leaflet.VehicleIcon({
-					iconUrl : this.options.baseUrl + '/' + this.options.iconImages.idle
-				});
-
-				this.icons.offline = new leaflet.VehicleIcon({
-					iconUrl : this.options.baseUrl + '/' + this.options.iconImages.offline
-				});
-			}
-
 			if (this.vehicleState != state)
 			{
 				this.vehicleState = state;
-				this.setIcon(this.icons[state]);
+				this.options.icon = new leaflet.VehicleIcon({
+					iconUrl : this.options.baseUrl + '/' + this.options.iconImages[state]
+				});
+				this.setIcon(this.options.icon);
 			}
 
 			this.options.icon.setVehicleState(id, state, heading, name);
-
-			return this;
 		},
 
 		setVvState : function(task, state)
 		{
 			this.options.icon.setVvState(task, state)
-			return this;
 		},
 	});
 
@@ -154,7 +141,6 @@ function(leaflet, console)
 	 * leaflet.QuadrotorMarker is used to display quadrotor UAVs on the map.
 	 */
 	leaflet.QuadrotorMarker = leaflet.VehicleMarker.extend({
-		icons : {},
 		options : {
 			iconImages : {
 				busy : 'QuadrotorBlack_32.png',
@@ -169,7 +155,6 @@ function(leaflet, console)
 	 * map.
 	 */
 	leaflet.ModelAirPlaneMarker = leaflet.VehicleMarker.extend({
-		icons : {},
 		options : {
 			iconImages : {
 				busy : 'ModelAirPlaneBlack_32.png',
@@ -183,7 +168,6 @@ function(leaflet, console)
 	 * leaflet.DrifterMarker is used to display drifter buoys on the map.
 	 */
 	leaflet.DrifterMarker = leaflet.VehicleMarker.extend({
-		icons : {},
 		options : {
 			iconImages : {
 				busy : 'DrifterBlack_32.png',
@@ -197,7 +181,6 @@ function(leaflet, console)
 	 * leaflet.BoatMarker is used to display boats on the map.
 	 */
 	leaflet.BoatMarker = leaflet.VehicleMarker.extend({
-		icons : {},
 		options : {
 			iconImages : {
 				busy : 'BoatBlack_32.png',
@@ -212,7 +195,6 @@ function(leaflet, console)
 	 * map.
 	 */
 	leaflet.GroundStationMarker = leaflet.VehicleMarker.extend({
-		icons : {},
 		options : {
 			iconImages : {
 				busy : 'GroundStationBlack_32.png',

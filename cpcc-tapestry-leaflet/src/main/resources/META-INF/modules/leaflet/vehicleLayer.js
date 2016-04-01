@@ -85,18 +85,13 @@ function($, leaflet, data, vehicles, zoneManager, console, lMap)
 
 		for ( var vehicleId in newVehicles)
 		{
-			var vehicle = newVehicles[vehicleId];
-			// console.info('updateVehicleData: ' + JSON.stringify(vehicle));
-
-			vehicle.features.forEach(function(element, index, array)
+			newVehicles[vehicleId].features.forEach(function(element, index, array)
 			{
 				overlay.layer.fire(element.properties.type + 'Change', {
 					layer : {
 						cpccType : element.properties.type,
 						cpccMapId : mapId,
 						cpccFeatures : element,
-						cpccOverlay : overlay,
-						cpccRv : vehicle,
 						cpccRvId : vehicleId,
 					}
 				});
