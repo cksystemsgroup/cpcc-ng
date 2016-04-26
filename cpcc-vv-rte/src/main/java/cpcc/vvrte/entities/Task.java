@@ -19,6 +19,7 @@
 package cpcc.vvrte.entities;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -296,4 +297,20 @@ public class Task implements Serializable
         this.vehicle = vehicle;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return "created " + sdf.format(creationTime)
+            + ", started " + (executionStart != null ? sdf.format(executionStart) : "-")
+            + ", ended " + (executionEnd != null ? sdf.format(executionEnd) : "-")
+            + ", pos " + position
+            + ", state " + taskState
+            + ", order " + order
+            + ", tolerance " + tolerance
+            + ", " + (vehicle != null ? "VV " + vehicle.getName() + " (" + vehicle.getUuid() + ")" : "");
+    }
 }

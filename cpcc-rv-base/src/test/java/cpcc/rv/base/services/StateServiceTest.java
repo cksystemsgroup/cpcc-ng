@@ -25,7 +25,9 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.geojson.FeatureCollection;
 import org.json.JSONException;
@@ -101,6 +103,20 @@ public class StateServiceTest
     @BeforeMethod
     public void setUp()
     {
+        Map<VirtualVehicleState, Integer> vvStats = new HashMap<>();
+        vvStats.put(VirtualVehicleState.DEFECTIVE, 1230);
+        vvStats.put(VirtualVehicleState.FINISHED, 2230);
+        vvStats.put(VirtualVehicleState.INIT, 3230);
+        vvStats.put(VirtualVehicleState.RUNNING, 4230);
+        vvStats.put(VirtualVehicleState.TASK_COMPLETION_AWAITED, 5230);
+        vvStats.put(VirtualVehicleState.INTERRUPTED, 6230);
+        vvStats.put(VirtualVehicleState.MIGRATION_INTERRUPTED_SND, 7230);
+        vvStats.put(VirtualVehicleState.MIGRATING_RCV, 8230);
+        vvStats.put(VirtualVehicleState.MIGRATING_SND, 9230);
+        vvStats.put(VirtualVehicleState.MIGRATION_AWAITED_SND, 10230);
+        vvStats.put(VirtualVehicleState.MIGRATION_COMPLETED_RCV, 11230);
+        vvStats.put(VirtualVehicleState.MIGRATION_COMPLETED_SND, 12230);
+
         Logger logger = mock(Logger.class);
 
         SensorDefinition sd1 = mock(SensorDefinition.class);
@@ -175,6 +191,7 @@ public class StateServiceTest
 
         vvRepo = mock(VvRteRepository.class);
         when(vvRepo.findAllActiveVehicles(anyInt())).thenReturn(vvList);
+        when(vvRepo.getVvStatistics()).thenReturn(vvStats);
 
         vjc = new VvGeoJsonConverterImpl();
 
@@ -218,7 +235,8 @@ public class StateServiceTest
                     + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
                     + ""
                     + "{\"type\":\"Feature\""
-                    + ",\"properties\":{\"type\":\"vvs\"}"
+                    + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
+                    + ",\"vvsTotal\":80760,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
                     + ",\"geometry\":{\"type\":\"GeometryCollection\""
                     + ",\"geometries\":["
                     + "{\"type\":\"Feature\""
@@ -254,7 +272,8 @@ public class StateServiceTest
                     + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
                     + ""
                     + "{\"type\":\"Feature\""
-                    + ",\"properties\":{\"type\":\"vvs\"}"
+                    + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
+                    + ",\"vvsTotal\":80760,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
                     + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                     + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\""
                     + ",\"type\":\"vv\"},\"id\":\"19a43d...\"},"
@@ -281,14 +300,14 @@ public class StateServiceTest
                 NOW_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\""
-                    + ",\"properties\":{\"type\":\"vvs\"}"
+                    + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
+                    + ",\"vvsTotal\":80760,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
                     + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                     + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv1\",\"state\":\"running\""
                     + ",\"type\":\"vv\"},\"id\":\"19a43d...\"},"
                     + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\""
                     + ",\"type\":\"vv\"},\"id\":\"1d50b3...\"}"
-                    + "]"
-                    + "}}"
+                    + "]}}"
                     + "]}"
             },
 

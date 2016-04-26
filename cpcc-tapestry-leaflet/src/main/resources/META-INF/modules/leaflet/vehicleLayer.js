@@ -13,7 +13,10 @@ function($, leaflet, data, vehicles, zoneManager, console, lMap)
 		var props = e.layer.cpccFeatures.properties;
 		var pos = [ props.rvPosition.coordinates[1], props.rvPosition.coordinates[0] ];
 		var age = new Date().getTime() - (props.rvTime ? props.rvTime : 0);
-		var offline = props.rvTime ? (age > 10000) : true;
+		if (age > 10000)
+		{
+			props.rvState = 'offline';
+		}
 
 		if (vehicleMarker)
 		{
@@ -27,7 +30,8 @@ function($, leaflet, data, vehicles, zoneManager, console, lMap)
 			overlay.vehicles[vehicleId] = vehicleMarker;
 		}
 
-		vehicleMarker.setVehicleState(vehicleId, offline ? 'offline' : props.rvState, props.rvHeading, props.rvName);
+		// vehicleMarker.setVehicleState(vehicleId, props.rvState, props.rvHeading, props.rvName);
+		vehicleMarker.setVehicleState(vehicleId, props);
 	}
 
 	module.onVirtualVehicleChange = function(e, overlay)

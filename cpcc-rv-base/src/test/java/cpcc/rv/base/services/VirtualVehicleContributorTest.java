@@ -26,7 +26,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
@@ -56,14 +58,31 @@ public class VirtualVehicleContributorTest
     @BeforeMethod
     public void setUp()
     {
+        Map<VirtualVehicleState, Integer> vvStats = new HashMap<>();
+        vvStats.put(VirtualVehicleState.DEFECTIVE, 1230);
+        vvStats.put(VirtualVehicleState.FINISHED, 2230);
+        vvStats.put(VirtualVehicleState.INIT, 3230);
+        vvStats.put(VirtualVehicleState.RUNNING, 4230);
+        vvStats.put(VirtualVehicleState.TASK_COMPLETION_AWAITED, 5230);
+        vvStats.put(VirtualVehicleState.INTERRUPTED, 6230);
+        vvStats.put(VirtualVehicleState.MIGRATION_INTERRUPTED_SND, 7230);
+        vvStats.put(VirtualVehicleState.MIGRATING_RCV, 8230);
+        vvStats.put(VirtualVehicleState.MIGRATING_SND, 9230);
+        vvStats.put(VirtualVehicleState.MIGRATION_AWAITED_SND, 10230);
+        vvStats.put(VirtualVehicleState.MIGRATION_COMPLETED_RCV, 11230);
+        vvStats.put(VirtualVehicleState.MIGRATION_COMPLETED_SND, 12230);
+
         vjc = mock(VvGeoJsonConverter.class);
+
         vvRepo = mock(VvRteRepository.class);
+        when(vvRepo.getVvStatistics()).thenReturn(vvStats);
 
         sut = new VirtualVehicleContributor(vvRepo, vjc);
     }
 
     public static final String EMPTY_VV_FEATURE = "{\"type\":\"Feature\""
-        + ",\"properties\":{\"type\":\"vvs\"}"
+        + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460,\"vvsTotal\":80760"
+        + ",\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
         + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[]}}";
 
     @DataProvider
@@ -128,21 +147,24 @@ public class VirtualVehicleContributorTest
 
         return new Object[][]{
             new Object[]{Arrays.asList(vv1), go1, "{\"type\":\"Feature\""
-                + ",\"properties\":{\"type\":\"vvs\"}"
+                + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
+                + ",\"vvsTotal\":80760,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
                 + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                 + "{\"type\":\"Feature\""
                 + ",\"properties\":{\"name\":\"vv0001\",\"state\":\"RUNNING\",\"type\":\"vv\"},\"id\":\"erwtw\"}"
                 + "]}}"},
 
             new Object[]{Arrays.asList(vv2), go2, "{\"type\":\"Feature\""
-                + ",\"properties\":{\"type\":\"vvs\"}"
+                + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
+                + ",\"vvsTotal\":80760,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
                 + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                 + "{\"type\":\"Feature\""
                 + ",\"properties\":{\"name\":\"vv0002\",\"state\":\"INIT\",\"type\":\"vv\"},\"id\":\"xcvbav\"}"
                 + "]}}"},
 
             new Object[]{Arrays.asList(vv1, vv2), go3, "{\"type\":\"Feature\""
-                + ",\"properties\":{\"type\":\"vvs\"}"
+                + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
+                + ",\"vvsTotal\":80760,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
                 + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                 + "{\"type\":\"Feature\""
                 + ",\"properties\":{\"name\":\"vv0001\",\"state\":\"RUNNING\",\"type\":\"vv\"},\"id\":\"erwtw\"},"

@@ -74,8 +74,16 @@
 	width: 60px;
 }
 
+.vv-table-stats {
+	padding-right: 6px;	
+}
+
 .vv-info {
 	text-align: left;
+}
+
+.vv-info-none {
+	color: black
 }
 
 .vv-info-init {
