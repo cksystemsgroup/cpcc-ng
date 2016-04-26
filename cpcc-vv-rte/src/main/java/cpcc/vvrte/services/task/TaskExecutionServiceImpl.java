@@ -19,7 +19,9 @@
 package cpcc.vvrte.services.task;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,7 @@ import cpcc.ros.sensors.SensorType;
 import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.TaskState;
+import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.services.ros.MessageConverter;
 import sensor_msgs.NavSatFix;
 
@@ -200,19 +203,20 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
 
         if (vehiclePosition != null)
         {
+            if (currentRunningTask.getExecutionStart() == null)
+            {
+                currentRunningTask.setExecutionStart(timeService.newDate());
+            }
+
             double distance = gs.calculateDistance(currentRunningTask.getPosition(), vehiclePosition);
             currentRunningTask.setDistanceToTarget(distance);
 
             boolean completed = false;
             if (distance < currentRunningTask.getTolerance())
             {
-                logger.info("Task executed: " + currentRunningTask.getPosition() + " distance=" + distance);
                 completeTask(currentRunningTask);
+                logExecutionCompleted(currentRunningTask, distance);
                 completed = true;
-            }
-            else if (currentRunningTask.getExecutionStart() == null)
-            {
-                currentRunningTask.setExecutionStart(timeService.newDate());
             }
 
             sessionManager.getSession().update(currentRunningTask);
@@ -240,6 +244,32 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         }
 
         tm.cleanup();
+    }
+
+    private void logExecutionCompleted(Task task, double distance)
+    {
+        logger.info(String.format("Task executed: ;%s;%s;%s;%s;%s;%.1f;",
+            vvToString(task.getVehicle()),
+            dateFormatter(task.getCreationTime()),
+            dateFormatter(task.getExecutionStart()),
+            dateFormatter(task.getExecutionEnd()),
+            positionToString(task.getPosition()),
+            distance));
+    }
+
+    private static String dateFormatter(Date date)
+    {
+        return date != null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date) : "";
+    }
+
+    private static String vvToString(VirtualVehicle vv)
+    {
+        return vv != null ? vv.getName() + ";" + vv.getUuid() : ";";
+    }
+
+    private static String positionToString(PolarCoordinate pos)
+    {
+        return pos != null ? pos.getLatitude() + ";" + pos.getLongitude() + ";" + pos.getAltitude() : ";;";
     }
 
     /**
