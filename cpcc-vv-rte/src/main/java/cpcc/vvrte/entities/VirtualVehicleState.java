@@ -57,15 +57,35 @@ public enum VirtualVehicleState
             {
                 case FINISHED:
                     return FINISHED;
-                case WAITING:
-                    return WAITING;
+                    //                case WAITING:
+                    //                    return WAITING;
                 default:
                     return null;
             }
         }
     },
 
-    WAITING
+    //    WAITING
+    //    {
+    //        /**
+    //         * {@inheritDoc}
+    //         */
+    //        @Override
+    //        public VirtualVehicleState traverse(VirtualVehicleState newState)
+    //        {
+    //            switch (newState)
+    //            {
+    //                case RUNNING:
+    //                    return RUNNING;
+    //                case MIGRATING:
+    //                    return MIGRATING;
+    //                default:
+    //                    return null;
+    //            }
+    //        }
+    //    },
+
+    MIGRATION_AWAITED_SND
     {
         /**
          * {@inheritDoc}
@@ -75,17 +95,15 @@ public enum VirtualVehicleState
         {
             switch (newState)
             {
-                case RUNNING:
-                    return RUNNING;
-                case MIGRATING:
-                    return MIGRATING;
+                case MIGRATING_SND:
+                    return MIGRATING_SND;
                 default:
                     return null;
             }
         }
     },
 
-    MIGRATION_AWAITED
+    MIGRATING_SND
     {
         /**
          * {@inheritDoc}
@@ -95,15 +113,17 @@ public enum VirtualVehicleState
         {
             switch (newState)
             {
-                case MIGRATING:
-                    return MIGRATING;
+                case MIGRATION_INTERRUPTED_SND:
+                    return MIGRATION_INTERRUPTED_SND;
+                    //                case WAITING:
+                    //                    return WAITING;
                 default:
                     return null;
             }
         }
     },
 
-    MIGRATING
+    MIGRATION_INTERRUPTED_SND
     {
         /**
          * {@inheritDoc}
@@ -113,17 +133,17 @@ public enum VirtualVehicleState
         {
             switch (newState)
             {
-                case MIGRATION_INTERRUPTED:
-                    return MIGRATION_INTERRUPTED;
-                case WAITING:
-                    return WAITING;
+                case MIGRATION_AWAITED_SND:
+                    return MIGRATION_AWAITED_SND;
+                    //                case WAITING:
+                    //                    return WAITING;
                 default:
                     return null;
             }
         }
     },
 
-    MIGRATION_INTERRUPTED
+    MIGRATION_COMPLETED_SND
     {
         /**
          * {@inheritDoc}
@@ -131,19 +151,43 @@ public enum VirtualVehicleState
         @Override
         public VirtualVehicleState traverse(VirtualVehicleState newState)
         {
-            switch (newState)
-            {
-                case MIGRATION_AWAITED:
-                    return MIGRATION_AWAITED;
-                case WAITING:
-                    return WAITING;
-                default:
-                    return null;
-            }
+            return null;
         }
     },
 
-    MIGRATION_COMPLETED
+    MIGRATING_RCV
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
+        {
+            //            switch (newState)
+            //            {
+            //                case MIGRATION_INTERRUPTED_RCV:
+            //                    return MIGRATION_INTERRUPTED_RCV;
+            //                    //                case WAITING:
+            //                    //                    return WAITING;
+            //                default:
+            return null;
+            //            }
+        }
+    },
+
+    //    MIGRATION_INTERRUPTED_RCV
+    //    {
+    //        /**
+    //         * {@inheritDoc}
+    //         */
+    //        @Override
+    //        public VirtualVehicleState traverse(VirtualVehicleState newState)
+    //        {
+    //            return null;
+    //        }
+    //    },
+
+    MIGRATION_COMPLETED_RCV
     {
         /**
          * {@inheritDoc}
@@ -201,7 +245,8 @@ public enum VirtualVehicleState
     };
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_DELETE = Stream.of(
-        DEFECTIVE, FINISHED, INIT, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_COMPLETED, MIGRATION_INTERRUPTED
+        DEFECTIVE, FINISHED, INIT, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_COMPLETED_SND,
+        MIGRATION_INTERRUPTED_SND, MIGRATION_COMPLETED_RCV
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_EDIT = Stream.of(
@@ -213,31 +258,36 @@ public enum VirtualVehicleState
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_STOP = Stream.of(
-        DEFECTIVE, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_INTERRUPTED
+        DEFECTIVE, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_INTERRUPTED_SND
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART = Stream.of(
-        INIT, DEFECTIVE, FINISHED, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_COMPLETED, MIGRATION_INTERRUPTED
+        INIT, DEFECTIVE, FINISHED, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_COMPLETED_SND,
+        MIGRATION_INTERRUPTED_SND
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION_FROM_RV = Stream.of(
-        DEFECTIVE, FINISHED, INTERRUPTED, MIGRATION_AWAITED, MIGRATION_INTERRUPTED
+        DEFECTIVE, FINISHED, INTERRUPTED, MIGRATION_AWAITED_SND, MIGRATION_INTERRUPTED_SND
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_RV = Stream.of(
-        INIT, DEFECTIVE, FINISHED, INTERRUPTED, MIGRATION_INTERRUPTED
+        INIT, DEFECTIVE, FINISHED, INTERRUPTED, MIGRATION_INTERRUPTED_SND
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_GS = Stream.of(
-        MIGRATION_INTERRUPTED
+        MIGRATION_INTERRUPTED_SND
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_NO_CHANGE_AFTER_MIGRATION = Stream.of(
         DEFECTIVE, FINISHED
         ).collect(Collectors.toSet());
 
-    public static final Set<VirtualVehicleState> VV_STATES_FOR_MIGRATION = Stream.of(
-        MIGRATING, MIGRATION_INTERRUPTED
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_MIGRATION_SND = Stream.of(
+        MIGRATING_SND, MIGRATION_INTERRUPTED_SND
+        ).collect(Collectors.toSet());
+
+    public static final Set<VirtualVehicleState> VV_STATES_FOR_MIGRATION_RCV = Stream.of(
+        MIGRATING_SND, MIGRATING_RCV
         ).collect(Collectors.toSet());
 
     /**

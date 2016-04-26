@@ -202,7 +202,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     public void stateChange(int vehicleId, VirtualVehicleState newState)
     {
         logger.debug("New vehicle state for vehicle " + vehicleId + " : " + newState);
-        if (newState == VirtualVehicleState.MIGRATION_COMPLETED)
+        if (newState == VirtualVehicleState.MIGRATION_COMPLETED_RCV)
         {
             VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleId);
 
@@ -359,12 +359,12 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
             // TODO select the best suitable RV instead of taking just the first.
             RealVehicle migrationDestination = decision.getRealVehicles().get(0);
             vehicle.setMigrationDestination(migrationDestination);
-            vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED);
+            vehicle.setState(VirtualVehicleState.MIGRATION_AWAITED_SND);
             vehicle.setTask(null);
         }
         else
         {
-            vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+            vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED_SND);
             vehicle.setMigrationDestination(null);
             vehicle.setStateInfo(convertToStateInfoString(decision));
             decision = null;

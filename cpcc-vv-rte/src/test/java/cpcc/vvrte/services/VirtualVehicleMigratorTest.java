@@ -600,7 +600,7 @@ public class VirtualVehicleMigratorTest
             byte[] chunk = migrator.findChunk(vv, lastStorageName, chunkNumber);
             if (chunkNumber == numberOfChunks - 1)
             {
-                assertThat(vv.getState() == VirtualVehicleState.MIGRATION_COMPLETED);
+                assertThat(vv.getState() == VirtualVehicleState.MIGRATION_COMPLETED_SND);
             }
 
             verifyChunk(params, factory, chunkNumber, chunk);
@@ -875,7 +875,7 @@ public class VirtualVehicleMigratorTest
     }
 
     @Test(dataProvider = "chunkDataProvider", expectedExceptions = {IOException.class},
-        expectedExceptionsMessageRegExp = "Virtual vehicle \\S+ (\\S+) has not state MIGRATING but FINISHED")
+        expectedExceptionsMessageRegExp = "Virtual vehicle \\S+ (\\S+) has not state MIGRATING_RCV but FINISHED")
     public void shouldThrowIOEOnWrongVirtualVehicleState(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
@@ -909,9 +909,9 @@ public class VirtualVehicleMigratorTest
     {
         when(paramChunkSize.getValue()).thenReturn(Integer.toString(chunkSize));
 
-        when(vv1.getState()).thenReturn(VirtualVehicleState.MIGRATING);
+        when(vv1.getState()).thenReturn(VirtualVehicleState.MIGRATING_SND);
         when(vv1.getMigrationDestination()).thenReturn(new RealVehicle());
-        when(vv2.getState()).thenReturn(VirtualVehicleState.MIGRATING);
+        when(vv2.getState()).thenReturn(VirtualVehicleState.MIGRATING_SND);
         when(vv2.getMigrationDestination()).thenReturn(new RealVehicle());
 
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);

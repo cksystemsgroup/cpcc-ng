@@ -47,7 +47,7 @@ public class VirtualVehicleTest
         Date migStart = new Date(12345678);
         byte[] blob = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         int apiVersion = 33;
-        VirtualVehicleState state = VirtualVehicleState.MIGRATING;
+        VirtualVehicleState state = VirtualVehicleState.MIGRATING_SND;
         Date startTime = new Date(1385063517000L);
         Date endTime = new Date(1385069517000L);
         String stateInfo = "The State Info";

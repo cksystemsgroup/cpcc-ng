@@ -19,6 +19,7 @@
 package cpcc.vvrte.services.db;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
@@ -42,6 +43,11 @@ public interface VvRteRepository
      * @return the available virtual vehicles.
      */
     List<VirtualVehicle> findAllVehicles();
+
+    /**
+     * @return the virtual vehicle statistics.
+     */
+    Map<VirtualVehicleState, Integer> getVvStatistics();
 
     /**
      * @param maxResults the maximum number of virtual vehicles to return.

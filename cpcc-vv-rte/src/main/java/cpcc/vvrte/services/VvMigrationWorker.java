@@ -88,7 +88,7 @@ public class VvMigrationWorker extends Thread
         // TODO Finished VVs should not be started automatically after migration.
 
         vehicle.setPreMigrationState(vehicle.getState());
-        vehicle.setState(VirtualVehicleState.MIGRATING);
+        vehicle.setState(VirtualVehicleState.MIGRATING_SND);
         vehicle.setMigrationStartTime(new Date());
         sessionManager.getSession().saveOrUpdate(vehicle);
         sessionManager.commit();
@@ -120,7 +120,7 @@ public class VvMigrationWorker extends Thread
                 response = com.transfer(
                     vehicle.getMigrationDestination(), VvRteConstants.MIGRATION_CONNECTOR, chunk);
 
-                if (vehicle.getState() == VirtualVehicleState.MIGRATION_COMPLETED)
+                if (vehicle.getState() == VirtualVehicleState.MIGRATION_COMPLETED_SND)
                 {
                     break;
                 }
@@ -134,7 +134,7 @@ public class VvMigrationWorker extends Thread
             }
             else
             {
-                vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+                vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED_SND);
                 sessionManager.getSession().saveOrUpdate(vehicle);
             }
 
@@ -146,7 +146,7 @@ public class VvMigrationWorker extends Thread
                 + " (" + vehicle.getUuid() + ")", e);
             sessionManager.abort();
 
-            vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED);
+            vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED_SND);
             sessionManager.getSession().saveOrUpdate(vehicle);
             sessionManager.commit();
         }

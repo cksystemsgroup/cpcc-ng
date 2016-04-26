@@ -143,7 +143,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
         if (lastChunk)
         {
-            virtualVehicle.setState(VirtualVehicleState.MIGRATION_COMPLETED);
+            virtualVehicle.setState(VirtualVehicleState.MIGRATION_COMPLETED_SND);
         }
 
         return baos.toByteArray();
@@ -394,10 +394,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      */
     private void updateVirtualVehicle(boolean lastChunk, VirtualVehicle vv) throws IOException
     {
-        if (!VirtualVehicleState.VV_STATES_FOR_MIGRATION.contains(vv.getState()))
+        if (!VirtualVehicleState.VV_STATES_FOR_MIGRATION_RCV.contains(vv.getState()))
         {
             throw new IOException("Virtual vehicle " + vv.getName() + " (" + vv.getUuid() + ") "
-                + "has not state " + VirtualVehicleState.MIGRATING + " but " + vv.getState());
+                + "has not state " + VirtualVehicleState.MIGRATING_RCV + " but " + vv.getState());
         }
 
         if (vv.getMigrationDestination() != null)
@@ -414,7 +414,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             VirtualVehicleState newState =
                 VirtualVehicleState.VV_NO_CHANGE_AFTER_MIGRATION.contains(vv.getPreMigrationState())
                     ? vv.getPreMigrationState()
-                    : VirtualVehicleState.MIGRATION_COMPLETED;
+                    : VirtualVehicleState.MIGRATION_COMPLETED_RCV;
 
             vv.setState(newState);
             vv.setPreMigrationState(null);
@@ -449,7 +449,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         }
         else
         {
-            vv.setState(VirtualVehicleState.MIGRATING);
+            vv.setState(VirtualVehicleState.MIGRATING_RCV);
             vv.setPreMigrationState(getVehicleState(props.getProperty("state")));
         }
 

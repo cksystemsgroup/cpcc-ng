@@ -18,12 +18,18 @@
 
 package cpcc.vvrte.services.db;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
@@ -63,14 +69,14 @@ public class VvRteRepositoryImpl implements VvRteRepository
     {
         session
             .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
-            .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED)
-            .setParameter("oldState", VirtualVehicleState.MIGRATING)
+            .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
+            .setParameter("oldState", VirtualVehicleState.MIGRATING_SND)
             .executeUpdate();
 
         session
             .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
-            .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED)
-            .setParameter("oldState", VirtualVehicleState.MIGRATION_AWAITED)
+            .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
+            .setParameter("oldState", VirtualVehicleState.MIGRATION_AWAITED_SND)
             .executeUpdate();
 
         session
@@ -82,10 +88,6 @@ public class VvRteRepositoryImpl implements VvRteRepository
         session
             .createQuery("UPDATE VirtualVehicle SET task = null")
             .executeUpdate();
-
-        // session
-        //    .createQuery("UPDATE Task SET vehicle = null")
-        //    .executeUpdate();
 
         session
             .createQuery("DELETE Task")
@@ -103,6 +105,29 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .createCriteria(VirtualVehicle.class)
             .addOrder(Property.forName("id").asc())
             .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<VirtualVehicleState, Integer> getVvStatistics()
+    {
+        Map<VirtualVehicleState, Integer> statistics = new HashMap<>();
+
+        statistics.putAll(Stream.of(VirtualVehicleState.values())
+            .map(x -> new SimpleEntry<>(x, Integer.valueOf(0)))
+            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
+
+        List<VirtualVehicleState> stateList = session
+            .createCriteria(VirtualVehicle.class)
+            .setProjection(Projections.property("state"))
+            .list();
+
+        stateList.stream().forEach(x -> statistics.put(x, statistics.get(x) + 1));
+
+        return statistics;
     }
 
     /**
