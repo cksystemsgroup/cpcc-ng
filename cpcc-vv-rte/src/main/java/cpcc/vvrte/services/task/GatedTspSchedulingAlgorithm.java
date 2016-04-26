@@ -37,7 +37,7 @@ public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
      */
     public GatedTspSchedulingAlgorithm()
     {
-        maxTasks = 30;
+        maxTasks = Integer.parseInt(System.getProperty("cpcc.vv-rte.gtsp-max-tasks", "30"));
         tspSolver = new HeldKarpTspSolver();
     }
 
