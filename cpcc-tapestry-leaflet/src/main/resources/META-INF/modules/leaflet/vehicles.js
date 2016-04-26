@@ -57,47 +57,18 @@ function(leaflet, console)
 			var geometries = vvs.geometry.geometries;
 
 			var html = '';
-			// var props = undefined;
 
 			if (vvs.properties && vvs.properties.vvsTotal !== undefined)
 			{
-				// console.info("VVS: " + JSON.stringify(vvs));
 				html = '<table class="vv-table"><tr class="vv-info">'
 						+ '<td class="vv-table-stats">t:</td><td class="vv-table-stats">' + vvs.properties.vvsTotal
 						+ '</td><td class="vv-table-stats">a:</td><td class="vv-table-stats">'
 						+ vvs.properties.vvsActive
 						+ '</td></tr><tr class="vv-info"><td class="vv-table-stats">m:</td><td class="vv-table-stats">'
-						+ vvs.properties.vvsMigrating 
+						+ vvs.properties.vvsMigrating
 						+ '</td><td class="vv-table-stats">i:</td><td class="vv-table-stats">'
-						+ (vvs.properties.vvsInterrupted + vvs.properties.vvsDormant)
-						+'</td></tr></table>';
+						+ (vvs.properties.vvsInterrupted + vvs.properties.vvsDormant) + '</td></tr></table>';
 			}
-
-			// feature.setProperty("vvsTotal", total);
-			// feature.setProperty("vvsDefective", defective);
-			// feature.setProperty("vvsDormant", dormant);
-			// feature.setProperty("vvsActive", active);
-			// feature.setProperty("vvsInterrupted", interrupted);
-			// feature.setProperty("vvsMigrating", migrating);
-
-			// if (geometries.length > 0 || props)
-			// {
-			// html = html + '<table class="vv-table">';
-			// if (props)
-			// {
-			// html = html + props;
-			// }
-			//
-			// for (var k = 0; k < geometries.length; ++k)
-			// {
-			// html = html + '<tr class="vv-info vv-info-' +
-			// geometries[k].properties.state + '"><td>'
-			// + geometries[k].id + '</td><td>' + geometries[k].properties.name
-			// + '</td></tr>';
-			// }
-			//
-			// html = html + "</table>";
-			// }
 
 			if (this.taskDiv.innerHTML != html)
 			{
@@ -105,9 +76,6 @@ function(leaflet, console)
 			}
 		},
 
-		// setVehicleState : function(vehicleId, vehicleState, vehicleHeading,
-		// vehicleName)
-		// props.rvState, props.rvHeading, props.rvName
 		setVehicleState : function(vehicleId, props)
 		{
 			var vehicleState = props.rvState;
@@ -121,9 +89,6 @@ function(leaflet, console)
 				this.vehicleName = vehicleName;
 				this.vehicleHeading = vehicleHeading;
 				this.vehicleState = vehicleState;
-				// this.vehicleDiv.innerHTML = 'v: ' + vehicleName + ' (' +
-				// (vehicleId || '??') + ') <br/>h: '
-				// + Number(vehicleHeading).toFixed();
 				this.vehicleDiv.innerHTML = vehicleName + ' (' + (vehicleId || '??') + ')';
 				this.vehicleDiv.className = 'vehicle-info vehicle-info-' + vehicleState;
 
@@ -155,8 +120,6 @@ function(leaflet, console)
 
 		vehicleState : '',
 
-		// setVehicleState : function(id, state, heading, name)
-		// props.rvState, props.rvHeading, props.rvName
 		setVehicleState : function(id, props)
 		{
 			if (this.vehicleState != props.rvState)

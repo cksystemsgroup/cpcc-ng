@@ -30,7 +30,6 @@ function($, leaflet, data, vehicles, zoneManager, console, lMap)
 			overlay.vehicles[vehicleId] = vehicleMarker;
 		}
 
-		// vehicleMarker.setVehicleState(vehicleId, props.rvState, props.rvHeading, props.rvName);
 		vehicleMarker.setVehicleState(vehicleId, props);
 	}
 
