@@ -21,6 +21,7 @@ package cpcc.vvrte.services.task;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -52,10 +53,20 @@ public class HeldKarpTspSolver extends AbstractTspSolver
         Node bestNode = solve(cost);
 
         List<Task> r = new ArrayList<>();
+        List<Integer> pathIndices = new ArrayList<>();
 
         for (int j = bestNode.parent[0]; j != 0; j = bestNode.parent[j])
         {
             r.add(path.get(j - 1));
+            pathIndices.add(j);
+        }
+
+        int firstIx = pathIndices.get(0);
+        int lastIx = pathIndices.get(pathIndices.size() - 1);
+
+        if (cost[0][firstIx] > cost[0][lastIx])
+        {
+            Collections.reverse(r);
         }
 
         return r;
