@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # -----------------------------------------------------------------------------
 # @(#) start_rv.sh - real vehicle start script.
 # -----------------------------------------------------------------------------
@@ -6,16 +6,17 @@
 # Usage: start_rv.sh RV-name
 #
 
-cd $(dirname $0)/..;
-   
-. bin/profile.sh
+. $(dirname $0)/profile.sh
 
 [ "x$*" = "x" ] && die "Usage:  $(basename $0) RV-name";
 
 APP_CONTEXT_PATH=$1;
+
+[ "${RVS[$1]}" = "$1" ] || die "Real Vehicle $1 is not configured. Start aborted.";
+
 case "$APP_CONTEXT_PATH" in
-	GS01)  APP_WAR_FILE="$(ls $CPCC_DIR/war/cpcc-gs-web*.war | tail -1)"; IX=00; OPTS="-Xmx400m"; ;;
-	RV0[1-7])  APP_WAR_FILE="$(ls $CPCC_DIR/war/cpcc-rv-web*.war | tail -1)"; IX=${1/RV/}; OPTS="-Xmx300m"; ;;
+	GS*)  APP_WAR_FILE="$(ls $CPCC_DIR/war/cpcc-gs-web*.war | tail -1)"; OPTS="$GS_OPTS"; ;;
+	RV*)  APP_WAR_FILE="$(ls $CPCC_DIR/war/cpcc-rv-web*.war | tail -1)"; OPTS="$RV_OPTS"; ;;
 	*) echo "Can not start Real Vehicle $1" >&2; exit 1; ;;
 esac
 
@@ -29,8 +30,8 @@ rm -rf $CATALINA_BASE/conf/* $CATALINA_BASE/webapps/* $CATALINA_BASE/temp/*;
 for d in $CATALINA_BASE $CATALINA_BASE/conf $CATALINA_BASE/webapps $CATALINA_BASE/logs $CATALINA_BASE/work $CATALINA_BASE/temp; do ensureDir $d; done
 cp $CPCC_DIR/conf/*.xml $CPCC_DIR/conf/*.properties $CATALINA_BASE/conf
 
-OPTS="$OPTS -Xss256k -Duser.timezone=CET -Dfile.encoding=UTF-8 -Djava.awt.headless=true";
-OPTS="$OPTS -Dcatalina.base=$CATALINA_BASE -Dshutdown.port=8${IX}5 -Dhttp.connector.port=8${IX}0"; 
+OPTS="$OPTS -Xss256k -Duser.timezone=CET -Dfile.encoding=UTF-8 -Djava.awt.headless=true $CATALINA_OPTS";
+OPTS="$OPTS -Dcatalina.base=$CATALINA_BASE -Dshutdown.port=${SHUTDOWN_PORT[$APP_CONTEXT_PATH]} -Dhttp.connector.port=${CONNECTOR_PORT[$APP_CONTEXT_PATH]}";
 # OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE -Ddb.directory=$DBDIR -Dhibernate.dialect=org.hibernate.dialect.HSQLDialect";
 OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE"
 #OPTS="$OPTS -Dhibernate.dialect=org.hibernate.dialect.HSQLDialect -Ddb.driver=org.hsqldb.jdbc.JDBCDriver -Ddb.url=jdbc:hsqldb:file://${DBDIR}/${APP_CONTEXT_PATH}";

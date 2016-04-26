@@ -12,10 +12,14 @@
 			<includes>
 				<include>db-update.sh</include>
 				<include>liquibase-update.sh</include>
+				<include>run.sh</include>
 				<include>setup_databases.sh</include>
+				<include>setup_demo.sh</include>
+				<include>shutdown.sh</include>
 				<include>start_rv.sh</include>
 				<include>stop_rv.sh</include>
 			</includes>
+			<fileMode>0755</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>src/main/scripts</directory>
@@ -24,17 +28,22 @@
 			<includes>
 				<include>profile.sh</include>
 			</includes>
+			<fileMode>0644</fileMode>
 		</fileSet>
 		<fileSet>
 			<directory>src/main/resources/config</directory>
 			<outputDirectory>cpcc-demo-${project.parent.version}/conf</outputDirectory>
 			<includes>
-				<include>catalina.properties</include>
-				<include>context.xml</include>
-				<include>*.sql</include>
-				<include>logging.properties</include>
-				<include>server.xml</include>
-				<include>web.xml</include>
+				<include>*.properties</include>
+				<include>*.xml</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/setups</directory>
+			<outputDirectory>cpcc-demo-${project.parent.version}/setups</outputDirectory>
+			<includes>
+				<include>**/*.sql</include>
+				<include>**/*.txt</include>
 			</includes>
 		</fileSet>
 	</fileSets>

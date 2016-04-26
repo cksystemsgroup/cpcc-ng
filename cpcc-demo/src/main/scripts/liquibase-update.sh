@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # -----------------------------------------------------------------------------
 # @(#) liquibase-update.sh - Liquibase update script
 # -----------------------------------------------------------------------------
@@ -8,9 +8,7 @@
 
 URL="$1";
 
-cd $(dirname $0)/..;
-
-. bin/profile.sh
+. $(dirname $0)/profile.sh
 
 [ "x$*" = "x" ] && die "Usage:  $(basename $0) dbUrl";
 

@@ -1,0 +1,3 @@
+
+Hexagonal setup (honeycomb structure), 7 cells, one in the middle and six surrounding cells, each of them 50m diameter, 9 RVs
+ 

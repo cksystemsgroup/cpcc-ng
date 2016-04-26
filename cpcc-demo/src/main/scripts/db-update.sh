@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # -----------------------------------------------------------------------------
 # @(#) db-update.sh - Database update script
 # -----------------------------------------------------------------------------
@@ -6,9 +6,7 @@
 # Usage: db-update.sh dbUrl file1 [file2 ...]
 #
 
-cd $(dirname $0)/..;
-
-. bin/profile.sh
+. $(dirname $0)/profile.sh
 
 [ "x$*" = "x" ] && die "Usage:  $(basename $0) dbUrl file1 [file2 ...]";
 
