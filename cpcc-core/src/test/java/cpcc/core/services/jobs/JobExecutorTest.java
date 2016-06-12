@@ -67,11 +67,13 @@ public class JobExecutorTest
     private JobRunnable failingRunnable;
     private JobRunnableFactory factory;
     private Logger logger;
+    private JobQueueCallback callBack;
 
     @BeforeMethod
     public void setUp() throws Exception
     {
         logger = mock(Logger.class);
+        callBack = mock(JobQueueCallback.class);
         startDate = mock(Date.class);
         endDate = mock(Date.class);
 
@@ -129,7 +131,8 @@ public class JobExecutorTest
     @Test
     public void shouldExecuteSucceedingRunnable() throws Exception
     {
-        JobExecutor sut = new JobExecutor(logger, serviceResources, Arrays.asList(factory), SUCCEEDING_JOB_ID);
+        JobExecutor sut =
+            new JobExecutor(logger, serviceResources, Arrays.asList(factory), SUCCEEDING_JOB_ID, callBack);
 
         sut.run();
 
@@ -157,7 +160,8 @@ public class JobExecutorTest
     @Test
     public void shouldExecuteFailingRunnable() throws Exception
     {
-        JobExecutor sut = new JobExecutor(logger, serviceResources, Arrays.asList(factory), FAILING_JOB_ID);
+        JobExecutor sut =
+            new JobExecutor(logger, serviceResources, Arrays.asList(factory), FAILING_JOB_ID, callBack);
 
         sut.run();
 
@@ -183,7 +187,8 @@ public class JobExecutorTest
     @Test
     public void shouldHandleFactoriesThatDoNotCreateJob() throws Exception
     {
-        JobExecutor sut = new JobExecutor(logger, serviceResources, Arrays.asList(factory), HAS_NO_FACTORY_JOB_ID);
+        JobExecutor sut =
+            new JobExecutor(logger, serviceResources, Arrays.asList(factory), HAS_NO_FACTORY_JOB_ID, callBack);
 
         sut.run();
 

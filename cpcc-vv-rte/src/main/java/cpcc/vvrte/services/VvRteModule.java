@@ -18,16 +18,26 @@
 
 package cpcc.vvrte.services;
 
+import java.util.Arrays;
+
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
 import org.apache.tapestry5.ioc.ScopeConstants;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Startup;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
+import org.slf4j.Logger;
 
 import cpcc.com.services.CommunicationService;
+import cpcc.core.services.jobs.JobQueue;
+import cpcc.core.services.jobs.JobRepository;
+import cpcc.core.services.jobs.JobRunnableFactory;
+import cpcc.core.services.jobs.JobService;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.services.db.DownloadService;
 import cpcc.vvrte.services.db.DownloadServiceImpl;
@@ -118,7 +128,7 @@ public final class VvRteModule
      */
     @Startup
     public static void scheduleJobs(VvRteRepository vvRteRepo, PeriodicExecutor executor
-        , final TaskExecutionService taskExecutionService, final VirtualVehicleLauncher launcher)
+        , final TaskExecutionService taskExecutionService, final JobService jobService, final Logger logger)
     {
         vvRteRepo.resetVirtualVehicleStates();
 
@@ -138,7 +148,9 @@ public final class VvRteModule
             @Override
             public void run()
             {
-                launcher.handleStuckMigrations();
+                logger.debug("### Add job for stuck migrations.");
+                jobService.addJobIfNotExists(
+                    VvRteConstants.MIGRATION_JOB_QUEUE_NAME, VvRteConstants.STUCK_MIGRATIONS);
             }
         });
     }
@@ -152,6 +164,10 @@ public final class VvRteModule
         communicationService.addConnector(
             VvRteConstants.MIGRATION_CONNECTOR,
             VvRteConstants.MIGRATION_PATH);
+
+        communicationService.addConnector(
+            VvRteConstants.MIGRATION_ACK_CONNECTOR,
+            VvRteConstants.MIGRATION_ACK_PATH);
     }
 
     /**
@@ -162,5 +178,24 @@ public final class VvRteModule
     public static void setupTaskExecutionService(TaskExecutionService tes, VirtualVehicleLauncher vvl)
     {
         tes.addListener(vvl);
+    }
+
+    /**
+     * @param logger the application logger.
+     * @param jobService the job service instance.
+     * @param sessionManager the session manager instance.
+     * @param timeService the time service.
+     * @param jobRepository the job repository
+     * @param numberOfPoolThreads the number of migration job queue pool threads.
+     */
+    @Startup
+    public static void setupJobQueues(Logger logger, JobService jobService, HibernateSessionManager sessionManager
+        , TimeService timeService, JobRepository jobRepository
+        , @Symbol(VvRteConstants.NUMBER_OF_MIGRATION_POOL_THREADS) int numberOfPoolThreads)
+    {
+        JobRunnableFactory factory = new VvRteJobRunnableFactory();
+
+        jobService.addJobQueue(VvRteConstants.MIGRATION_JOB_QUEUE_NAME
+            , new JobQueue(logger, sessionManager, timeService, Arrays.asList(factory), numberOfPoolThreads));
     }
 }

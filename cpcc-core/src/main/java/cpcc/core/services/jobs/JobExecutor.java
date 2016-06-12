@@ -37,6 +37,7 @@ public class JobExecutor implements Runnable
     private ServiceResources serviceResources;
     private List<JobRunnableFactory> factoryList;
     private int jobNumber;
+    private JobQueueCallback callBack;
 
     /**
      * @param logger the application logger.
@@ -45,12 +46,13 @@ public class JobExecutor implements Runnable
      * @param jobNumber the id of the job to be executed.
      */
     public JobExecutor(Logger logger, ServiceResources serviceResources, List<JobRunnableFactory> factoryList
-        , int jobNumber)
+        , int jobNumber, JobQueueCallback callBack)
     {
         this.logger = logger;
         this.serviceResources = serviceResources;
         this.factoryList = factoryList;
         this.jobNumber = jobNumber;
+        this.callBack = callBack;
     }
 
     /**
@@ -70,6 +72,8 @@ public class JobExecutor implements Runnable
         sessionManager.getSession().update(job);
         sessionManager.commit();
 
+        logger.debug("Executing job " + jobNumber + " " + job.getQueueName() + " parameters=" + job.getParameters());
+
         job.setStatus(JobStatus.NO_FACTORY);
 
         for (JobRunnableFactory factory : factoryList)
@@ -87,6 +91,8 @@ public class JobExecutor implements Runnable
                     sessionManager.abort();
                     job.setResultText(e.getMessage());
                     job.setStatus(JobStatus.FAILED);
+                    logger.error("Job failed: " + jobNumber + " " + job.getQueueName()
+                        + " parameters=" + job.getParameters(), e);
                 }
                 break;
             }
@@ -97,6 +103,8 @@ public class JobExecutor implements Runnable
         sessionManager.commit();
 
         tm.cleanup();
+
+        callBack.executed(jobNumber);
     }
 
 }

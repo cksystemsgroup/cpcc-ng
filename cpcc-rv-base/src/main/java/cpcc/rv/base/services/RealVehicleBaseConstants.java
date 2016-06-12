@@ -30,7 +30,9 @@ public final class RealVehicleBaseConstants
     public static final String REAL_VEHICLE_STATUS_PATH = "/rvbase/update/status/pos-vvs-tsk-sen";
 
     public static final String JOB_QUEUE_NAME = "RV Base";
-    public static final int NUMBER_OF_POOL_THREADS = 10;
+
+    public static final String RV_BASE_JOB_POOL_THREADS = "rv-base.job.pool.threads";
+    public static final String RV_BASE_JOB_POOL_THREADS_DEFAULT = "20";
 
     private RealVehicleBaseConstants()
     {

@@ -82,6 +82,12 @@ public class VirtualVehicle implements Serializable
     @ManyToOne
     private RealVehicle migrationDestination;
 
+    @ManyToOne
+    private RealVehicle migrationSource;
+
+    @Column(name = "chunk_number")
+    private Integer chunkNumber;
+
     @Type(type = "timestamp")
     @Column(name = "migration_start_time")
     private java.util.Date migrationStartTime;
@@ -96,6 +102,10 @@ public class VirtualVehicle implements Serializable
     @Type(type = "timestamp")
     @Column(name = "end_time")
     private java.util.Date endTime;
+
+    @Type(type = "timestamp")
+    @Column(name = "update_time")
+    private java.util.Date updateTime;
 
     @Column(name = "state_info")
     @Lob
@@ -237,6 +247,38 @@ public class VirtualVehicle implements Serializable
     }
 
     /**
+     * @return the real vehicle to migrate from or null.
+     */
+    public RealVehicle getMigrationSource()
+    {
+        return migrationSource;
+    }
+
+    /**
+     * @param migrationSource the real vehicle to migrate from.
+     */
+    public void setMigrationSource(RealVehicle migrationSource)
+    {
+        this.migrationSource = migrationSource;
+    }
+
+    /**
+     * @return the migration chunk number or null.
+     */
+    public Integer getChunkNumber()
+    {
+        return chunkNumber;
+    }
+
+    /**
+     * @param chunkNumber the migration chunk number to set.
+     */
+    public void setChunkNumber(Integer chunkNumber)
+    {
+        this.chunkNumber = chunkNumber;
+    }
+
+    /**
      * @return the start time of the current migration.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is exposed on purpose")
@@ -306,6 +348,24 @@ public class VirtualVehicle implements Serializable
     public void setEndTime(java.util.Date endTime)
     {
         this.endTime = endTime;
+    }
+
+    /**
+     * @return
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is exposed on purpose")
+    public java.util.Date getUpdateTime()
+    {
+        return updateTime;
+    }
+
+    /**
+     * @param updateTime
+     */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
+    public void setUpdateTime(java.util.Date updateTime)
+    {
+        this.updateTime = updateTime;
     }
 
     /**

@@ -33,12 +33,19 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
-import org.apache.tapestry5.ioc.ServiceResources;
+import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
 
+import cpcc.com.services.CommunicationResponse;
+import cpcc.com.services.CommunicationResponse.Status;
+import cpcc.com.services.CommunicationService;
 import cpcc.core.entities.Parameter;
 import cpcc.core.services.QueryManager;
+import cpcc.core.services.RealVehicleRepository;
+import cpcc.core.services.jobs.JobService;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.core.utils.PropertyUtils;
+import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
@@ -54,26 +61,33 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private VvRteRepository vvRepository;
     private QueryManager qm;
     private VirtualVehicleLauncher launcher;
-    private ServiceResources serviceResources;
+    private JobService jobService;
+    private TimeService timeService;
+    private RealVehicleRepository rvRepository;
+    private CommunicationService com;
 
     /**
      * @param logger the application logger.
-     * @param serviceResources the service resources.
      * @param sessionManager the Hibernate session manager.
      * @param vvRepository the virtual vehicle repository.
      * @param qm the query manager.
      * @param launcher the virtual vehicle launcher.
+     * @param jobService the job service.
+     * @param timeService the time service.
      */
-    public VirtualVehicleMigratorImpl(Logger logger, ServiceResources serviceResources
-        , HibernateSessionManager sessionManager, VvRteRepository vvRepository, QueryManager qm
-        , VirtualVehicleLauncher launcher)
+    public VirtualVehicleMigratorImpl(Logger logger, HibernateSessionManager sessionManager
+        , VvRteRepository vvRepository, QueryManager qm, VirtualVehicleLauncher launcher, JobService jobService
+        , TimeService timeService, RealVehicleRepository rvRepository, CommunicationService com)
     {
         this.logger = logger;
-        this.serviceResources = serviceResources;
         this.sessionManager = sessionManager;
         this.vvRepository = vvRepository;
         this.qm = qm;
         this.launcher = launcher;
+        this.jobService = jobService;
+        this.timeService = timeService;
+        this.rvRepository = rvRepository;
+        this.com = com;
     }
 
     /**
@@ -82,9 +96,8 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     @Override
     public void initiateMigration(VirtualVehicle vehicle)
     {
-        // TODO use a thread pool.
-        VvMigrationWorker worker = new VvMigrationWorker(logger, serviceResources, vehicle.getId());
-        worker.start();
+        jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME
+            , String.format(VvRteConstants.MIGRATION_FORMAT_SEND, vehicle.getId()));
     }
 
     /**
@@ -112,7 +125,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     public byte[] findChunk(VirtualVehicle virtualVehicle, String lastStorageName, int chunkNumber)
         throws IOException, ArchiveException
     {
-        Parameter paramChunkSize = qm.findParameterByName(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE, "10");
+        Parameter paramChunkSize = qm.findParameterByName(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE, "100000");
 
         int chunkSize = Integer.parseInt(paramChunkSize.getValue());
 
@@ -212,6 +225,11 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private void writeVirtualVehicleSourceCode(VirtualVehicle virtualVehicle, ArchiveOutputStream os, int chunkNumber)
         throws IOException
     {
+        if (virtualVehicle.getCode() == null)
+        {
+            return;
+        }
+
         byte[] source = virtualVehicle.getCode().getBytes("UTF-8");
 
         TarArchiveEntry entry = new TarArchiveEntry("vv/vv-source.js");
@@ -262,6 +280,12 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         props.setProperty("uuid", virtualVehicle.getUuid());
         PropertyUtils.setProperty(props, "api.version", virtualVehicle.getApiVersion());
         PropertyUtils.setProperty(props, "state", virtualVehicle.getPreMigrationState());
+        PropertyUtils.setProperty(props, "chunk", virtualVehicle.getChunkNumber());
+
+        if (virtualVehicle.getMigrationSource() != null)
+        {
+            PropertyUtils.setProperty(props, "migration.source", virtualVehicle.getMigrationSource().getName());
+        }
 
         if (virtualVehicle.getStartTime() != null)
         {
@@ -285,7 +309,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * {@inheritDoc}
      */
     @Override
-    public String storeChunk(InputStream inStream) throws ArchiveException, IOException
+    public void storeChunk(InputStream inStream) throws ArchiveException, IOException
     {
         boolean lastChunk = false;
         String chunkName = "unknown-" + System.currentTimeMillis();
@@ -315,15 +339,63 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             }
         }
 
+        VirtualVehicle vv = virtualVehicleHolder.getVirtualVehicle();
+
+        String result = new JSONObject("uuid", vv.getUuid(), "chunk", vv.getChunkNumber()).toCompactString();
+
+        CommunicationResponse response = com.transfer(
+            vv.getMigrationSource(), VvRteConstants.MIGRATION_ACK_CONNECTOR, result.getBytes());
+
+        if (response.getStatus() == Status.OK)
+        {
+            if (lastChunk)
+            {
+                VirtualVehicleState newState =
+                    VirtualVehicleState.VV_NO_CHANGE_AFTER_MIGRATION.contains(vv.getPreMigrationState())
+                        ? vv.getPreMigrationState()
+                        : VirtualVehicleState.MIGRATION_COMPLETED_RCV;
+
+                vv.setState(newState);
+                vv.setPreMigrationState(null);
+            }
+        }
+        else
+        {
+            logger.error("Migration ACK failed! Virtual vehicle: " + vv.getName()
+                + " (" + vv.getUuid() + ") " + new String(response.getContent(), "UTF-8"));
+
+            vv.setState(VirtualVehicleState.MIGRATION_INTERRUPTED_RCV);
+            vv.setStateInfo(new String(response.getContent(), "UTF-8"));
+        }
+
+        vv.setUpdateTime(timeService.newDate());
+        sessionManager.getSession().saveOrUpdate(vv);
         sessionManager.commit();
 
         if (lastChunk)
         {
-            VirtualVehicle vv = virtualVehicleHolder.getVirtualVehicle();
             launcher.stateChange(vv.getId(), vv.getState());
         }
+    }
 
-        return chunkName;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void queueChunk(InputStream inputStream) throws IOException
+    {
+        byte[] data = IOUtils.toByteArray(inputStream);
+        jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME, VvRteConstants.MIGRATION_RECEIVE, data);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void ackChunk(InputStream inputStream) throws IOException
+    {
+        byte[] data = IOUtils.toByteArray(inputStream);
+        jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME, VvRteConstants.MIGRATION_CONTINUE, data);
     }
 
     /**
@@ -357,11 +429,11 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             VirtualVehicle vv = vvRepository.findVirtualVehicleByUUID(props.getProperty("uuid"));
             if (vv == null)
             {
-                vv = createVirtualVehicle(lastChunk, props);
+                vv = createVirtualVehicle(props);
             }
             else
             {
-                updateVirtualVehicle(lastChunk, vv);
+                updateVirtualVehicle(props, vv);
             }
 
             virtualVehicleHolder.setVirtualVehicle(vv);
@@ -388,16 +460,17 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     }
 
     /**
+     * @param props the virtual vehicle properties.
      * @param lastChunk true if this is the last migration chunk.
      * @param vv the virtual vehicle
      * @throws IOException thrown in case of errors.
      */
-    private void updateVirtualVehicle(boolean lastChunk, VirtualVehicle vv) throws IOException
+    private void updateVirtualVehicle(Properties props, VirtualVehicle vv) throws IOException
     {
         if (!VirtualVehicleState.VV_STATES_FOR_MIGRATION_RCV.contains(vv.getState()))
         {
-            throw new IOException("Virtual vehicle " + vv.getName() + " (" + vv.getUuid() + ") "
-                + "has not state " + VirtualVehicleState.MIGRATING_RCV + " but " + vv.getState());
+            throw new IOException("Virtual vehicle " + vv.getName() + " (" + vv.getUuid() + ")"
+                + " has not state " + VirtualVehicleState.MIGRATING_RCV + " but " + vv.getState());
         }
 
         if (vv.getMigrationDestination() != null)
@@ -406,52 +479,27 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
                 + "is being migrated and can not be a migration target.");
         }
 
-        logger.debug("pre-migration:  " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last="
-            + lastChunk);
+        logger.debug("pre-migration:  " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState());
 
-        if (lastChunk)
-        {
-            VirtualVehicleState newState =
-                VirtualVehicleState.VV_NO_CHANGE_AFTER_MIGRATION.contains(vv.getPreMigrationState())
-                    ? vv.getPreMigrationState()
-                    : VirtualVehicleState.MIGRATION_COMPLETED_RCV;
-
-            vv.setState(newState);
-            vv.setPreMigrationState(null);
-        }
-        //        else
-        //        {
-        //            // TODO check if necessary.
-        //            vv.setState(VirtualVehicleState.MIGRATING);
-        //        }
+        vv.setChunkNumber(Integer.parseInt(props.getProperty("chunk")));
+        vv.setMigrationSource(rvRepository.findRealVehicleByName(props.getProperty("migration.source")));
         sessionManager.getSession().saveOrUpdate(vv);
 
-        logger.debug("post-migration: " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState() + " last="
-            + lastChunk);
+        logger.debug("post-migration: " + vv.getName() + " (" + vv.getUuid() + ") " + vv.getState());
     }
 
     /**
-     * @param lastChunk true if this is the last migration chunk.
      * @param props the virtual vehicle properties.
      * @return the created virtual vehicle
      */
-    private VirtualVehicle createVirtualVehicle(boolean lastChunk, Properties props)
+    private VirtualVehicle createVirtualVehicle(Properties props)
     {
-        VirtualVehicle vv;
-        vv = new VirtualVehicle();
+        VirtualVehicle vv = new VirtualVehicle();
         vv.setName(props.getProperty("name"));
         vv.setUuid(props.getProperty("uuid"));
         vv.setApiVersion(Integer.parseInt(props.getProperty("api.version")));
-
-        if (lastChunk)
-        {
-            vv.setState(getVehicleState(props.getProperty("state")));
-        }
-        else
-        {
-            vv.setState(VirtualVehicleState.MIGRATING_RCV);
-            vv.setPreMigrationState(getVehicleState(props.getProperty("state")));
-        }
+        vv.setState(VirtualVehicleState.MIGRATING_RCV);
+        vv.setPreMigrationState(getVehicleState(props.getProperty("state")));
 
         String startTime = props.getProperty("start.time");
         if (startTime != null)
@@ -465,7 +513,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             vv.setEndTime(new Date(Long.parseLong(endTime)));
         }
 
+        vv.setChunkNumber(Integer.parseInt(props.getProperty("chunk")));
         vv.setMigrationDestination(null);
+        vv.setMigrationSource(rvRepository.findRealVehicleByName(props.getProperty("migration.source")));
+        vv.setUpdateTime(timeService.newDate());
         sessionManager.getSession().saveOrUpdate(vv);
         return vv;
     }
@@ -476,12 +527,9 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      */
     private VirtualVehicleState getVehicleState(String stateString)
     {
-        if (StringUtils.isBlank(stateString))
-        {
-            return null;
-        }
-
-        return VirtualVehicleState.valueOf(stateString);
+        return StringUtils.isBlank(stateString)
+            ? null
+            : VirtualVehicleState.valueOf(stateString);
     }
 
     /**

@@ -48,22 +48,28 @@ public interface VirtualVehicleMigrator
      * @param lastStorageName the name of the last successfully migrated storage entry.
      * @param chunkNumber the chunk number.
      * @return the virtual vehicle chunk as byte array.
-     * @throws IOException thrown in case of errors.
-     * @throws ArchiveException thrown in case of errors.
+     * @throws IOException in case of errors.
+     * @throws ArchiveException in case of errors.
      */
     byte[] findChunk(VirtualVehicle virtualVehicle, String lastStorageName, int chunkNumber)
         throws IOException, ArchiveException;
 
     /**
      * @param inStream the input stream containing the virtual vehicle chunk to be stored in the database.
-     * @return the last stored chunk name.
      * @throws ArchiveException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    String storeChunk(InputStream inStream) throws ArchiveException, IOException;
+    void storeChunk(InputStream inStream) throws ArchiveException, IOException;
 
-//    /**
-//     * @param listener the virtual vehicle listener.
-//     */
-//    void addListener(VirtualVehicleListener listener);
+    /**
+     * @param inputStream the input stream containing the virtual vehicle chunk to be stored in the database.
+     * @throws IOException in case of errors.
+     */
+    void queueChunk(InputStream inputStream) throws IOException;
+
+    /**
+     * @param inputStream the input stream containing the virtual vehicle chunk acknowledgement message.
+     * @throws IOException in case of errors.
+     */
+    void ackChunk(InputStream inputStream) throws IOException;
 }

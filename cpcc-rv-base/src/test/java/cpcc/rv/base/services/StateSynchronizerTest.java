@@ -112,7 +112,7 @@ public class StateSynchronizerTest
     {
         sut.importConfiguration(data);
 
-        verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=import", data);
+        verify(jobService).addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=import", data);
     }
 
     @Test

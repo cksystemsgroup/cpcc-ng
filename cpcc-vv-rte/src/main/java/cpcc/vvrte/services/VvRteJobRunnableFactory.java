@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2009-2016 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.rv.base.services;
+package cpcc.vvrte.services;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +27,12 @@ import org.slf4j.Logger;
 import cpcc.core.entities.Job;
 import cpcc.core.services.jobs.JobRunnable;
 import cpcc.core.services.jobs.JobRunnableFactory;
+import cpcc.vvrte.base.VvRteConstants;
 
 /**
- * RealVehicleJobRunnableFactory
+ * VvRteJobRunnableFactory implementation.
  */
-public class RealVehicleJobRunnableFactory implements JobRunnableFactory
+public class VvRteJobRunnableFactory implements JobRunnableFactory
 {
     /**
      * {@inheritDoc}
@@ -49,27 +50,27 @@ public class RealVehicleJobRunnableFactory implements JobRunnableFactory
 
         String mode = parameters.get("mode");
 
-        if ("config".equals(mode))
+        if (VvRteConstants.MIGRATION_MODE_SEND.equals(mode))
         {
-            return new ConfigPushJobRunnable(serviceResources, parameters);
+            return new MigrationSendJobRunnable(logger, serviceResources, parameters, job.getData());
         }
 
-        if ("import".equals(mode))
+        if (VvRteConstants.MIGRATION_MODE_SEND_ACK.equals(mode))
         {
-            return new ConfigImportJobRunnable(logger, serviceResources, job.getData());
+            return new MigrationSendAckJobRunnable(logger, serviceResources, parameters, job.getData());
         }
 
-        if ("status".equals(mode))
+        if (VvRteConstants.MIGRATION_MODE_RECEIVE.equals(mode))
         {
-            return new RealVehicleStateJobRunnable(serviceResources, parameters);
+            return new MigrationReceiveJobRunnable(logger, serviceResources, job.getData());
         }
 
-        if ("init".equals(mode))
+        if (VvRteConstants.STUCK_MIGRATIONS_MODE.equals(mode))
         {
-            return new RealVehicleInitJobRunnable(logger, serviceResources);
+            return new StuckMigrationsJobRunnable(serviceResources);
         }
 
-        logger.error("RealVehicleJobRunnableFactory: Can not create a runnable for mode " + mode
+        logger.error("VvRteJobRunnableFactory: Can not create a runnable for mode " + mode
             + " parameters are " + parameters);
         return null;
     }

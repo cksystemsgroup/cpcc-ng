@@ -49,6 +49,15 @@ public interface JobService
     void addJob(String queueName, String parameters, byte[] data) throws JobCreationException;
 
     /**
+     * Add a job if it is not already queued.
+     * 
+     * @param queueName the name of the queue for executing the job.
+     * @param parameters the job parameters.
+     * @param data the job data.
+     */
+    void addJobIfNotExists(String queueName, String parameters, byte[] data);
+    
+    /**
      * Execute pending jobs. This method should be invoked periodically by the {@code PeriodicExecutor}.
      * 
      * @throws JobExecutionException in case of errors.

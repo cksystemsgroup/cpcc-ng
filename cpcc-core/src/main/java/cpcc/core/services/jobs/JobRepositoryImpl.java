@@ -49,11 +49,11 @@ public class JobRepositoryImpl implements JobRepository
      * @param maxJobAgeString the maximum job age as a string.
      */
     public JobRepositoryImpl(Logger logger, Session session
-        , @Symbol(CoreConstants.PROP_MAX_JOB_AGE) String maxJobAgeString)
+        , @Symbol(CoreConstants.PROP_MAX_JOB_AGE) long maxJobAge)
     {
         this.logger = logger;
         this.session = session;
-        this.maxJobAge = Long.parseLong(maxJobAgeString);
+        this.maxJobAge = maxJobAge;
     }
 
     /**

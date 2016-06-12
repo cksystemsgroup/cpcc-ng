@@ -175,17 +175,17 @@ public enum VirtualVehicleState
         }
     },
 
-    //    MIGRATION_INTERRUPTED_RCV
-    //    {
-    //        /**
-    //         * {@inheritDoc}
-    //         */
-    //        @Override
-    //        public VirtualVehicleState traverse(VirtualVehicleState newState)
-    //        {
-    //            return null;
-    //        }
-    //    },
+    MIGRATION_INTERRUPTED_RCV
+    {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VirtualVehicleState traverse(VirtualVehicleState newState)
+        {
+            return null;
+        }
+    },
 
     MIGRATION_COMPLETED_RCV
     {
@@ -263,19 +263,19 @@ public enum VirtualVehicleState
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART = Stream.of(
         INIT, DEFECTIVE, FINISHED, INTERRUPTED, TASK_COMPLETION_AWAITED, MIGRATION_COMPLETED_SND,
-        MIGRATION_INTERRUPTED_SND
+        MIGRATION_INTERRUPTED_SND, MIGRATION_COMPLETED_RCV
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_MIGRATION_FROM_RV = Stream.of(
-        DEFECTIVE, FINISHED, INTERRUPTED, MIGRATION_AWAITED_SND, MIGRATION_INTERRUPTED_SND
+        DEFECTIVE, FINISHED, INTERRUPTED, MIGRATION_AWAITED_SND, MIGRATION_INTERRUPTED_SND, MIGRATING_SND
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_RV = Stream.of(
-        INIT, DEFECTIVE, FINISHED, INTERRUPTED, MIGRATION_INTERRUPTED_SND
+        MIGRATION_AWAITED_SND, MIGRATION_COMPLETED_RCV, INIT, DEFECTIVE, FINISHED, INTERRUPTED
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_GS = Stream.of(
-        MIGRATION_INTERRUPTED_SND
+        MIGRATION_AWAITED_SND, MIGRATION_COMPLETED_RCV
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_NO_CHANGE_AFTER_MIGRATION = Stream.of(
@@ -287,7 +287,7 @@ public enum VirtualVehicleState
         ).collect(Collectors.toSet());
 
     public static final Set<VirtualVehicleState> VV_STATES_FOR_MIGRATION_RCV = Stream.of(
-        MIGRATING_SND, MIGRATING_RCV
+        MIGRATING_SND, MIGRATION_INTERRUPTED_SND, MIGRATING_RCV
         ).collect(Collectors.toSet());
 
     /**

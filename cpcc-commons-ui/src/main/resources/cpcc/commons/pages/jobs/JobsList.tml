@@ -1,10 +1,9 @@
-<html t:type="layout" title="${message:jobsList.pageTitle}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
+<html t:type="layout" title="${message:jobsList.pageTitle}" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter">
 
 	<h4>${message:jobsList.Headline}</h4>
 
-	<t:Grid t:source="jobList" t:row="currentJob"
-		class="table table-striped table-condensed">
+	<t:Grid t:source="jobList" t:row="currentJob" t:rowsPerPage="100" class="table table-striped table-condensed">
 
 		<p:createdCell>
 			<t:Output t:format="message:dateFormat" t:value="currentJob.created" />

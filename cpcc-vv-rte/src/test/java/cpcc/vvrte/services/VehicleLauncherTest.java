@@ -47,6 +47,7 @@ import org.testng.annotations.Test;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.RealVehicleRepository;
+import cpcc.core.services.jobs.JobService;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
@@ -73,6 +74,7 @@ public class VehicleLauncherTest
     private TimeService timeService;
     private VirtualVehicle vehicle2;
     private RealVehicle groundStation;
+    private JobService jobService;
 
     @BeforeMethod
     public void setUp() throws IOException
@@ -90,6 +92,7 @@ public class VehicleLauncherTest
         });
 
         logger = mock(Logger.class);
+        jobService = mock(JobService.class);
 
         String vvProgramFileName = "simple-vv.js";
         InputStream scriptStream = VehicleLauncherTest.class.getResourceAsStream(vvProgramFileName);
@@ -151,7 +154,7 @@ public class VehicleLauncherTest
         TaskRepository taskRepository = mock(TaskRepository.class);
 
         launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository
-            , rvRepository, timeService, messages, taskRepository);
+            , rvRepository, timeService, messages, taskRepository, jobService);
     }
 
     @Test

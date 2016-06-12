@@ -18,10 +18,14 @@
 
 package cpcc.core.services.jobs;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
@@ -40,6 +44,7 @@ public class JobServiceImpl implements JobService
     private TimeService timeService;
     private Map<String, JobQueue> queueMap = new HashMap<>();
     private Logger logger;
+    private MessageDigest md5;
 
     /**
      * @param serviceResources the service resources.
@@ -47,15 +52,18 @@ public class JobServiceImpl implements JobService
      * @param jobRepository the job repository.
      * @param timeService the time service.
      * @param logger the application logger.
+     * @throws NoSuchAlgorithmException
      */
     public JobServiceImpl(ServiceResources serviceResources, HibernateSessionManager sessionManager,
-        JobRepository jobRepository, TimeService timeService, Logger logger)
+        JobRepository jobRepository, TimeService timeService, Logger logger) throws NoSuchAlgorithmException
     {
         this.serviceResources = serviceResources;
         this.sessionManager = sessionManager;
         this.jobRepository = jobRepository;
         this.timeService = timeService;
         this.logger = logger;
+
+        md5 = MessageDigest.getInstance("MD5");
     }
 
     /**
@@ -89,7 +97,7 @@ public class JobServiceImpl implements JobService
         }
         catch (JobCreationException e)
         {
-            logger.info("Job already executing in queue '" + jobQueueName + "', parameters='" + parameters + "'");
+            logger.info(e.getMessage());
         }
     }
 
@@ -97,17 +105,38 @@ public class JobServiceImpl implements JobService
      * {@inheritDoc}
      */
     @Override
-    public void addJob(String queueName, String parameters, byte[] data) throws JobCreationException
+    public void addJobIfNotExists(String jobQueueName, String parameters, byte[] data)
+    {
+        try
+        {
+            addJob(jobQueueName, parameters, data);
+        }
+        catch (JobCreationException e)
+        {
+            logger.info(e.getMessage());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addJob(String queueName, String params, byte[] data) throws JobCreationException
     {
         if (!queueMap.containsKey(queueName))
         {
             throw new JobCreationException("Queue " + queueName + " not registered!");
         }
 
+        String parameters = ArrayUtils.isEmpty(data)
+            ? params
+            : params + ",md5=" + Hex.encodeHexString(md5.digest(data));
+
         List<Job> jobList = jobRepository.findOtherRunningJob(queueName, parameters);
-        if (jobList.size() > 0 && data == null)
+        if (jobList.size() > 0)
         {
-            throw new JobCreationException("Job already executing: queue=" + queueName + "  params=" + parameters);
+            throw new JobCreationException("Job already executing in queue='" + queueName + "', parameters='"
+                + parameters + "'");
         }
 
         Job job = new Job();
@@ -116,7 +145,9 @@ public class JobServiceImpl implements JobService
         job.setQueueName(queueName);
         job.setParameters(parameters);
         job.setData(data);
+
         sessionManager.getSession().save(job);
+        sessionManager.commit();
     }
 
     /**
@@ -129,7 +160,16 @@ public class JobServiceImpl implements JobService
         {
             for (Job job : jobRepository.findNextScheduledJobs())
             {
-                queueMap.get(job.getQueueName()).execute(job);
+                try
+                {
+                    queueMap.get(job.getQueueName()).execute(job);
+                    logger.debug("Executed job: " + job.getId() + ", queue: " + job.getQueueName() + ", params: "
+                        + job.getParameters() + ", result: " + job.getResultText());
+                }
+                catch (JobExecutionException e)
+                {
+                    logger.error("Buggerit!", e);
+                }
             }
         }
     }

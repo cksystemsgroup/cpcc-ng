@@ -119,4 +119,9 @@ public interface VvRteRepository
      */
     List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName, int maxEntries);
 
+    /**
+     * @param id the virtual vehicle identification.
+     * @return the requested entries, or null if not found.
+     */
+    List<VirtualVehicleStorage> findAllStorageItemsByVirtualVehicle(Integer id);
 }

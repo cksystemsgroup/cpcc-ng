@@ -101,13 +101,13 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
                 }
                 else
                 {
-                    logger.info("Migrate not to " + rv.getName() + " because of sensors "
+                    logger.debug("Migrate not to " + rv.getName() + " because of sensors "
                         + getSensorString(task.getSensors(), rv.getSensors()));
                 }
             }
             else
             {
-                logger.info("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
+                logger.debug("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
             }
         }
 

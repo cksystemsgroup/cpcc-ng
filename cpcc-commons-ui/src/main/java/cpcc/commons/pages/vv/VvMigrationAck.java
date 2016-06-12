@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2013 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2016 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@ import org.apache.tapestry5.util.TextStreamResponse;
 import cpcc.vvrte.services.VirtualVehicleMigrator;
 
 /**
- * Vehicle migration end-point.
+ * Vehicle migration acknowledge end-point.
  */
-public class VvMigration
+public class VvMigrationAck
 {
     @Inject
     private RequestGlobals requestGlobals;
@@ -43,7 +43,7 @@ public class VvMigration
     Object onActivate() throws Exception
     {
         InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();
-        migrator.queueChunk(inputStream);
+        migrator.ackChunk(inputStream);
         return new TextStreamResponse("text/plain", "OK");
     }
 }

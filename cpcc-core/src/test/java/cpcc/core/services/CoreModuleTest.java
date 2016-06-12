@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Constructor;
 
 import org.apache.tapestry5.hibernate.HibernateConfigurer;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.HibernateTransactionAdvisor;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
@@ -155,10 +156,15 @@ public class CoreModuleTest
         PeriodicExecutor executor = mock(PeriodicExecutor.class);
         Logger logger = mock(Logger.class);
         JobService jobService = mock(JobService.class);
+        HibernateSessionManager sessionManager = mock(HibernateSessionManager.class);
 
-        CoreModule.scheduleJobs(executor, logger, jobService);
+        CoreModule.scheduleJobs(executor, logger, jobService, sessionManager);
 
-        InOrder inOrder = Mockito.inOrder(executor, logger, jobService);
+        InOrder inOrder = Mockito.inOrder(executor, logger, jobService, sessionManager);
+
+        inOrder.verify(jobService).resetJobs();
+        inOrder.verify(jobService).removeOldJobs();
+        inOrder.verify(sessionManager).commit();
 
         ArgumentCaptor<Runnable> argument1 = ArgumentCaptor.forClass(Runnable.class);
         ArgumentCaptor<Runnable> argument2 = ArgumentCaptor.forClass(Runnable.class);

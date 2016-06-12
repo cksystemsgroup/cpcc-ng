@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+	<changeSet author="ckrainer" id="2016-05-30-01">
+		<addColumn tableName="VIRTUAL_VEHICLES">
+			<column name="MIGRATIONSOURCE_ID" type="INT(10)" />
+			<column name="CHUNK_NUMBER" type="INT(10)" />
+			<column name="UPDATE_TIME" type="TIMESTAMP" />
+		</addColumn>
+		<addForeignKeyConstraint baseColumnNames="MIGRATIONSOURCE_ID" baseTableName="VIRTUAL_VEHICLES"
+			constraintName="FK_VVMS_REALVEHICLE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+			referencedColumnNames="ID" referencedTableName="REAL_VEHICLES" />
+	</changeSet>
+</databaseChangeLog>

@@ -20,6 +20,8 @@ package cpcc.vvrte.services.db;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.slf4j.Logger;
 
+import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.TaskState;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
@@ -48,17 +51,19 @@ public class VvRteRepositoryImpl implements VvRteRepository
     private Logger logger;
     private Session session;
     private TaskRepository taskRepository;
+    private TimeService timeService;
 
     /**
      * @param logger the application logger.
      * @param session the Hibernate session.
      * @param taskRepository the task repository instance.
      */
-    public VvRteRepositoryImpl(Logger logger, Session session, TaskRepository taskRepository)
+    public VvRteRepositoryImpl(Logger logger, Session session, TaskRepository taskRepository, TimeService timeService)
     {
         this.logger = logger;
         this.session = session;
         this.taskRepository = taskRepository;
+        this.timeService = timeService;
     }
 
     /**
@@ -77,6 +82,13 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
             .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
             .setParameter("oldState", VirtualVehicleState.MIGRATION_AWAITED_SND)
+            .executeUpdate();
+
+        session
+            .createQuery("UPDATE VirtualVehicle SET migrationStartTime = :now "
+                + "WHERE state = :state AND migrationStartTime is NULL")
+            .setParameter("state", VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
+            .setParameter("now", timeService.newDate())
             .executeUpdate();
 
         session
@@ -161,8 +173,26 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .list());
 
         vvs.addAll((List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
-            .add(Restrictions.eqOrIsNull("state", VirtualVehicleState.TASK_COMPLETION_AWAITED))
+            .add(Restrictions.eq("state", VirtualVehicleState.TASK_COMPLETION_AWAITED))
             .add(Restrictions.isNull("task"))
+            .list());
+
+        vvs.addAll((List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
+            .add(Restrictions.eq("state", VirtualVehicleState.MIGRATION_AWAITED_SND))
+            .add(Restrictions.le("migrationStartTime", new Date(timeService.currentTimeMillis() - 10000)))
+            .list());
+
+        vvs.addAll((List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
+            .add(Restrictions.in("state", Arrays.asList(
+                VirtualVehicleState.MIGRATING_SND,
+                VirtualVehicleState.MIGRATION_INTERRUPTED_SND,
+                VirtualVehicleState.MIGRATION_COMPLETED_SND)))
+            .add(Restrictions.le("updateTime", new Date(timeService.currentTimeMillis() - 55000)))
+            .list());
+
+        vvs.addAll((List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
+            .add(Restrictions.eq("state", VirtualVehicleState.MIGRATING_RCV))
+            .add(Restrictions.le("updateTime", new Date(timeService.currentTimeMillis() - 175000)))
             .list());
 
         return vvs;
@@ -193,12 +223,17 @@ public class VvRteRepositoryImpl implements VvRteRepository
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public VirtualVehicle findVirtualVehicleByUUID(String uuid)
     {
-        return (VirtualVehicle) session.createCriteria(VirtualVehicle.class)
+        List<VirtualVehicle> vvs = (List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
             .add(Restrictions.eq("uuid", uuid))
-            .uniqueResult();
+            .addOrder(Order.asc("id"))
+            .list();
+
+        VirtualVehicle result = vvs.isEmpty() ? null : vvs.remove(0);
+        return result;
     }
 
     /**
@@ -251,18 +286,18 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public VirtualVehicleStorage findStorageItemByVirtualVehicleAndName(VirtualVehicle vehicle, String name)
     {
-        return (VirtualVehicleStorage) session
-            .createQuery("from VirtualVehicleStorage where virtualVehicle.id = :id AND name = :name")
-            .setInteger("id", vehicle.getId())
-            .setString("name", name)
-            .uniqueResult();
-
         //        return (VirtualVehicleStorage) session
-        //            .createCriteria(VirtualVehicleStorage.class)
-        //            .add(Restrictions.and(
-        //                Restrictions.eq("virtualVehicle.id", vehicle.getId()), 
-        //                Restrictions.eq("name", name)))
+        //            .createQuery("from VirtualVehicleStorage where virtualVehicle.id = :id AND name = :name")
+        //            .setInteger("id", vehicle.getId())
+        //            .setString("name", name)
         //            .uniqueResult();
+
+        return (VirtualVehicleStorage) session
+            .createCriteria(VirtualVehicleStorage.class)
+            .add(Restrictions.and(
+                Restrictions.eq("virtualVehicle.id", vehicle.getId()),
+                Restrictions.eq("name", name)))
+            .uniqueResult();
     }
 
     /**
@@ -306,4 +341,16 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .list();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<VirtualVehicleStorage> findAllStorageItemsByVirtualVehicle(Integer id)
+    {
+        return (List<VirtualVehicleStorage>) session
+            .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id")
+            .setInteger("id", id)
+            .list();
+    }
 }

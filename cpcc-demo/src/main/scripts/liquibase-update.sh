@@ -14,10 +14,10 @@ URL="$1";
 
 cd $CPCC_DIR/classes;
 
-# CP="$CPCC_DIR/lib/hsqldb-${COM_HSQLDB_VERSION}.jar:$CPCC_DIR/lib/liquibase-core-${LIQUIBASE_VERSION}.jar:$CPCC_DIR/lib/snakeyaml-${SNAKEYAML_VERSION}.jar";
+# CP="$LIBDIR/hsqldb-${COM_HSQLDB_VERSION}.jar:$LIBDIR/liquibase-core-${LIQUIBASE_VERSION}.jar:$LIBDIR/snakeyaml-${SNAKEYAML_VERSION}.jar";
 # DRV='org.hsqldb.jdbc.JDBCDriver';
 
-CP="$CPCC_DIR/lib/h2-${COM_H2DB_VERSION}.jar:$CPCC_DIR/lib/liquibase-core-${LIQUIBASE_VERSION}.jar:$CPCC_DIR/lib/snakeyaml-${SNAKEYAML_VERSION}.jar";
+CP="$LIBDIR/h2-${COM_H2DB_VERSION}.jar:$LIBDIR/liquibase-core-${LIQUIBASE_VERSION}.jar:$LIBDIR/snakeyaml-${SNAKEYAML_VERSION}.jar";
 DRV='org.h2.Driver';
 
 java -classpath $CP liquibase.integration.commandline.Main \

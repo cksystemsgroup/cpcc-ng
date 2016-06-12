@@ -31,6 +31,7 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
 
+import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.db.VvRteRepository;
@@ -58,6 +59,9 @@ public class AbstractModifyVv
     @Inject
     protected Messages messages;
 
+    @Inject
+    protected TimeService timeService;
+    
     @Valid
     @Property
     protected VirtualVehicle vehicle;
@@ -72,20 +76,17 @@ public class AbstractModifyVv
     protected Object onSuccessFromForm()
     {
         vehicle.setCode(vehicle.getCode().trim().replace("\\n", "\n"));
-        vehicle.setMigrationDestination(null);
         vehicle.setContinuation(null);
         vehicle.setEndTime(null);
         vehicle.setStartTime(null);
         vehicle.setState(VirtualVehicleState.INIT);
         vehicle.setMigrationDestination(null);
+        vehicle.setMigrationSource(null);
         vehicle.setMigrationStartTime(null);
         vehicle.setPreMigrationState(null);
+        vehicle.setUpdateTime(timeService.newDate());
         sessionManager.getSession().saveOrUpdate(vehicle);
         sessionManager.commit();
-
-        // TODO
-        //        rvss.notifyConfigurationChange();
-        //        confSync.notifyConfigurationChange();
         return VvList.class;
     }
 

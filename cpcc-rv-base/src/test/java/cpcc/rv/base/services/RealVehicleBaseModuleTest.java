@@ -129,7 +129,7 @@ public class RealVehicleBaseModuleTest
         TimeService timeService = mock(TimeService.class);
         JobRepository jobRepository = mock(JobRepository.class);
 
-        RealVehicleBaseModule.setupJobQueues(logger, jobService, sessionManager, timeService, jobRepository);
+        RealVehicleBaseModule.setupJobQueues(logger, jobService, sessionManager, timeService, jobRepository, 10);
 
         verify(jobService).addJobQueue(eq(RealVehicleBaseConstants.JOB_QUEUE_NAME), any(JobQueue.class));
         verify(jobService).addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=init");

@@ -36,9 +36,9 @@
 		<!-- t:mixins="ZoneRefresh" ZoneRefresh.period="5" -->
 		<t:Zone t:id="paneZone" id="stateInfoPaneZone">
 			<t:Grid t:source="virtualVehicleList" t:exclude="code,continuation,apiVersion,stateInfo,preMigrationState"
-				t:reorder="selected,id,name,state,uuid,startTime,endTime,migrationStartTime,migrationDestination" t:row="virtualVehicle"
-				t:add="migrationDestination,vehicleActions" class="table table-striped table-condensed topic-table" t:mixins="commons/GridCheckboxHelper"
-				GridCheckboxHelper.checkBoxId="vvCB" GridCheckboxHelper.enableIds="deleteVehiclesBtn"
+				t:reorder="selected,id,name,state,uuid,startTime,endTime,updateTime,migrationStartTime,migrationSource,migrationDestination"
+				t:row="virtualVehicle" t:add="migrationSource,migrationDestination,vehicleActions" class="table table-striped table-condensed topic-table"
+				t:mixins="commons/GridCheckboxHelper" GridCheckboxHelper.checkBoxId="vvCB" GridCheckboxHelper.enableIds="deleteVehiclesBtn"
 				GridCheckboxHelper.allCheckboxColumn="0" GridCheckboxHelper.allCheckboxChecked="false">
 
 				<p:selectedCell>
@@ -60,6 +60,16 @@
 				<p:migrationStartTimeCell>
 					<t:output t:format="message:dateFormat" t:value="virtualVehicle.migrationStartTime" />
 				</p:migrationStartTimeCell>
+
+				<p:updateTimeCell>
+					<t:output t:format="message:dateFormat" t:value="virtualVehicle.updateTime" />
+				</p:updateTimeCell>
+
+				<p:migrationSourceCell>
+					<t:If test="virtualVehicle.migrationSource">
+						${virtualVehicle.migrationSource.name}
+					</t:If>
+				</p:migrationSourceCell>
 
 				<p:migrationDestinationCell>
 					<t:If test="virtualVehicle.migrationDestination">

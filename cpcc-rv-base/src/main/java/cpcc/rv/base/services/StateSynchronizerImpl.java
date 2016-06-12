@@ -68,7 +68,7 @@ public class StateSynchronizerImpl implements StateSynchronizer
     @Override
     public void importConfiguration(byte[] data) throws JobCreationException
     {
-        jobService.addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=import", data);
+        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=import", data);
     }
 
     /**

@@ -21,10 +21,8 @@ package cpcc.core.services.jobs;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,43 +36,31 @@ import cpcc.core.entities.JobStatus;
 /**
  * JobQueue implementation.
  */
-public class JobQueue
+public class JobQueue implements JobQueueCallback
 {
-    @SuppressWarnings("serial")
-    private static final Set<JobStatus> ENDED_JOB_STATUS = new HashSet<JobStatus>()
-    {
-        {
-            add(JobStatus.OK);
-            add(JobStatus.FAILED);
-            add(JobStatus.NO_FACTORY);
-        }
-    };
-
     private Logger logger;
     private HibernateSessionManager sessionManager;
     private TimeService timeService;
-    private JobRepository jobRepository;
     private List<JobRunnableFactory> factoryList;
     private ExecutorService executorService;
     private ServiceResources serviceResources;
 
     private Map<Integer, Runnable> taskMap = Collections.synchronizedMap(new HashMap<Integer, Runnable>());
+    private List<Integer> doneList = new ArrayList<Integer>();
 
     /**
      * @param logger the application logger.
      * @param sessionManager the Hibernate session manager.
      * @param timeService the time service.
-     * @param jobRepository the job repository.
      * @param factoryList the factory list.
      * @param numberOfPoolThreads the number of pool threads to be used.
      */
     public JobQueue(Logger logger, HibernateSessionManager sessionManager, TimeService timeService
-        , JobRepository jobRepository, List<JobRunnableFactory> factoryList, int numberOfPoolThreads)
+        , List<JobRunnableFactory> factoryList, int numberOfPoolThreads)
     {
         this.logger = logger;
         this.sessionManager = sessionManager;
         this.timeService = timeService;
-        this.jobRepository = jobRepository;
         this.factoryList = factoryList;
 
         executorService = Executors.newFixedThreadPool(numberOfPoolThreads);
@@ -107,7 +93,7 @@ public class JobQueue
         sessionManager.getSession().update(job);
         sessionManager.commit();
 
-        JobExecutor executor = new JobExecutor(logger, serviceResources, factoryList, job.getId());
+        JobExecutor executor = new JobExecutor(logger, serviceResources, factoryList, job.getId(), this);
 
         synchronized (taskMap)
         {
@@ -122,25 +108,29 @@ public class JobQueue
      */
     private void cleanupTaskMap()
     {
-        synchronized (taskMap)
+        synchronized (doneList)
         {
-            List<Job> toBeDeleted = new ArrayList<>();
-
-            for (Integer jobNumber : taskMap.keySet())
+            synchronized (taskMap)
             {
-                Job job = jobRepository.findJobById(jobNumber);
-
-                if (ENDED_JOB_STATUS.contains(job.getStatus()))
+                for (Integer jobId : doneList)
                 {
-                    toBeDeleted.add(job);
+                    taskMap.remove(jobId);
                 }
             }
-
-            for (Job job : toBeDeleted)
-            {
-                taskMap.remove(job.getId());
-            }
+            
+            doneList.clear();
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void executed(int jobId)
+    {
+        synchronized (doneList)
+        {
+            doneList.add(jobId);
+        }
+    }
 }

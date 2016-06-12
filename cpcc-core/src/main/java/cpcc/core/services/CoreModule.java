@@ -19,6 +19,7 @@
 package cpcc.core.services;
 
 import org.apache.tapestry5.hibernate.HibernateConfigurer;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.HibernateTransactionAdvisor;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
@@ -138,12 +139,15 @@ public final class CoreModule
      * @param executor the periodic executor service.
      * @param logger the application logger.
      * @param jobService the job service.
+     * @param sessionManager
      */
     @Startup
-    public static void scheduleJobs(PeriodicExecutor executor, final Logger logger, final JobService jobService)
+    public static void scheduleJobs(PeriodicExecutor executor, final Logger logger, final JobService jobService
+        , HibernateSessionManager sessionManager)
     {
         jobService.resetJobs();
         jobService.removeOldJobs();
+        sessionManager.commit();
 
         executor.addJob(new CronSchedule("* * * * * ?"), "JobService periodical execution", new Runnable()
         {

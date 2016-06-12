@@ -21,12 +21,17 @@ package cpcc.core.services.jobs;
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -74,7 +79,7 @@ public class JobServiceTest
     private Logger logger;
 
     @BeforeMethod
-    public void setUp() throws JobExecutionException
+    public void setUp() throws JobExecutionException, NoSuchAlgorithmException
     {
         parameters01 = "parameters01";
         parameters02 = "parameters02";
@@ -175,9 +180,11 @@ public class JobServiceTest
         sut.addJob(QUEUE_NAME_01, parameters01, data1);
         sut.addJob(QUEUE_NAME_01, parameters01, data2);
 
+        String parameterRegex = parameters01 + ",md5=[0-9a-f]+";
+
         InOrder inOrder = Mockito.inOrder(timeService, jobQueue01, jobRepository, session);
 
-        inOrder.verify(jobRepository).findOtherRunningJob(QUEUE_NAME_01, parameters01);
+        inOrder.verify(jobRepository).findOtherRunningJob(eq(QUEUE_NAME_01), matches(parameterRegex));
 
         ArgumentCaptor<Job> argument1 = ArgumentCaptor.forClass(Job.class);
         inOrder.verify(session).save(argument1.capture());
@@ -193,7 +200,7 @@ public class JobServiceTest
 
         assertThat(actual1.getParameters())
             .describedAs("Job parameters")
-            .isEqualTo(parameters01);
+            .matches(parameterRegex);
 
         assertThat(actual1.getQueueName())
             .describedAs("Job queue name")
@@ -217,7 +224,7 @@ public class JobServiceTest
 
         assertThat(actual2.getParameters())
             .describedAs("Job parameters")
-            .isEqualTo(parameters01);
+            .matches(parameterRegex);
 
         assertThat(actual2.getQueueName())
             .describedAs("Job queue name")
@@ -273,6 +280,54 @@ public class JobServiceTest
     }
 
     @Test
+    public void shouldAddJobWithDataIfNotExists() throws JobCreationException
+    {
+        byte[] data = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+        String parameterWithMd5 = parameters01 + ",md5=70903e79b7575e3f4e7ffa15c2608ac7";
+
+        when(timeService.newDate()).thenAnswer(new Answer<Date>()
+        {
+            int counter = 0;
+            Date[] dateList = new Date[]{createdDate1};
+
+            @Override
+            public Date answer(InvocationOnMock invocation) throws Throwable
+            {
+                return counter < dateList.length ? dateList[counter++] : null;
+            }
+        });
+
+        sut.addJobQueue(QUEUE_NAME_01, jobQueue01);
+
+        sut.addJobIfNotExists(QUEUE_NAME_01, parameters01, data);
+
+        verify(jobRepository).findOtherRunningJob(QUEUE_NAME_01, parameterWithMd5);
+
+        ArgumentCaptor<Job> argument = ArgumentCaptor.forClass(Job.class);
+        verify(session).save(argument.capture());
+        Job actual = argument.getValue();
+
+        assertThat(actual.getCreated())
+            .describedAs("Job queued time")
+            .isEqualTo(createdDate1);
+
+        assertThat(actual.getStatus())
+            .describedAs("Job status")
+            .isEqualTo(JobStatus.CREATED);
+
+        assertThat(actual.getParameters())
+            .describedAs("Job parameters")
+            .isEqualTo(parameterWithMd5);
+
+        assertThat(actual.getQueueName())
+            .describedAs("Job queue name")
+            .isEqualTo(QUEUE_NAME_01);
+
+        verifyZeroInteractions(logger);
+    }
+
+    @Test
     public void shouldNotAddJobIfExists() throws JobCreationException
     {
         Job existingJob = mock(Job.class);
@@ -298,7 +353,39 @@ public class JobServiceTest
         verify(jobRepository).findOtherRunningJob(QUEUE_NAME_01, parameters01);
 
         verify(logger)
-            .info("Job already executing in queue '" + QUEUE_NAME_01 + "', parameters='" + parameters01 + "'");
+            .info("Job already executing in queue='" + QUEUE_NAME_01 + "', parameters='" + parameters01 + "'");
+    }
+
+    @Test
+    public void shouldNotAddJobWithDataIfExists() throws JobCreationException
+    {
+        byte[] data = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+        Job existingJob = mock(Job.class);
+        String parameterWithMd5 = parameters01 + ",md5=70903e79b7575e3f4e7ffa15c2608ac7";
+
+        when(jobRepository.findOtherRunningJob(QUEUE_NAME_01, parameterWithMd5)).thenReturn(Arrays.asList(existingJob));
+
+        when(timeService.newDate()).thenAnswer(new Answer<Date>()
+        {
+            int counter = 0;
+            Date[] dateList = new Date[]{createdDate1};
+
+            @Override
+            public Date answer(InvocationOnMock invocation) throws Throwable
+            {
+                return counter < dateList.length ? dateList[counter++] : null;
+            }
+        });
+
+        sut.addJobQueue(QUEUE_NAME_01, jobQueue01);
+
+        sut.addJobIfNotExists(QUEUE_NAME_01, parameters01, data);
+
+        verify(jobRepository).findOtherRunningJob(QUEUE_NAME_01, parameterWithMd5);
+
+        verify(logger)
+            .info("Job already executing in queue='" + QUEUE_NAME_01 + "', parameters='" + parameterWithMd5 + "'");
     }
 
     @Test
@@ -316,7 +403,7 @@ public class JobServiceTest
 
         assertThat(caughtException().getMessage())
             .describedAs("Exception message")
-            .isEqualTo("Job already executing: queue=queueName01  params=parameters01");
+            .isEqualTo("Job already executing in queue='queueName01', parameters='parameters01'");
     }
 
     @Test
@@ -342,7 +429,7 @@ public class JobServiceTest
         verify(jobQueue01).setServiceResources(serviceResources);
         verify(jobQueue02).setServiceResources(serviceResources);
 
-        verify(existingJob).getQueueName();
+        verify(existingJob, times(2)).getQueueName();
         verify(jobQueue01).execute(existingJob);
         verifyZeroInteractions(jobQueue02);
     }
@@ -375,5 +462,18 @@ public class JobServiceTest
         sut.removeOldJobs();
 
         verify(jobRepository).removeOldJobs();
+    }
+
+    @Test
+    public void shouldCatchJEEOfFailingJob() throws JobExecutionException
+    {
+        when(jobRepository.findNextScheduledJobs()).thenReturn(Arrays.asList(failingJob));
+
+        sut.addJobQueue(QUEUE_NAME_02, jobQueue02);
+        sut.executeJobs();
+
+        verify(jobQueue02).execute(failingJob);
+
+        verify(logger).error(eq("Buggerit!"), any(JobExecutionException.class));
     }
 }

@@ -9,14 +9,14 @@
 		<Engine name="Catalina" defaultHost="localhost">
 			<Host name="localhost" appBase="${app.base}" autoDeploy="false" copyXML="false">
 				<Context path="/" docBase="${app.war.file}" privileged="false" cookies="false" antiResourceLocking="false"
-					antiJARLocking="false" useHttpOnly="true">
+					useHttpOnly="true">
 
 					<Resource name="jdbc/GS" auth="Container" type="javax.sql.DataSource" username="sa" password=""
-						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
+						driverClassName="${db.driver}" url="${db.url}" maxTotal="60" />
 					<Resource name="jdbc/RV" auth="Container" type="javax.sql.DataSource" username="sa" password=""
-						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
+						driverClassName="${db.driver}" url="${db.url}" maxTotal="60" />
 					<Resource name="jdbc/LIQUIBASE" auth="Container" type="javax.sql.DataSource" username="sa" password=""
-						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
+						driverClassName="${db.driver}" url="${db.url}" maxTotal="5" />
 				</Context>
 			</Host>
 		</Engine>

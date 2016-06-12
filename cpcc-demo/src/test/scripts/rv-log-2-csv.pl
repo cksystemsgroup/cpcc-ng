@@ -7,7 +7,7 @@ use Time::Local;
 use Math::Trig;
 use Statistics::Descriptive;
 
-my $estimatesFile = 'extimates.csv';
+my $estimatesFile = 'estimates.csv';
 my $tasksFile     = 'tasks.csv';
 my $vvsFile       = 'vvs.csv';
 my $help          = undef;

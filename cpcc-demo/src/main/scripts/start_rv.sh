@@ -32,7 +32,7 @@ cp $CPCC_DIR/conf/*.xml $CPCC_DIR/conf/*.properties $CATALINA_BASE/conf
 
 OPTS="$OPTS -Xss256k -Duser.timezone=CET -Dfile.encoding=UTF-8 -Djava.awt.headless=true $CATALINA_OPTS";
 OPTS="$OPTS -Dcatalina.base=$CATALINA_BASE -Dshutdown.port=${SHUTDOWN_PORT[$APP_CONTEXT_PATH]} -Dhttp.connector.port=${CONNECTOR_PORT[$APP_CONTEXT_PATH]}";
-# OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE -Ddb.directory=$DBDIR -Dhibernate.dialect=org.hibernate.dialect.HSQLDialect";
+# OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE -Ddb.directory=$DBDIR";
 OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE"
 #OPTS="$OPTS -Dhibernate.dialect=org.hibernate.dialect.HSQLDialect -Ddb.driver=org.hsqldb.jdbc.JDBCDriver -Ddb.url=jdbc:hsqldb:file://${DBDIR}/${APP_CONTEXT_PATH}";
 OPTS="$OPTS -Dhibernate.dialect=org.hibernate.dialect.H2Dialect -Ddb.driver=org.h2.Driver -Ddb.url=jdbc:h2:file:${DBDIR}/${APP_CONTEXT_PATH};MVCC=true;AUTOCOMMIT=OFF";
@@ -68,6 +68,7 @@ CP="$CP:$LIBDIR/tomcat-websocket-api-${TOMCAT_VERSION}.jar";
 
 [ -f "$LIBDIR/scrutiny-javaagent-1.2.1.jar" ] && AGENT="-javaagent:$LIBDIR/scrutiny-javaagent-1.2.1.jar=scrutiny.logs.dir=$CPCC_DIR/work/javaagent-$APP_CONTEXT_PATH"
 
+cd $CATALINA_BASE
 # exec "$JAVA_HOME/bin/java" -cp $CP $AGENT $OPTS org.apache.catalina.startup.Bootstrap start
 "$JAVA_HOME/bin/java" -cp $CP $AGENT $OPTS org.apache.catalina.startup.Bootstrap start >> $CATALINA_BASE/logs/catalina.out 2>&1 &
 echo $! > $CATALINA_BASE/logs/jvm.pid

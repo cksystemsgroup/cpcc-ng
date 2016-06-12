@@ -26,6 +26,9 @@ public final class VvRteConstants
     public static final String MIGRATION_CONNECTOR = "migration";
     public static final String MIGRATION_PATH = "/commons/vv/migration";
 
+    public static final String MIGRATION_ACK_CONNECTOR = "migration-ack";
+    public static final String MIGRATION_ACK_PATH = "/commons/vv/migrationAck";
+
     public static final String PROP_DEFAULT_SCHEDULER = "vvrte.default.scheduler";
     // public static final String PROP_DEFAULT_SCHEDULER_CLASS_NAME =
     //  "cpcc.vvrte.services.task.FirstComeFirstServeAlgorithm";
@@ -34,6 +37,24 @@ public final class VvRteConstants
 
     public static final String PROP_MIN_TOLERANCE_DISTANCE = "cpcc.vvrte.task.minimumToleranceDistance";
     public static final String PROP_MIN_TOLERANCE_DISTANCE_DEFAULT = "3.0";
+
+    public static final String MIGRATION_JOB_QUEUE_NAME = "VV Migrations";
+    public static final String NUMBER_OF_MIGRATION_POOL_THREADS = "vvrte.mig.job.pool.threads";
+    public static final String NUMBER_OF_MIGRATION_POOL_THREADS_DEFAULT = "20";
+
+    public static final String MIGRATION_MODE_SEND = "migration-send";
+    public static final String MIGRATION_FORMAT_SEND = "mode=" + MIGRATION_MODE_SEND + ",id=%d";
+
+    public static final String MIGRATION_MODE_SEND_ACK = "migration-send-ack";
+    public static final String MIGRATION_FORMAT_SEND_ACK = "mode=" + MIGRATION_MODE_SEND_ACK + ",id=%d";
+
+    public static final String MIGRATION_MODE_RECEIVE = "migration-receive";
+    public static final String MIGRATION_RECEIVE = "mode=" + MIGRATION_MODE_RECEIVE;
+
+    public static final String MIGRATION_CONTINUE = "mode=" + MIGRATION_MODE_SEND + ",id=0";
+
+    public static final String STUCK_MIGRATIONS_MODE = "stuck-migrations";
+    public static final String STUCK_MIGRATIONS = "mode=" + STUCK_MIGRATIONS_MODE;
 
     private VvRteConstants()
     {

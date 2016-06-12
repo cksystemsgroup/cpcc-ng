@@ -188,7 +188,8 @@ public class VvList
     void restartMigration(Integer id)
     {
         VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
-        if (!VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION_FROM_RV.contains(vehicle.getState()))
+        if (vehicle == null
+            || !VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION_FROM_RV.contains(vehicle.getState()))
         {
             return;
         }

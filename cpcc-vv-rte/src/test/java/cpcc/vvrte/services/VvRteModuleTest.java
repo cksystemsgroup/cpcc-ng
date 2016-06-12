@@ -29,6 +29,7 @@ import static org.testng.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
 
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
@@ -37,10 +38,15 @@ import org.apache.tapestry5.ioc.ServiceBindingOptions;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.Logger;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import cpcc.com.services.CommunicationService;
+import cpcc.core.services.jobs.JobQueue;
+import cpcc.core.services.jobs.JobRepository;
+import cpcc.core.services.jobs.JobService;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.services.db.VvRteRepository;
 import cpcc.vvrte.services.db.VvRteRepositoryImpl;
@@ -156,9 +162,10 @@ public class VvRteModuleTest
         VvRteRepository vvRteRepo = mock(VvRteRepository.class);
         PeriodicExecutor executor = mock(PeriodicExecutor.class);
         TaskExecutionService taskExecutionService = mock(TaskExecutionService.class);
-        VirtualVehicleLauncher launcher = mock(VirtualVehicleLauncher.class);
+        JobService jobService = mock(JobService.class);
+        Logger logger = mock(Logger.class);
 
-        VvRteModule.scheduleJobs(vvRteRepo, executor, taskExecutionService, launcher);
+        VvRteModule.scheduleJobs(vvRteRepo, executor, taskExecutionService, jobService, logger);
 
         ArgumentCaptor<Runnable> argument = ArgumentCaptor.forClass(Runnable.class);
 
@@ -167,7 +174,7 @@ public class VvRteModuleTest
         argument.getAllValues().stream().forEach(x -> x.run());
 
         verify(taskExecutionService).executeTasks();
-        verify(launcher).handleStuckMigrations();
+        verify(jobService).addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME, VvRteConstants.STUCK_MIGRATIONS);
     }
 
     @Test
@@ -189,5 +196,19 @@ public class VvRteModuleTest
         VvRteModule.setupTaskExecutionService(tes, vvl);
 
         verify(tes).addListener(vvl);
+    }
+
+    @Test
+    public void shouldSetupJobQueues()
+    {
+        Logger logger = mock(Logger.class);
+        JobService jobService = mock(JobService.class);
+        HibernateSessionManager sessionManager = mock(HibernateSessionManager.class);
+        TimeService timeService = mock(TimeService.class);
+        JobRepository jobRepository = mock(JobRepository.class);
+
+        VvRteModule.setupJobQueues(logger, jobService, sessionManager, timeService, jobRepository, 10);
+
+        verify(jobService).addJobQueue(eq(VvRteConstants.MIGRATION_JOB_QUEUE_NAME), any(JobQueue.class));
     }
 }
