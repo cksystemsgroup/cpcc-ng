@@ -87,15 +87,19 @@ public class PositionContributorTest
         when(rv01.getType()).thenReturn(RealVehicleType.BOAT);
         when(rv01.getId()).thenReturn(12345);
         when(rv01.getName()).thenReturn("RV01");
+        when(rv01.toString()).thenReturn("RV01");
 
         RealVehicleState rvs01 = mock(RealVehicleState.class);
         when(rvs01.getLastUpdate()).thenReturn(new Date(NEW_TIME));
-
+        when(rvs01.toString()).thenReturn("State One");
+        
         RealVehicleState rvs02 = mock(RealVehicleState.class);
         when(rvs02.getLastUpdate()).thenReturn(new Date(TIMEOUT_TIME));
-
+        when(rvs02.toString()).thenReturn("State Two");
+        
         Task task1 = mock(Task.class);
-
+        when(task1.toString()).thenReturn("Task One");
+        
         return new Object[][]{
             new Object[]{null, null, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
@@ -122,7 +126,7 @@ public class PositionContributorTest
                 + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"properties\":{"
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
-                + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"none\",\"rvHeading\":0,"
+                + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
             },
@@ -132,7 +136,7 @@ public class PositionContributorTest
                 + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"properties\":{"
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
-                + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"none\",\"rvHeading\":0,"
+                + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
             },

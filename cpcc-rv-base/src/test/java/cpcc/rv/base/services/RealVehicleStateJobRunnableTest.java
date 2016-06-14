@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -32,6 +33,7 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -59,11 +61,14 @@ public class RealVehicleStateJobRunnableTest
     private RealVehicle rv;
     private Session session;
     private CommunicationResponse response;
+    private Logger logger;
 
     @SuppressWarnings("unchecked")
     @BeforeMethod
     public void setUp() throws Exception
     {
+        logger = mock(Logger.class);
+
         parameters = mock(Map.class);
         when(parameters.get("rv")).thenReturn(Integer.toString(RV_ID));
 
@@ -91,11 +96,11 @@ public class RealVehicleStateJobRunnableTest
         when(serviceResources.getService(CommunicationService.class)).thenReturn(com);
         when(serviceResources.getService(RealVehicleRepository.class)).thenReturn(rvRepo);
 
-        sut = new RealVehicleStateJobRunnable(serviceResources, parameters);
+        sut = new RealVehicleStateJobRunnable(logger, serviceResources, parameters);
     }
 
     @Test
-    public void shouldHandleExistingRvState() throws Exception
+    public void shouldHandleExistingRvState()
     {
         RealVehicleState rvState = mock(RealVehicleState.class);
         when(rvRepo.findRealVehicleStateById(RV_ID)).thenReturn(rvState);
@@ -113,11 +118,11 @@ public class RealVehicleStateJobRunnableTest
         verifyNoMoreInteractions(rvState);
 
         verify(session).saveOrUpdate(rvState);
-
+        verifyZeroInteractions(logger);
     }
 
     @Test
-    public void shouldHandleMissingRvState() throws Exception
+    public void shouldHandleMissingRvState()
     {
         Date now = new Date();
         sut.run();
@@ -131,5 +136,7 @@ public class RealVehicleStateJobRunnableTest
         assertThat(rvState.getLastUpdate().getTime() - now.getTime()).isLessThan(1000);
         assertThat(rvState.getRealVehicleName()).isEqualTo(rv.getName());
         assertThat(rvState.getState()).isEqualTo(RESPONSE_STRING);
+
+        verifyZeroInteractions(logger);
     }
 }

@@ -52,7 +52,7 @@ public class JobServiceImpl implements JobService
      * @param jobRepository the job repository.
      * @param timeService the time service.
      * @param logger the application logger.
-     * @throws NoSuchAlgorithmException
+     * @throws NoSuchAlgorithmException in case of errors.
      */
     public JobServiceImpl(ServiceResources serviceResources, HibernateSessionManager sessionManager,
         JobRepository jobRepository, TimeService timeService, Logger logger) throws NoSuchAlgorithmException

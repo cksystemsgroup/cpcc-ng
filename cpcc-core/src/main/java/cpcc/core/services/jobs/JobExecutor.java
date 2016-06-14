@@ -44,6 +44,7 @@ public class JobExecutor implements Runnable
      * @param serviceResources the service resources.
      * @param factoryList the factory list.
      * @param jobNumber the id of the job to be executed.
+     * @param callBack the job queue callback.
      */
     public JobExecutor(Logger logger, ServiceResources serviceResources, List<JobRunnableFactory> factoryList
         , int jobNumber, JobQueueCallback callBack)

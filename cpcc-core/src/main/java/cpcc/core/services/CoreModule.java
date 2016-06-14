@@ -139,7 +139,7 @@ public final class CoreModule
      * @param executor the periodic executor service.
      * @param logger the application logger.
      * @param jobService the job service.
-     * @param sessionManager
+     * @param sessionManager the database session manager.
      */
     @Startup
     public static void scheduleJobs(PeriodicExecutor executor, final Logger logger, final JobService jobService

@@ -147,7 +147,7 @@ public class VehicleLauncherTest
         when(vvRteRepository.findVirtualVehicleById(1234567)).thenReturn(vehicle2);
 
         RealVehicleRepository rvRepository = mock(RealVehicleRepository.class);
-        when(rvRepository.findAllConnectedGroundStations()).thenReturn(Arrays.asList(groundStation));
+        when(rvRepository.findAllGroundStations()).thenReturn(Arrays.asList(groundStation));
 
         Messages messages = mock(Messages.class);
 

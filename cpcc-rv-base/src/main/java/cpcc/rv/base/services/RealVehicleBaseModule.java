@@ -85,16 +85,6 @@ public final class RealVehicleBaseModule
     public static void scheduleJobs(PeriodicExecutor executor, final StateSynchronizer stateSync)
     {
         // TODO check cycle time!
-        executor.addJob(new CronSchedule("* * * * * ?"), "Real Vehicle status update", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                stateSync.realVehicleStatusUpdate();
-            }
-        });
-
-        // TODO check cycle time!
         executor.addJob(new CronSchedule("0 * * * * ?"), "Push Configuration", new Runnable()
         {
             @Override

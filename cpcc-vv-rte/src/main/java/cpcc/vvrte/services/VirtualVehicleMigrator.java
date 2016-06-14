@@ -37,14 +37,6 @@ public interface VirtualVehicleMigrator
 
     /**
      * @param virtualVehicle the virtual vehicle to be migrated.
-     * @return the virtual vehicle chunk as byte array.
-     * @throws IOException thrown in case of errors.
-     * @throws ArchiveException thrown in case of errors.
-     */
-    byte[] findFirstChunk(VirtualVehicle virtualVehicle) throws IOException, ArchiveException;
-
-    /**
-     * @param virtualVehicle the virtual vehicle to be migrated.
      * @param lastStorageName the name of the last successfully migrated storage entry.
      * @param chunkNumber the chunk number.
      * @return the virtual vehicle chunk as byte array.

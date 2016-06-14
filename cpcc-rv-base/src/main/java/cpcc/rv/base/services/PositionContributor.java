@@ -26,7 +26,6 @@ import org.geojson.Point;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
-import cpcc.core.entities.RealVehicleState;
 import cpcc.core.entities.RealVehicleType;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
@@ -40,7 +39,6 @@ public class PositionContributor implements StateContributor
 {
     private RealVehicleRepository rvRepo;
     private TimeService timeService;
-    private long connectionTimeout;
 
     /**
      * @param timeService the time service.
@@ -50,7 +48,6 @@ public class PositionContributor implements StateContributor
     {
         this.rvRepo = rvRepo;
         this.timeService = timeService;
-        this.connectionTimeout = 10000L;
     }
 
     /**
@@ -79,7 +76,7 @@ public class PositionContributor implements StateContributor
             pointFeature.setProperty("rvType", rv.getType().name());
             pointFeature.setProperty("rvId", rv.getId());
             pointFeature.setProperty("rvName", rv.getName());
-            pointFeature.setProperty("rvState", getRvState(taskList, rv));
+            pointFeature.setProperty("rvState", taskList.isEmpty() ? "idle" : "busy");
         }
         else
         {
@@ -90,24 +87,5 @@ public class PositionContributor implements StateContributor
         }
 
         featureCollection.add(pointFeature);
-    }
-
-    /**
-     * @param taskList the currently scheduled tasks.
-     * @param realVehicle the host Real Vehicle.
-     * @return the Real Vehicle state.
-     */
-    private String getRvState(List<Task> taskList, RealVehicle realVehicle)
-    {
-        RealVehicleState state = rvRepo.findRealVehicleStateById(realVehicle.getId());
-
-        String stateString = "none";
-
-        if (state != null && timeService.currentTimeMillis() - state.getLastUpdate().getTime() < connectionTimeout)
-        {
-            stateString = taskList.isEmpty() ? "idle" : "busy";
-        }
-
-        return stateString;
     }
 }

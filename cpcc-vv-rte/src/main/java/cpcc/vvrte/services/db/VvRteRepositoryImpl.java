@@ -57,6 +57,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
      * @param logger the application logger.
      * @param session the Hibernate session.
      * @param taskRepository the task repository instance.
+     * @param timeService the time service.
      */
     public VvRteRepositoryImpl(Logger logger, Session session, TaskRepository taskRepository, TimeService timeService)
     {
@@ -337,7 +338,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id AND name > :name ORDER BY name")
             .setInteger("id", id)
             .setString("name", startName)
-            .setMaxResults(maxEntries)
+            .setMaxResults(maxEntries > 0 ? maxEntries : 1)
             .list();
     }
 

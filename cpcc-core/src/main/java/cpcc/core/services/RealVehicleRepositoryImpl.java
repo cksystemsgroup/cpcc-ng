@@ -18,13 +18,11 @@
 
 package cpcc.core.services;
 
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
 
 import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
@@ -90,16 +88,11 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<RealVehicle> findAllConnectedGroundStations()
+    public List<RealVehicle> findAllGroundStations()
     {
-        Date timeLimit = new Date(timeService.currentTimeMillis() - connectionTimeout);
-        
         return (List<RealVehicle>) session
             .createCriteria(RealVehicle.class, "rv")
             .add(Restrictions.eq("type", RealVehicleType.GROUND_STATION))
-            .createCriteria("rv.state", "st", JoinType.LEFT_OUTER_JOIN)
-            .add(Restrictions.eqProperty("rv.id", "st.id"))
-            .add(Restrictions.ge("st.lastUpdate", timeLimit))
             .list();
     }
 

@@ -20,8 +20,12 @@ package cpcc.gs.web.services;
 
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.ioc.annotations.Startup;
+import org.apache.tapestry5.ioc.services.cron.CronSchedule;
+import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 
 import cpcc.core.utils.VersionUtils;
+import cpcc.rv.base.services.StateSynchronizer;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to configure and extend
@@ -58,5 +62,24 @@ public final class AppModule
         configuration.add(SymbolConstants.SUPPORTED_LOCALES, "en,de");
         configuration.add(SymbolConstants.MINIFICATION_ENABLED, "false");
         configuration.add(SymbolConstants.HMAC_PASSPHRASE, "Eith6Du9reeSa7aiaiweaM7oaCh6quae");
+    }
+
+    /**
+     * @param executor the periodic executor service.
+     * @param stateSync the state synchronization service.
+     */
+    @Startup
+    public static void scheduleJobs(PeriodicExecutor executor, final StateSynchronizer stateSync)
+    {
+        // Taken from RealVehicleBaseModule to reduce network traffic.
+        // TODO check cycle time!
+        executor.addJob(new CronSchedule("* * * * * ?"), "Real Vehicle status update", new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                stateSync.realVehicleStatusUpdate();
+            }
+        });
     }
 }

@@ -351,7 +351,7 @@ public class VirtualVehicle implements Serializable
     }
 
     /**
-     * @return
+     * @return the time of the last update.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is exposed on purpose")
     public java.util.Date getUpdateTime()
@@ -360,7 +360,7 @@ public class VirtualVehicle implements Serializable
     }
 
     /**
-     * @param updateTime
+     * @param updateTime the time of the last update to set.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
     public void setUpdateTime(java.util.Date updateTime)

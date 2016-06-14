@@ -33,14 +33,13 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
 
 import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationResponse.Status;
 import cpcc.com.services.CommunicationService;
-import cpcc.core.entities.Parameter;
-import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.JobService;
 import cpcc.core.services.jobs.TimeService;
@@ -59,35 +58,46 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private Logger logger;
     private HibernateSessionManager sessionManager;
     private VvRteRepository vvRepository;
-    private QueryManager qm;
     private VirtualVehicleLauncher launcher;
     private JobService jobService;
     private TimeService timeService;
     private RealVehicleRepository rvRepository;
     private CommunicationService com;
+    private int chunkSize;
 
     /**
      * @param logger the application logger.
      * @param sessionManager the Hibernate session manager.
      * @param vvRepository the virtual vehicle repository.
-     * @param qm the query manager.
      * @param launcher the virtual vehicle launcher.
      * @param jobService the job service.
      * @param timeService the time service.
+     * @param rvRepository the real vehicle repository.
+     * @param com the communication service.
+     * @param chunkSize the migration chunk size.
      */
     public VirtualVehicleMigratorImpl(Logger logger, HibernateSessionManager sessionManager
-        , VvRteRepository vvRepository, QueryManager qm, VirtualVehicleLauncher launcher, JobService jobService
-        , TimeService timeService, RealVehicleRepository rvRepository, CommunicationService com)
+        , VvRteRepository vvRepository, VirtualVehicleLauncher launcher, JobService jobService
+        , TimeService timeService, RealVehicleRepository rvRepository, CommunicationService com
+        , @Symbol(VvRteConstants.MIGRATION_CHUNK_SIZE) int chunkSize)
     {
         this.logger = logger;
         this.sessionManager = sessionManager;
         this.vvRepository = vvRepository;
-        this.qm = qm;
         this.launcher = launcher;
         this.jobService = jobService;
         this.timeService = timeService;
         this.rvRepository = rvRepository;
         this.com = com;
+        this.chunkSize = chunkSize;
+    }
+
+    /**
+     * @param chunkSize the migration chunk size to set.
+     */
+    public void setChunkSize(int chunkSize)
+    {
+        this.chunkSize = chunkSize;
     }
 
     /**
@@ -104,46 +114,23 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * {@inheritDoc}
      */
     @Override
-    public byte[] findFirstChunk(VirtualVehicle virtualVehicle) throws IOException, ArchiveException
-    {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
-        ArchiveOutputStream outStream = factory.createArchiveOutputStream("tar", baos);
-
-        writeVirtualVehicleProperties(virtualVehicle, outStream, 0, false);
-
-        outStream.close();
-        baos.close();
-        return baos.toByteArray();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public byte[] findChunk(VirtualVehicle virtualVehicle, String lastStorageName, int chunkNumber)
         throws IOException, ArchiveException
     {
-        Parameter paramChunkSize = qm.findParameterByName(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE, "100000");
-
-        int chunkSize = Integer.parseInt(paramChunkSize.getValue());
-
         String name = lastStorageName != null && lastStorageName.startsWith("storage/")
             ? lastStorageName.substring(8) : "";
 
         List<VirtualVehicleStorage> storageChunk =
             vvRepository.findStorageItemsByVirtualVehicle(virtualVehicle.getId(), name, chunkSize);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
-
         boolean lastChunk = storageChunk.size() == 0 || storageChunk.size() < chunkSize;
 
+        ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ArchiveOutputStream outStream = factory.createArchiveOutputStream("tar", baos);
 
         writeVirtualVehicleProperties(virtualVehicle, outStream, chunkNumber, lastChunk);
-        if (chunkNumber == 1)
+        if (chunkNumber == 0)
         {
             writeVirtualVehicleSourceCode(virtualVehicle, outStream, chunkNumber);
             writeVirtualVehicleContinuation(virtualVehicle, outStream, chunkNumber);
@@ -343,8 +330,8 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
         String result = new JSONObject("uuid", vv.getUuid(), "chunk", vv.getChunkNumber()).toCompactString();
 
-        CommunicationResponse response = com.transfer(
-            vv.getMigrationSource(), VvRteConstants.MIGRATION_ACK_CONNECTOR, result.getBytes());
+        CommunicationResponse response = com.transfer(vv.getMigrationSource(), VvRteConstants.MIGRATION_ACK_CONNECTOR
+            , org.apache.commons.codec.binary.StringUtils.getBytesUtf8(result));
 
         if (response.getStatus() == Status.OK)
         {
@@ -355,27 +342,33 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
                         ? vv.getPreMigrationState()
                         : VirtualVehicleState.MIGRATION_COMPLETED_RCV;
 
-                vv.setState(newState);
                 vv.setPreMigrationState(null);
+                updateStateAndCommit(vv, newState, null);
+                launcher.stateChange(vv.getId(), vv.getState());
             }
         }
         else
         {
+            String content = new String(response.getContent(), "UTF-8");
             logger.error("Migration ACK failed! Virtual vehicle: " + vv.getName()
-                + " (" + vv.getUuid() + ") " + new String(response.getContent(), "UTF-8"));
-
-            vv.setState(VirtualVehicleState.MIGRATION_INTERRUPTED_RCV);
-            vv.setStateInfo(new String(response.getContent(), "UTF-8"));
+                + " (" + vv.getUuid() + ") " + content);
+            updateStateAndCommit(vv, VirtualVehicleState.MIGRATION_INTERRUPTED_RCV, content);
         }
 
+    }
+
+    /**
+     * @param vv the virtual vehicle.
+     * @param newState the new state to set.
+     * @param stateInfo the state info to set.
+     */
+    private void updateStateAndCommit(VirtualVehicle vv, VirtualVehicleState newState, String stateInfo)
+    {
+        vv.setState(newState);
+        vv.setStateInfo(stateInfo);
         vv.setUpdateTime(timeService.newDate());
         sessionManager.getSession().saveOrUpdate(vv);
         sessionManager.commit();
-
-        if (lastChunk)
-        {
-            launcher.stateChange(vv.getId(), vv.getState());
-        }
     }
 
     /**

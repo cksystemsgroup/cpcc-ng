@@ -110,6 +110,14 @@ public final class VvRteModule
             VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE, System.getProperty(
                 VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE,
                 VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE_DEFAULT));
+        configuration.add(
+            VvRteConstants.NUMBER_OF_MIGRATION_POOL_THREADS, System.getProperty(
+                VvRteConstants.NUMBER_OF_MIGRATION_POOL_THREADS,
+                VvRteConstants.NUMBER_OF_MIGRATION_POOL_THREADS_DEFAULT));
+        configuration.add(
+            VvRteConstants.MIGRATION_CHUNK_SIZE, System.getProperty(
+                VvRteConstants.MIGRATION_CHUNK_SIZE,
+                VvRteConstants.MIGRATION_CHUNK_SIZE_EDFAULT));
     }
 
     /**
@@ -124,7 +132,8 @@ public final class VvRteModule
      * @param vvRteRepo the Virtual Vehicle repository.
      * @param executor the periodic executor service.
      * @param taskExecutionService the task executor service.
-     * @param launcher the Virtual Vehicle launcher.
+     * @param jobService the job service.
+     * @param logger the application logger.
      */
     @Startup
     public static void scheduleJobs(VvRteRepository vvRteRepo, PeriodicExecutor executor
@@ -143,7 +152,7 @@ public final class VvRteModule
         });
 
         // TODO check cycle
-        executor.addJob(new CronSchedule("30 * * * * ?"), "VvRte handle stuck migrations.", new Runnable()
+        executor.addJob(new CronSchedule("0,30 * * * * ?"), "VvRte handle stuck migrations.", new Runnable()
         {
             @Override
             public void run()

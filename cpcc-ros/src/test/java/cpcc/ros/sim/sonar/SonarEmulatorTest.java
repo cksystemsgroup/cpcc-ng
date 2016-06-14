@@ -50,7 +50,7 @@ public class SonarEmulatorTest
     @BeforeMethod
     public void setUp() throws URISyntaxException, InterruptedException
     {
-        int port = RandomUtils.nextInt(14000, 28000);
+        int port = RandomUtils.nextInt(20000, 40000);
         String hostName = InetAddressFactory.newNonLoopback().getHostName();
 
         rosCore = RosCore.newPublic(hostName, port);

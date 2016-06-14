@@ -267,7 +267,7 @@ public class StateServiceTest
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\""
                     + ",\"properties\":{\"rvPosition\":{\"coordinates\":[6.7,8.9,4.5]}"
-                    + ",\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"none\""
+                    + ",\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"busy\""
                     + ",\"rvHeading\":0,\"rvId\":1001,\"type\":\"rvPosition\",\"rvTime\":200000000}"
                     + ",\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}},"
                     + ""
@@ -281,6 +281,7 @@ public class StateServiceTest
                     + ",\"type\":\"vv\"},\"id\":\"1d50b3...\"}"
                     + "]}}"
                     + "]}"
+
             },
 
             new Object[]{

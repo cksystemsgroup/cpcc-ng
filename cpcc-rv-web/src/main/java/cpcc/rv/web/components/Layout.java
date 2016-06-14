@@ -86,7 +86,6 @@ public class Layout
             "commons/contact",
             "commons/ros/overview",
             "commons/sensor/list",
-            "commons/rv/list",
             "commons/vv/list",
             "commons/task/list",
             "commons/jobs/list");

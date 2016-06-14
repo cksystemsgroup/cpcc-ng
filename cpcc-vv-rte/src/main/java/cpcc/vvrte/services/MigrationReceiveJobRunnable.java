@@ -26,6 +26,7 @@ import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.slf4j.Logger;
 
 import cpcc.core.services.jobs.JobRunnable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * MigrationReceiveJobRunnable implementation.
@@ -41,6 +42,7 @@ public class MigrationReceiveJobRunnable implements JobRunnable
      * @param serviceResources the service resources.
      * @param data the job data.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
     public MigrationReceiveJobRunnable(Logger logger, ServiceResources serviceResources, byte[] data)
     {
         this.logger = logger;

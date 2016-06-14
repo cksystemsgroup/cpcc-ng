@@ -77,6 +77,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
      * @param timeService the time service.
      * @param messages the application message catalog.
      * @param taskRepository the task repository instance.
+     * @param jobService the job service.
      */
     public VirtualVehicleLauncherImpl(Logger logger, HibernateSessionManager sessionManager, JavascriptService jss
         , VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository, RealVehicleRepository rvRepository
@@ -191,15 +192,25 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     /**
      * @param vehicle the virtual vehicle to start
      * @param useContinuation use the continuation data if true
-     * @throws IOException thrown in case of errors.
      */
-    private void startVehicle(VirtualVehicle vehicle, boolean useContinuation) throws IOException
+    private void startVehicle(VirtualVehicle vehicle, boolean useContinuation)
     {
-        JavascriptWorker worker = jss.createWorker(vehicle, useContinuation);
-        worker.addStateListener(this);
-        worker.setName("VV-" + vehicle.getId() + "-" + vehicle.getName());
-        vehicleMap.put(worker, vehicle.getId());
-        worker.start();
+        try
+        {
+            JavascriptWorker worker = jss.createWorker(vehicle, useContinuation);
+            worker.addStateListener(this);
+            worker.setName("VV-" + vehicle.getId() + "-" + vehicle.getName());
+            vehicleMap.put(worker, vehicle.getId());
+            worker.start();
+        }
+        catch (IOException e)
+        {
+            logger.error("Can not (re)start virtual vehicle " + vehicle.getUuid()
+                + ", id=" + vehicle.getId() + ", name=" + vehicle.getName(), e);
+
+            vehicle.setState(VirtualVehicleState.DEFECTIVE);
+            sessionManager.getSession().update(vehicle);
+        }
     }
 
     /**
@@ -212,15 +223,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
         if (newState == VirtualVehicleState.MIGRATION_COMPLETED_RCV)
         {
             VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleId);
-
-            try
-            {
-                startVehicle(vehicle, true);
-            }
-            catch (IOException e)
-            {
-                logger.error("Can not start virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")", e);
-            }
+            startVehicle(vehicle, true);
         }
     }
 
@@ -238,14 +241,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
         sessionManager.getSession().saveOrUpdate(task);
         sessionManager.commit();
 
-        try
-        {
-            startVehicle(vehicle, true);
-        }
-        catch (IOException e)
-        {
-            logger.error("Can not start virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")", e);
-        }
+        startVehicle(vehicle, true);
     }
 
     /**
@@ -290,17 +286,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         if (decision != null && vehicle.getMigrationDestination() != null)
         {
-            if (rvRepository.isRealVehicleConnected(vehicle.getMigrationDestination().getId()))
-            {
-                logger.info("initiate Migration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
-                migrator.initiateMigration(vehicle);
-            }
-            else
-            {
-                logger.info(String.format("Not migrating VV %s (%d/%s), because RV %s (%d) is not reachable"
-                    , vehicle.getName(), vehicle.getId(), vehicle.getUuid()
-                    , vehicle.getMigrationDestination().getName(), vehicle.getMigrationDestination().getId()));
-            }
+            logger.info("initiate Migration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
+            migrator.initiateMigration(vehicle);
         }
     }
 
@@ -333,7 +320,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         VirtualVehicleMappingDecision decision = new VirtualVehicleMappingDecision();
 
-        List<RealVehicle> groundStations = rvRepository.findAllConnectedGroundStations();
+        List<RealVehicle> groundStations = rvRepository.findAllGroundStations();
         if (!groundStations.isEmpty())
         {
             decision.setMigration(true);
@@ -406,7 +393,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     {
         logger.debug("Handling stuck VVs.");
 
-        List<RealVehicle> groundStations = rvRepository.findAllConnectedGroundStations();
+        List<RealVehicle> groundStations = rvRepository.findAllGroundStations();
 
         RealVehicle me = rvRepository.findOwnRealVehicle();
         Set<VirtualVehicleState> requiredStates = me.getType() == RealVehicleType.GROUND_STATION
@@ -416,71 +403,64 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
         for (VirtualVehicle vehicle : vvRteRepository.findAllStuckVehicles(requiredStates))
         {
             logger.info("Found stuck VV: " + vehicle.getName() + "  " + vehicle.getState().name());
+            handleOneStuckMigration(groundStations, requiredStates, vehicle);
+            sessionManager.commit();
+        }
+    }
 
-            if (vehicle.getState() == VirtualVehicleState.MIGRATING_RCV)
-            {
-                vehicle.setState(VirtualVehicleState.DEFECTIVE);
-                vvRteRepository.deleteVirtualVehicleById(vehicle);
-                sessionManager.commit();
-                continue;
-            }
+    /**
+     * @param groundStations the available ground stations.
+     * @param requiredStates the required states for migration.
+     * @param vehicle the virtual vehicle.
+     */
+    private void handleOneStuckMigration(List<RealVehicle> groundStations, Set<VirtualVehicleState> requiredStates,
+        VirtualVehicle vehicle)
+    {
+        if (vehicle.getState() == VirtualVehicleState.MIGRATING_RCV)
+        {
+            vehicle.setState(VirtualVehicleState.DEFECTIVE);
+            vvRteRepository.deleteVirtualVehicleById(vehicle);
+            return;
+        }
 
-            if (vehicle.getState() == VirtualVehicleState.MIGRATING_SND
-                || vehicle.getState() == VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
-            {
-                migrator.initiateMigration(vehicle);
-                sessionManager.commit();
-                continue;
-            }
+        if (vehicle.getState() == VirtualVehicleState.MIGRATING_SND
+            || vehicle.getState() == VirtualVehicleState.MIGRATION_INTERRUPTED_SND
+            || vehicle.getState() == VirtualVehicleState.MIGRATION_AWAITED_SND)
+        {
+            migrator.initiateMigration(vehicle);
+            return;
+        }
 
-            if (vehicle.getState() == VirtualVehicleState.MIGRATION_COMPLETED_SND)
-            {
-                String result =
-                    new JSONObject("uuid", vehicle.getUuid(), "chunk", vehicle.getChunkNumber()).toCompactString();
+        if (vehicle.getState() == VirtualVehicleState.MIGRATION_COMPLETED_SND)
+        {
+            String result =
+                new JSONObject("uuid", vehicle.getUuid(), "chunk", vehicle.getChunkNumber()).toCompactString();
 
-                logger.debug("Queuing ACK job for VV: " + vehicle.getName() + "  " + vehicle.getState().name()
-                    + " result is " + result);
+            logger.debug("Queuing ACK job for VV: " + vehicle.getName() + "  " + vehicle.getState().name()
+                + " result is " + result);
 
-                jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME
-                    , String.format(VvRteConstants.MIGRATION_FORMAT_SEND_ACK, vehicle.getId())
-                    , result.getBytes());
+            jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME
+                , String.format(VvRteConstants.MIGRATION_FORMAT_SEND_ACK, vehicle.getId())
+                , org.apache.commons.codec.binary.StringUtils.getBytesUtf8(result));
+            return;
+        }
 
-                sessionManager.commit();
-                continue;
-            }
+        if (vehicle.getState() == VirtualVehicleState.TASK_COMPLETION_AWAITED)
+        {
+            startVehicle(vehicle, true);
+            return;
+        }
 
-            if (vehicle.getState() == VirtualVehicleState.TASK_COMPLETION_AWAITED)
-            {
-                try
-                {
-                    startVehicle(vehicle, true);
-                }
-                catch (IOException e)
-                {
-                    logger.error("Can not restart virtual vehicle " + vehicle.getUuid()
-                        + ", id=" + vehicle.getId() + ", name=" + vehicle.getName(), e);
+        if (!requiredStates.contains(vehicle.getState()))
+        {
+            return;
+        }
 
-                    vehicle.setState(VirtualVehicleState.DEFECTIVE);
-                    sessionManager.getSession().update(vehicle);
-                    sessionManager.commit();
-                }
+        boolean migrate = vehicle.getMigrationDestination() == null;
 
-                continue;
-            }
-
-            if (!requiredStates.contains(vehicle.getState()))
-            {
-                continue;
-            }
-
-            boolean migrate = vehicle.getMigrationDestination() == null
-                || rvRepository.isRealVehicleConnected(vehicle.getMigrationDestination().getId());
-
-            if (migrate && setDestinationAndSaveVehicle(groundStations, vehicle))
-            {
-                migrator.initiateMigration(vehicle);
-                sessionManager.commit();
-            }
+        if (migrate && setDestinationAndSaveVehicle(groundStations, vehicle))
+        {
+            migrator.initiateMigration(vehicle);
         }
     }
 

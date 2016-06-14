@@ -39,7 +39,6 @@ public class Parameter implements Serializable
     public static final String MASTER_SERVER_URI = "masterServerURI";
     public static final String USE_INTERNAL_ROS_CORE = "useInternalRosCore";
     public static final String REAL_VEHICLE_NAME = "realVehicleName";
-    public static final String VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE = "virtualVehicleMigChunkSize";
 
     @Id
     @GeneratedValue

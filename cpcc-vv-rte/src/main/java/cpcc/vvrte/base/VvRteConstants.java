@@ -41,7 +41,10 @@ public final class VvRteConstants
     public static final String MIGRATION_JOB_QUEUE_NAME = "VV Migrations";
     public static final String NUMBER_OF_MIGRATION_POOL_THREADS = "vvrte.mig.job.pool.threads";
     public static final String NUMBER_OF_MIGRATION_POOL_THREADS_DEFAULT = "20";
-
+    
+    public static final String MIGRATION_CHUNK_SIZE = "vvrte.migration.chunk.size";
+    public static final String MIGRATION_CHUNK_SIZE_EDFAULT = "1000";
+    
     public static final String MIGRATION_MODE_SEND = "migration-send";
     public static final String MIGRATION_FORMAT_SEND = "mode=" + MIGRATION_MODE_SEND + ",id=%d";
 

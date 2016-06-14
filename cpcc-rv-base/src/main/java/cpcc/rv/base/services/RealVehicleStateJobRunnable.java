@@ -18,12 +18,14 @@
 
 package cpcc.rv.base.services;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
+import org.slf4j.Logger;
 
 import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationService;
@@ -38,14 +40,17 @@ import cpcc.core.services.jobs.JobRunnable;
 public class RealVehicleStateJobRunnable implements JobRunnable
 {
     private int id;
+    private Logger logger;
     private ServiceResources serviceResources;
 
     /**
+     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param parameters the job parameters.
      */
-    public RealVehicleStateJobRunnable(ServiceResources serviceResources, Map<String, String> parameters)
+    public RealVehicleStateJobRunnable(Logger logger, ServiceResources serviceResources, Map<String, String> parameters)
     {
+        this.logger = logger;
         this.serviceResources = serviceResources;
 
         id = Integer.parseInt(parameters.get("rv"));
@@ -55,7 +60,7 @@ public class RealVehicleStateJobRunnable implements JobRunnable
      * {@inheritDoc}
      */
     @Override
-    public void run() throws Exception
+    public void run()
     {
         HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
         CommunicationService com = serviceResources.getService(CommunicationService.class);
@@ -63,20 +68,27 @@ public class RealVehicleStateJobRunnable implements JobRunnable
 
         RealVehicle target = rvRepo.findRealVehicleById(id);
 
-        CommunicationResponse result = com
-            .transfer(target, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY);
-
-        RealVehicleState rvState = rvRepo.findRealVehicleStateById(id);
-        if (rvState == null)
+        try
         {
-            rvState = new RealVehicleState();
-            rvState.setId(id);
+            CommunicationResponse result = com
+                .transfer(target, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY);
+
+            RealVehicleState rvState = rvRepo.findRealVehicleStateById(id);
+            if (rvState == null)
+            {
+                rvState = new RealVehicleState();
+                rvState.setId(id);
+            }
+
+            rvState.setLastUpdate(new Date());
+            rvState.setRealVehicleName(target.getName());
+            rvState.setState(new String(result.getContent(), "UTF-8"));
+
+            sessionManager.getSession().saveOrUpdate(rvState);
         }
-
-        rvState.setLastUpdate(new Date());
-        rvState.setRealVehicleName(target.getName());
-        rvState.setState(new String(result.getContent(), "UTF-8"));
-
-        sessionManager.getSession().saveOrUpdate(rvState);
+        catch (IOException e)
+        {
+            logger.debug("Real vehicle state query to " + target.getName() + " did not work.", e.getMessage());
+        }
     }
 }

@@ -61,7 +61,7 @@ public class RealVehicleJobRunnableFactory implements JobRunnableFactory
 
         if ("status".equals(mode))
         {
-            return new RealVehicleStateJobRunnable(serviceResources, parameters);
+            return new RealVehicleStateJobRunnable(logger, serviceResources, parameters);
         }
 
         if ("init".equals(mode))

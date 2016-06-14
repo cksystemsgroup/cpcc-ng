@@ -59,9 +59,7 @@ import org.testng.annotations.Test;
 import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationResponse.Status;
 import cpcc.com.services.CommunicationService;
-import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
-import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.JobService;
 import cpcc.core.services.jobs.TimeService;
@@ -78,12 +76,10 @@ public class VirtualVehicleMigratorTest
     private Logger logger;
     private JobService jobService;
     private VvRteRepository repo;
-    private VirtualVehicleMigrator migrator;
+    private VirtualVehicleMigratorImpl migrator;
     private CommunicationService com;
     private Session session;
     private HibernateSessionManager sessionManager;
-    private QueryManager qm;
-    private Parameter paramChunkSize;
 
     private Map<String, VirtualVehicle> virtualVehicleMap;
     private HashMap<String, VirtualVehicleStorage> virtualVehicleStorageMap;
@@ -100,17 +96,12 @@ public class VirtualVehicleMigratorTest
     {
         logger = mock(Logger.class);
         jobService = mock(JobService.class);
-        paramChunkSize = mock(Parameter.class);
         timeService = mock(TimeService.class);
         rvRepository = mock(RealVehicleRepository.class);
 
         session = mock(Session.class);
         sessionManager = mock(HibernateSessionManager.class);
         when(sessionManager.getSession()).thenReturn(session);
-
-        qm = mock(QueryManager.class);
-        when(qm.findParameterByName(eq(Parameter.VIRTUAL_VEHICLE_MIGRATION_CHUNK_SIZE), anyString()))
-            .thenReturn(paramChunkSize);
 
         repo = mock(VvRteRepository.class);
 
@@ -120,10 +111,10 @@ public class VirtualVehicleMigratorTest
 
         CommunicationResponse response = new CommunicationResponse();
         response.setStatus(Status.OK);
-        
+
         com = mock(CommunicationService.class);
         when(com.transfer(any(RealVehicle.class), anyString(), any(byte[].class))).thenReturn(response);
-            
+
         serviceResources = mock(ServiceResources.class);
         when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
         when(serviceResources.getService(VvRteRepository.class)).thenReturn(repo);
@@ -132,8 +123,8 @@ public class VirtualVehicleMigratorTest
 
         launcher = mock(VirtualVehicleLauncher.class);
 
-        migrator = new VirtualVehicleMigratorImpl(logger, sessionManager, repo, qm, launcher, jobService, timeService
-            , rvRepository, com);
+        migrator = new VirtualVehicleMigratorImpl(logger, sessionManager, repo, launcher, jobService, timeService
+            , rvRepository, com, 1000);
         assertThat(migrator).isNotNull();
     }
 
@@ -438,158 +429,134 @@ public class VirtualVehicleMigratorTest
     public Object[][] chunkDataProvider()
     {
         return new Object[][]{
-            new Object[]{VV_ID1, 1, 5,
+            new Object[]{VV_ID1, 1, 4,
                 new Object[]{
                     new Object[]{
                         new Object[]{"vv/vv.properties", 181, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv-source.js", 8, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"vv/vv-continuation.js", 10, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 727, 1789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 181, 0, 1, "vvrte", "cpcc", null},
-                        new Object[]{"vv/vv-source.js", 8, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"vv/vv-continuation.js", 10, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 727, 1789, 1, "vvrte", "cpcc"},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 181, 0, 2, "vvrte", "cpcc", "storage/storage1"},
-                        new Object[]{"storage/storage2", 897, 2789, 2, "vvrte", "cpcc"},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 181, 0, 3, "vvrte", "cpcc", "storage/storage2"},
-                        new Object[]{"storage/storage3", 574, 3789, 3, "vvrte", "cpcc"},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 181, 0, 4, "vvrte", "cpcc", "storage/storage3"},
-                        new Object[]{"storage/storage4", 5, 4789, 4, "vvrte", "cpcc"},
-                    }
-                }
-            },
-            new Object[]{VV_ID1, 2, 3,
-                new Object[]{
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 181, 0, 0, "vvrte", "cpcc", null},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 181, 0, 1, "vvrte", "cpcc", null},
-                        new Object[]{"vv/vv-source.js", 8, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"vv/vv-continuation.js", 10, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 727, 1789, 1, "vvrte", "cpcc"},
+                        new Object[]{"vv/vv.properties", 181, 0, 1, "vvrte", "cpcc", "storage/storage1"},
                         new Object[]{"storage/storage2", 897, 2789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 181, 0, 2, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 574, 3789, 2, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
+                    },
+                    new Object[]{
+                        new Object[]{"vv/vv.properties", 181, 0, 3, "vvrte", "cpcc", "storage/storage3"},
+                        new Object[]{"storage/storage4", 5, 4789, 3, "vvrte", "cpcc"},
                     }
                 }
             },
-            new Object[]{VV_ID1, 3, 3,
+            new Object[]{VV_ID1, 2, 2,
                 new Object[]{
                     new Object[]{
                         new Object[]{"vv/vv.properties", 181, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv-source.js", 8, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"vv/vv-continuation.js", 10, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 727, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 897, 2789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 181, 0, 1, "vvrte", "cpcc", null},
-                        new Object[]{"vv/vv-source.js", 8, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"vv/vv-continuation.js", 10, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 727, 1789, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 897, 2789, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage3", 574, 3789, 1, "vvrte", "cpcc"},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 197, 0, 2, "vvrte", "cpcc", "storage/storage3"},
-                        new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
-                    }
-                }
-            },
-            new Object[]{VV_ID1, 4, 2,
-                new Object[]{
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 181, 0, 0, "vvrte", "cpcc", null},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 181, 0, 1, "vvrte", "cpcc", null},
-                        new Object[]{"vv/vv-source.js", 8, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"vv/vv-continuation.js", 10, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 727, 1789, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 897, 2789, 1, "vvrte", "cpcc"},
+                        new Object[]{"vv/vv.properties", 181, 0, 1, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 574, 3789, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 1, "vvrte", "cpcc"},
                     }
                 }
             },
-
-            new Object[]{VV_ID2, 1, 5,
+            new Object[]{VV_ID1, 3, 2,
                 new Object[]{
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv.properties", 181, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv-source.js", 8, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"vv/vv-continuation.js", 10, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 727, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 897, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 574, 3789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 133, 0, 1, "vvrte", "cpcc", null},
-                        new Object[]{"vv/vv-source.js", 12, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 726, 1789, 1, "vvrte", "cpcc"},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 133, 0, 2, "vvrte", "cpcc", "storage/storage1"},
-                        new Object[]{"storage/storage2", 854, 2789, 2, "vvrte", "cpcc"},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 133, 0, 3, "vvrte", "cpcc", "storage/storage2"},
-                        new Object[]{"storage/storage3", 655, 3789, 3, "vvrte", "cpcc"},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 133, 0, 4, "vvrte", "cpcc", "storage/storage3"},
-                        new Object[]{"storage/storage4", 5, 4789, 4, "vvrte", "cpcc"},
+                        new Object[]{"vv/vv.properties", 197, 0, 1, "vvrte", "cpcc", "storage/storage3"},
+                        new Object[]{"storage/storage4", 5, 4789, 1, "vvrte", "cpcc"},
                     }
                 }
             },
-            new Object[]{VV_ID2, 2, 3,
+            new Object[]{VV_ID1, 4, 1,
+                new Object[]{
+                    new Object[]{
+                        new Object[]{"vv/vv.properties", 181, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv-source.js", 8, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"vv/vv-continuation.js", 10, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 727, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 897, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 574, 3789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage4", 5, 4789, 0, "vvrte", "cpcc"},
+                    }
+                }
+            },
+
+            new Object[]{VV_ID2, 1, 4,
                 new Object[]{
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv-source.js", 12, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 726, 1789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 133, 0, 1, "vvrte", "cpcc", null},
-                        new Object[]{"vv/vv-source.js", 12, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 726, 1789, 1, "vvrte", "cpcc"},
+                        new Object[]{"vv/vv.properties", 133, 0, 1, "vvrte", "cpcc", "storage/storage1"},
                         new Object[]{"storage/storage2", 854, 2789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 2, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 655, 3789, 2, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
+                    },
+                    new Object[]{
+                        new Object[]{"vv/vv.properties", 133, 0, 3, "vvrte", "cpcc", "storage/storage3"},
+                        new Object[]{"storage/storage4", 5, 4789, 3, "vvrte", "cpcc"},
                     }
                 }
             },
-            new Object[]{VV_ID2, 3, 3,
+            new Object[]{VV_ID2, 2, 2,
                 new Object[]{
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv-source.js", 12, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 726, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 854, 2789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
-                        new Object[]{"vv/vv.properties", 133, 0, 1, "vvrte", "cpcc", null},
-                        new Object[]{"vv/vv-source.js", 12, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 726, 1789, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 854, 2789, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage3", 655, 3789, 1, "vvrte", "cpcc"},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 149, 0, 2, "vvrte", "cpcc", "storage/storage3"},
-                        new Object[]{"storage/storage4", 5, 4789, 2, "vvrte", "cpcc"},
-                    }
-                }
-            },
-            new Object[]{VV_ID2, 4, 2,
-                new Object[]{
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
-                    },
-                    new Object[]{
-                        new Object[]{"vv/vv.properties", 133, 0, 1, "vvrte", "cpcc", null},
-                        new Object[]{"vv/vv-source.js", 12, 0, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 726, 1789, 1, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 854, 2789, 1, "vvrte", "cpcc"},
+                        new Object[]{"vv/vv.properties", 133, 0, 1, "vvrte", "cpcc", "storage/storage2"},
                         new Object[]{"storage/storage3", 655, 3789, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 1, "vvrte", "cpcc"},
+                    }
+                }
+            },
+            new Object[]{VV_ID2, 3, 2,
+                new Object[]{
+                    new Object[]{
+                        new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv-source.js", 12, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 726, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 854, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 655, 3789, 0, "vvrte", "cpcc"},
+                    },
+                    new Object[]{
+                        new Object[]{"vv/vv.properties", 149, 0, 1, "vvrte", "cpcc", "storage/storage3"},
+                        new Object[]{"storage/storage4", 5, 4789, 1, "vvrte", "cpcc"},
+                    }
+                }
+            },
+            new Object[]{VV_ID2, 4, 1,
+                new Object[]{
+                    new Object[]{
+                        new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
+                        new Object[]{"vv/vv-source.js", 12, 0, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 726, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 854, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 655, 3789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage4", 5, 4789, 0, "vvrte", "cpcc"},
                     }
                 }
             },
@@ -600,14 +567,14 @@ public class VirtualVehicleMigratorTest
     public void shouldZipVirtualVehicleToByteArray(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
-        when(paramChunkSize.getValue()).thenReturn(Integer.toString(chunkSize));
+        migrator.setChunkSize(chunkSize);
 
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
         assertThat(vv).isNotNull();
 
         ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
-        byte[] firstChunk = migrator.findFirstChunk(vv);
+        byte[] firstChunk = migrator.findChunk(vv, null, 0);
         verifyChunk(params, factory, 0, firstChunk);
 
         for (int chunkNumber = 1; chunkNumber < numberOfChunks; ++chunkNumber)
@@ -635,9 +602,16 @@ public class VirtualVehicleMigratorTest
         for (TarArchiveEntry entry = readEntry(inStream); entry != null; entry = readEntry(inStream), ++entryNumber)
         {
             byte[] content = IOUtils.toByteArray(inStream); // readContent(inStream);
-            //System.out.print("Content: '");
-            //System.out.write(content);
-            //System.out.print("'");
+            // System.out.print("Content: '");
+            // System.out.write(content);
+            // System.out.print("'");
+
+            assertThat(chunkParams)
+                .describedAs("Chunk parameter")
+                .isNotNull();
+            assertThat(((Object[]) chunkParams).length)
+                .describedAs("Chunk parameter length")
+                .isGreaterThan(entryNumber);
 
             Object[] entryParams = (Object[]) chunkParams[entryNumber];
 
@@ -689,21 +663,21 @@ public class VirtualVehicleMigratorTest
     public void shouldStoreChunksInDatabase(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
-        when(paramChunkSize.getValue()).thenReturn(Integer.toString(chunkSize));
+        migrator.setChunkSize(chunkSize);
 
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
         assertThat(vv).isNotNull();
 
         ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
-        byte[] firstChunk = migrator.findFirstChunk(vv);
+        byte[] firstChunk = migrator.findChunk(vv, null, 0);
         verifyChunk(params, factory, 0, firstChunk);
         migrator.storeChunk(new ByteArrayInputStream(firstChunk));
 
         assertThat(virtualVehicleMap.entrySet().size()).isEqualTo(1);
-        assertThat(virtualVehicleStorageMap.entrySet().size()).isEqualTo(0);
+        assertThat(virtualVehicleStorageMap.entrySet().size()).isEqualTo(chunkSize);
 
-        int storageEntries = 0;
+        int storageEntries = chunkSize;
         for (int chunkNumber = 1; chunkNumber < numberOfChunks; ++chunkNumber)
         {
             String lastStorageName = (String) ((Object[]) ((Object[]) params[chunkNumber])[0])[6];
@@ -804,7 +778,7 @@ public class VirtualVehicleMigratorTest
     public void shouldOverwriteExistingStorageEntries(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
-        when(paramChunkSize.getValue()).thenReturn(Integer.toString(chunkSize));
+        migrator.setChunkSize(chunkSize);
 
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
         assertThat(vv).isNotNull();
@@ -895,7 +869,7 @@ public class VirtualVehicleMigratorTest
     public void shouldThrowIOEOnWrongVirtualVehicleState(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
-        when(paramChunkSize.getValue()).thenReturn(Integer.toString(chunkSize));
+        migrator.setChunkSize(chunkSize);
 
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
         assertThat(vv).isNotNull();
@@ -923,7 +897,7 @@ public class VirtualVehicleMigratorTest
         Object[] params)
         throws IOException, ArchiveException
     {
-        when(paramChunkSize.getValue()).thenReturn(Integer.toString(chunkSize));
+        migrator.setChunkSize(chunkSize);
 
         when(vv1.getState()).thenReturn(VirtualVehicleState.MIGRATING_SND);
         when(vv1.getMigrationDestination()).thenReturn(new RealVehicle());
@@ -946,6 +920,12 @@ public class VirtualVehicleMigratorTest
 
             migrator.storeChunk(new ByteArrayInputStream(chunk));
         }
+
+        if (numberOfChunks == 1)
+        {
+            throw new IOException("Virtual vehicle " + vvId + " (FAKE-" + vv.getName() + ") is being migrated "
+                + "and can not be a migration target.");
+        }
     }
 
     @Test(dataProvider = "chunkDataProvider")
@@ -953,14 +933,14 @@ public class VirtualVehicleMigratorTest
         Object[] params)
         throws IOException, ArchiveException
     {
-        when(paramChunkSize.getValue()).thenReturn(Integer.toString(chunkSize));
+        migrator.setChunkSize(chunkSize);
 
         VirtualVehicle vv = repo.findVirtualVehicleById(vvId);
         assertThat(vv).isNotNull();
 
         ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
-        byte[] firstChunk = migrator.findFirstChunk(vv);
+        byte[] firstChunk = migrator.findChunk(vv, null, 0);
         verifyChunk(params, factory, 0, firstChunk);
 
         for (int chunkNumber = 1; chunkNumber < numberOfChunks; ++chunkNumber)

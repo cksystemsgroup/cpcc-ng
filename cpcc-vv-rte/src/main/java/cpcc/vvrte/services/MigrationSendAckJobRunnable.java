@@ -35,6 +35,7 @@ import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.db.VvRteRepository;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * MigrationSendAckJobRunnable implementation.
@@ -55,6 +56,7 @@ public class MigrationSendAckJobRunnable implements JobRunnable
      * @param parameters the job parameters.
      * @param data the optional job data.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
     public MigrationSendAckJobRunnable(Logger logger, ServiceResources serviceResources
         , Map<String, String> parameters, byte[] data)
     {
@@ -95,7 +97,7 @@ public class MigrationSendAckJobRunnable implements JobRunnable
         if (vehicle.getState() != VirtualVehicleState.MIGRATION_COMPLETED_SND)
         {
             logger.error(String.format(LOG_MIG_WRONG_STATE, vehicle.getName(), vehicle.getId()
-                , vehicle.getState().name()), VirtualVehicleState.MIGRATION_COMPLETED_SND.name());
+                , vehicle.getState().name(), VirtualVehicleState.MIGRATION_COMPLETED_SND.name()));
             return;
         }
 
@@ -107,17 +109,17 @@ public class MigrationSendAckJobRunnable implements JobRunnable
             CommunicationResponse response = com.transfer(
                 vehicle.getMigrationSource(), VvRteConstants.MIGRATION_ACK_CONNECTOR, data);
 
+            String content = new String(response.getContent(), "UTF-8");
+
             if (response.getStatus() == Status.OK)
             {
                 vvRepository.deleteVirtualVehicleById(vehicle);
-                logger.info("ACK virtual vehicle migration , parameters="
-                    + parameters + " " + new String(response.getContent(), "UTF-8"));
+                logger.info("ACK virtual vehicle migration , parameters=" + parameters + " " + content);
             }
             else
             {
-                logger.error("Can not ACK VV " + vehicle.getName()
-                    + " to RV " + vehicle.getMigrationSource().getName()
-                    + " reason: " + new String(response.getContent(), "UTF-8"));
+                logger.error("Can not ACK VV " + vehicle.getName() + " to RV " + vehicle.getMigrationSource().getName()
+                    + " reason: " + content);
             }
 
             sessionManager.commit();

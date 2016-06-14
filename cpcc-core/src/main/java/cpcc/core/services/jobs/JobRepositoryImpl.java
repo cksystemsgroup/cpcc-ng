@@ -46,7 +46,7 @@ public class JobRepositoryImpl implements JobRepository
     /**
      * @param logger the application logger.
      * @param session the database session.
-     * @param maxJobAgeString the maximum job age as a string.
+     * @param maxJobAge the maximum job age in milliseconds.
      */
     public JobRepositoryImpl(Logger logger, Session session
         , @Symbol(CoreConstants.PROP_MAX_JOB_AGE) long maxJobAge)

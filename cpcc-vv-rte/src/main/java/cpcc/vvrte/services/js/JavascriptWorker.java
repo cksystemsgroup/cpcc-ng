@@ -178,6 +178,8 @@ public class JavascriptWorker extends Thread
             }
             catch (IOException e)
             {
+                logger.error("Defective: VV=" + vehicle.getName()
+                    + " (" + vehicle.getId() + " / " + vehicle.getUuid() + ")", e);
                 result = ExceptionFormatter.toString(e);
                 snapshot = null;
                 changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
@@ -185,12 +187,16 @@ public class JavascriptWorker extends Thread
         }
         catch (RhinoException e)
         {
+            logger.error("Defective: VV=" + vehicle.getName()
+                + " (" + vehicle.getId() + " / " + vehicle.getUuid() + ")", e);
             result = e.getMessage() + ", line=" + (e.lineNumber() - scriptStartLine) + ":" + e.columnNumber()
                 + ", source='" + e.lineSource() + "'";
             changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
         }
         catch (ClassNotFoundException | IOException | NoSuchMethodError e)
         {
+            logger.error("Defective: VV=" + vehicle.getName()
+                + " (" + vehicle.getId() + " / " + vehicle.getUuid() + ")", e);
             result = ExceptionFormatter.toString(e);
             changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
         }

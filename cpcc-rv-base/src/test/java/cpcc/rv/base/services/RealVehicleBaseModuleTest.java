@@ -94,15 +94,10 @@ public class RealVehicleBaseModuleTest
         InOrder inOrder = Mockito.inOrder(executor, stateSyncService, logger);
 
         ArgumentCaptor<Runnable> argument1 = ArgumentCaptor.forClass(Runnable.class);
-        ArgumentCaptor<Runnable> argument2 = ArgumentCaptor.forClass(Runnable.class);
 
-        inOrder.verify(executor).addJob(any(CronSchedule.class), matches(".*status update.*"), argument1.capture());
-        inOrder.verify(executor).addJob(any(CronSchedule.class), matches(".*Push Config.*"), argument2.capture());
+        inOrder.verify(executor).addJob(any(CronSchedule.class), matches(".*Push Config.*"), argument1.capture());
 
         argument1.getValue().run();
-        inOrder.verify(stateSyncService).realVehicleStatusUpdate();
-
-        argument2.getValue().run();
         inOrder.verify(stateSyncService).pushConfiguration();
         verifyZeroInteractions(logger);
     }
