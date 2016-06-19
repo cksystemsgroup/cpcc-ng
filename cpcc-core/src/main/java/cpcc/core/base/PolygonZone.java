@@ -244,7 +244,7 @@ public class PolygonZone
      */
     private boolean pointIsAVertice(double ax, double ay, double cx, double cy)
     {
-        return cx == ax && cy == ay;
+        return Math.abs(cx - ax) <= 1E-9 && Math.abs(cy - ay) <= 1E-9;
     }
 
     /**
@@ -265,7 +265,7 @@ public class PolygonZone
      */
     private double adjustVerticalVerticeCoordinate(double cy, double ny)
     {
-        return cy == ny ? ny + EPSILON : ny;
+        return Math.abs(cy - ny) <= 1E-9 ? ny + EPSILON : ny;
     }
 
     /**

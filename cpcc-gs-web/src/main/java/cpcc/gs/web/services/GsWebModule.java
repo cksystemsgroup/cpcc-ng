@@ -31,11 +31,11 @@ import cpcc.rv.base.services.StateSynchronizer;
  * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to configure and extend
  * Tapestry, or to place your own service definitions.
  */
-public final class AppModule
+public final class GsWebModule
 {
     private static final String VERSION_PROPERTIES = "version.properties";
 
-    private AppModule()
+    private GsWebModule()
     {
         // intentionally empty.
     }

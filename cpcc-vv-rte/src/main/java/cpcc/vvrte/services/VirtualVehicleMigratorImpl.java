@@ -267,6 +267,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         props.setProperty("uuid", virtualVehicle.getUuid());
         PropertyUtils.setProperty(props, "api.version", virtualVehicle.getApiVersion());
         PropertyUtils.setProperty(props, "state", virtualVehicle.getPreMigrationState());
+        PropertyUtils.setProperty(props, "stateInfo", virtualVehicle.getStateInfo());
         PropertyUtils.setProperty(props, "chunk", virtualVehicle.getChunkNumber());
 
         if (virtualVehicle.getMigrationSource() != null)
@@ -365,7 +366,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private void updateStateAndCommit(VirtualVehicle vv, VirtualVehicleState newState, String stateInfo)
     {
         vv.setState(newState);
-        vv.setStateInfo(stateInfo);
+        if (newState != VirtualVehicleState.DEFECTIVE)
+        {
+            vv.setStateInfo(stateInfo);
+        }
         vv.setUpdateTime(timeService.newDate());
         sessionManager.getSession().saveOrUpdate(vv);
         sessionManager.commit();
@@ -493,6 +497,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         vv.setApiVersion(Integer.parseInt(props.getProperty("api.version")));
         vv.setState(VirtualVehicleState.MIGRATING_RCV);
         vv.setPreMigrationState(getVehicleState(props.getProperty("state")));
+        vv.setStateInfo(props.getProperty("stateInfo"));
 
         String startTime = props.getProperty("start.time");
         if (startTime != null)

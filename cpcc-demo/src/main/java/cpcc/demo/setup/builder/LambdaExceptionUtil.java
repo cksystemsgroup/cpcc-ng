@@ -19,7 +19,7 @@ public final class LambdaExceptionUtil
      * @param <E> the exception.
      */
     @FunctionalInterface
-    public interface Consumer_WithExceptions<T, E extends Exception>
+    public interface ConsumerWithExceptions<T, E extends Exception>
     {
         /**
          * @param t the function parameter.
@@ -34,7 +34,7 @@ public final class LambdaExceptionUtil
      * @param <E> the exception.
      */
     @FunctionalInterface
-    public interface BiConsumer_WithExceptions<T, U, E extends Exception>
+    public interface BiConsumerWithExceptions<T, U, E extends Exception>
     {
         /**
          * @param t the function parameter.
@@ -50,7 +50,7 @@ public final class LambdaExceptionUtil
      * @param <E> the exception.
      */
     @FunctionalInterface
-    public interface Function_WithExceptions<T, R, E extends Exception>
+    public interface FunctionWithExceptions<T, R, E extends Exception>
     {
         /**
          * @param t the function parameter.
@@ -65,7 +65,7 @@ public final class LambdaExceptionUtil
      * @param <E> the exception.
      */
     @FunctionalInterface
-    public interface Supplier_WithExceptions<T, E extends Exception>
+    public interface SupplierWithExceptions<T, E extends Exception>
     {
         /**
          * @return the supplier result.
@@ -78,7 +78,7 @@ public final class LambdaExceptionUtil
      * @param <E> the exception.
      */
     @FunctionalInterface
-    public interface Runnable_WithExceptions<E extends Exception>
+    public interface RunnableWithExceptions<E extends Exception>
     {
         /**
          * @throws E in case of errors.
@@ -100,7 +100,7 @@ public final class LambdaExceptionUtil
      * @param consumer the consumer.
      * @return the consumer result.
      */
-    public static <T, E extends Exception> Consumer<T> rethrowConsumer(Consumer_WithExceptions<T, E> consumer)
+    public static <T, E extends Exception> Consumer<T> rethrowConsumer(ConsumerWithExceptions<T, E> consumer)
     {
         return t -> {
             try
@@ -122,7 +122,7 @@ public final class LambdaExceptionUtil
      * @return the consumer result.
      */
     public static <T, U, E extends Exception> BiConsumer<T, U> rethrowBiConsumer(
-        BiConsumer_WithExceptions<T, U, E> biConsumer)
+        BiConsumerWithExceptions<T, U, E> biConsumer)
     {
         return (t, u) -> {
             try
@@ -145,7 +145,7 @@ public final class LambdaExceptionUtil
      * @param function the function.
      * @return the function result.
      */
-    public static <T, R, E extends Exception> Function<T, R> rethrowFunction(Function_WithExceptions<T, R, E> function)
+    public static <T, R, E extends Exception> Function<T, R> rethrowFunction(FunctionWithExceptions<T, R, E> function)
     {
         return t -> {
             try
@@ -168,7 +168,7 @@ public final class LambdaExceptionUtil
      * @param function the supplier function.
      * @return the supplier result.
      */
-    public static <T, E extends Exception> Supplier<T> rethrowSupplier(Supplier_WithExceptions<T, E> function)
+    public static <T, E extends Exception> Supplier<T> rethrowSupplier(SupplierWithExceptions<T, E> function)
     {
         return () -> {
             try
@@ -189,7 +189,7 @@ public final class LambdaExceptionUtil
      * @param t the runnable.
      */
     @SuppressWarnings("rawtypes")
-    public static void uncheck(Runnable_WithExceptions t)
+    public static void uncheck(RunnableWithExceptions t)
     {
         try
         {
@@ -209,7 +209,7 @@ public final class LambdaExceptionUtil
      * @param supplier the supplier.
      * @return the supplier result.
      */
-    public static <R, E extends Exception> R uncheck(Supplier_WithExceptions<R, E> supplier)
+    public static <R, E extends Exception> R uncheck(SupplierWithExceptions<R, E> supplier)
     {
         try
         {
@@ -232,7 +232,7 @@ public final class LambdaExceptionUtil
      * @param t the target.
      * @return the function result.
      */
-    public static <T, R, E extends Exception> R uncheck(Function_WithExceptions<T, R, E> function, T t)
+    public static <T, R, E extends Exception> R uncheck(FunctionWithExceptions<T, R, E> function, T t)
     {
         try
         {

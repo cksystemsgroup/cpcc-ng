@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.Job;
 import cpcc.core.services.jobs.JobRunnable;
@@ -61,7 +62,8 @@ public class RealVehicleJobRunnableFactory implements JobRunnableFactory
 
         if (RealVehicleBaseConstants.JOB_MODE_STATUS.equals(mode))
         {
-            return new RealVehicleStateJobRunnable(logger, serviceResources, parameters);
+            Logger rvStateJobLogger = LoggerFactory.getLogger("RealVehicleStateJobLogger");
+            return new RealVehicleStateJobRunnable(rvStateJobLogger, serviceResources, parameters);
         }
 
         if (RealVehicleBaseConstants.JOB_MODE_INIT.equals(mode))

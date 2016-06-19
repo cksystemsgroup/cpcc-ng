@@ -88,6 +88,11 @@ public interface RealVehicleRepository
     RealVehicleState findRealVehicleStateById(int id);
 
     /**
+     * Cleanup old real vehicle states.
+     */
+    void cleanupOldVehicleStates();
+
+    /**
      * @param id the real vehicle identification.
      * @return true, if a connection to the real vehicle is possible.
      */

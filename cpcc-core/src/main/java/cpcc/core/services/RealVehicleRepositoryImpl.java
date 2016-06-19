@@ -18,6 +18,7 @@
 
 package cpcc.core.services;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -35,6 +36,7 @@ import cpcc.core.services.jobs.TimeService;
  */
 public class RealVehicleRepositoryImpl implements RealVehicleRepository
 {
+    private static final int TOO_OLD_TO_REMEMBER = 86400000;
     private static final String REAL_VEHICLE_NAME = "name";
     private static final String REAL_VEHICLE_URL = "url";
 
@@ -68,7 +70,7 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
             .addOrder(Property.forName("id").asc())
             .list();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -193,6 +195,21 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
             .createCriteria(RealVehicleState.class)
             .add(Restrictions.eq("id", id))
             .uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void cleanupOldVehicleStates()
+    {
+        @SuppressWarnings("unchecked")
+        List<RealVehicleState> oldRvStates = (List<RealVehicleState>) session
+            .createCriteria(RealVehicleState.class)
+            .add(Restrictions.le("lastUpdate", new Date(timeService.currentTimeMillis() - TOO_OLD_TO_REMEMBER)))
+            .list();
+
+        oldRvStates.stream().forEach(x -> session.delete(x));
     }
 
     /**

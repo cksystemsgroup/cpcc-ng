@@ -3,7 +3,7 @@
         PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
         "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
-	<display-name>real-vehicle Tapestry 5 Application</display-name>
+	<display-name>CPCC Real Vehicle</display-name>
 	<context-param>
 		<param-name>tapestry.app-package</param-name>
 		<param-value>cpcc.rv.web</param-value>
@@ -17,11 +17,11 @@
 		<param-value>cpcc.rv.web.services.QaModule</param-value>
 	</context-param>
 	<filter>
-		<filter-name>app</filter-name>
+		<filter-name>rvWeb</filter-name>
 		<filter-class>org.apache.tapestry5.TapestryFilter</filter-class>
 	</filter>
 	<filter-mapping>
-		<filter-name>app</filter-name>
+		<filter-name>rvWeb</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	<resource-ref>

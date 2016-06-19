@@ -200,7 +200,7 @@ public class CartesianCoordinate
     {
         double n = norm();
 
-        if (n == 0)
+        if (n <= 1E-9)
         {
             return new CartesianCoordinate(1, 0, 0);
         }

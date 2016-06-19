@@ -21,61 +21,13 @@ package cpcc.rv.web.components;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.tapestry5.BindingConstants;
-import org.apache.tapestry5.ComponentResources;
-import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.annotations.Import;
-import org.apache.tapestry5.annotations.Parameter;
-import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.ioc.Messages;
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.apache.tapestry5.ioc.annotations.Symbol;
-
-import cpcc.core.services.QueryManager;
+import cpcc.commons.components.AbstractLayout;
 
 /**
  * Layout component for pages of application real vehicle web application.
  */
-@Import(module = {"jquery", "bootstrap/collapse", "jquery"}, stylesheet = "layout.css")
-public class Layout
+public class Layout extends AbstractLayout
 {
-    /**
-     * The page title, for the <title> element and the <h1>element.
-     */
-    @Property
-    @Parameter(required = true, defaultPrefix = BindingConstants.LITERAL)
-    private String title;
-
-    @Property
-    private String pageName;
-
-    @Inject
-    private Messages messages;
-
-    @Inject
-    private ComponentResources resources;
-
-    @Inject
-    @Property
-    @Symbol(SymbolConstants.APPLICATION_VERSION)
-    private String appVersion;
-
-    @Inject
-    private QueryManager qm;
-
-    String defaultTitle()
-    {
-        return messages.get("pagetitle." + resources.getPageName());
-    }
-
-    /**
-     * @return the class associated to a page name.
-     */
-    public String getClassForPageName()
-    {
-        return resources.getPageName().equalsIgnoreCase(pageName) ? "active" : null;
-    }
-
     /**
      * @return the page names in the main menu.
      */
@@ -89,23 +41,5 @@ public class Layout
             "commons/vv/list",
             "commons/task/list",
             "commons/jobs/list");
-    }
-
-    /**
-     * @return the label for a given page name.
-     */
-    public String getPageLabel()
-    {
-        return messages.get("pagetitle." + pageName);
-    }
-
-    /**
-     * @return the name of the real vehicle
-     */
-    public String getRealVehicleName()
-    {
-        cpcc.core.entities.Parameter rvn =
-            qm.findParameterByName(cpcc.core.entities.Parameter.REAL_VEHICLE_NAME, "");
-        return rvn != null && rvn.getValue() != null ? rvn.getValue() : "";
     }
 }

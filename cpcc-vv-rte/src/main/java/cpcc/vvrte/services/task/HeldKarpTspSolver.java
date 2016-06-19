@@ -165,7 +165,7 @@ public class HeldKarpTspSolver extends AbstractTspSolver
         private int[] parent;
         private int chk;
 
-        public Node(int n, double[][] costWithPi, double[][] cost)
+        Node(int n, double[][] costWithPi, double[][] cost)
         {
             this.n = n;
             this.costWithPi = costWithPi;

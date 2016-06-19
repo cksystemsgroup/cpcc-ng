@@ -51,15 +51,13 @@ public class RosEditDevice extends AbstractRosModifyDevice
         if (!deviceTopic.equals(device.getTopicRoot()))
         {
             Device dev = qm.findDeviceByTopicRoot(device.getTopicRoot());
-            // TODO: ask KOC
-            // TODO: use HQL: qm.isTopicAlreadyPresent() ...
-            if (dev != null && dev != device)
+            if (dev != null && !dev.getId().equals(device.getId()))
             {
                 String msg = messages.get(ERROR_TOPIC_ALREADY_USED);
                 form.recordError(String.format(msg, device.getTopicRoot()));
             }
         }
-
+        
         checkConfig();
     }
 }

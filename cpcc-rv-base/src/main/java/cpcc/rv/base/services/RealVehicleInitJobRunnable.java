@@ -18,6 +18,7 @@
 
 package cpcc.rv.base.services;
 
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
 
@@ -50,8 +51,13 @@ public class RealVehicleInitJobRunnable implements JobRunnable
     public void run() throws Exception
     {
         RealVehicleRepository rvRepo = serviceResources.getService(RealVehicleRepository.class);
-        RealVehicle myself = rvRepo.findOwnRealVehicle();
+        HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
 
+        logger.info("Cleaning up old real vehicle states");
+        rvRepo.cleanupOldVehicleStates();
+        sessionManager.commit();
+
+        RealVehicle myself = rvRepo.findOwnRealVehicle();
         if (myself != null)
         {
             logger.info("Found own vehicle name: " + myself.getName() + ", id=" + myself.getId()

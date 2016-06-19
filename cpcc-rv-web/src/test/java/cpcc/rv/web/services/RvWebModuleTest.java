@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.gs.web.services;
+package cpcc.rv.web.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -30,29 +30,29 @@ import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.testng.annotations.Test;
 
-import cpcc.gs.web.services.AppModule;
+import cpcc.rv.web.services.RvWebModule;
 
 /**
  * AppModuleTest
  */
-public class AppModuleTest
+public class RvWebModuleTest
 {
     @Test
     public void shouldHavePrivateConstructor() throws Exception
     {
-        Constructor<AppModule> cnt = AppModule.class.getDeclaredConstructor();
+        Constructor<RvWebModule> cnt = RvWebModule.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
-    
+
     @Test
     public void shouldContributreFactoryDefaults()
     {
         @SuppressWarnings("unchecked")
         MappedConfiguration<String, Object> configuration = mock(MappedConfiguration.class);
 
-        AppModule.contributeFactoryDefaults(configuration);
+        RvWebModule.contributeFactoryDefaults(configuration);
 
         verify(configuration).override(eq(SymbolConstants.APPLICATION_VERSION), any());
     }
@@ -63,10 +63,11 @@ public class AppModuleTest
         @SuppressWarnings("unchecked")
         MappedConfiguration<String, Object> configuration = mock(MappedConfiguration.class);
 
-        AppModule.contributeApplicationDefaults(configuration);
+        RvWebModule.contributeApplicationDefaults(configuration);
 
         verify(configuration).add(eq(SymbolConstants.SUPPORTED_LOCALES), any());
         verify(configuration).add(eq(SymbolConstants.MINIFICATION_ENABLED), any());
         verify(configuration).add(eq(SymbolConstants.HMAC_PASSPHRASE), any());
     }
+
 }

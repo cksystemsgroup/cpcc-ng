@@ -1,10 +1,5 @@
 package cpcc.tapestry.leaflet.services;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
@@ -19,18 +14,21 @@ import org.apache.tapestry5.services.javascript.ModuleManager;
 import org.apache.tapestry5.services.javascript.StackExtension;
 import org.apache.tapestry5.services.javascript.StackExtensionType;
 
+import cpcc.core.utils.VersionUtils;
+
 /**
  * LeafletModule
  */
 public final class LeafletModule
 {
-    private static final String MODULE_VERSION = "module.version";
-    private static final String PROPERTY_PATH = LeafletModule.class.getPackage().getName() + "/module.properties";
-    private static final String RESOURCE_NOT_FOUND = "Property file resource not found: " + PROPERTY_PATH;
-    private static final String VERSION_NOT_SET = "Property " + MODULE_VERSION
-        + " is not set in resource " + PROPERTY_PATH;
-    private static final String RESOURCE_FILTERING_FAILED = "Property " + MODULE_VERSION
-        + " is not filtered in resource " + PROPERTY_PATH;
+    //    private static final String MODULE_VERSION = "module.version";
+    private static final String PROPERTY_PATH =
+        LeafletModule.class.getPackage().getName().replace('.', '/') + "/module.properties";
+    //    private static final String RESOURCE_NOT_FOUND = "Property file resource not found: " + PROPERTY_PATH;
+    //    private static final String VERSION_NOT_SET = "Property " + MODULE_VERSION
+    //        + " is not set in resource " + PROPERTY_PATH;
+    //    private static final String RESOURCE_FILTERING_FAILED = "Property " + MODULE_VERSION
+    //        + " is not filtered in resource " + PROPERTY_PATH;
 
     private static final String ROOT = "classpath:META-INF/assets/leaflet";
 
@@ -52,7 +50,7 @@ public final class LeafletModule
      */
     public static void contributeClasspathAssetAliasManager(MappedConfiguration<String, String> configuration)
     {
-        configuration.add(getModuleVersion("leaflet"), "cpcc/tapestry/leaflet");
+        configuration.add(VersionUtils.getModuleVersion("leaflet", PROPERTY_PATH), "cpcc/tapestry/leaflet");
     }
 
     /**
@@ -73,10 +71,8 @@ public final class LeafletModule
     @Contribute(ModuleManager.class)
     public static void setupBaseModules(MappedConfiguration<String, Object> configuration
         , @Path(ROOT + "/leaflet-shim.js") Resource leafletShim
-        // , @Path(ROOT + "/img/dummyAsset.txt") Asset dummyAsset
         )
     {
-        // String imageBaseDir = dummyAsset.toClientURL().replace("dummyAsset.txt", "");
         configuration.add("leaflet", new JavaScriptModuleConfiguration(leafletShim).dependsOn("t5/core/console"));
     }
 
@@ -97,38 +93,38 @@ public final class LeafletModule
         }
     }
 
-    /**
-     * @param moduleName the module name
-     * @return the module name and module version.
-     */
-    private static String getModuleVersion(String moduleName)
-    {
-        try (InputStream stream = LeafletModule.class.getResourceAsStream("module.properties"))
-        {
-            Properties props = new Properties();
-            props.load(stream);
-            String version = props.getProperty("module.version");
-
-            if (StringUtils.isEmpty(version))
-            {
-                throw new IllegalArgumentException(VERSION_NOT_SET);
-            }
-
-            if (version.startsWith("${"))
-            {
-                throw new IllegalArgumentException(RESOURCE_FILTERING_FAILED);
-            }
-
-            if (version.endsWith("SNAPSHOT"))
-            {
-                version += '-' + System.currentTimeMillis();
-            }
-
-            return moduleName + '/' + version;
-        }
-        catch (IOException e)
-        {
-            throw new IllegalArgumentException(RESOURCE_NOT_FOUND);
-        }
-    }
+    //    /**
+    //     * @param moduleName the module name
+    //     * @return the module name and module version.
+    //     */
+    //    private static String getModuleVersion(String moduleName)
+    //    {
+    //        try (InputStream stream = LeafletModule.class.getResourceAsStream("module.properties"))
+    //        {
+    //            Properties props = new Properties();
+    //            props.load(stream);
+    //            String version = props.getProperty("module.version");
+    //
+    //            if (StringUtils.isEmpty(version))
+    //            {
+    //                throw new IllegalArgumentException(VERSION_NOT_SET);
+    //            }
+    //
+    //            if (version.startsWith("${"))
+    //            {
+    //                throw new IllegalArgumentException(RESOURCE_FILTERING_FAILED);
+    //            }
+    //
+    //            if (version.endsWith("SNAPSHOT"))
+    //            {
+    //                version += '-' + System.currentTimeMillis();
+    //            }
+    //
+    //            return moduleName + '/' + version;
+    //        }
+    //        catch (IOException e)
+    //        {
+    //            throw new IllegalArgumentException(RESOURCE_NOT_FOUND);
+    //        }
+    //    }
 }

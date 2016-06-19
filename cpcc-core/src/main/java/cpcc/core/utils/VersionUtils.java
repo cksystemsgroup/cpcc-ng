@@ -22,13 +22,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Application Version Utilities
  */
 public final class VersionUtils
 {
     private static final String UNKNOWN_VERSION = "0.0.0-UNKNOWN";
+    private static final String MODULE_VERSION = "module.version";
     private static final String PROP_APPLICATION_VERSION = "application.version";
+    private static final String VERSION_NOT_SET = "Property " + MODULE_VERSION + " is not set in resource %s";
+    private static final String RESOURCE_FILTERING_FAILED = "Property " + MODULE_VERSION
+        + " is not filtered in resource %s";
+    private static final String RESOURCE_NOT_FOUND = "Property file resource not found: %s";
 
     private VersionUtils()
     {
@@ -57,6 +64,41 @@ public final class VersionUtils
         catch (IOException e)
         {
             return UNKNOWN_VERSION;
+        }
+    }
+
+    /**
+     * @param moduleName the module name
+     * @return the module name and module version.
+     */
+    public static String getModuleVersion(String moduleName, String propertyFile)
+    {
+        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertyFile))
+        {
+            Properties props = new Properties();
+            props.load(stream);
+            String version = props.getProperty("module.version");
+
+            if (StringUtils.isEmpty(version))
+            {
+                throw new IllegalArgumentException(String.format(VERSION_NOT_SET, propertyFile));
+            }
+
+            if (version.startsWith("${"))
+            {
+                throw new IllegalArgumentException(String.format(RESOURCE_FILTERING_FAILED, propertyFile));
+            }
+
+            if (version.endsWith("SNAPSHOT"))
+            {
+                version += '-' + System.currentTimeMillis();
+            }
+
+            return moduleName + '/' + version;
+        }
+        catch (IOException e)
+        {
+            throw new IllegalArgumentException(String.format(RESOURCE_NOT_FOUND, propertyFile));
         }
     }
 }

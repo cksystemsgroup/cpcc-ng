@@ -18,6 +18,7 @@
 
 package cpcc.core.services.jobs;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
@@ -92,8 +93,17 @@ public class JobExecutor implements Runnable
                     sessionManager.abort();
                     job.setResultText(e.getMessage());
                     job.setStatus(JobStatus.FAILED);
-                    logger.error("Job failed: " + jobNumber + " " + job.getQueueName()
-                        + " parameters=" + job.getParameters(), e);
+
+                    if (e instanceof IOException)
+                    {
+                        logger.error("Job failed: " + jobNumber + " " + job.getQueueName()
+                            + " parameters=" + job.getParameters() + " " + e.getMessage());
+                    }
+                    else
+                    {
+                        logger.error("Job failed: " + jobNumber + " " + job.getQueueName()
+                            + " parameters=" + job.getParameters(), e);
+                    }
                 }
                 break;
             }

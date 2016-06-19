@@ -86,7 +86,7 @@ public class WGS84 implements GeodeticSystem
      */
     public PolarCoordinate rectangularToPolarCoordinates(double x, double y, double z)
     {
-        if (x == 0 && y == 0)
+        if (Math.abs(x) <= 1E-9 && Math.abs(y) <= 1E-9)
         {
             if (z > 0)
             {

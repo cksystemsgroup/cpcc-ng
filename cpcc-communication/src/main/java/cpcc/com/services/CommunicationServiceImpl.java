@@ -37,7 +37,7 @@ import cpcc.com.services.CommunicationResponse.Status;
 import cpcc.core.entities.RealVehicle;
 
 /**
- * CommunicationServiceImpl
+ * Communication Service implementation.
  */
 public class CommunicationServiceImpl implements CommunicationService
 {
@@ -77,21 +77,22 @@ public class CommunicationServiceImpl implements CommunicationService
         HttpEntity entity = EntityBuilder.create().setBinary(data).build();
         request.setEntity(entity);
 
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        CloseableHttpResponse response = httpclient.execute(request);
+        try (CloseableHttpClient httpclient = HttpClients.createDefault();
+            CloseableHttpResponse response = httpclient.execute(request))
+        {
+            HttpEntity responseEntity = response.getEntity();
+            InputStream ins = responseEntity.getContent();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IOUtils.copy(ins, baos);
+            byte[] content = baos.toByteArray();
 
-        HttpEntity responseEntity = response.getEntity();
-        InputStream ins = responseEntity.getContent();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        IOUtils.copy(ins, baos);
-        byte[] content = baos.toByteArray();
+            boolean ok = response.getStatusLine().getStatusCode() == 200;
 
-        boolean ok = response.getStatusLine().getStatusCode() == 200;
-
-        CommunicationResponse r = new CommunicationResponse();
-        r.setStatus(ok ? Status.OK : Status.NOT_OK);
-        r.setContent(content);
-        return r;
+            CommunicationResponse r = new CommunicationResponse();
+            r.setStatus(ok ? Status.OK : Status.NOT_OK);
+            r.setContent(content);
+            return r;
+        }
     }
 
 }
