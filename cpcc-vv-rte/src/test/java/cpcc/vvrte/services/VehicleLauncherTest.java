@@ -113,6 +113,7 @@ public class VehicleLauncherTest
 
         final JavascriptWorker worker = mock(JavascriptWorker.class);
         when(worker.getApplicationState()).thenReturn(null);
+        worker.setName("Worker 01");
 
         doAnswer(new Answer<Object>()
         {

@@ -106,6 +106,9 @@ public class JavascriptWorker extends Thread
     @Override
     public void run()
     {
+        String name = Thread.currentThread().getName();
+        Thread.currentThread().setName("Virtual Vehicle: " + vehicle.getName() + " (" + vehicle.getId() + ")");
+
         HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
 
         applicationState = null;
@@ -205,6 +208,7 @@ public class JavascriptWorker extends Thread
             Context.exit();
             sessionManager.commit();
             serviceResources.getService(PerthreadManager.class).cleanup();
+            Thread.currentThread().setName(name);
         }
     }
 

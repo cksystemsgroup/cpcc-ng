@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2015 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2009-2016 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,26 +18,13 @@
 
 package cpcc.rv.base.services;
 
-import cpcc.core.services.jobs.JobCreationException;
-
 /**
- * ConfigurationSynchronizer interface.
+ * SystemMonitor interface.
  */
-public interface StateSynchronizer
+public interface SystemMonitor
 {
     /**
-     * Synchronize the configuration to all real vehicles.
+     * Write a log entry.
      */
-    void pushConfiguration();
-
-    /**
-     * @param data the data to be imported.
-     * @throws JobCreationException in case of errors.
-     */
-    void importConfiguration(byte[] data) throws JobCreationException;
-
-    /**
-     * Update the state of the active real vehicles.
-     */
-    void realVehicleStatusUpdate();
+    void writeLogEntry();
 }

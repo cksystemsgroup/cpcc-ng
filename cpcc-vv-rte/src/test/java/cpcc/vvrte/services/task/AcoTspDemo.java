@@ -43,7 +43,7 @@ import cpcc.vvrte.entities.Task;
  */
 public class AcoTspDemo extends JPanel implements ActionListener
 {
-    private static final int PATH_LENGTH = 30;
+    private static final int PATH_LENGTH = 50;
     private static final String BTN_REFRESH = "Refresh";
     private static final String BTN_AGAIN = "Again";
 

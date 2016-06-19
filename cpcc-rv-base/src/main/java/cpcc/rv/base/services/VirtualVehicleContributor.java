@@ -74,6 +74,7 @@ public class VirtualVehicleContributor implements StateContributor
             + stats.get(VirtualVehicleState.TASK_COMPLETION_AWAITED);
 
         int interrupted = stats.get(VirtualVehicleState.INTERRUPTED)
+            + stats.get(VirtualVehicleState.MIGRATION_INTERRUPTED_RCV)
             + stats.get(VirtualVehicleState.MIGRATION_INTERRUPTED_SND);
 
         int migrating = stats.get(VirtualVehicleState.MIGRATING_RCV)

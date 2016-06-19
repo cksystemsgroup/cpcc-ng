@@ -24,7 +24,6 @@ import java.io.InputStream;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.json.JSONObject;
 import org.apache.tapestry5.services.RequestGlobals;
 
@@ -42,7 +41,6 @@ public class UpdateConfiguration
     @Inject
     private StateSynchronizer synchronizer;
 
-    @CommitAfter
     Object onActivate() throws IOException
     {
         InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();

@@ -65,6 +65,7 @@ public class VirtualVehicleContributorTest
         vvStats.put(VirtualVehicleState.RUNNING, 4230);
         vvStats.put(VirtualVehicleState.TASK_COMPLETION_AWAITED, 5230);
         vvStats.put(VirtualVehicleState.INTERRUPTED, 6230);
+        vvStats.put(VirtualVehicleState.MIGRATION_INTERRUPTED_RCV, 13230);
         vvStats.put(VirtualVehicleState.MIGRATION_INTERRUPTED_SND, 7230);
         vvStats.put(VirtualVehicleState.MIGRATING_RCV, 8230);
         vvStats.put(VirtualVehicleState.MIGRATING_SND, 9230);
@@ -81,8 +82,8 @@ public class VirtualVehicleContributorTest
     }
 
     public static final String EMPTY_VV_FEATURE = "{\"type\":\"Feature\""
-        + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460,\"vvsTotal\":80760"
-        + ",\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
+        + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460,\"vvsTotal\":93990"
+        + ",\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":26690}"
         + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[]}}";
 
     @DataProvider
@@ -148,7 +149,7 @@ public class VirtualVehicleContributorTest
         return new Object[][]{
             new Object[]{Arrays.asList(vv1), go1, "{\"type\":\"Feature\""
                 + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
-                + ",\"vvsTotal\":80760,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
+                + ",\"vvsTotal\":93990,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":26690}"
                 + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                 + "{\"type\":\"Feature\""
                 + ",\"properties\":{\"name\":\"vv0001\",\"state\":\"RUNNING\",\"type\":\"vv\"},\"id\":\"erwtw\"}"
@@ -156,7 +157,7 @@ public class VirtualVehicleContributorTest
 
             new Object[]{Arrays.asList(vv2), go2, "{\"type\":\"Feature\""
                 + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
-                + ",\"vvsTotal\":80760,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
+                + ",\"vvsTotal\":93990,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":26690}"
                 + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                 + "{\"type\":\"Feature\""
                 + ",\"properties\":{\"name\":\"vv0002\",\"state\":\"INIT\",\"type\":\"vv\"},\"id\":\"xcvbav\"}"
@@ -164,7 +165,7 @@ public class VirtualVehicleContributorTest
 
             new Object[]{Arrays.asList(vv1, vv2), go3, "{\"type\":\"Feature\""
                 + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
-                + ",\"vvsTotal\":80760,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":13460}"
+                + ",\"vvsTotal\":93990,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":26690}"
                 + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                 + "{\"type\":\"Feature\""
                 + ",\"properties\":{\"name\":\"vv0001\",\"state\":\"RUNNING\",\"type\":\"vv\"},\"id\":\"erwtw\"},"
@@ -192,7 +193,7 @@ public class VirtualVehicleContributorTest
         Feature argument = captor.getValue();
 
         String actual = new ObjectMapper().disable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(argument);
-        System.out.println("actual: " + actual.replace("\"", "\\\""));
+        // System.out.println("actual: " + actual.replace("\"", "\\\""));
 
         JSONAssert.assertEquals(expected, actual, false);
         JSONAssert.assertEquals(actual, expected, false);

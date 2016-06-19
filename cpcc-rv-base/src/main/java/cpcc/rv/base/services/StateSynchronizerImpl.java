@@ -59,7 +59,7 @@ public class StateSynchronizerImpl implements StateSynchronizer
     @Override
     public void pushConfiguration()
     {
-        queueSateSyncJobs("config");
+        queueSateSyncJobs(RealVehicleBaseConstants.JOB_MODE_CONFIG);
     }
 
     /**
@@ -68,7 +68,8 @@ public class StateSynchronizerImpl implements StateSynchronizer
     @Override
     public void importConfiguration(byte[] data) throws JobCreationException
     {
-        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=import", data);
+        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME
+            , "mode=" + RealVehicleBaseConstants.JOB_MODE_IMPORT, data);
     }
 
     /**
@@ -77,7 +78,7 @@ public class StateSynchronizerImpl implements StateSynchronizer
     @Override
     public void realVehicleStatusUpdate()
     {
-        queueSateSyncJobs("status");
+        queueSateSyncJobs(RealVehicleBaseConstants.JOB_MODE_STATUS);
     }
 
     /**

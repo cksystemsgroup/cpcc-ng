@@ -147,7 +147,6 @@ public final class CoreModule
     {
         jobService.resetJobs();
         jobService.removeOldJobs();
-        sessionManager.commit();
 
         executor.addJob(new CronSchedule("* * * * * ?"), "JobService periodical execution", new Runnable()
         {

@@ -18,8 +18,6 @@
 
 package cpcc.core.services.jobs;
 
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
-
 /**
  * JobService interface.
  */
@@ -62,7 +60,6 @@ public interface JobService
      * 
      * @throws JobExecutionException in case of errors.
      */
-    @CommitAfter
     void executeJobs() throws JobExecutionException;
 
     /**
@@ -76,7 +73,6 @@ public interface JobService
      * 
      * @see {@code JobRepository}
      */
-    @CommitAfter
     void resetJobs();
 
     /**
@@ -84,7 +80,6 @@ public interface JobService
      * 
      * @see {@code JobRepository}
      */
-    @CommitAfter
     void removeOldJobs();
 
 }

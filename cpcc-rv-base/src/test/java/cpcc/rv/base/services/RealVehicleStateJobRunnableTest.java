@@ -19,10 +19,10 @@
 package cpcc.rv.base.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -118,7 +118,7 @@ public class RealVehicleStateJobRunnableTest
         verifyNoMoreInteractions(rvState);
 
         verify(session).saveOrUpdate(rvState);
-        verifyZeroInteractions(logger);
+        verify(logger).info(matches("RealVehicleState: ;.*"));
     }
 
     @Test
@@ -137,6 +137,6 @@ public class RealVehicleStateJobRunnableTest
         assertThat(rvState.getRealVehicleName()).isEqualTo(rv.getName());
         assertThat(rvState.getState()).isEqualTo(RESPONSE_STRING);
 
-        verifyZeroInteractions(logger);
+        verify(logger).info(matches("RealVehicleState: ;.*"));
     }
 }

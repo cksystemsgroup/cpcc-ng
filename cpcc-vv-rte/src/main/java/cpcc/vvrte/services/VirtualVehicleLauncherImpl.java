@@ -199,7 +199,6 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
         {
             JavascriptWorker worker = jss.createWorker(vehicle, useContinuation);
             worker.addStateListener(this);
-            worker.setName("VV-" + vehicle.getId() + "-" + vehicle.getName());
             vehicleMap.put(worker, vehicle.getId());
             worker.start();
         }

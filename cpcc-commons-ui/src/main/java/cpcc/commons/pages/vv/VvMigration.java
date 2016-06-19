@@ -22,7 +22,6 @@ import java.io.InputStream;
 
 import javax.inject.Inject;
 
-import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.services.RequestGlobals;
 import org.apache.tapestry5.util.TextStreamResponse;
 
@@ -39,7 +38,6 @@ public class VvMigration
     @Inject
     private VirtualVehicleMigrator migrator;
 
-    @CommitAfter
     Object onActivate() throws Exception
     {
         InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();

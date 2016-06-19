@@ -80,9 +80,12 @@ public class RealVehicleStateJobRunnable implements JobRunnable
                 rvState.setId(id);
             }
 
+            String stateString = org.apache.commons.codec.binary.StringUtils.newStringUtf8(result.getContent());
             rvState.setLastUpdate(new Date());
             rvState.setRealVehicleName(target.getName());
-            rvState.setState(new String(result.getContent(), "UTF-8"));
+            rvState.setState(stateString);
+
+            logger.info("RealVehicleState: ;" + target.getName() + ";" + stateString + ";");
 
             sessionManager.getSession().saveOrUpdate(rvState);
         }

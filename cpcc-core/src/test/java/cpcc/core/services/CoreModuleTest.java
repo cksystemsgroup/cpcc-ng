@@ -164,7 +164,6 @@ public class CoreModuleTest
 
         inOrder.verify(jobService).resetJobs();
         inOrder.verify(jobService).removeOldJobs();
-        inOrder.verify(sessionManager).commit();
 
         ArgumentCaptor<Runnable> argument1 = ArgumentCaptor.forClass(Runnable.class);
         ArgumentCaptor<Runnable> argument2 = ArgumentCaptor.forClass(Runnable.class);

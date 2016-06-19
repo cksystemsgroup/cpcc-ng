@@ -86,19 +86,26 @@ public class RealVehicleBaseModuleTest
     {
         PeriodicExecutor executor = mock(PeriodicExecutor.class);
         Logger logger = mock(Logger.class);
+        SystemMonitor monitor = mock(SystemMonitor.class);
 
         StateSynchronizer stateSyncService = mock(StateSynchronizer.class);
 
-        RealVehicleBaseModule.scheduleJobs(executor, stateSyncService);
+        RealVehicleBaseModule.scheduleJobs(executor, stateSyncService, monitor);
 
-        InOrder inOrder = Mockito.inOrder(executor, stateSyncService, logger);
+        InOrder inOrder = Mockito.inOrder(executor, stateSyncService, monitor, logger);
 
         ArgumentCaptor<Runnable> argument1 = ArgumentCaptor.forClass(Runnable.class);
+        ArgumentCaptor<Runnable> argument2 = ArgumentCaptor.forClass(Runnable.class);
 
         inOrder.verify(executor).addJob(any(CronSchedule.class), matches(".*Push Config.*"), argument1.capture());
+        inOrder.verify(executor).addJob(any(CronSchedule.class), matches(".*System Monitor.*"), argument2.capture());
 
         argument1.getValue().run();
         inOrder.verify(stateSyncService).pushConfiguration();
+
+        argument2.getValue().run();
+        inOrder.verify(monitor).writeLogEntry();
+
         verifyZeroInteractions(logger);
     }
 

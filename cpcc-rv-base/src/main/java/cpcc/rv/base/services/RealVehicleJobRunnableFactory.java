@@ -49,22 +49,22 @@ public class RealVehicleJobRunnableFactory implements JobRunnableFactory
 
         String mode = parameters.get("mode");
 
-        if ("config".equals(mode))
+        if (RealVehicleBaseConstants.JOB_MODE_CONFIG.equals(mode))
         {
             return new ConfigPushJobRunnable(serviceResources, parameters);
         }
 
-        if ("import".equals(mode))
+        if (RealVehicleBaseConstants.JOB_MODE_IMPORT.equals(mode))
         {
             return new ConfigImportJobRunnable(logger, serviceResources, job.getData());
         }
 
-        if ("status".equals(mode))
+        if (RealVehicleBaseConstants.JOB_MODE_STATUS.equals(mode))
         {
             return new RealVehicleStateJobRunnable(logger, serviceResources, parameters);
         }
 
-        if ("init".equals(mode))
+        if (RealVehicleBaseConstants.JOB_MODE_INIT.equals(mode))
         {
             return new RealVehicleInitJobRunnable(logger, serviceResources);
         }

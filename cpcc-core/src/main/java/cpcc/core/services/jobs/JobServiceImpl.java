@@ -181,6 +181,7 @@ public class JobServiceImpl implements JobService
     public void resetJobs()
     {
         jobRepository.resetJobs();
+        sessionManager.commit();
     }
 
     /**
@@ -190,5 +191,6 @@ public class JobServiceImpl implements JobService
     public void removeOldJobs()
     {
         jobRepository.removeOldJobs();
+        sessionManager.commit();
     }
 }

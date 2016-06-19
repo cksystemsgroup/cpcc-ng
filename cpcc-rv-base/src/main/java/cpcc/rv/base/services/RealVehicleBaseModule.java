@@ -30,6 +30,7 @@ import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.apache.tapestry5.services.LibraryMapping;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.com.services.CommunicationService;
 import cpcc.core.services.jobs.JobQueue;
@@ -56,6 +57,7 @@ public final class RealVehicleBaseModule
         binder.bind(StateSynchronizer.class, StateSynchronizerImpl.class);
         binder.bind(StateService.class, StateServiceImpl.class);
         binder.bind(SetupService.class, SetupServiceImpl.class);
+        binder.bind(SystemMonitor.class, SystemMonitorImpl.class);
     }
 
     /**
@@ -78,11 +80,21 @@ public final class RealVehicleBaseModule
     }
 
     /**
+     * @param configuration the IoC configuration.
+     */
+    public static void contributeSystemMonitor(MappedConfiguration<String, Object> configuration)
+    {
+        configuration.add("logger", LoggerFactory.getLogger("SystemMonitorLogger"));
+    }
+
+    /**
      * @param executor the periodic executor service.
      * @param stateSync the state synchronization service.
+     * @param monitor the system monitor.
      */
     @Startup
-    public static void scheduleJobs(PeriodicExecutor executor, final StateSynchronizer stateSync)
+    public static void scheduleJobs(PeriodicExecutor executor, final StateSynchronizer stateSync
+        , final SystemMonitor monitor)
     {
         // TODO check cycle time!
         executor.addJob(new CronSchedule("0 * * * * ?"), "Push Configuration", new Runnable()
@@ -91,6 +103,16 @@ public final class RealVehicleBaseModule
             public void run()
             {
                 stateSync.pushConfiguration();
+            }
+        });
+
+        // TODO check cycle time!
+        executor.addJob(new CronSchedule("*/15 * * * * ?"), "System Monitor", new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                monitor.writeLogEntry();
             }
         });
     }
@@ -131,6 +153,7 @@ public final class RealVehicleBaseModule
         jobService.addJobQueue(RealVehicleBaseConstants.JOB_QUEUE_NAME
             , new JobQueue(logger, sessionManager, timeService, Arrays.asList(factory), numberOfPoolThreads));
 
-        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=init");
+        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME
+            , "mode=" + RealVehicleBaseConstants.JOB_MODE_INIT);
     }
 }

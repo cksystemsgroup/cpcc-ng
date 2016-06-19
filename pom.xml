@@ -73,7 +73,7 @@
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
 		<tapestry-release-version>5.4.1</tapestry-release-version>
 		<testng-release-version>6.9.10</testng-release-version>
-		<tomcat8Version>8.0.35</tomcat8Version>
+		<tomcat8Version>8.0.36</tomcat8Version>
 		<!-- <jacoco.version>0.7.6.201602180812</jacoco.version> not working -->
 		<!-- <jacoco.version>0.7.5.201505241946</jacoco.version> not working either -->
 		<!-- <jacoco.version>0.7.4.201502262128</jacoco.version> -->
