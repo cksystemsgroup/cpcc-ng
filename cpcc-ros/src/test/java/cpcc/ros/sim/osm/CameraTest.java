@@ -115,7 +115,7 @@ public class CameraTest
     @BeforeMethod
     public void setUp() throws Exception
     {
-        int port = RandomUtils.nextInt(10000, 30000); 
+        int port = RandomUtils.nextInt(30000, 50000); 
 
         gs = new WGS84();
 
