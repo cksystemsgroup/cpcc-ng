@@ -77,12 +77,13 @@
 		<!-- <jacoco.version>0.7.6.201602180812</jacoco.version> not working -->
 		<!-- <jacoco.version>0.7.5.201505241946</jacoco.version> not working either -->
 		<!-- <jacoco.version>0.7.4.201502262128</jacoco.version> -->
-
 		<cobertura.report.format>xml</cobertura.report.format>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.testng.reportsPath>target/site</sonar.testng.reportsPath>
 		<sonar.java.coveragePlugin>cobertura</sonar.java.coveragePlugin>
 		<sonar.cobertura.reportPath>target/site/cobertura/coverage.xml</sonar.cobertura.reportPath>
+		<argLine>-XX:-UseSplitVerifier</argLine>
+		<additionalparam>-Xdoclint:none</additionalparam>
 	</properties>
 
 	<dependencyManagement>
