@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>at.uni-salzburg.cs.cpcc</groupId>
 		<artifactId>cpcc-ng-project</artifactId>
-		<version>0.0.4-SNAPSHOT</version>
+		<version>0.0.5-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
