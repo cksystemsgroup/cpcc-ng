@@ -26,7 +26,7 @@ public enum JobStatus
     CREATED,
     QUEUED,
     RUNNING,
-    OK,
+    NO_FACTORY,
     FAILED,
-    NO_FACTORY
+    OK
 }

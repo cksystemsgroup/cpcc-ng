@@ -164,7 +164,7 @@ public final class CoreModule
             }
         });
 
-        executor.addJob(new CronSchedule("0 0 * * * ?"), "Cleanup job history periodical execution", new Runnable()
+        executor.addJob(new CronSchedule("0 * * * * ?"), "Cleanup job history periodical execution", new Runnable()
         {
             @Override
             public void run()
