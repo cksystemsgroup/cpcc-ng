@@ -1,7 +1,7 @@
 #!/bin/bash
 # -----------------------------------------------------------------------------
-# @(#) setup_demo.sh - configure ground stations, real vehicles, and operation
-#                      areas interactively
+# @(#) setup_demo.sh - interactively configure ground stations, real vehicles,
+#                       and operation areas 
 # -----------------------------------------------------------------------------
 #
 # Usage: setup_demo.sh
@@ -32,8 +32,8 @@ setup() {
 			
 	info "Creating file $CONFIG"
 	{
-		echo "GS_OPTS='-Xmx1700m'"
-		echo "RV_OPTS='-Xmx1700m'"
+		echo "GS_OPTS='-Xmx1500m -Xss256k '"
+		echo "RV_OPTS='-Xmx900m -Xss128k '"
 		echo
 		echo "declare -A RVS"
 		ls -1 $WORKDIR/temp/db-setup-*-rv.sql | sed -e 's#^.*/db-setup-##' -e 's#-rv\.sql$##' | while read rv; do echo "RVS['$rv']='$rv'"; done;

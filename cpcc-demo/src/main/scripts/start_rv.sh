@@ -30,12 +30,12 @@ rm -rf $CATALINA_BASE/conf/* $CATALINA_BASE/webapps/* $CATALINA_BASE/temp/*;
 for d in $CATALINA_BASE $CATALINA_BASE/conf $CATALINA_BASE/webapps $CATALINA_BASE/logs $CATALINA_BASE/work $CATALINA_BASE/temp; do ensureDir $d; done
 cp $CPCC_DIR/conf/*.xml $CPCC_DIR/conf/*.properties $CATALINA_BASE/conf
 
-OPTS="$OPTS -Xss256k -Duser.timezone=CET -Dfile.encoding=UTF-8 -Djava.awt.headless=true $CATALINA_OPTS";
+OPTS="$OPTS -Duser.timezone=CET -Dfile.encoding=UTF-8 -Djava.awt.headless=true $CATALINA_OPTS";
 OPTS="$OPTS -Dcatalina.base=$CATALINA_BASE -Dshutdown.port=${SHUTDOWN_PORT[$APP_CONTEXT_PATH]} -Dhttp.connector.port=${CONNECTOR_PORT[$APP_CONTEXT_PATH]}";
 # OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE -Ddb.directory=$DBDIR";
 OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE"
 #OPTS="$OPTS -Dhibernate.dialect=org.hibernate.dialect.HSQLDialect -Ddb.driver=org.hsqldb.jdbc.JDBCDriver -Ddb.url=jdbc:hsqldb:file://${DBDIR}/${APP_CONTEXT_PATH}";
-OPTS="$OPTS -Dhibernate.dialect=org.hibernate.dialect.H2Dialect -Ddb.driver=org.h2.Driver -Ddb.url=jdbc:h2:file:${DBDIR}/${APP_CONTEXT_PATH};MVCC=true;AUTOCOMMIT=OFF";
+OPTS="$OPTS -Dhibernate.dialect=org.hibernate.dialect.H2Dialect -Ddb.driver=org.h2.Driver -Ddb.url=jdbc:h2:file:${DBDIR}/${APP_CONTEXT_PATH};MVCC=true;AUTOCOMMIT=OFF;RETENTION_TIME=0;CACHE_SIZE=65536";
 
 CP="$CATALINA_BASE/conf";
 CP="$CP:$LIBDIR/c3p0-${C3P0_VERSION}.jar";
