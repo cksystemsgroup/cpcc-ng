@@ -30,7 +30,6 @@ import cpcc.vvrte.entities.Task;
 public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
 {
     private int maxTasks;
-    private TspSolver tspSolver;
 
     /**
      * Default constructor.
@@ -38,7 +37,6 @@ public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
     public GatedTspSchedulingAlgorithm()
     {
         maxTasks = Integer.parseInt(System.getProperty("cpcc.vv-rte.gtsp-max-tasks", "30"));
-        tspSolver = new HeldKarpTspSolver();
     }
 
     /**
@@ -59,7 +57,7 @@ public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
             taskList.add(pendingTasks.remove(0));
         }
 
-        scheduledTasks.addAll(tspSolver.calculateBestPath(position, taskList));
+        scheduledTasks.addAll(new HeldKarpTspSolver().calculateBestPath(position, taskList));
         return true;
     }
 }
