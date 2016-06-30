@@ -49,13 +49,14 @@ public class JobQueue implements JobQueueCallback
     private List<Integer> doneList = new ArrayList<Integer>();
 
     /**
+     * @param queueName the (unique) name of this queue.
      * @param logger the application logger.
      * @param sessionManager the Hibernate session manager.
      * @param timeService the time service.
      * @param factoryList the factory list.
      * @param numberOfPoolThreads the number of pool threads to be used.
      */
-    public JobQueue(Logger logger, HibernateSessionManager sessionManager, TimeService timeService
+    public JobQueue(String queueName, Logger logger, HibernateSessionManager sessionManager, TimeService timeService
         , List<JobRunnableFactory> factoryList, int numberOfPoolThreads)
     {
         this.logger = logger;
@@ -63,7 +64,7 @@ public class JobQueue implements JobQueueCallback
         this.timeService = timeService;
         this.factoryList = factoryList;
 
-        executorService = Executors.newFixedThreadPool(numberOfPoolThreads);
+        executorService = Executors.newFixedThreadPool(numberOfPoolThreads, new JobQueueThreadFactory(queueName));
     }
 
     /**
@@ -117,7 +118,7 @@ public class JobQueue implements JobQueueCallback
                     taskMap.remove(jobId);
                 }
             }
-            
+
             doneList.clear();
         }
     }

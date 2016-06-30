@@ -204,7 +204,8 @@ public final class VvRteModule
     {
         JobRunnableFactory factory = new VvRteJobRunnableFactory();
 
-        jobService.addJobQueue(VvRteConstants.MIGRATION_JOB_QUEUE_NAME
-            , new JobQueue(logger, sessionManager, timeService, Arrays.asList(factory), numberOfPoolThreads));
+        jobService.addJobQueue(VvRteConstants.MIGRATION_JOB_QUEUE_NAME, new JobQueue(
+            VvRteConstants.MIGRATION_JOB_QUEUE_NAME, logger, sessionManager, timeService, Arrays.asList(factory),
+            numberOfPoolThreads));
     }
 }

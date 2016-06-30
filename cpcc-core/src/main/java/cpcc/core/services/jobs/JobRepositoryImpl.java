@@ -93,9 +93,9 @@ public class JobRepositoryImpl implements JobRepository
     public List<Job> findOtherRunningJob(String queueName, String parameters)
     {
         return (List<Job>) session.createCriteria(Job.class)
-            .add(Restrictions.in("status", ACTIVE_JOB_STATES))
             .add(Restrictions.eq("queueName", queueName))
             .add(Restrictions.eq("parameters", parameters))
+            .add(Restrictions.in("status", ACTIVE_JOB_STATES))
             .list();
     }
 
@@ -145,8 +145,12 @@ public class JobRepositoryImpl implements JobRepository
     public void removeOldJobs()
     {
         List<Job> oldJobs = (List<Job>) session.createCriteria(Job.class)
-            .add(Restrictions.le("end", new Date(System.currentTimeMillis() - maxJobAge)))
-            .list();
+            .add(Restrictions.or(
+                Restrictions.le("end", new Date(System.currentTimeMillis() - maxJobAge)),
+                Restrictions.and(
+                    Restrictions.le("end", new Date(System.currentTimeMillis() - 30000)),
+                    Restrictions.in("status", new JobStatus[]{JobStatus.OK, JobStatus.FAILED, JobStatus.NO_FACTORY}))
+                )).list();
 
         for (Job job : oldJobs)
         {

@@ -150,8 +150,9 @@ public final class RealVehicleBaseModule
 
         JobRunnableFactory factory = new RealVehicleJobRunnableFactory();
 
-        jobService.addJobQueue(RealVehicleBaseConstants.JOB_QUEUE_NAME
-            , new JobQueue(logger, sessionManager, timeService, Arrays.asList(factory), numberOfPoolThreads));
+        jobService.addJobQueue(RealVehicleBaseConstants.JOB_QUEUE_NAME, new JobQueue(
+            RealVehicleBaseConstants.JOB_QUEUE_NAME, logger, sessionManager, timeService, Arrays.asList(factory),
+            numberOfPoolThreads));
 
         jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME
             , "mode=" + RealVehicleBaseConstants.JOB_MODE_INIT);

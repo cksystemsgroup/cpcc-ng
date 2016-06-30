@@ -151,8 +151,7 @@ public class JobQueueTest
         when(factory.createRunnable(logger, serviceResources, quickJob)).thenReturn(quickJobRunnable);
         when(factory.createRunnable(logger, serviceResources, slowJob)).thenReturn(slowJobRunnable);
 
-        sut =
-            new JobQueue(logger, sessionManager, timeService, Arrays.asList(factory), numberOfPoolThreads);
+        sut = new JobQueue("JQ", logger, sessionManager, timeService, Arrays.asList(factory), numberOfPoolThreads);
         sut.setServiceResources(serviceResources);
     }
 
