@@ -60,14 +60,11 @@ function(leaflet, console)
 
 			if (vvs.properties && vvs.properties.vvsTotal !== undefined)
 			{
-				html = '<table class="vv-table"><tr class="vv-info">'
-						+ '<td class="vv-table-stats">t:</td><td class="vv-table-stats">' + vvs.properties.vvsTotal
-						+ '</td><td class="vv-table-stats">a:</td><td class="vv-table-stats">'
-						+ vvs.properties.vvsActive
-						+ '</td></tr><tr class="vv-info"><td class="vv-table-stats">m:</td><td class="vv-table-stats">'
-						+ vvs.properties.vvsMigrating
-						+ '</td><td class="vv-table-stats">i:</td><td class="vv-table-stats">'
-						+ (vvs.properties.vvsInterrupted + vvs.properties.vvsDormant) + '</td></tr></table>';
+				html = '<table class="vv-table"><tr class="vv-info"><td class="vv-table-stats-total">'
+						+ vvs.properties.vvsTotal + '</td><td class="vv-table-stats-active">'
+						+ vvs.properties.vvsActive + '</td><td class="vv-table-stats-migrating">'
+						+ vvs.properties.vvsMigrating + '</td><td class="vv-table-stats-inactive">'
+						+ (vvs.properties.vvsInterrupted + vvs.properties.vvsDormant) + '</td></tr></table>'
 			}
 
 			if (this.taskDiv.innerHTML != html)
