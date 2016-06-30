@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+	<changeSet author="ckrainer" id="2016-06-25-01">
+		<createIndex indexName="IDX_JOB_PARAMETERS" tableName="JOBS" unique="false">
+			<column name="QUEUE_NAME" type="VARCHAR(20)" />
+			<column name="PARAMETERS" type="VARCHAR(512)" />
+		</createIndex>
+	</changeSet>
+</databaseChangeLog>
