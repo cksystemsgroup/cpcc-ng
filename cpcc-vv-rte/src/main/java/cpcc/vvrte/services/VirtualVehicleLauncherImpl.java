@@ -288,6 +288,11 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
             logger.info("initiate Migration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
             migrator.initiateMigration(vehicle);
         }
+
+        if (vehicleState != VirtualVehicleState.RUNNING)
+        {
+            vehicleMap.remove(worker);
+        }
     }
 
     /**
