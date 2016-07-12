@@ -113,8 +113,8 @@ public class MigrationSendAckJobRunnable implements JobRunnable
 
             if (response.getStatus() == Status.OK)
             {
-                vvRepository.deleteVirtualVehicleById(vehicle);
                 logger.info("ACK virtual vehicle migration , parameters=" + parameters + " " + content);
+                vvRepository.deleteVirtualVehicleById(vehicle);
             }
             else
             {

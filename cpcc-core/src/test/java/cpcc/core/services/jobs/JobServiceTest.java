@@ -180,7 +180,7 @@ public class JobServiceTest
         sut.addJob(QUEUE_NAME_01, parameters01, data1);
         sut.addJob(QUEUE_NAME_01, parameters01, data2);
 
-        String parameterRegex = parameters01 + ",md5=[0-9a-f]+";
+        String parameterRegex = parameters01 + ",len=\\d+,md5=[0-9a-f]+";
 
         InOrder inOrder = Mockito.inOrder(timeService, jobQueue01, jobRepository, session);
 
@@ -284,7 +284,7 @@ public class JobServiceTest
     {
         byte[] data = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-        String parameterWithMd5 = parameters01 + ",md5=70903e79b7575e3f4e7ffa15c2608ac7";
+        String parameterWithMd5 = parameters01 + ",len=10,md5=70903e79b7575e3f4e7ffa15c2608ac7";
 
         when(timeService.newDate()).thenAnswer(new Answer<Date>()
         {
@@ -362,7 +362,7 @@ public class JobServiceTest
         byte[] data = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
         Job existingJob = mock(Job.class);
-        String parameterWithMd5 = parameters01 + ",md5=70903e79b7575e3f4e7ffa15c2608ac7";
+        String parameterWithMd5 = parameters01 + ",len=10,md5=70903e79b7575e3f4e7ffa15c2608ac7";
 
         when(jobRepository.findOtherRunningJob(QUEUE_NAME_01, parameterWithMd5)).thenReturn(Arrays.asList(existingJob));
 

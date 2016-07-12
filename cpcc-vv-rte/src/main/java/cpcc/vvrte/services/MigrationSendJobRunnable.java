@@ -21,9 +21,11 @@ package cpcc.vvrte.services;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
@@ -70,8 +72,8 @@ public class MigrationSendJobRunnable implements JobRunnable
      * @param data the optional job data.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
-    public MigrationSendJobRunnable(Logger logger, ServiceResources serviceResources
-        , Map<String, String> parameters, byte[] data)
+    public MigrationSendJobRunnable(Logger logger, ServiceResources serviceResources, Map<String, String> parameters,
+        byte[] data)
     {
         this.logger = logger;
         this.serviceResources = serviceResources;
@@ -145,9 +147,9 @@ public class MigrationSendJobRunnable implements JobRunnable
 
         if (vvId == 0 && vehicle.getState() == VirtualVehicleState.MIGRATION_COMPLETED_SND)
         {
+            logger.info("VV Migration completed for ID " + vvId + " " + vehicle.getName() + " UUID " + uuid);
             vvRepository.deleteVirtualVehicleById(vehicle);
             sessionManager.commit();
-            logger.info("VV Migration completed for ID " + vvId + " UUID " + uuid);
             return;
         }
 
@@ -167,19 +169,23 @@ public class MigrationSendJobRunnable implements JobRunnable
                 vehicle.getMigrationDestination(), VvRteConstants.MIGRATION_CONNECTOR, chunk);
 
             setVehicleState(vehicle, response);
-            sessionManager.getSession().saveOrUpdate(vehicle);
-            sessionManager.commit();
+
+            logger.info("Migration done! Virtual vehicle: " + vehicle.getName()
+                + " (" + vehicle.getUuid() + ") " + response.getStatus()
+                + " " + org.apache.commons.codec.binary.StringUtils.newStringUtf8(response.getContent()));
         }
         catch (IOException | ArchiveException e)
         {
             logger.error("Migration aborted! Virtual vehicle: " + vehicle.getName()
-                + " (" + vehicle.getUuid() + ")", e);
+                + " (" + vehicle.getUuid() + ")" + e.getMessage());
             sessionManager.abort();
 
             vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED_SND);
-            sessionManager.getSession().saveOrUpdate(vehicle);
-            sessionManager.commit();
+            vehicle.setStateInfo(ExceptionUtils.getStackTrace(e));
         }
+
+        sessionManager.getSession().saveOrUpdate(vehicle);
+        sessionManager.commit();
     }
 
     /**
@@ -188,14 +194,15 @@ public class MigrationSendJobRunnable implements JobRunnable
      */
     private void setVehicleState(VirtualVehicle vehicle, CommunicationResponse response)
     {
+        String stateInfo = org.apache.commons.codec.binary.StringUtils.newStringUtf8(response.getContent());
+
         if (response.getStatus() == Status.OK)
         {
             vehicle.setChunkNumber(chunkNumber);
-            vehicle.setStateInfo(null);
+            vehicle.setStateInfo(stateInfo);
         }
         else
         {
-            String stateInfo = org.apache.commons.codec.binary.StringUtils.newStringUtf8(response.getContent());
             logger.error("Migration failed! Virtual vehicle: " + vehicle.getName()
                 + " (" + vehicle.getUuid() + ") " + stateInfo);
             vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED_SND);
@@ -225,7 +232,8 @@ public class MigrationSendJobRunnable implements JobRunnable
             chunk = migrator.findChunk(vehicle, dataString, chunkNumber);
 
             logger.info("Initiating migration of virtual vehicle " + vehicle.getName() + ", chunk=" + chunkNumber
-                + ", parameters=" + parameters);
+                + ", parameters=" + parameters + ", len=" + chunk.length
+                + ", md5=" + DigestUtils.md5Hex(chunk));
         }
         else
         {
@@ -234,7 +242,8 @@ public class MigrationSendJobRunnable implements JobRunnable
             chunk = migrator.findChunk(vehicle, dataString, chunkNumber);
 
             logger.info("Continuing migration of virtual vehicle " + vehicle.getName() + ", chunk=" + chunkNumber
-                + ", parameters=" + parameters);
+                + ", parameters=" + parameters + ", len=" + chunk.length
+                + ", md5=" + DigestUtils.md5Hex(chunk));
         }
 
         return chunk;

@@ -18,13 +18,12 @@
 
 package cpcc.core.services.jobs;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
@@ -44,7 +43,6 @@ public class JobServiceImpl implements JobService
     private TimeService timeService;
     private Map<String, JobQueue> queueMap = new HashMap<>();
     private Logger logger;
-    private MessageDigest md5;
 
     /**
      * @param serviceResources the service resources.
@@ -62,8 +60,6 @@ public class JobServiceImpl implements JobService
         this.jobRepository = jobRepository;
         this.timeService = timeService;
         this.logger = logger;
-
-        md5 = MessageDigest.getInstance("MD5");
     }
 
     /**
@@ -130,7 +126,7 @@ public class JobServiceImpl implements JobService
 
         String parameters = ArrayUtils.isEmpty(data)
             ? params
-            : params + ",md5=" + Hex.encodeHexString(md5.digest(data));
+            : params + ",len=" + data.length + ",md5=" + DigestUtils.md5Hex(data);
 
         List<Job> jobList = jobRepository.findOtherRunningJob(queueName, parameters);
         if (jobList.size() > 0)
