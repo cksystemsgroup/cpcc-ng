@@ -57,9 +57,11 @@ import org.testng.annotations.Test;
 @PrepareForTest(HttpClientBuilder.class)
 public class TileCacheTest extends PowerMockTestCase
 {
+    private static final String USER_AGENT = "TileCache/1.0";
+
     private Configuration config;
 
-    private TileCache tileCache;
+    private TileCache sut;
 
     private HttpClientBuilder httpClientBuilderMock;
 
@@ -126,7 +128,7 @@ public class TileCacheTest extends PowerMockTestCase
         PowerMockito.doReturn(tempDirectory.getAbsolutePath()).when(config).getTileCacheBaseDir();
         PowerMockito.doReturn("http://my.tile.server/%1$d/%2$d/%3$d.png").when(config).getTileServerUrl();
 
-        tileCache = new TileCache(config);
+        sut = new TileCache(config);
 
         entity = Mockito.mock(HttpEntity.class);
         when(entity.getContent()).thenReturn(new ByteArrayInputStream(responseData.getBytes("UTF-8")));
@@ -142,6 +144,8 @@ public class TileCacheTest extends PowerMockTestCase
 
         PowerMock.mockStatic(HttpClientBuilder.class);
         EasyMock.expect(HttpClientBuilder.create()).andReturn(httpClientBuilderMock).anyTimes();
+        PowerMock.replay(HttpClientBuilder.class);
+        EasyMock.expect(httpClientBuilderMock.setUserAgent(USER_AGENT)).andReturn(httpClientBuilderMock).anyTimes();
         PowerMock.replay(HttpClientBuilder.class);
         EasyMock.expect(httpClientBuilderMock.build()).andReturn(client).anyTimes();
         PowerMock.replay(HttpClientBuilder.class, httpClientBuilderMock);
@@ -169,7 +173,7 @@ public class TileCacheTest extends PowerMockTestCase
     {
         FileUtils.deleteDirectory(tempDirectory);
         assertThat(tempDirectory.exists()).isFalse();
-        File file = tileCache.getTile(zoom, x, y);
+        File file = sut.getTile(zoom, x, y);
         assertThat(file.exists()).isTrue();
         assertThat(tempDirectory.exists()).isTrue();
     }
@@ -177,9 +181,9 @@ public class TileCacheTest extends PowerMockTestCase
     @Test(dataProvider = "tileCoordinatesDataProvider")
     public void shouldCreateTileCacheFile(int zoom, int x, int y) throws Exception
     {
-        assertThat(tileCache).isNotNull();
+        assertThat(sut).isNotNull();
 
-        File file = tileCache.getTile(zoom, x, y);
+        File file = sut.getTile(zoom, x, y);
 
         String content = IOUtils.toString(new FileInputStream(file), "UTF-8");
         assertThat(content).isNotNull().isEqualTo(responseData);
@@ -188,14 +192,14 @@ public class TileCacheTest extends PowerMockTestCase
     @Test(dataProvider = "tileCoordinatesDataProvider")
     public void shouldLoadCachedTileCacheFile(int zoom, int x, int y) throws Exception
     {
-        assertThat(tileCache).isNotNull();
+        assertThat(sut).isNotNull();
 
-        File file1 = tileCache.getTile(zoom, x, y);
+        File file1 = sut.getTile(zoom, x, y);
         String content1 = IOUtils.toString(new FileInputStream(file1), "UTF-8");
         assertThat(content1).isNotNull().isEqualTo(responseData);
         Mockito.verify(client).execute((HttpUriRequest) anyObject());
 
-        File file2 = tileCache.getTile(zoom, x, y);
+        File file2 = sut.getTile(zoom, x, y);
         String content2 = IOUtils.toString(new FileInputStream(file2), "UTF-8");
         assertThat(content2).isNotNull().isEqualTo(responseData);
         Mockito.verify(client).execute((HttpUriRequest) anyObject());
@@ -204,16 +208,16 @@ public class TileCacheTest extends PowerMockTestCase
     @Test(dataProvider = "tileCoordinatesDataProvider")
     public void shouldRecognizeExistingTileCacheFolder(int zoom, int x, int y) throws Exception
     {
-        assertThat(tileCache).isNotNull();
+        assertThat(sut).isNotNull();
 
-        File file1 = tileCache.getTile(zoom, x, y);
+        File file1 = sut.getTile(zoom, x, y);
         String content1 = IOUtils.toString(new FileInputStream(file1), "UTF-8");
         assertThat(content1).isNotNull().isEqualTo(responseData);
         Mockito.verify(client).execute((HttpUriRequest) anyObject());
 
         when(entity.getContent()).thenReturn(new ByteArrayInputStream(responseData.getBytes("UTF-8")));
 
-        File file2 = tileCache.getTile(zoom, x, y + 1);
+        File file2 = sut.getTile(zoom, x, y + 1);
         String content2 = IOUtils.toString(new FileInputStream(file2), "UTF-8");
         assertThat(content2).isNotNull().isEqualTo(responseData);
         Mockito.verify(client, times(2)).execute((HttpUriRequest) anyObject());
@@ -223,12 +227,12 @@ public class TileCacheTest extends PowerMockTestCase
     public void shouldHandleIOEAtDownload(int zoom, int x, int y) throws Exception
     {
         String msg = "thrown on purpose";
-        assertThat(tileCache).isNotNull();
+        assertThat(sut).isNotNull();
         PowerMockito.doThrow(new IOException(msg)).when(client).execute((HttpUriRequest) anyObject());
 
         try
         {
-            tileCache.getTile(zoom, x, y);
+            sut.getTile(zoom, x, y);
             Fail.failBecauseExceptionWasNotThrown(IOException.class);
         }
         catch (IOException e)
@@ -244,7 +248,7 @@ public class TileCacheTest extends PowerMockTestCase
 
         try
         {
-            tileCache.getTile(zoom, x, y);
+            sut.getTile(zoom, x, y);
             Fail.failBecauseExceptionWasNotThrown(IOException.class);
         }
         catch (IOException e)
@@ -261,6 +265,6 @@ public class TileCacheTest extends PowerMockTestCase
         PowerMockito.when(response.getEntity()).thenReturn(null);
         //        when(entity.getContent()).thenReturn(null);
 
-        tileCache.getTile(zoom, x, y);
+        sut.getTile(zoom, x, y);
     }
 }

@@ -105,7 +105,9 @@ public class TileCache
         HttpResponse response = null;
         try
         {
-            response = HttpClientBuilder.create().build().execute(new HttpGet(url));
+            response = HttpClientBuilder.create()
+                .setUserAgent("TileCache/1.0")
+                .build().execute(new HttpGet(url));
         }
         catch (IOException e)
         {
