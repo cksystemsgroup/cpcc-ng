@@ -25,8 +25,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.TimeoutException;
+
+import org.apache.commons.lang3.RandomUtils;
+import org.slf4j.Logger;
 
 import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.Task;
 
 /**
@@ -37,6 +42,20 @@ import cpcc.vvrte.entities.Task;
  */
 public class HeldKarpTspSolver extends AbstractTspSolver
 {
+    private static final long MAX_CALCULATION_TIME = 10000;
+
+    private Logger logger;
+    private TimeService timeService;
+
+    /**
+     * @param timeService the time service.
+     */
+    public HeldKarpTspSolver(Logger logger, TimeService timeService)
+    {
+        this.logger = logger;
+        this.timeService = timeService;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -50,7 +69,18 @@ public class HeldKarpTspSolver extends AbstractTspSolver
 
         double[][] cost = setupCostMatrix(position, path);
 
-        Node bestNode = solve(cost);
+        Node bestNode;
+        try
+        {
+            bestNode = solve(cost);
+        }
+        catch (TimeoutException e)
+        {
+            int index = RandomUtils.nextInt(0, path.size() - 1);
+            logger.error("HeldKarpTspSolver timed out. Using random selection: 0 < " + index + " < "
+                + (path.size() - 1));
+            return Arrays.asList(path.get(index));
+        }
 
         List<Task> r = new ArrayList<>();
         List<Integer> pathIndices = new ArrayList<>();
@@ -75,9 +105,12 @@ public class HeldKarpTspSolver extends AbstractTspSolver
     /**
      * @param cost the cost matrix.
      * @return the best node.
+     * @throws TimeoutException in case of timeouts.
      */
-    private Node solve(double[][] cost)
+    private Node solve(double[][] cost) throws TimeoutException
     {
+        long start = timeService.currentTimeMillis();
+
         int n = cost.length;
         double[][] costWithPi = new double[n][n];
 
@@ -92,6 +125,8 @@ public class HeldKarpTspSolver extends AbstractTspSolver
         {
             do
             {
+                checkForTimeout(start);
+
                 int i = -1;
 
                 for (int j = 0; j < n; j++)
@@ -125,6 +160,18 @@ public class HeldKarpTspSolver extends AbstractTspSolver
         } while (currentNode != null && currentNode.lowerBound < bestNode.lowerBound);
 
         return bestNode;
+    }
+
+    /**
+     * @param start the start time in milliseconds.
+     * @throws TimeoutException in case of an time out.
+     */
+    private void checkForTimeout(long start) throws TimeoutException
+    {
+        if (timeService.currentTimeMillis() - start > MAX_CALCULATION_TIME)
+        {
+            throw new TimeoutException();
+        }
     }
 
     /**
