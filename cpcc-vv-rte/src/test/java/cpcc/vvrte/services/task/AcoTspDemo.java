@@ -35,7 +35,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.services.jobs.TimeServiceImpl;
 import cpcc.vvrte.entities.Task;
 
 /**
@@ -43,6 +47,8 @@ import cpcc.vvrte.entities.Task;
  */
 public class AcoTspDemo extends JPanel implements ActionListener
 {
+    private static final Logger LOG = LoggerFactory.getLogger(AcoTspDemo.class);
+    
     private static final int PATH_LENGTH = 50;
     private static final String BTN_REFRESH = "Refresh";
     private static final String BTN_AGAIN = "Again";
@@ -127,7 +133,7 @@ public class AcoTspDemo extends JPanel implements ActionListener
 
     public AcoTspDemo(boolean useAco)
     {
-        solver = useAco ? new AcoTspTasks() : new HeldKarpTspSolver();
+        solver = useAco ? new AcoTspTasks() : new HeldKarpTspSolver(LOG, new TimeServiceImpl());
 
         JPanel buttonPane = new JPanel();
         Stream.of(BTN_REFRESH, BTN_AGAIN).forEach(

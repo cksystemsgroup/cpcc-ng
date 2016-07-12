@@ -21,6 +21,7 @@ package cpcc.rv.base.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -88,7 +89,7 @@ public class TasksContributorTest
     {
         FeatureCollection featureCollection = mock(FeatureCollection.class);
 
-        sut.contribute(featureCollection, position, Collections.<Task> emptyList());
+        sut.contribute(featureCollection, position, Collections.<Task>emptyList());
 
         ArgumentCaptor<Feature> captor = ArgumentCaptor.forClass(Feature.class);
 
@@ -126,5 +127,15 @@ public class TasksContributorTest
 
         JSONAssert.assertEquals(EXPECTED_01, actual, false);
         JSONAssert.assertEquals(actual, EXPECTED_01, false);
+    }
+
+    @Test
+    public void shouldNotContributeOnMissingRvPosition()
+    {
+        FeatureCollection featureCollection = mock(FeatureCollection.class);
+
+        sut.contribute(featureCollection, null, Arrays.asList(task));
+
+        verifyZeroInteractions(featureCollection);
     }
 }

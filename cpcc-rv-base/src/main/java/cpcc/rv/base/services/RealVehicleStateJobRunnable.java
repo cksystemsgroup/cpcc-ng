@@ -91,7 +91,7 @@ public class RealVehicleStateJobRunnable implements JobRunnable
         }
         catch (IOException e)
         {
-            logger.debug("Real vehicle state query to " + target.getName() + " did not work.", e.getMessage());
+            logger.debug("Real vehicle state query to " + target.getName() + " did not work. " + e.getMessage());
         }
     }
 }

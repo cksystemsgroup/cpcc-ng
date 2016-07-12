@@ -193,7 +193,7 @@ public class VirtualVehicleMapperTest
         when(realVehicleRepository.findAllRealVehicles())
             .thenReturn(Arrays.asList(gs01, realVehicle1, realVehicle2, realVehicle3));
         when(realVehicleRepository.findOwnRealVehicle()).thenReturn(realVehicle1);
-        when(realVehicleRepository.findAllRealVehiclesExceptOwn())
+        when(realVehicleRepository.findAllActiveRealVehiclesExceptOwn())
             .thenReturn(Arrays.asList(gs01, realVehicle2, realVehicle3));
 
         sut = new VirtualVehicleMapperImpl(logger, realVehicleRepository);

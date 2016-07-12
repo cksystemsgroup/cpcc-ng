@@ -137,7 +137,6 @@ public class PngImageStreamResponse implements StreamResponse
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(image, "png", baos);
-        baos.flush();
         baos.close();
         return new PngImageStreamResponse(baos.toByteArray());
     }

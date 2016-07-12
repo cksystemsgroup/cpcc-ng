@@ -25,10 +25,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
@@ -85,8 +87,6 @@ public class RealVehicleStateJobRunnableTest
         when(response.getContent()).thenReturn(RESPONSE_STRING.getBytes("UTF-8"));
 
         com = mock(CommunicationService.class);
-        when(com.transfer(rv, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY))
-            .thenReturn(response);
 
         rvRepo = mock(RealVehicleRepository.class);
         when(rvRepo.findRealVehicleById(RV_ID)).thenReturn(rv);
@@ -100,8 +100,11 @@ public class RealVehicleStateJobRunnableTest
     }
 
     @Test
-    public void shouldHandleExistingRvState()
+    public void shouldHandleExistingRvState() throws ClientProtocolException, IOException
     {
+        when(com.transfer(rv, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY))
+            .thenReturn(response);
+
         RealVehicleState rvState = mock(RealVehicleState.class);
         when(rvRepo.findRealVehicleStateById(RV_ID)).thenReturn(rvState);
 
@@ -122,8 +125,11 @@ public class RealVehicleStateJobRunnableTest
     }
 
     @Test
-    public void shouldHandleMissingRvState()
+    public void shouldHandleMissingRvState() throws ClientProtocolException, IOException
     {
+        when(com.transfer(rv, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY))
+            .thenReturn(response);
+
         Date now = new Date();
         sut.run();
 
@@ -138,5 +144,17 @@ public class RealVehicleStateJobRunnableTest
         assertThat(rvState.getState()).isEqualTo(RESPONSE_STRING);
 
         verify(logger).info(matches("RealVehicleState: ;.*"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldLogFailingConnections() throws ClientProtocolException, IOException
+    {
+        when(com.transfer(rv, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY))
+            .thenThrow(IOException.class);
+
+        sut.run();
+
+        verify(logger).debug(matches("Real vehicle state query to \\S+ did not work\\. .*"));
     }
 }

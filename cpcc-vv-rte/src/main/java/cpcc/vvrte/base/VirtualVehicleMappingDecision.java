@@ -85,4 +85,13 @@ public class VirtualVehicleMappingDecision
         this.realVehicles = newRealVehicles;
         return this;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return migration + " " + task + " " + realVehicles;
+    }
 }

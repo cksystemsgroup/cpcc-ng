@@ -255,7 +255,8 @@ public class VvRteRepositoryImpl implements VvRteRepository
             return;
         }
 
-        logger.info("Deleting virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ")");
+        logger.info("Deleting virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ") "
+            + vehicle.getState());
 
         session
             .createQuery("DELETE FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id")
