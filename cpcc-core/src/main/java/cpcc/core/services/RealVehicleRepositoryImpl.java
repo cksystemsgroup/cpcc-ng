@@ -103,17 +103,18 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<RealVehicle> findAllRealVehiclesExceptOwn()
+    public List<RealVehicle> findAllActiveRealVehiclesExceptOwn()
     {
         Parameter rvNameParam = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME);
         if (rvNameParam == null)
         {
-            return findAllRealVehicles();
+            return findAllActiveRealVehicles();
         }
 
         return (List<RealVehicle>) session
             .createCriteria(RealVehicle.class)
             .add(Restrictions.not(Restrictions.eq(REAL_VEHICLE_NAME, rvNameParam.getValue())))
+            .add(Restrictions.eq("deleted", Boolean.FALSE))
             .list();
     }
 
@@ -133,15 +134,22 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public RealVehicle findRealVehicleByName(String name)
     {
-        return (RealVehicle) session
+        List<RealVehicle> rvList = (List<RealVehicle>) session
             .createCriteria(RealVehicle.class)
             .add(Restrictions.eq(REAL_VEHICLE_NAME, name))
-            .uniqueResult();
+            .add(Restrictions.eq("deleted", Boolean.FALSE))
+            .list();
+
+        return rvList.size() > 0 ? rvList.get(0) : null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RealVehicle findRealVehicleByUrl(String url)
     {

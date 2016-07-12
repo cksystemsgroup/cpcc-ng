@@ -121,7 +121,7 @@ public class RvEditAreaOfOperations
     {
         List<RealVehicle> otherRvList = new ArrayList<RealVehicle>();
 
-        for (RealVehicle rv : realVehicleRepository.findAllRealVehicles())
+        for (RealVehicle rv : realVehicleRepository.findAllActiveRealVehicles())
         {
             if (rv.getId().intValue() != realVehicle.getId().intValue())
             {

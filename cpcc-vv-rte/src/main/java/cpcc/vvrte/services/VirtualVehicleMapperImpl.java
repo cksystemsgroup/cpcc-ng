@@ -85,7 +85,7 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
         List<RealVehicle> groundStations = new ArrayList<RealVehicle>();
         List<RealVehicle> destinationRealVehicles = new ArrayList<RealVehicle>();
 
-        for (RealVehicle rv : rvRepo.findAllRealVehiclesExceptOwn())
+        for (RealVehicle rv : rvRepo.findAllActiveRealVehiclesExceptOwn())
         {
             if (rv.getType() == RealVehicleType.GROUND_STATION)
             {

@@ -44,9 +44,9 @@ public interface RealVehicleRepository
     List<RealVehicle> findAllGroundStations();
 
     /**
-     * @return the list of available real vehicles except own real vehicle.
+     * @return the list of available and not deleted real vehicles except own real vehicle.
      */
-    List<RealVehicle> findAllRealVehiclesExceptOwn();
+    List<RealVehicle> findAllActiveRealVehiclesExceptOwn();
 
     /**
      * @return the list of available real vehicles ordered by name.

@@ -45,7 +45,7 @@ public class GsViewer
      */
     public String getMapCenter()
     {
-        double[] bbox = RealVehicleUtils.findBoundingBox(realVehicleRepository.findAllRealVehicles());
+        double[] bbox = RealVehicleUtils.findBoundingBox(realVehicleRepository.findAllActiveRealVehicles());
 
         if (bbox.length == 4 && MathUtils.containsNoNaN(bbox))
         {
@@ -69,7 +69,7 @@ public class GsViewer
      */
     public String getRegions()
     {
-        List<RealVehicle> rvList = realVehicleRepository.findAllRealVehicles();
+        List<RealVehicle> rvList = realVehicleRepository.findAllActiveRealVehicles();
         return jsonConverter.toRegionJson(rvList);
     }
 
