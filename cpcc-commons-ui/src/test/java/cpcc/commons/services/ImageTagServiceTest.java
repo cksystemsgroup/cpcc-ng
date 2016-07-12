@@ -94,8 +94,8 @@ public class ImageTagServiceTest
     public void shouldGetImageDimension(AbstractRosAdapter adapter, Dimension expectedDimension)
     {
         Dimension dimension = imageTagService.getRosImageDimension(adapter);
-        assertThat(dimension.getWidth()).isEqualTo(expectedDimension.getWidth(), offset(1E-8));
-        assertThat(dimension.getHeight()).isEqualTo(expectedDimension.getHeight(), offset(1E-8));
+        assertThat(dimension.getWidth()).describedAs("width").isEqualTo(expectedDimension.getWidth(), offset(1E-8));
+        assertThat(dimension.getHeight()).describedAs("height").isEqualTo(expectedDimension.getHeight(), offset(1E-8));
     }
 
     @DataProvider
@@ -112,21 +112,21 @@ public class ImageTagServiceTest
     public void shouldIgnoreUnfittingAdapters(AbstractRosAdapter adapter)
     {
         Dimension dimension = imageTagService.getRosImageDimension(adapter);
-        assertThat(dimension.getWidth()).isEqualTo(10.0, offset(1E-8));
-        assertThat(dimension.getHeight()).isEqualTo(10.0, offset(1E-8));
+        assertThat(dimension.getWidth()).describedAs("width").isEqualTo(10.0, offset(1E-8));
+        assertThat(dimension.getHeight()).describedAs("height").isEqualTo(10.0, offset(1E-8));
     }
 
     @DataProvider
     public Object[][] imageTagDataProvider()
     {
         return new Object[][]{
-            new Object[]{abstracAdapter1, "<img src=\"/test-context/commons/ros/cameraimage/_topic_1/\\d+\" "
+            new Object[]{abstracAdapter1, "<img src=\"/test-context/commons/ros/cameraimage/.topic.1/\\d+\" "
                 + "width=\"10\" height=\"10\" alt=\"image-alt\" title=\"image-title\">"},
-            new Object[]{adapter1, "<img src=\"/test-context/commons/ros/cameraimage/_lala_topic11/\\d+\" "
+            new Object[]{adapter1, "<img src=\"/test-context/commons/ros/cameraimage/.lala.topic11/\\d+\" "
                 + "width=\"640\" height=\"480\" alt=\"image-alt\" title=\"image-title\">"},
-            new Object[]{adapter2, "<img src=\"/test-context/commons/ros/cameraimage/_lala_topic11/\\d+\" "
+            new Object[]{adapter2, "<img src=\"/test-context/commons/ros/cameraimage/.lala.topic11/\\d+\" "
                 + "width=\"320\" height=\"240\" alt=\"image-alt\" title=\"image-title\">"},
-            new Object[]{adapter3, "<img src=\"/test-context/commons/ros/cameraimage/_lala_topic11/\\d+\" "
+            new Object[]{adapter3, "<img src=\"/test-context/commons/ros/cameraimage/.lala.topic11/\\d+\" "
                 + "width=\"10\" height=\"10\" alt=\"image-alt\" title=\"image-title\">"},
         };
     }
@@ -135,7 +135,7 @@ public class ImageTagServiceTest
     public void shouldGetImageTag(AbstractRosAdapter adapter, String expectedPattern)
     {
         String tag = imageTagService.getRosImageTag(adapter);
-        assertThat(tag.matches(expectedPattern)).isTrue();
+        assertThat(tag).describedAs("pattern").matches(expectedPattern);
     }
 
     private static class AbstractRosAdapterHelper extends AbstractRosAdapter implements ImageProvider

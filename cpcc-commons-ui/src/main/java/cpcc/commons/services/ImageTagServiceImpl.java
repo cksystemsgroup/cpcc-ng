@@ -71,7 +71,7 @@ public class ImageTagServiceImpl implements ImageTagService
             }
         }
 
-        String param = adapter.getTopic().getName().replaceAll("/", "_");
+        String param = adapter.getTopic().getName().replace("/", ".");
         String alt = messages.get(ROS_CAMERA_IMAGE_TAG_ALT);
         String title = messages.get(ROS_CAMERA_IMAGE_TAG_TITLE);
         long time = System.currentTimeMillis();

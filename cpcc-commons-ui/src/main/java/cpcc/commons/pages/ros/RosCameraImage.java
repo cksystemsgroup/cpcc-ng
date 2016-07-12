@@ -56,7 +56,7 @@ public class RosCameraImage
      */
     public StreamResponse onActivate(String rootTopicParam)
     {
-        String rootTopic = rootTopicParam.replaceAll("_", "/").replaceAll("image/raw", "image_raw");
+        String rootTopic = rootTopicParam.replace(".", "/");
 
         if (logger.isDebugEnabled())
         {
@@ -74,7 +74,7 @@ public class RosCameraImage
 
         if (image == null)
         {
-            logger.error("No image adapter found for root topic " + rootTopicParam);
+            logger.error("No image adapter found for root topic " + rootTopic);
             return new PngImageStreamResponse();
         }
 
@@ -82,7 +82,7 @@ public class RosCameraImage
 
         try
         {
-            return PngImageStreamResponse.convertImageToStreamResponse(bufferedImage, rootTopicParam);
+            return PngImageStreamResponse.convertImageToStreamResponse(bufferedImage, rootTopic);
         }
         catch (IOException e)
         {
