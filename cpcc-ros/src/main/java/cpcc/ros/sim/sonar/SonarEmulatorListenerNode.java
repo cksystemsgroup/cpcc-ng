@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
+import org.ros.node.Node;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
 
@@ -36,6 +37,7 @@ public class SonarEmulatorListenerNode extends AnonymousNodeMain<sensor_msgs.Nav
 {
     private Logger logger;
     private MessageListener<NavSatFix> listenerNode;
+    private Subscriber<sensor_msgs.NavSatFix> subscriber;
     private String listenTopic;
 
     /**
@@ -60,9 +62,16 @@ public class SonarEmulatorListenerNode extends AnonymousNodeMain<sensor_msgs.Nav
     {
         logger.info("onStart()");
 
-        Subscriber<sensor_msgs.NavSatFix> subscriber =
-            connectedNode.newSubscriber(listenTopic, sensor_msgs.NavSatFix._TYPE);
-
+        subscriber = connectedNode.newSubscriber(listenTopic, sensor_msgs.NavSatFix._TYPE);
         subscriber.addMessageListener(listenerNode);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShutdown(Node node)
+    {
+        subscriber.shutdown();
     }
 }

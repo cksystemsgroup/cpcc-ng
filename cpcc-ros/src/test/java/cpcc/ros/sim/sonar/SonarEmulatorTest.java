@@ -30,11 +30,19 @@ import java.util.Map;
 import org.apache.commons.lang3.RandomUtils;
 import org.ros.RosCore;
 import org.ros.address.InetAddressFactory;
+import org.ros.concurrent.CancellableLoop;
+import org.ros.node.ConnectedNode;
+import org.ros.node.DefaultNodeMainExecutor;
+import org.ros.node.Node;
 import org.ros.node.NodeConfiguration;
+import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import cpcc.ros.sim.AnonymousNodeMain;
+import sensor_msgs.NavSatFix;
 
 /**
  * SonarEmulatorTest implementation.
@@ -46,6 +54,7 @@ public class SonarEmulatorTest
     private Map<String, List<String>> config;
     private NodeConfiguration nodeConfiguration;
     private RosCore rosCore;
+    private AnonymousNodeMain<NavSatFix> senderNode;
 
     @BeforeMethod
     public void setUp() throws URISyntaxException, InterruptedException
@@ -62,7 +71,7 @@ public class SonarEmulatorTest
         logger = mock(Logger.class);
 
         config = new HashMap<>();
-        config.put("gps", Arrays.asList("X"));
+        config.put("gps", Arrays.asList("/gpsrcv"));
         config.put("origin", Arrays.asList("0"));
 
         sut = new SonarEmulator(logger);
@@ -72,19 +81,105 @@ public class SonarEmulatorTest
         sut.start();
 
         Thread.sleep(1000);
-        Thread.yield();
     }
 
     @AfterMethod
     public void tearDown() throws InterruptedException
     {
+        if (senderNode != null)
+        {
+            System.out.println("Sender node: shutdown");
+            DefaultNodeMainExecutor.newDefault().shutdownNodeMain(senderNode);
+        }
+
         System.out.println("SUT: shutdown");
         sut.shutdown();
-        // Thread.sleep(10000);
-        Thread.yield();
+        Thread.sleep(1000);
+
         System.out.println("ROS core: shutdown");
         rosCore.shutdown();
         System.out.println("ROS core: shutdown done");
+    }
+
+    private void setupMessageSender() throws InterruptedException
+    {
+        senderNode = new AnonymousNodeMain<sensor_msgs.NavSatFix>()
+        {
+            private Publisher<sensor_msgs.NavSatFix> publisher;
+            private CancellableLoop loop;
+
+            @Override
+            public void onStart(ConnectedNode connectedNode)
+            {
+                publisher = connectedNode.newPublisher("/gpsrcv", sensor_msgs.NavSatFix._TYPE);
+                loop = new CancellableLoop()
+                {
+                    @Override
+                    protected void loop() throws InterruptedException
+                    {
+                        publisher.publish(getReceivedMessage());
+                        Thread.sleep(200);
+                    }
+                };
+
+                NavSatFix message = connectedNode.getTopicMessageFactory().newFromType(sensor_msgs.NavSatFix._TYPE);
+                message.setAltitude(123.66);
+                onNewMessage(message);
+
+                connectedNode.executeCancellableLoop(loop);
+            }
+
+            @Override
+            public void onShutdown(Node node)
+            {
+                loop.cancel();
+            }
+        };
+
+        DefaultNodeMainExecutor.newDefault().execute(senderNode, nodeConfiguration);
+    }
+
+    @Test
+    public void shouldProduceStateWithMessagesReceived() throws InterruptedException
+    {
+        setupMessageSender();
+
+        Thread.sleep(1000);
+
+        Map<String, List<String>> actual = sut.getCurrentState();
+
+        System.out.println("Actual: " + actual);
+
+        assertThat(actual.keySet())
+            .describedAs("values")
+            .hasSize(5)
+            .contains("config.topicRoot", "config.gps", "config.origin", "sensor.sonar.altitude",
+                "sensor.gps.altitude");
+
+        assertThat(actual.get("config.topicRoot"))
+            .describedAs("config.topicRoot")
+            .hasSize(1)
+            .contains("/topicRoot");
+
+        assertThat(actual.get("config.gps"))
+            .describedAs("config.gps")
+            .hasSize(1)
+            .contains("/gpsrcv");
+
+        assertThat(actual.get("config.origin"))
+            .describedAs("config.origin")
+            .hasSize(1)
+            .contains("0");
+
+        assertThat(actual.get("sensor.sonar.altitude"))
+            .describedAs("sensor.sonar.altitude")
+            .hasSize(1)
+            .contains("123.66");
+
+        assertThat(actual.get("sensor.gps.altitude"))
+            .describedAs("sensor.gps.altitude")
+            .hasSize(1)
+            .contains("123.66");
     }
 
     @Test
@@ -104,7 +199,7 @@ public class SonarEmulatorTest
 
         assertThat(actual.get("config.gps"))
             .hasSize(1)
-            .contains("X");
+            .contains("/gpsrcv");
 
         assertThat(actual.get("config.origin"))
             .hasSize(1)

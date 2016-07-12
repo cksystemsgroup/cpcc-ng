@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ros.node.ConnectedNode;
+import org.ros.node.Node;
 import org.slf4j.Logger;
 
 import sensor_msgs.NavSatFix;
@@ -55,6 +56,15 @@ public class SonarEmulatorPublisherNode extends AnonymousNodeMain<sensor_msgs.Na
         logger.info("onStart");
         loop = new SonarEmulatorPublisherLoop(config, connectedNode);
         connectedNode.executeCancellableLoop(loop);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShutdown(Node node)
+    {
+        loop.cancel();
     }
 
     /**

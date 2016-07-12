@@ -69,7 +69,9 @@ public class SonarEmulator extends AbstractRosNodeGroup
     {
         logger.info("shutdown()");
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(listenerNode);
+        listenerNode.onShutdown(null);
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(publisherNode);
+        publisherNode.onShutdown(null);
     }
 
     /**
