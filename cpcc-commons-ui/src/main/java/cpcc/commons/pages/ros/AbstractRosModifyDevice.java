@@ -28,9 +28,9 @@ import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Form;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.ioc.Messages;
-import org.hibernate.Session;
 
 import cpcc.commons.pages.configuration.ConfigurationEdit;
 import cpcc.core.entities.Device;
@@ -52,7 +52,7 @@ public abstract class AbstractRosModifyDevice
     protected static final String ERROR_PARSING_SYNTAX = "error.parsing.syntax";
 
     @Inject
-    protected Session session;
+    protected HibernateSessionManager sessionManager;
 
     @Inject
     protected QueryManager qm;
@@ -84,8 +84,10 @@ public abstract class AbstractRosModifyDevice
             device.setTopicRoot("/" + device.getTopicRoot());
         }
 
-        session.saveOrUpdate(device);
+        sessionManager.getSession().saveOrUpdate(device);
         qm.saveOrUpdateMappingAttributes(device);
+        sessionManager.commit();
+
         nodeService.updateDevice(device);
         nodeService.updateMappingAttributes(qm.findMappingAttributesByDevice(device));
         return ConfigurationEdit.class;

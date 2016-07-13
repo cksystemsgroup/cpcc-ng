@@ -24,10 +24,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
+import org.hibernate.Session;
 
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.RealVehicleState;
 import cpcc.core.services.RealVehicleRepository;
 
 /**
@@ -36,7 +37,7 @@ import cpcc.core.services.RealVehicleRepository;
 public class RvList
 {
     @Inject
-    private HibernateSessionManager sessionManager;
+    private Session session;
 
     @Inject
     private RealVehicleRepository rvRepo;
@@ -58,8 +59,7 @@ public class RvList
         RealVehicle rv = rvRepo.findRealVehicleById(id);
         rv.setDeleted(Boolean.FALSE);
         rv.setLastUpdate(new Date());
-        sessionManager.getSession().saveOrUpdate(rv);
-        sessionManager.commit();
+        session.update(rv);
     }
 
     @CommitAfter
@@ -68,8 +68,13 @@ public class RvList
         RealVehicle rv = rvRepo.findRealVehicleById(id);
         rv.setDeleted(Boolean.TRUE);
         rv.setLastUpdate(new Date());
-        sessionManager.getSession().saveOrUpdate(rv);
-        sessionManager.commit();
+        session.update(rv);
+
+        RealVehicleState state = rvRepo.findRealVehicleStateById(id);
+        if (state != null)
+        {
+            session.delete(state);
+        }
     }
 
     public boolean getConnected()

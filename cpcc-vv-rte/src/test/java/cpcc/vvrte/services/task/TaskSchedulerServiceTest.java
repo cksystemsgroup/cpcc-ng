@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
 import org.mockito.InOrder;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.TaskState;
@@ -65,17 +67,22 @@ public class TaskSchedulerServiceTest
     private ArrayList<Task> scheduledTasks;
     private ArrayList<Task> pendingTasks;
 
-    private TaskSchedulerServiceImpl scheduler;
+    private TaskSchedulerServiceImpl sut;
     private Logger logger = mock(Logger.class);
     private Session session;
     private TaskRepository taskRepository;
+    private ServiceResources serviceResources;
 
     private List<PolarCoordinate> depotList;
+
+    private TimeService timeService;
+
+    private GatedTspSchedulingAlgorithm algorithm;
 
     @BeforeMethod
     public void setUp()
     {
-        depotList = Collections.<PolarCoordinate> emptyList();
+        depotList = Collections.<PolarCoordinate>emptyList();
 
         rvPosition = mock(PolarCoordinate.class);
 
@@ -131,10 +138,19 @@ public class TaskSchedulerServiceTest
         when(taskRepository.getScheduledTasks()).thenReturn(scheduledTasks);
         when(taskRepository.getPendingTasks()).thenReturn(pendingTasks);
 
-        scheduler = new TaskSchedulerServiceImpl(VvRteConstants.PROP_DEFAULT_SCHEDULER_CLASS_NAME
-            , logger, session, taskRepository);
+        timeService = mock(TimeService.class);
+        when(timeService.currentTimeMillis()).thenReturn(System.currentTimeMillis());
 
-        assertThat(scheduler).isNotNull();
+        algorithm = new GatedTspSchedulingAlgorithm(logger, timeService, 30);
+
+        serviceResources = mock(ServiceResources.class);
+        when(serviceResources.getService(GatedTspSchedulingAlgorithm.class)).thenReturn(algorithm);
+        when(serviceResources.getService(ReverseScheduler.class)).thenReturn(new ReverseScheduler());
+
+        sut = new TaskSchedulerServiceImpl(VvRteConstants.PROP_SCHEDULER_CLASS_NAME_DEFAULT, logger, session,
+            taskRepository, serviceResources);
+
+        assertThat(sut).isNotNull();
     }
 
     @Test
@@ -143,7 +159,7 @@ public class TaskSchedulerServiceTest
         pendingTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
         when(taskRepository.getCurrentRunningTask()).thenReturn(null);
 
-        Task actual = scheduler.schedule(rvPosition, depotList);
+        Task actual = sut.schedule(rvPosition, depotList);
 
         assertThat(actual).isNotNull();
 
@@ -159,7 +175,7 @@ public class TaskSchedulerServiceTest
         scheduledTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
         when(taskRepository.getCurrentRunningTask()).thenReturn(null);
 
-        Task actual = scheduler.schedule(rvPosition, depotList);
+        Task actual = sut.schedule(rvPosition, depotList);
 
         assertThat(actual).isSameAs(taskA);
 
@@ -180,9 +196,9 @@ public class TaskSchedulerServiceTest
         pendingTasks.addAll(Arrays.asList(taskA, taskB, taskC, taskD));
         when(taskRepository.getCurrentRunningTask()).thenReturn(null);
 
-        scheduler.setAlgorithm(ReverseScheduler.class.getName());
+        sut.setAlgorithm(ReverseScheduler.class.getName());
 
-        Task actual = scheduler.schedule(rvPosition, depotList);
+        Task actual = sut.schedule(rvPosition, depotList);
 
         assertThat(actual).isSameAs(taskD);
 
@@ -217,7 +233,7 @@ public class TaskSchedulerServiceTest
 
         when(taskRepository.getCurrentRunningTask()).thenReturn(taskA);
 
-        Task actual = scheduler.schedule(rvPosition, depotList);
+        Task actual = sut.schedule(rvPosition, depotList);
 
         assertThat(actual).isSameAs(taskA);
 
@@ -233,7 +249,7 @@ public class TaskSchedulerServiceTest
     @Test
     public void shouldReturnNullOnNoTasksToHandle()
     {
-        Task actual = scheduler.schedule(rvPosition, depotList);
+        Task actual = sut.schedule(rvPosition, depotList);
 
         assertThat(actual).isNull();
 
@@ -252,8 +268,8 @@ public class TaskSchedulerServiceTest
 
         when(taskRepository.getCurrentRunningTask()).thenReturn(null);
 
-        TaskSchedulerServiceImpl scheduler2 =
-            new TaskSchedulerServiceImpl("cpcc.notExistingAlgorithmImpl", logger, session, taskRepository);
+        TaskSchedulerServiceImpl scheduler2 = new TaskSchedulerServiceImpl("cpcc.notExistingAlgorithmImpl",
+            logger, session, taskRepository, serviceResources);
 
         verify(logger).error(anyString(), any(ClassNotFoundException.class));
 
@@ -279,8 +295,8 @@ public class TaskSchedulerServiceTest
          * {@inheritDoc}
          */
         @Override
-        public boolean schedule(PolarCoordinate position, List<PolarCoordinate> depot, List<Task> scheduledTasks
-            , List<Task> pendingTasks)
+        public boolean schedule(PolarCoordinate position, List<PolarCoordinate> depot, List<Task> scheduledTasks,
+            List<Task> pendingTasks)
         {
             for (int k = pendingTasks.size(); k > 0; --k)
             {

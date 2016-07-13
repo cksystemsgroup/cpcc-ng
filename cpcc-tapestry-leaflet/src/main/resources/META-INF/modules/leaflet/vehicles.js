@@ -86,7 +86,8 @@ function(leaflet, console)
 				this.vehicleName = vehicleName;
 				this.vehicleHeading = vehicleHeading;
 				this.vehicleState = vehicleState;
-				this.vehicleDiv.innerHTML = vehicleName + ' (' + (vehicleId || '??') + ')';
+				// this.vehicleDiv.innerHTML = vehicleName + ' (' + (vehicleId || '??') + ')';
+				this.vehicleDiv.innerHTML = vehicleName;
 				this.vehicleDiv.className = 'vehicle-info vehicle-info-' + vehicleState;
 
 				var rotation = 270 - vehicleHeading;

@@ -29,7 +29,7 @@
 
 	<div id="footer">
 		<div class="container">
-			<p class="muted credit">&copy; Computational Systems Group, University of Salzburg, Austria.
+			<p class="muted credit">&copy; Clemens Krainer, Computational Systems Group, University of Salzburg, Austria.
 			All Rights Reserved. Made with 
 			<a target="_blank" href="http://tapestry.apache.org">Tapestry</a> and
 			<a target="_blank" href="http://getbootstrap.com">Bootstrap.</a>

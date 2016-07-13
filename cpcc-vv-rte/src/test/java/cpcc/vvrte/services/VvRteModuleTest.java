@@ -127,7 +127,7 @@ public class VvRteModuleTest
     public Object[][] applicationDefaultsDataProvider()
     {
         return new Object[][]{
-            new Object[]{VvRteConstants.PROP_DEFAULT_SCHEDULER_CLASS_NAME},
+            new Object[]{VvRteConstants.PROP_SCHEDULER_CLASS_NAME_DEFAULT},
             new Object[]{"Iingoo8m voh2EiCh eefahNg4 Ov6ahqua"},
         };
     }
@@ -138,11 +138,11 @@ public class VvRteModuleTest
     {
         MappedConfiguration<String, String> configuration = mock(MappedConfiguration.class);
 
-        System.setProperty(VvRteConstants.PROP_DEFAULT_SCHEDULER, className);
+        System.setProperty(VvRteConstants.PROP_SCHEDULER_CLASS_NAME, className);
 
         VvRteModule.contributeApplicationDefaults(configuration);
 
-        verify(configuration).add(VvRteConstants.PROP_DEFAULT_SCHEDULER, className);
+        verify(configuration).add(VvRteConstants.PROP_SCHEDULER_CLASS_NAME, className);
     }
 
     @SuppressWarnings("unchecked")

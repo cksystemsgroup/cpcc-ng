@@ -29,22 +29,25 @@ public final class VvRteConstants
     public static final String MIGRATION_ACK_CONNECTOR = "migration-ack";
     public static final String MIGRATION_ACK_PATH = "/commons/vv/migrationAck";
 
-    public static final String PROP_DEFAULT_SCHEDULER = "vvrte.default.scheduler";
+    public static final String PROP_SCHEDULER_CLASS_NAME = "vvrte.default.scheduler";
     // public static final String PROP_DEFAULT_SCHEDULER_CLASS_NAME =
     //  "cpcc.vvrte.services.task.FirstComeFirstServeAlgorithm";
-    public static final String PROP_DEFAULT_SCHEDULER_CLASS_NAME =
+    public static final String PROP_SCHEDULER_CLASS_NAME_DEFAULT =
         "cpcc.vvrte.services.task.GatedTspSchedulingAlgorithm";
+
+    public static final String PROP_GTSP_MAX_TASKS = "cpcc.vv-rte.gtsp-max-tasks";
+    public static final String PROP_GTSP_MAX_TASKS_DEFAULT = "30";
 
     public static final String PROP_MIN_TOLERANCE_DISTANCE = "cpcc.vvrte.task.minimumToleranceDistance";
     public static final String PROP_MIN_TOLERANCE_DISTANCE_DEFAULT = "3.0";
 
     public static final String MIGRATION_JOB_QUEUE_NAME = "VV Migrations";
     public static final String NUMBER_OF_MIGRATION_POOL_THREADS = "vvrte.mig.job.pool.threads";
-    public static final String NUMBER_OF_MIGRATION_POOL_THREADS_DEFAULT = "20";
-    
+    public static final String NUMBER_OF_MIGRATION_POOL_THREADS_DEFAULT = "5";
+
     public static final String MIGRATION_CHUNK_SIZE = "vvrte.migration.chunk.size";
-    public static final String MIGRATION_CHUNK_SIZE_EDFAULT = "1000";
-    
+    public static final String MIGRATION_CHUNK_SIZE_DEFAULT = "1000";
+
     public static final String MIGRATION_MODE_SEND = "migration-send";
     public static final String MIGRATION_FORMAT_SEND = "mode=" + MIGRATION_MODE_SEND + ",id=%d";
 

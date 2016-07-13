@@ -21,7 +21,12 @@ package cpcc.vvrte.services.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
+
 import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.services.jobs.TimeService;
+import cpcc.vvrte.base.VvRteConstants;
 import cpcc.vvrte.entities.Task;
 
 /**
@@ -29,22 +34,29 @@ import cpcc.vvrte.entities.Task;
  */
 public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
 {
+    private Logger logger;
+    private TimeService timeService;
     private int maxTasks;
 
     /**
-     * Default constructor.
+     * @param logger the application logger.
+     * @param timeService the time service.
+     * @param maxTasks the maximum number of GTSP tasks to connect.
      */
-    public GatedTspSchedulingAlgorithm()
+    public GatedTspSchedulingAlgorithm(Logger logger, TimeService timeService,
+        @Symbol(VvRteConstants.PROP_GTSP_MAX_TASKS) int maxTasks)
     {
-        maxTasks = Integer.parseInt(System.getProperty("cpcc.vv-rte.gtsp-max-tasks", "30"));
+        this.logger = logger;
+        this.timeService = timeService;
+        this.maxTasks = maxTasks;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean schedule(PolarCoordinate position, List<PolarCoordinate> depots, List<Task> scheduledTasks
-        , List<Task> pendingTasks)
+    public boolean schedule(PolarCoordinate position, List<PolarCoordinate> depots, List<Task> scheduledTasks,
+        List<Task> pendingTasks)
     {
         if (!scheduledTasks.isEmpty())
         {
@@ -57,7 +69,7 @@ public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
             taskList.add(pendingTasks.remove(0));
         }
 
-        scheduledTasks.addAll(new HeldKarpTspSolver().calculateBestPath(position, taskList));
+        scheduledTasks.addAll(new HeldKarpTspSolver(logger, timeService).calculateBestPath(position, taskList));
         return true;
     }
 }

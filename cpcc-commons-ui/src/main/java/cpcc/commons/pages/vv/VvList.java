@@ -219,6 +219,12 @@ public class VvList
     void stopVehicle(Integer id)
     {
         VirtualVehicle vehicle = repository.findVirtualVehicleById(id);
+        stopVirtualVehicle(vehicle);
+        handleXhrRequest(paneZone);
+    }
+
+    private void stopVirtualVehicle(VirtualVehicle vehicle)
+    {
         if (!VirtualVehicleState.VV_STATES_FOR_STOP.contains(vehicle.getState()))
         {
             return;
@@ -226,14 +232,24 @@ public class VvList
 
         try
         {
-            launcher.stop(vehicle.getId());
+            launcher.stop(vehicle.getId(), VirtualVehicleState.INIT);
         }
         catch (VirtualVehicleLaunchException | IOException e)
         {
-            logger.error("Can not restart migration of virtual vehicle " + id, e);
+            logger.error("Can not stop virtual vehicle " + vehicle.getId(), e);
         }
-
-        handleXhrRequest(paneZone);
+    }
+    
+    private void terminateVirtualVehicle(VirtualVehicle vehicle)
+    {
+        try
+        {
+            launcher.stop(vehicle.getId(), VirtualVehicleState.FINISHED);
+        }
+        catch (VirtualVehicleLaunchException | IOException e)
+        {
+            logger.error("Can not terminate virtual vehicle " + vehicle.getId(), e);
+        }
     }
 
     @OnEvent("restartVehicle")
@@ -285,6 +301,22 @@ public class VvList
     void startAllVehicles()
     {
         repository.findAllVehicles().stream().forEach(vv -> restartVirtualVehicle(vv));
+        handleXhrRequest(paneZone);
+    }
+
+    @OnEvent("terminateAllVehicles")
+    @CommitAfter
+    void terminateAllVehicles()
+    {
+        repository.findAllVehicles().stream().forEach(vv -> terminateVirtualVehicle(vv));
+        handleXhrRequest(paneZone);
+    }
+
+    @OnEvent("deleteAllVehicles")
+    @CommitAfter
+    void deleteAllVehicles()
+    {
+        repository.findAllVehicles().stream().forEach(vv -> repository.deleteVirtualVehicleById(vv));
         handleXhrRequest(paneZone);
     }
 

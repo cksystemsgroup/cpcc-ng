@@ -21,8 +21,22 @@
 				</t:EventLink>
 			</li>
 			<li>
+				<t:EventLink t:event="terminateAllVehicles">
+					<button type="button" class="btn btn-warning">
+						${message:terminateAllVehicles}
+					</button>
+				</t:EventLink>
+			</li>
+			<li>
 				<t:Submit t:id="deleteVehiclesBtn" t:value="${message:deleteVehicles}" class="btn btn-danger" t:mixins="Confirm"
-					Confirm.message="${message:virtualVehicle.confirmDeleteSelected}?" />
+					Confirm.message="${message:virtualVehicle.confirmDeleteSelected}" />
+			</li>
+			<li>
+				<t:EventLink t:event="deleteAllVehicles" t:mixins="Confirm" Confirm.message="${message:virtualVehicle.confirmDeleteAll}">
+					<button type="button" class="btn btn-danger">
+						${message:deleteAllVehicles}
+					</button>
+				</t:EventLink>
 			</li>
 			<li>
 				<t:PageLink t:page="commons/vv/downloadAll" class="btn btn-primary">

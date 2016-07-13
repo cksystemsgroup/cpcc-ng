@@ -38,10 +38,11 @@ public interface VirtualVehicleLauncher extends JavascriptWorkerStateListener, T
 
     /**
      * @param vehicleId the ID of the vehicle to launch.
+     * @param newState the new vehicle state.
      * @throws VirtualVehicleLaunchException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    void stop(int vehicleId) throws VirtualVehicleLaunchException, IOException;
+    void stop(int vehicleId, VirtualVehicleState newState) throws VirtualVehicleLaunchException, IOException;
 
     /**
      * @param vehicleId the ID of the vehicle to launch.

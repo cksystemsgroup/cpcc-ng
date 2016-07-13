@@ -18,11 +18,10 @@
 
 package cpcc.vvrte.services.task;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.hibernate.Session;
 import org.slf4j.Logger;
@@ -43,6 +42,7 @@ public class TaskSchedulerServiceImpl implements TaskSchedulerService
     private Logger logger;
     private Session session;
     private TaskRepository taskRepository;
+    private ServiceResources serviceResources;
 
     /**
      * @param scheduler the task scheduling algorithm.
@@ -50,19 +50,19 @@ public class TaskSchedulerServiceImpl implements TaskSchedulerService
      * @param session the database session.
      * @param taskRepository the task repository.
      */
-    public TaskSchedulerServiceImpl(@Symbol(VvRteConstants.PROP_DEFAULT_SCHEDULER) String scheduler
-        , Logger logger, Session session, TaskRepository taskRepository)
+    public TaskSchedulerServiceImpl(@Symbol(VvRteConstants.PROP_SCHEDULER_CLASS_NAME) String scheduler, Logger logger,
+        Session session, TaskRepository taskRepository, ServiceResources serviceResources)
     {
         this.logger = logger;
         this.session = session;
         this.taskRepository = taskRepository;
+        this.serviceResources = serviceResources;
 
         try
         {
             setAlgorithm(scheduler);
         }
-        catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-            | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+        catch (ClassNotFoundException e)
         {
             logger.error("Can not load default scheduling algorithm: " + scheduler, e);
         }
@@ -115,12 +115,9 @@ public class TaskSchedulerServiceImpl implements TaskSchedulerService
      * {@inheritDoc}
      */
     @Override
-    public void setAlgorithm(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
-        InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+    public void setAlgorithm(String className) throws ClassNotFoundException
     {
         Class<?> clazz = Class.forName(className);
-        Constructor<?> ctor = clazz.getDeclaredConstructor(new Class<?>[0]);
-        Object instance = ctor.newInstance(new Object[0]);
-        algorithm = (TaskSchedulingAlgorithm) instance;
+        algorithm = (TaskSchedulingAlgorithm) serviceResources.getService(clazz);
     }
 }

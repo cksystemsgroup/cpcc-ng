@@ -103,9 +103,9 @@ public final class VvRteModule
     public static void contributeApplicationDefaults(MappedConfiguration<String, String> configuration)
     {
         configuration.add(
-            VvRteConstants.PROP_DEFAULT_SCHEDULER, System.getProperty(
-                VvRteConstants.PROP_DEFAULT_SCHEDULER,
-                VvRteConstants.PROP_DEFAULT_SCHEDULER_CLASS_NAME));
+            VvRteConstants.PROP_SCHEDULER_CLASS_NAME, System.getProperty(
+                VvRteConstants.PROP_SCHEDULER_CLASS_NAME,
+                VvRteConstants.PROP_SCHEDULER_CLASS_NAME_DEFAULT));
         configuration.add(
             VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE, System.getProperty(
                 VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE,
@@ -117,7 +117,11 @@ public final class VvRteModule
         configuration.add(
             VvRteConstants.MIGRATION_CHUNK_SIZE, System.getProperty(
                 VvRteConstants.MIGRATION_CHUNK_SIZE,
-                VvRteConstants.MIGRATION_CHUNK_SIZE_EDFAULT));
+                VvRteConstants.MIGRATION_CHUNK_SIZE_DEFAULT));
+        configuration.add(
+            VvRteConstants.PROP_GTSP_MAX_TASKS, System.getProperty(
+                VvRteConstants.PROP_GTSP_MAX_TASKS,
+                VvRteConstants.PROP_GTSP_MAX_TASKS_DEFAULT));
     }
 
     /**
@@ -136,8 +140,8 @@ public final class VvRteModule
      * @param logger the application logger.
      */
     @Startup
-    public static void scheduleJobs(VvRteRepository vvRteRepo, PeriodicExecutor executor
-        , final TaskExecutionService taskExecutionService, final JobService jobService, final Logger logger)
+    public static void scheduleJobs(VvRteRepository vvRteRepo, PeriodicExecutor executor,
+        final TaskExecutionService taskExecutionService, final JobService jobService, final Logger logger)
     {
         vvRteRepo.resetVirtualVehicleStates();
 
@@ -198,9 +202,9 @@ public final class VvRteModule
      * @param numberOfPoolThreads the number of migration job queue pool threads.
      */
     @Startup
-    public static void setupJobQueues(Logger logger, JobService jobService, HibernateSessionManager sessionManager
-        , TimeService timeService, JobRepository jobRepository
-        , @Symbol(VvRteConstants.NUMBER_OF_MIGRATION_POOL_THREADS) int numberOfPoolThreads)
+    public static void setupJobQueues(Logger logger, JobService jobService, HibernateSessionManager sessionManager,
+        TimeService timeService, JobRepository jobRepository,
+        @Symbol(VvRteConstants.NUMBER_OF_MIGRATION_POOL_THREADS) int numberOfPoolThreads)
     {
         JobRunnableFactory factory = new VvRteJobRunnableFactory();
 

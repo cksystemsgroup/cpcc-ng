@@ -32,7 +32,7 @@ public final class RealVehicleBaseConstants
     public static final String JOB_QUEUE_NAME = "RV Base";
 
     public static final String RV_BASE_JOB_POOL_THREADS = "rv-base.job.pool.threads";
-    public static final String RV_BASE_JOB_POOL_THREADS_DEFAULT = "20";
+    public static final String RV_BASE_JOB_POOL_THREADS_DEFAULT = "5";
 
     public static final String JOB_MODE_CONFIG = "config";
     public static final String JOB_MODE_IMPORT = "import";

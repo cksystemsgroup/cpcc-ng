@@ -79,9 +79,9 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
      * @param taskRepository the task repository instance.
      * @param jobService the job service.
      */
-    public VirtualVehicleLauncherImpl(Logger logger, HibernateSessionManager sessionManager, JavascriptService jss
-        , VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository, RealVehicleRepository rvRepository
-        , TimeService timeService, Messages messages, TaskRepository taskRepository, JobService jobService)
+    public VirtualVehicleLauncherImpl(Logger logger, HibernateSessionManager sessionManager, JavascriptService jss,
+        VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository, RealVehicleRepository rvRepository,
+        TimeService timeService, Messages messages, TaskRepository taskRepository, JobService jobService)
     {
         this.logger = logger;
         this.sessionManager = sessionManager;
@@ -131,7 +131,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
      * {@inheritDoc}
      */
     @Override
-    public void stop(int vehicleId) throws VirtualVehicleLaunchException, IOException
+    public void stop(int vehicleId, VirtualVehicleState newState) throws VirtualVehicleLaunchException, IOException
     {
         VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleId);
 
@@ -149,7 +149,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
         }
 
         vehicle.setEndTime(timeService.newDate());
-        vehicle.setState(VirtualVehicleState.INIT);
+        vehicle.setState(newState);
         vehicle.setStateInfo("Vehicle has been stopped manually.");
         vehicle.setContinuation(null);
         vehicle.setPreMigrationState(null);
@@ -385,8 +385,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     {
         PolarCoordinate position = decision.getTask().getPosition();
 
-        return messages.format(MSG_MAPPING_DECISION, decision.isMigration()
-            , position.getLatitude(), position.getLongitude(), position.getAltitude());
+        return messages.format(MSG_MAPPING_DECISION, decision.isMigration(), position.getLatitude(),
+            position.getLongitude(), position.getAltitude());
     }
 
     /**
@@ -395,11 +395,16 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void handleStuckMigrations()
     {
-        logger.debug("Handling stuck VVs.");
-
         List<RealVehicle> groundStations = rvRepository.findAllGroundStations();
 
         RealVehicle me = rvRepository.findOwnRealVehicle();
+        if (me == null)
+        {
+            return;
+        }
+
+        logger.debug("Handling stuck VVs.");
+
         Set<VirtualVehicleState> requiredStates = me.getType() == RealVehicleType.GROUND_STATION
             ? VirtualVehicleState.VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_GS
             : VirtualVehicleState.VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_RV;
@@ -443,9 +448,9 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
             logger.debug("Queuing ACK job for VV: " + vehicle.getName() + "  " + vehicle.getState().name()
                 + " result is " + result);
 
-            jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME
-                , String.format(VvRteConstants.MIGRATION_FORMAT_SEND_ACK, vehicle.getId())
-                , org.apache.commons.codec.binary.StringUtils.getBytesUtf8(result));
+            jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME,
+                String.format(VvRteConstants.MIGRATION_FORMAT_SEND_ACK, vehicle.getId()),
+                org.apache.commons.codec.binary.StringUtils.getBytesUtf8(result));
             return;
         }
 

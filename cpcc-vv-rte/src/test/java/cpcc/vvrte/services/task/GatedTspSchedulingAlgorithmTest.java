@@ -29,11 +29,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.Task;
 
 /**
@@ -43,6 +45,8 @@ public class GatedTspSchedulingAlgorithmTest
 {
     private GatedTspSchedulingAlgorithm sut;
     private List<PolarCoordinate> depots;
+    private Logger logger;
+    private TimeService timeService;
 
     /**
      * Test setup.
@@ -50,8 +54,11 @@ public class GatedTspSchedulingAlgorithmTest
     @BeforeMethod
     public void setUp()
     {
+        logger = mock(Logger.class);
+        timeService = mock(TimeService.class);
+
         depots = spy(new ArrayList<>());
-        sut = new GatedTspSchedulingAlgorithm();
+        sut = new GatedTspSchedulingAlgorithm(logger, timeService, 30);
     }
 
     @DataProvider

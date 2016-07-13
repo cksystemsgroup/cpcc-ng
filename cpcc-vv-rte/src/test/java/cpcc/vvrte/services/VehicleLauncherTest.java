@@ -154,8 +154,8 @@ public class VehicleLauncherTest
 
         TaskRepository taskRepository = mock(TaskRepository.class);
 
-        launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository
-            , rvRepository, timeService, messages, taskRepository, jobService);
+        launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository, rvRepository,
+            timeService, messages, taskRepository, jobService);
     }
 
     @Test
@@ -173,7 +173,7 @@ public class VehicleLauncherTest
     @Test
     public void shouldStopSimpleVirtualVehicle() throws Exception
     {
-        launcher.stop(vehicle2.getId());
+        launcher.stop(vehicle2.getId(), VirtualVehicleState.INIT);
 
         verify(vehicle2).setEndTime(currentDate);
         verify(vehicle2).setState(VirtualVehicleState.INIT);
@@ -188,7 +188,7 @@ public class VehicleLauncherTest
     {
         try
         {
-            launcher.stop(INVALID_VV_ID);
+            launcher.stop(INVALID_VV_ID, VirtualVehicleState.INIT);
             failBecauseExceptionWasNotThrown(VirtualVehicleLaunchException.class);
         }
         catch (VirtualVehicleLaunchException e)
@@ -202,7 +202,7 @@ public class VehicleLauncherTest
     {
         try
         {
-            launcher.stop(vehicle.getId());
+            launcher.stop(vehicle.getId(), VirtualVehicleState.INIT);
             failBecauseExceptionWasNotThrown(VirtualVehicleLaunchException.class);
         }
         catch (VirtualVehicleLaunchException e)

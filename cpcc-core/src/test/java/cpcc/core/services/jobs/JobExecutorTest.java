@@ -18,6 +18,9 @@
 
 package cpcc.core.services.jobs;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,18 +42,13 @@ import org.testng.annotations.Test;
 
 import cpcc.core.entities.Job;
 import cpcc.core.entities.JobStatus;
-import cpcc.core.services.jobs.JobExecutionException;
-import cpcc.core.services.jobs.JobExecutor;
-import cpcc.core.services.jobs.JobRepository;
-import cpcc.core.services.jobs.JobRunnable;
-import cpcc.core.services.jobs.JobRunnableFactory;
-import cpcc.core.services.jobs.TimeService;
 
 public class JobExecutorTest
 {
     private static final Integer SUCCEEDING_JOB_ID = 1001;
     private static final Integer FAILING_JOB_ID = 2002;
     private static final Integer HAS_NO_FACTORY_JOB_ID = 3003;
+    private static final Integer CRASHING_JOB_ID = 4004;
 
     private Date startDate;
     private Date endDate;
@@ -63,8 +61,10 @@ public class JobExecutorTest
     private Job succeedingJob;
     private Job failingJob;
     private Job hasNoFactoryJob;
+    private Job crashingJob;
     private JobRunnable succeedingRunnable;
     private JobRunnable failingRunnable;
+    private JobRunnable crashingRunnable;
     private JobRunnableFactory factory;
     private Logger logger;
     private JobQueueCallback callBack;
@@ -101,10 +101,16 @@ public class JobExecutorTest
         hasNoFactoryJob = mock(Job.class);
         when(hasNoFactoryJob.getId()).thenReturn(HAS_NO_FACTORY_JOB_ID);
 
+        crashingJob = mock(Job.class);
+        when(crashingJob.getId()).thenReturn(CRASHING_JOB_ID);
+
         succeedingRunnable = mock(JobRunnable.class);
 
         failingRunnable = mock(JobRunnable.class);
         doThrow(JobExecutionException.class).when(failingRunnable).run();
+
+        crashingRunnable = mock(JobRunnable.class);
+        doThrow(IllegalArgumentException.class).when(crashingRunnable).run();
 
         perthreadManager = mock(PerthreadManager.class);
 
@@ -115,6 +121,7 @@ public class JobExecutorTest
         when(jobRepository.findJobById(SUCCEEDING_JOB_ID)).thenReturn(succeedingJob);
         when(jobRepository.findJobById(FAILING_JOB_ID)).thenReturn(failingJob);
         when(jobRepository.findJobById(HAS_NO_FACTORY_JOB_ID)).thenReturn(hasNoFactoryJob);
+        when(jobRepository.findJobById(CRASHING_JOB_ID)).thenReturn(crashingJob);
 
         serviceResources = mock(ServiceResources.class);
         when(serviceResources.getService(PerthreadManager.class)).thenReturn(perthreadManager);
@@ -126,6 +133,7 @@ public class JobExecutorTest
         when(factory.createRunnable(logger, serviceResources, succeedingJob)).thenReturn(succeedingRunnable);
         when(factory.createRunnable(logger, serviceResources, failingJob)).thenReturn(failingRunnable);
         when(factory.createRunnable(logger, serviceResources, hasNoFactoryJob)).thenReturn(null);
+        when(factory.createRunnable(logger, serviceResources, crashingJob)).thenReturn(crashingRunnable);
     }
 
     @Test
@@ -166,7 +174,7 @@ public class JobExecutorTest
         sut.run();
 
         final InOrder inOrder =
-            Mockito.inOrder(session, sessionManager, factory, failingJob, failingRunnable);
+            Mockito.inOrder(logger, session, sessionManager, factory, failingJob, failingRunnable);
         inOrder.verify(failingJob).setStart(startDate);
         inOrder.verify(failingJob).setStatus(JobStatus.RUNNING);
         inOrder.verify(session).update(failingJob);
@@ -178,9 +186,45 @@ public class JobExecutorTest
 
         inOrder.verify(sessionManager).abort();
 
+        inOrder.verify(failingJob).setResultText(anyString());
         inOrder.verify(failingJob).setStatus(JobStatus.FAILED);
+
+        inOrder.verify(logger).error(matches("Job failed: " + FAILING_JOB_ID + " .*"));
+
         inOrder.verify(failingJob).setEnd(endDate);
         inOrder.verify(session).update(failingJob);
+        inOrder.verify(sessionManager).commit();
+    }
+
+    @Test
+    public void shouldExecuteCrashingRunnable() throws Exception
+    {
+        JobExecutor sut =
+            new JobExecutor(logger, serviceResources, Arrays.asList(factory), CRASHING_JOB_ID, callBack);
+
+        sut.run();
+
+        final InOrder inOrder =
+            Mockito.inOrder(logger, session, sessionManager, factory, crashingJob, crashingRunnable);
+        inOrder.verify(crashingJob).setStart(startDate);
+        inOrder.verify(crashingJob).setStatus(JobStatus.RUNNING);
+        inOrder.verify(session).update(crashingJob);
+        inOrder.verify(sessionManager).commit();
+        inOrder.verify(crashingJob).setStatus(JobStatus.NO_FACTORY);
+
+        inOrder.verify(factory).createRunnable(logger, serviceResources, crashingJob);
+        inOrder.verify(crashingRunnable).run();
+
+        inOrder.verify(sessionManager).abort();
+
+        inOrder.verify(crashingJob).setResultText(anyString());
+        inOrder.verify(crashingJob).setStatus(JobStatus.FAILED);
+
+        inOrder.verify(logger).error(matches("Job failed: " + CRASHING_JOB_ID + " .*"),
+            any(IllegalArgumentException.class));
+
+        inOrder.verify(crashingJob).setEnd(endDate);
+        inOrder.verify(session).update(crashingJob);
         inOrder.verify(sessionManager).commit();
     }
 

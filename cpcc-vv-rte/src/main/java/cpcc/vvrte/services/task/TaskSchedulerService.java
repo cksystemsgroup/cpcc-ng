@@ -18,7 +18,6 @@
 
 package cpcc.vvrte.services.task;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import cpcc.core.entities.PolarCoordinate;
@@ -32,15 +31,8 @@ public interface TaskSchedulerService
     /**
      * @param className the class name of the scheduling algorithm.
      * @throws ClassNotFoundException in case of errors.
-     * @throws NoSuchMethodException in case of errors.
-     * @throws SecurityException in case of errors.
-     * @throws InstantiationException in case of errors.
-     * @throws IllegalAccessException in case of errors.
-     * @throws IllegalArgumentException in case of errors.
-     * @throws InvocationTargetException in case of errors.
      */
-    void setAlgorithm(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
-        InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
+    void setAlgorithm(String className) throws ClassNotFoundException;
 
     /**
      * @param currentPosition the current position of the Real Vehicle.

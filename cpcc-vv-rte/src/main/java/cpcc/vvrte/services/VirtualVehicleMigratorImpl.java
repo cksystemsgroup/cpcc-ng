@@ -76,10 +76,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * @param com the communication service.
      * @param chunkSize the migration chunk size.
      */
-    public VirtualVehicleMigratorImpl(Logger logger, HibernateSessionManager sessionManager
-        , VvRteRepository vvRepository, VirtualVehicleLauncher launcher, JobService jobService
-        , TimeService timeService, RealVehicleRepository rvRepository, CommunicationService com
-        , @Symbol(VvRteConstants.MIGRATION_CHUNK_SIZE) int chunkSize)
+    public VirtualVehicleMigratorImpl(Logger logger, HibernateSessionManager sessionManager,
+        VvRteRepository vvRepository, VirtualVehicleLauncher launcher, JobService jobService, TimeService timeService,
+        RealVehicleRepository rvRepository, CommunicationService com,
+        @Symbol(VvRteConstants.MIGRATION_CHUNK_SIZE) int chunkSize)
     {
         this.logger = logger;
         this.sessionManager = sessionManager;
@@ -106,8 +106,8 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     @Override
     public void initiateMigration(VirtualVehicle vehicle)
     {
-        jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME
-            , String.format(VvRteConstants.MIGRATION_FORMAT_SEND, vehicle.getId()));
+        jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME,
+            String.format(VvRteConstants.MIGRATION_FORMAT_SEND, vehicle.getId()));
     }
 
     /**
@@ -327,12 +327,14 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             }
         }
 
+        sessionManager.commit();
+
         VirtualVehicle vv = virtualVehicleHolder.getVirtualVehicle();
 
         String result = new JSONObject("uuid", vv.getUuid(), "chunk", vv.getChunkNumber()).toCompactString();
 
-        CommunicationResponse response = com.transfer(vv.getMigrationSource(), VvRteConstants.MIGRATION_ACK_CONNECTOR
-            , org.apache.commons.codec.binary.StringUtils.getBytesUtf8(result));
+        CommunicationResponse response = com.transfer(vv.getMigrationSource(), VvRteConstants.MIGRATION_ACK_CONNECTOR,
+            org.apache.commons.codec.binary.StringUtils.getBytesUtf8(result));
 
         if (response.getStatus() == Status.OK)
         {
@@ -382,6 +384,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     public void queueChunk(InputStream inputStream) throws IOException
     {
         byte[] data = IOUtils.toByteArray(inputStream);
+        if (data.length == 0)
+        {
+            throw new IOException("No data!");
+        }
         jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME, VvRteConstants.MIGRATION_RECEIVE, data);
     }
 
@@ -392,6 +398,10 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     public void ackChunk(InputStream inputStream) throws IOException
     {
         byte[] data = IOUtils.toByteArray(inputStream);
+        if (data.length == 0)
+        {
+            throw new IOException("No data!");
+        }
         jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME, VvRteConstants.MIGRATION_CONTINUE, data);
     }
 
