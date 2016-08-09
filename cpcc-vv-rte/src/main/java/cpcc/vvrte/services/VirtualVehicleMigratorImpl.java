@@ -55,6 +55,10 @@ import cpcc.vvrte.services.db.VvRteRepository;
  */
 public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 {
+    private static final String DATA_VV_PROPERTIES = "vv/vv.properties";
+    private static final String DATA_VV_SOURCE_JS = "vv/vv-source.js";
+    private static final String DATA_VV_CONTINUATION_JS = "vv/vv-continuation.js";
+
     private Logger logger;
     private HibernateSessionManager sessionManager;
     private VvRteRepository vvRepository;
@@ -165,7 +169,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
         byte[] propBytes = baos.toByteArray();
 
-        TarArchiveEntry entry = new TarArchiveEntry("vv/vv.properties");
+        TarArchiveEntry entry = new TarArchiveEntry(DATA_VV_PROPERTIES);
         entry.setModTime(new Date());
         entry.setSize(propBytes.length);
         entry.setIds(0, chunkNumber);
@@ -192,7 +196,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             return;
         }
 
-        TarArchiveEntry entry = new TarArchiveEntry("vv/vv-continuation.js");
+        TarArchiveEntry entry = new TarArchiveEntry(DATA_VV_CONTINUATION_JS);
         entry.setModTime(new Date());
         entry.setSize(continuation.length);
         entry.setIds(0, chunkNumber);
@@ -219,7 +223,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
         byte[] source = virtualVehicle.getCode().getBytes("UTF-8");
 
-        TarArchiveEntry entry = new TarArchiveEntry("vv/vv-source.js");
+        TarArchiveEntry entry = new TarArchiveEntry(DATA_VV_SOURCE_JS);
         entry.setModTime(new Date());
         entry.setSize(source.length);
         entry.setIds(0, chunkNumber);
@@ -426,7 +430,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     {
         boolean lastChunk = false;
 
-        if ("vv/vv.properties".equals(entry.getName()))
+        if (DATA_VV_PROPERTIES.equals(entry.getName()))
         {
             Properties props = new Properties();
             props.load(inStream);
@@ -446,13 +450,13 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
             virtualVehicleHolder.setVirtualVehicle(vv);
             sessionManager.getSession().saveOrUpdate(vv);
         }
-        else if ("vv/vv-continuation.js".equals(entry.getName()))
+        else if (DATA_VV_CONTINUATION_JS.equals(entry.getName()))
         {
             byte[] continuation = IOUtils.toByteArray(inStream);
             virtualVehicleHolder.getVirtualVehicle().setContinuation(continuation);
             sessionManager.getSession().saveOrUpdate(virtualVehicleHolder.getVirtualVehicle());
         }
-        else if ("vv/vv-source.js".equals(entry.getName()))
+        else if (DATA_VV_SOURCE_JS.equals(entry.getName()))
         {
             byte[] source = IOUtils.toByteArray(inStream);
             virtualVehicleHolder.getVirtualVehicle().setCode(new String(source, "UTF-8"));
@@ -477,7 +481,8 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         if (!VirtualVehicleState.VV_STATES_FOR_MIGRATION_RCV.contains(vv.getState()))
         {
             throw new IOException("Virtual vehicle " + vv.getName() + " (" + vv.getUuid() + ")"
-                + " has not state " + VirtualVehicleState.MIGRATING_RCV + " but " + vv.getState());
+                + " has not state " + VirtualVehicleState.MIGRATING_RCV + " but " + vv.getState()
+                + " props=" + props);
         }
 
         if (vv.getMigrationDestination() != null)
