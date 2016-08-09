@@ -52,6 +52,7 @@ import cpcc.vvrte.services.json.VvGeoJsonConverter;
 import cpcc.vvrte.services.json.VvGeoJsonConverterImpl;
 import cpcc.vvrte.services.ros.MessageConverter;
 import cpcc.vvrte.services.ros.MessageConverterImpl;
+import cpcc.vvrte.services.task.GatedTspSchedulingAlgorithm;
 import cpcc.vvrte.services.task.TaskAnalyzer;
 import cpcc.vvrte.services.task.TaskAnalyzerImpl;
 import cpcc.vvrte.services.task.TaskExecutionService;
@@ -87,6 +88,7 @@ public final class VvRteModule
         binder.bind(VvGeoJsonConverter.class, VvGeoJsonConverterImpl.class);
         binder.bind(TaskRepository.class, TaskRepositoryImpl.class);
         binder.bind(DownloadService.class, DownloadServiceImpl.class);
+        binder.bind(GatedTspSchedulingAlgorithm.class);
     }
 
     /**
