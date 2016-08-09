@@ -40,7 +40,7 @@ public class PlantMotionAlgorithmTwo implements PlantMotionAlgorithm
         this.maxA = maxA;
         this.totalTime = Math.sqrt(6.0 * dist / maxA);
 
-        double maxVPrime = Math.sqrt(maxA * totalTime / 4.0);
+        double maxVPrime = maxA * totalTime / 4.0;
         log.info("Two: dist=" + dist + ", maxV'=" + maxVPrime + ", maxA=" + maxA + ", totalTime=" + totalTime);
     }
 
