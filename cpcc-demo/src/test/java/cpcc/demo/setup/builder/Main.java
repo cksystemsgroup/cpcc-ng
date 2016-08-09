@@ -40,8 +40,6 @@ public class Main
         PolarCoordinate groundStationPosition = new PolarCoordinate(47.821922207617014, 13.040811717510222, 0.0);
 
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 50, 50, 1, 1);
-        writeRectangularConfig(8000, mapCenter, groundStationPosition, 500, 500, 1, 1);
-
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 50, 50, 2, 2);
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 50, 50, 3, 3);
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 50, 50, 4, 4);
@@ -51,6 +49,18 @@ public class Main
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 50, 50, 8, 8);
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 50, 50, 9, 9);
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 50, 50, 10, 10);
+
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 200, 200, 1, 1);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 200, 200, 2, 2);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 200, 200, 3, 3);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 200, 200, 4, 4);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 200, 200, 5, 5);
+
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 500, 500, 1, 1);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 500, 500, 2, 2);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 500, 500, 3, 3);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 500, 500, 4, 4);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 500, 500, 5, 5);
     }
 
     /**
@@ -64,12 +74,12 @@ public class Main
      * @throws IOException in case of errors.
      * @throws JsonProcessingException in case of errors.
      */
-    private static void writeRectangularConfig(int basePort, PolarCoordinate mapCenter
-        , PolarCoordinate groundStationPosition, int cellWidth, int cellHeight, int nrCellsWide, int nrCellsHigh)
+    private static void writeRectangularConfig(int basePort, PolarCoordinate mapCenter,
+        PolarCoordinate groundStationPosition, int cellWidth, int cellHeight, int nrCellsWide, int nrCellsHigh)
         throws IOException, JsonProcessingException
     {
-        File outputDir = new File(String.format("src/main/resources/setups/rect-%03dm-by-%03dm-%02dx%02d"
-            , cellWidth, cellHeight, nrCellsWide, nrCellsHigh));
+        File outputDir = new File(String.format("src/main/resources/setups/rect-%03dm-by-%03dm-%02dx%02d", cellWidth,
+            cellHeight, nrCellsWide, nrCellsHigh));
 
         new SquareDemoBuilder()
             .setBasePort(basePort)

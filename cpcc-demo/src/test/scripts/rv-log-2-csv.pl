@@ -29,8 +29,8 @@ $man and pod2usage( -exitstatus => 0, -verbose => 2 );
 
 # $estimatesFile && $tasksFile or pod2usage(1);
 
-local ( *OUTE, *OUTT );
-
+my $oute  = undef;
+my $outt  = undef;
 my $vv    = {};
 my $vvPos = {};
 
@@ -40,6 +40,7 @@ $vv->{ALL}->{nrTasks}        = 0;
 $vv->{ALL}->{startTime}      = 0;
 $vv->{ALL}->{flightTime}     = 0;
 $vv->{ALL}->{execTime}       = 0;
+$vv->{ALL}->{distance}       = 0;
 $vv->{ALL}->{statStartTime}  = Statistics::Descriptive::Full->new();
 $vv->{ALL}->{statFlightTime} = Statistics::Descriptive::Full->new();
 $vv->{ALL}->{statExecTime}   = Statistics::Descriptive::Full->new();
@@ -64,6 +65,7 @@ sub distance {
 	sqrt( $dLat * $dLat + $dLon * $dLon );
 }
 
+# Task executed: ;VV-0299;41072825-6a68-4484-9d63-54a2b0f54e3f;2016-07-28 15:27:24;2016-07-28 15:28:05;2016-07-28 15:28:06;47.82140509513377;13.039254546879977;50.0;2.1;
 sub handleTaskExecutionService {
 	$_[0] =~ m/^.*Task executed: ;([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);([^;]*);.*$/
 	  or return;
@@ -81,16 +83,17 @@ sub handleTaskExecutionService {
 	}
 	$vvPos->{$2} = [ $6, $7, $8 ];
 
-	printf OUTT "%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%.2f;%d;%d;%d;\n",
+	printf $outt "%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%.2f;%d;%d;%d;\n",
 	  $time, $1, $2, $created, $start, $end, $6, $7, $8, $tt, $9, $waitTime, $flightTime, $execTime;
 
 	if ( defined $vv->{$1}->{minCreated} ) {
-		$vv->{$1}->{$1}->{minCreated} > $created and $vv->{$1}->{minCreated}  = $created;
-		$vv->{$1}->{maxExecuted} < $end          and $vv->{$1}->{maxExecuted} = $end;
+		$vv->{$1}->{minCreated} > $created and $vv->{$1}->{minCreated}  = $created;
+		$vv->{$1}->{maxExecuted} < $end    and $vv->{$1}->{maxExecuted} = $end;
 		$vv->{$1}->{nrTasks}++;
 		$vv->{$1}->{startTime}  += ( $start - $created ) / 1000.0;
 		$vv->{$1}->{flightTime} += ( $end - $start ) / 1000.0;
 		$vv->{$1}->{execTime}   += ( $end - $created ) / 1000.0;
+		$vv->{$1}->{distance}   += $tt;
 	}
 	else {
 		$vv->{$1}->{minCreated}  = $created;
@@ -99,6 +102,7 @@ sub handleTaskExecutionService {
 		$vv->{$1}->{startTime}   = ( $start - $created ) / 1000.0;
 		$vv->{$1}->{flightTime}  = ( $end - $start ) / 1000.0;
 		$vv->{$1}->{execTime}    = ( $end - $created ) / 1000.0;
+		$vv->{$1}->{distance}    = 0;
 	}
 
 	$vv->{ALL}->{minCreated} > $created and $vv->{ALL}->{minCreated}  = $created;
@@ -107,6 +111,7 @@ sub handleTaskExecutionService {
 	$vv->{ALL}->{startTime}  += ( $start - $created ) / 1000.0;
 	$vv->{ALL}->{flightTime} += ( $end - $start ) / 1000.0;
 	$vv->{ALL}->{execTime}   += ( $end - $created ) / 1000.0;
+	$vv->{ALL}->{distance}   += $tt;
 	$vv->{ALL}->{statStartTime}->add_data(  ( $start - $created ) / 1000.0 );
 	$vv->{ALL}->{statFlightTime}->add_data( ( $end - $start ) / 1000.0 );
 	$vv->{ALL}->{statExecTime}->add_data(   ( $end - $created ) / 1000.0 );
@@ -114,38 +119,38 @@ sub handleTaskExecutionService {
 
 sub handlePlantEstimator {
 	$_[0] =~ m/^.*(Two): dist=([^,]+), maxV'=([^,]+), maxA=([^,]+), totalTime=([0-9.]+).*$/
-	  and printf( OUTE "%s;%s;%s;%s;%s;%s;\n", parseTime(@_), $1, $2, $3, $4, $5 ), return;
+	  and printf( $oute "%s;%s;%s;%s;%s;%s;\n", parseTime(@_), $1, $2, $3, $4, $5 ), return;
 
 	$_[0] =~
 	  m/^.*(One): dist=([^,]+), maxV=([^,]+), maxA=([^,]+), totalTime=([^,]+), timeOne=([^,]+), timeTwo=([0-9.]+).*$/
-	  and printf OUTE "%s;%s;%s;%s;%s;%s;%s;%s;\n", parseTime(@_), $1, $2, $3, $4, $5, $6, $7;
+	  and printf $oute "%s;%s;%s;%s;%s;%s;%s;%s;\n", parseTime(@_), $1, $2, $3, $4, $5, $6, $7;
 }
 
 sub parseFiles {
 	map {
-		open IN, "< $_" or die "Can not open '$_'.";
+		open my $in, "<", $_ or die "Can not open '$_'.";
 		map {
 			chomp;
 			$tasksFile && /cpcc.vvrte.services.VvRteModule.TaskExecutionService - Task executed:/
 			  and handleTaskExecutionService($_);
 			$estimatesFile && /cpcc.ros.sim.quadrotor.PlantStateEstimatorImpl - (One|Two):/
 			  and handlePlantEstimator($_);
-		} <IN>;
-		close IN;
+		} <$in>;
+		close $in;
 	} @_;
 }
 
 sub writeTasksHeader {
-	print OUTT
+	print $outt
 "TIME;VV_NAME;VV_UUID;CREATED;START;END;LATITUDE;LONGITUDE;ALTITUDE;TASK_DISTANCE;TOLERANCE_DISTANCE;START_TIME;FLIGHT_TIME;EXEC_TIME\n";
 }
 
 sub writeEstimatesHeader {
-	print OUTE "TIME;ALGORITHM;DISTANCE;MAX_V;MAX_A;TOTAL_TIME;TIME_ONE;TIME_TWO;\n";
+	print $oute "TIME;ALGORITHM;DISTANCE;MAX_V;MAX_A;TOTAL_TIME;TIME_ONE;TIME_TWO;\n";
 }
 
 sub writeVvsStats {
-	open OUTV, "> $vvsFile" or die "Can not open file '$vvsFile'.";
+	open my $outv, ">", $vvsFile or die "Can not open file '$vvsFile'.";
 	my @keys = keys %$vv;
 	map {
 		$vv->{$_}->{startTimePerTask}  = $vv->{$_}->{startTime} / $vv->{$_}->{nrTasks};
@@ -157,6 +162,7 @@ sub writeVvsStats {
 	$vv->{ALL}->{flightTime} /= $vvCount;
 	$vv->{ALL}->{execTime}   /= $vvCount;
 	$vv->{ALL}->{nrTasks}    /= $vvCount;
+	$vv->{ALL}->{distance}   /= $vvCount;
 
 	$vv->{ALL}->{avgStartTime}  = $vv->{ALL}->{statStartTime}->mean();
 	$vv->{ALL}->{avgFlightTime} = $vv->{ALL}->{statFlightTime}->mean();
@@ -165,31 +171,33 @@ sub writeVvsStats {
 	$vv->{ALL}->{stdFlightTime} = $vv->{ALL}->{statFlightTime}->standard_deviation();
 	$vv->{ALL}->{stdExecTime}   = $vv->{ALL}->{statExecTime}->standard_deviation();
 
-	my @cols = qw { startTime flightTime execTime nrTasks startTimePerTask flightTimePerTask maxExecuted minCreated
-	  avgStartTime avgFlightTime avgExecTime stdStartTime stdFlightTime stdExecTime  };
+	my @cols = qw { startTime flightTime execTime nrTasks distance virtualSpeed startTimePerTask flightTimePerTask
+	  maxExecuted minCreated avgStartTime avgFlightTime avgExecTime stdStartTime stdFlightTime stdExecTime
+	  totalExecTime };
 
-	print OUTV map {
-		my $id = $_;
-		join( ';', 'vvId', map { $_ } @cols, 'totalExecTime' ), "\n"
+	print $outv map {
+		join( ';', 'vvId', map { $_ } @cols ), "\n"
 	} ( sort keys %$vv )[0];
 
-	print OUTV map {
+	print $outv map {
 		my $id = $_;
-		join( ';', $id, map { $vv->{$id}->{$_} } @cols, $vv->{$id}->{maxExecuted} - $vv->{$id}->{minCreated} ), "\n"
+		$vv->{$id}->{virtualSpeed}  = $vv->{$id}->{distance} / $vv->{$id}->{execTime};
+		$vv->{$id}->{totalExecTime} = ( $vv->{$id}->{maxExecuted} - $vv->{$id}->{minCreated} ) / 1000.0;
+		join( ';', $id, map { $vv->{$id}->{$_} } @cols ), "\n"
 	} sort keys %$vv;
 
-	close OUTV;
+	close $outv;
 }
 
-$tasksFile     and ( open OUTT, "> $tasksFile"     or die "Can not open file $tasksFile" );
-$estimatesFile and ( open OUTE, "> $estimatesFile" or die "Can not open file $estimatesFile" );
+$tasksFile     and ( open $outt, ">", $tasksFile     or die "Can not open file $tasksFile" );
+$estimatesFile and ( open $oute, ">", $estimatesFile or die "Can not open file $estimatesFile" );
 $tasksFile     and writeTasksHeader;
 $estimatesFile and writeEstimatesHeader;
 
 parseFiles @ARGV;
 
-$tasksFile     and close OUTT;
-$estimatesFile and close OUTE;
+$tasksFile     and close $outt;
+$estimatesFile and close $oute;
 $vvsFile       and writeVvsStats();
 
 __END__
@@ -206,7 +214,7 @@ rv-log-2-csv.pl [options]
 
   	-e <fileName>
   	--estimates-out=<fileName>
-		The name of the extimator output file.
+		The name of the estimator output file.
   
   	-t <fileName>
   	--tasks-out=<fileName>

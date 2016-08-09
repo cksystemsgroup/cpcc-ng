@@ -285,7 +285,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         if (decision != null && vehicle.getMigrationDestination() != null)
         {
-            logger.info("initiate Migration of VV " + vehicle.getName() + "(" + vehicle.getUuid() + ")");
+            logger.info("initiate Migration of VV " + vehicle.getName() + " (" + vehicle.getUuid() + ") to "
+                + vehicle.getMigrationDestination().getName());
             migrator.initiateMigration(vehicle);
         }
 
