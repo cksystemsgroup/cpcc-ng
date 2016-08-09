@@ -19,6 +19,7 @@
 package cpcc.vvrte.services.task;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.vvrte.entities.Task;
@@ -32,6 +33,7 @@ public interface TspSolver
      * @param current the current position.
      * @param path the path to travel.
      * @return the newly ordered path.
+     * @throws TimeoutException if the algorithm needs to much time for TSP solving.
      */
-    List<Task> calculateBestPath(PolarCoordinate current, List<Task> path);
+    List<Task> calculateBestPath(PolarCoordinate current, List<Task> path) throws TimeoutException;
 }

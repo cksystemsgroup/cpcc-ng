@@ -20,6 +20,7 @@ package cpcc.vvrte.services.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
@@ -63,13 +64,53 @@ public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
             return false;
         }
 
-        List<Task> taskList = new ArrayList<>();
-        for (int k = 0, l = Math.min(maxTasks, pendingTasks.size()); k < l; ++k)
+        int mt = maxTasks;
+
+        while (mt > 0)
         {
-            taskList.add(pendingTasks.remove(0));
+            List<Task> taskList = getTaskList(mt, pendingTasks);
+            try
+            {
+                scheduledTasks.addAll(new HeldKarpTspSolver(timeService).calculateBestPath(position, taskList));
+                shift(pendingTasks, taskList.size());
+                return true;
+            }
+            catch (TimeoutException e)
+            {
+                mt /= 2;
+                logger.warn("Reducing GTSP path length from " + maxTasks + " to " + mt);
+            }
         }
 
-        scheduledTasks.addAll(new HeldKarpTspSolver(logger, timeService).calculateBestPath(position, taskList));
-        return true;
+        return false;
+    }
+
+    /**
+     * @param taskList the list of tasks.
+     * @param nrOfShifts the number of elements to remove from the list beginning.
+     */
+    private static void shift(List<Task> taskList, int nrOfShifts)
+    {
+        for (int k = 0, l = nrOfShifts; k < l; ++k)
+        {
+            taskList.remove(0);
+        }
+    }
+
+    /**
+     * @param maxTasks the maximum number of tasks to consider in the GTSP algorithm.
+     * @param pendingTasks the list of pending tasks.
+     * @return the list of tasks to schedule.
+     */
+    private static List<Task> getTaskList(int maxTasks, List<Task> pendingTasks)
+    {
+        List<Task> taskList = new ArrayList<>();
+
+        for (int k = 0, l = Math.min(maxTasks, pendingTasks.size()); k < l; ++k)
+        {
+            taskList.add(pendingTasks.get(k));
+        }
+
+        return taskList;
     }
 }

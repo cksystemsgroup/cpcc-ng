@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang3.RandomUtils;
-import org.slf4j.Logger;
-
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.Task;
@@ -44,15 +41,13 @@ public class HeldKarpTspSolver extends AbstractTspSolver
 {
     private static final long MAX_CALCULATION_TIME = 10000;
 
-    private Logger logger;
     private TimeService timeService;
 
     /**
      * @param timeService the time service.
      */
-    public HeldKarpTspSolver(Logger logger, TimeService timeService)
+    public HeldKarpTspSolver(TimeService timeService)
     {
-        this.logger = logger;
         this.timeService = timeService;
     }
 
@@ -60,7 +55,7 @@ public class HeldKarpTspSolver extends AbstractTspSolver
      * {@inheritDoc}
      */
     @Override
-    public List<Task> calculateBestPath(PolarCoordinate position, List<Task> path)
+    public List<Task> calculateBestPath(PolarCoordinate position, List<Task> path) throws TimeoutException
     {
         if (path.size() < 2)
         {
@@ -69,18 +64,19 @@ public class HeldKarpTspSolver extends AbstractTspSolver
 
         double[][] cost = setupCostMatrix(position, path);
 
-        Node bestNode;
-        try
-        {
-            bestNode = solve(cost);
-        }
-        catch (TimeoutException e)
-        {
-            int index = RandomUtils.nextInt(0, path.size() - 1);
-            logger.error("HeldKarpTspSolver timed out. Using random selection: 0 < " + index + " < "
-                + (path.size() - 1));
-            return Arrays.asList(path.get(index));
-        }
+        Node bestNode = solve(cost);
+        //        Node bestNode;
+        //        try
+        //        {
+        //            bestNode = solve(cost);
+        //        }
+        //        catch (TimeoutException e)
+        //        {
+        //            int index = RandomUtils.nextInt(0, path.size() - 1);
+        //            logger.error("HeldKarpTspSolver timed out. Using random selection: 0 < " + index + " < "
+        //                + (path.size() - 1));
+        //            return Arrays.asList(path.get(index));
+        //        }
 
         List<Task> r = new ArrayList<>();
         List<Integer> pathIndices = new ArrayList<>();

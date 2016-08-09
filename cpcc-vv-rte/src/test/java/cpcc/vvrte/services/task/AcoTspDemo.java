@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import javax.swing.BorderFactory;
@@ -133,7 +134,7 @@ public class AcoTspDemo extends JPanel implements ActionListener
 
     public AcoTspDemo(boolean useAco)
     {
-        solver = useAco ? new AcoTspTasks() : new HeldKarpTspSolver(LOG, new TimeServiceImpl());
+        solver = useAco ? new AcoTspTasks() : new HeldKarpTspSolver(new TimeServiceImpl());
 
         JPanel buttonPane = new JPanel();
         Stream.of(BTN_REFRESH, BTN_AGAIN).forEach(
@@ -160,14 +161,22 @@ public class AcoTspDemo extends JPanel implements ActionListener
         }
 
         long start = System.nanoTime();
-        List<Task> tasks = solver.calculateBestPath(CURRENT, path);
-        long duration = System.nanoTime() - start;
+        List<Task> tasks;
+        try
+        {
+            tasks = solver.calculateBestPath(CURRENT, path);
+            long duration = System.nanoTime() - start;
 
-        System.out.println("Time = " + duration / 1.0E9 + ", pathLen=" + path.size() + ", taskLen=" + tasks.size());
+            System.out.println("Time = " + duration / 1.0E9 + ", pathLen=" + path.size() + ", taskLen=" + tasks.size());
 
-        p.setTasks(tasks);
-        p.revalidate();
-        p.repaint();
+            p.setTasks(tasks);
+            p.revalidate();
+            p.repaint();
+        }
+        catch (TimeoutException e1)
+        {
+            LOG.error("Can not calculate TSP path.", e1);
+        }
     }
 
     static class MyPanel extends JPanel
