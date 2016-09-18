@@ -61,6 +61,12 @@ public class Main
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 500, 500, 3, 3);
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 500, 500, 4, 4);
         writeRectangularConfig(8000, mapCenter, groundStationPosition, 500, 500, 5, 5);
+
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 5000, 5000, 1, 1);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 5000, 5000, 2, 2);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 5000, 5000, 3, 3);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 5000, 5000, 4, 4);
+        writeRectangularConfig(8000, mapCenter, groundStationPosition, 5000, 5000, 5, 5);
     }
 
     /**
