@@ -65,19 +65,6 @@ public class HeldKarpTspSolver extends AbstractTspSolver
         double[][] cost = setupCostMatrix(position, path);
 
         Node bestNode = solve(cost);
-        //        Node bestNode;
-        //        try
-        //        {
-        //            bestNode = solve(cost);
-        //        }
-        //        catch (TimeoutException e)
-        //        {
-        //            int index = RandomUtils.nextInt(0, path.size() - 1);
-        //            logger.error("HeldKarpTspSolver timed out. Using random selection: 0 < " + index + " < "
-        //                + (path.size() - 1));
-        //            return Arrays.asList(path.get(index));
-        //        }
-
         List<Task> r = new ArrayList<>();
         List<Integer> pathIndices = new ArrayList<>();
 
@@ -85,6 +72,12 @@ public class HeldKarpTspSolver extends AbstractTspSolver
         {
             r.add(path.get(j - 1));
             pathIndices.add(j);
+        }
+
+        if (pathIndices.isEmpty())
+        {
+            // System.out.println("### Buggerit! " + position + ",  tasks=" + path + ", r=" + r);
+            return path;
         }
 
         int firstIx = pathIndices.get(0);

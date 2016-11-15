@@ -21,6 +21,7 @@ package cpcc.vvrte.entities;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -43,7 +44,7 @@ public class TaskTest
     private Task sut;
     private VirtualVehicle vehicle;
 
-    //    private Logger logger;
+    // private Logger logger;
 
     @BeforeMethod
     public void setUp()
@@ -273,5 +274,73 @@ public class TaskTest
         ScriptableObject actual = sut.getSensorValues();
 
         assertThat(actual.get(name)).isEqualTo(expected);
+    }
+
+    @DataProvider
+    public Object[][] valueDataProvider()
+    {
+        VirtualVehicle v1 = mock(VirtualVehicle.class);
+        when(v1.toString()).thenReturn("VV-1");
+        when(v1.getName()).thenReturn("VV-1");
+        when(v1.getUuid()).thenReturn("2efed8c8-8681-11e6-97ae-8f77cc48f640");
+
+        VirtualVehicle v2 = mock(VirtualVehicle.class);
+        when(v2.toString()).thenReturn("VV-2");
+        when(v2.getName()).thenReturn("VV-2");
+        when(v2.getUuid()).thenReturn("32daca92-8681-11e6-826d-2bc72e1cad17");
+
+        return new Object[][]{
+            new Object[]{
+                new Date(12345678), new Date(12345679), new Date(12345680),
+                new PolarCoordinate(37.1234, -122.0898, 0.0), TaskState.EXECUTED, 1, 4.5, v1,
+                "created 1970-01-01 04:25:45, started 1970-01-01 04:25:45, ended 1970-01-01 04:25:45, "
+                    + "pos (37.1234°, -122.0898°, 0.0m), state EXECUTED, order 1, tolerance 4.5, "
+                    + "VV VV-1 (2efed8c8-8681-11e6-97ae-8f77cc48f640)"
+            },
+            new Object[]{
+                new Date(12345681), new Date(12345682), new Date(12345680),
+                new PolarCoordinate(37.1234, 122.0898, 100.0), TaskState.COMPLETED, 2, 6.3, v2,
+                "created 1970-01-01 04:25:45, started 1970-01-01 04:25:45, ended 1970-01-01 04:25:45, "
+                    + "pos (37.1234°, 122.0898°, 100.0m), state COMPLETED, order 2, tolerance 6.3, "
+                    + "VV VV-2 (32daca92-8681-11e6-826d-2bc72e1cad17)"
+            },
+            new Object[]{
+                new Date(12345681), new Date(12345678), new Date(12345679),
+                new PolarCoordinate(-37.1234, -122.0898, -100.0), TaskState.RUNNING, 3, 9.8, null,
+                "created 1970-01-01 04:25:45, started 1970-01-01 04:25:45, ended 1970-01-01 04:25:45, "
+                    + "pos (-37.1234°, -122.0898°, -100.0m), state RUNNING, order 3, tolerance 9.8, "
+            },
+            new Object[]{
+                new Date(12345678), null, new Date(12345679),
+                new PolarCoordinate(37.1234, -122.0898, 0.0), TaskState.EXECUTED, 1, 4.5, v1,
+                "created 1970-01-01 04:25:45, started -, ended 1970-01-01 04:25:45, "
+                    + "pos (37.1234°, -122.0898°, 0.0m), state EXECUTED, order 1, tolerance 4.5, "
+                    + "VV VV-1 (2efed8c8-8681-11e6-97ae-8f77cc48f640)"
+            },
+            new Object[]{
+                new Date(12345681), new Date(12345680), null,
+                new PolarCoordinate(37.1234, 122.0898, 100.0), TaskState.COMPLETED, 2, 6.3, v2,
+                "created 1970-01-01 04:25:45, started 1970-01-01 04:25:45, ended -, "
+                    + "pos (37.1234°, 122.0898°, 100.0m), state COMPLETED, order 2, tolerance 6.3, "
+                    + "VV VV-2 (32daca92-8681-11e6-826d-2bc72e1cad17)"
+            },
+        };
+    }
+
+    @Test(dataProvider = "valueDataProvider")
+    public void shouldHaveProperStringRepresentation(Date creationTime, Date executionStart, Date executionEnd,
+        PolarCoordinate position, TaskState taskState, int order, double tolerance, VirtualVehicle vehicle,
+        String expected)
+    {
+        sut.setCreationTime(creationTime);
+        sut.setExecutionStart(executionStart);
+        sut.setExecutionEnd(executionEnd);
+        sut.setPosition(position);
+        sut.setTaskState(taskState);
+        sut.setOrder(order);
+        sut.setTolerance(tolerance);
+        sut.setVehicle(vehicle);
+
+        assertThat(sut.toString()).isEqualTo(expected);
     }
 }
