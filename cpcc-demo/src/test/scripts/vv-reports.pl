@@ -5,14 +5,12 @@ use Getopt::Long;
 use Pod::Usage;
 
 my @vvstats     = glob '*/*/vv-stats.csv';
-my $vvStatsFile = 'vv-stats-all.csv';
-my $cellSize    = 50;
+my $vvStatsFile = 'vv-stats-all-%s.csv';
 my $help        = undef;
 my $man         = undef;
 
 my $r = GetOptions(
-	'vv-stats-out|g=s' => \$vvStatsFile,
-	'cell-size|c=i'    => \$cellSize,
+	'vv-stats-out|o=s' => \$vvStatsFile,
 	'help|?'           => \$help,
 	'man'              => \$man,
 );
@@ -20,7 +18,7 @@ my $r = GetOptions(
 $help and pod2usage(1);
 $man and pod2usage( -exitstatus => 0, -verbose => 2 );
 
-my $e = new Estimator($cellSize);
+my $e = new Estimator();
 
 $e->run($_) foreach @vvstats;
 
@@ -44,7 +42,6 @@ use List::Pairwise qw(mapp);
 sub new {
 	my $classname = shift;
 	my $self = bless { RESULT => {} }, $classname;
-	$self->{CELL_SIZE} = shift;
 	return $self;
 }
 
@@ -65,9 +62,10 @@ sub run {
 		my @l = split /;/;
 		my %line = mapp { $a => $l[$b] } %cols;
 
-		my $nrRvs = $line{'Number of RVs'};
-		my $plen  = $line{'GTSP Path Length'};
-		$self->{RESULT}->{$plen}->{$nrRvs} = \%line;
+		my $cellSize = $line{'Cell Size'};
+		my $nrRvs    = $line{'Number of RVs'};
+		my $plen     = $line{'GTSP Path Length'};
+		$self->{RESULT}->{$cellSize}->{$plen}->{$nrRvs} = \%line;
 	}
 
 	close $in;
@@ -78,10 +76,13 @@ sub calc {
 	my $r    = $self->{RESULT};
 
 	mapp {
-		my $speedOne = $b->{'1'}->{'Virtual Speed'};
-
 		mapp {
-			$speedOne and $b->{'Virtual Speed'} and $b->{ 'Virtual Speed Gain' } = $b->{'Virtual Speed'} / $speedOne;
+			my $speedOne = $b->{'1'}->{'Virtual Speed'};
+
+			mapp {
+				$speedOne and $b->{'Virtual Speed'} and $b->{'Virtual Speed Gain'} = $b->{'Virtual Speed'} / $speedOne;
+			}
+			%$b
 		}
 		%$b
 	}
@@ -89,11 +90,20 @@ sub calc {
 }
 
 sub write {
-	my ( $self, $file ) = @_;
+	my ( $self, $filePattern ) = @_;
 
 	$self->calc;
 
 	my $r = $self->{RESULT};
+	mapp {
+		my $file = sprintf $filePattern, $a;
+		$self->writeOne( $file, $b );
+	}
+	%$r;
+}
+
+sub writeOne {
+	my ( $self, $file, $r ) = @_;
 
 	my %h = map { $_ => $_ } map { keys %{ $r->{$_} } } keys %$r;
 	my @keys = sort { $a <=> $b } keys %h;
@@ -106,7 +116,9 @@ sub write {
 
 	print $out map {
 		my $plen = $_;
-		join( ';', $_, map { $r->{$plen}->{$_}->{'Virtual Speed'} .';'. $r->{$plen}->{$_}->{'Virtual Speed Gain'} } @keys ), "\n"
+		join( ';',
+			$_, map { $r->{$plen}->{$_}->{'Virtual Speed'} . ';' . $r->{$plen}->{$_}->{'Virtual Speed Gain'} } @keys ),
+		  "\n"
 	} sort { $a <=> $b } keys %$r;
 
 	close $out;
@@ -114,3 +126,4 @@ sub write {
 	print "[INFO] Wrote file $file\n";
 }
 
+1;

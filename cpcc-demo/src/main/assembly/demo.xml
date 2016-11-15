@@ -45,6 +45,13 @@
 				<include>**/*.sql</include>
 				<include>**/*.txt</include>
 			</includes>
+		</fileSet>		
+		<fileSet>
+			<directory>src/main/resources/demo</directory>
+			<outputDirectory>cpcc-demo-${project.parent.version}/examples</outputDirectory>
+			<includes>
+				<include>vv-rnd*-tasks.js</include>
+			</includes>
 		</fileSet>
 	</fileSets>
 	<dependencySets>
@@ -83,8 +90,6 @@
 				<include>org.apache.tomcat:tomcat-util-scan</include>
 				<include>org.apache.tomcat:tomcat-websocket-api</include>
 				<include>com.h2database:h2</include>
-				<include>org.hsqldb:hsqldb</include>
-				<include>org.hsqldb:sqltool</include>
 				<include>org.liquibase:liquibase-core</include>
 				<include>org.yaml:snakeyaml</include>
 			</includes>

@@ -162,7 +162,7 @@ sub writeVvsStats {
 	$vv->{ALL}->{flightTime} /= $vvCount;
 	$vv->{ALL}->{execTime}   /= $vvCount;
 	$vv->{ALL}->{nrTasks}    /= $vvCount;
-	$vv->{ALL}->{distance}   /= $vvCount;
+	$vv->{ALL}->{distance}   /= $vvCount;  # TODO: Oje: rvCount ?
 
 	$vv->{ALL}->{avgStartTime}  = $vv->{ALL}->{statStartTime}->mean();
 	$vv->{ALL}->{avgFlightTime} = $vv->{ALL}->{statFlightTime}->mean();

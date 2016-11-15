@@ -41,13 +41,14 @@ use lib dirname($0);
 use List::Pairwise qw(mapp);
 
 use constant COLS => qw{
-  NumberOfRVs GTspPathLength AverageDistance AverageFlightVelocity AveragePeakVelocity AverageTravelTime
+  CellSize NumberOfRVs GTspPathLength AverageDistance AverageFlightVelocity AveragePeakVelocity AverageTravelTime
   TotalFlightDistance TotalFlightTime AverageTotalFlightDistancePerRV AverageTotalFlightTimePerRV
   AverageNumberOfFlightsPerRV RelativeAverageDistance DistanceGain AlgOneRelative
   AlgTwoRelative ExecutionTimeGain
 };
 
 use constant TITLES => {
+	CellSize                        => 'Cell Size',
 	NumberOfRVs                     => 'Number of RVs',
 	GTspPathLength                  => 'GTSP Path Length',
 	AverageDistance                 => 'Average Distance',
@@ -83,6 +84,7 @@ sub run {
 	my $stat  = $self->readEstimates( $dir . '/estimates.csv', $nrRvs );
 	$stat->{NumberOfRVs}    = $nrRvs;
 	$stat->{GTspPathLength} = $plen;
+	$stat->{CellSize}       = $self->{CELL_SIZE};
 
 	$self->{RESULT}->{$nrRvs}->{$plen} = $stat;
 }

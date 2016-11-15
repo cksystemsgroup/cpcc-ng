@@ -5,11 +5,13 @@ use Getopt::Long;
 use Pod::Usage;
 
 my $vvStatsFile = 'vv-stats.csv';
+my $cellSize    = 50;
 my $help        = undef;
 my $man         = undef;
 
 my $r = GetOptions(
 	'vv-stats-out|o=s' => \$vvStatsFile,
+	'cell-size|c=i'    => \$cellSize,
 	'help|?'           => \$help,
 	'man'              => \$man,
 );
@@ -17,7 +19,7 @@ my $r = GetOptions(
 $help and pod2usage(1);
 $man and pod2usage( -exitstatus => 0, -verbose => 2 );
 
-my $e = new Estimator();
+my $e = new Estimator($cellSize);
 
 $e->run($_) foreach @ARGV;
 
@@ -39,12 +41,13 @@ use lib dirname($0);
 use List::Pairwise qw(mapp);
 
 use constant COLS => qw{
-  NumberOfRVs GTspPathLength startTime flightTime execTime nrTasks distance virtualSpeed startTimePerTask
+  CellSize NumberOfRVs GTspPathLength startTime flightTime execTime nrTasks distance virtualSpeed startTimePerTask
   flightTimePerTask maxExecuted minCreated avgStartTime avgFlightTime avgExecTime stdStartTime stdFlightTime
   stdExecTime totalExecTime
 };
 
 use constant TITLES => {
+	CellSize          => 'Cell Size',
 	NumberOfRVs       => 'Number of RVs',
 	GTspPathLength    => 'GTSP Path Length',
 	startTime         => 'Task Start Time',
@@ -83,6 +86,7 @@ sub run {
 	my $stat  = $self->readVvs( $dir . '/vvs.csv' );
 	$stat->{NumberOfRVs}    = $nrRvs;
 	$stat->{GTspPathLength} = $plen;
+	$stat->{CellSize}       = $self->{CELL_SIZE};
 
 	$self->{RESULT}->{$nrRvs}->{$plen} = $stat;
 }
