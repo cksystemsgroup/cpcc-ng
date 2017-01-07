@@ -6,7 +6,7 @@
 <hibernate-configuration>
 	<session-factory>
 		<!-- Data Source -->
-		<property name="connection.datasource">java:comp/env/jdbc/RV</property>
+		<property name="connection.datasource">java:/comp/env/jdbc/RV</property>
 
 		<!-- Database Settings -->
 		<!-- <property name="dialect">org.hibernate.dialect.HSQLDialect</property> -->

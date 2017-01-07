@@ -19,7 +19,7 @@
 package cpcc.ros.sim.osm;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -138,7 +138,7 @@ public class TileCacheTest extends PowerMockTestCase
         PowerMockito.when(response.getEntity()).thenReturn(entity);
 
         client = PowerMockito.mock(CloseableHttpClient.class);
-        PowerMockito.doReturn(response).when(client).execute((HttpUriRequest) anyObject());
+        PowerMockito.doReturn(response).when(client).execute(any(HttpUriRequest.class));
 
         httpClientBuilderMock = PowerMock.createMock(HttpClientBuilder.class);
 
@@ -197,12 +197,12 @@ public class TileCacheTest extends PowerMockTestCase
         File file1 = sut.getTile(zoom, x, y);
         String content1 = IOUtils.toString(new FileInputStream(file1), "UTF-8");
         assertThat(content1).isNotNull().isEqualTo(responseData);
-        Mockito.verify(client).execute((HttpUriRequest) anyObject());
+        Mockito.verify(client).execute(any(HttpUriRequest.class));
 
         File file2 = sut.getTile(zoom, x, y);
         String content2 = IOUtils.toString(new FileInputStream(file2), "UTF-8");
         assertThat(content2).isNotNull().isEqualTo(responseData);
-        Mockito.verify(client).execute((HttpUriRequest) anyObject());
+        Mockito.verify(client).execute(any(HttpUriRequest.class));
     }
 
     @Test(dataProvider = "tileCoordinatesDataProvider")
@@ -213,14 +213,14 @@ public class TileCacheTest extends PowerMockTestCase
         File file1 = sut.getTile(zoom, x, y);
         String content1 = IOUtils.toString(new FileInputStream(file1), "UTF-8");
         assertThat(content1).isNotNull().isEqualTo(responseData);
-        Mockito.verify(client).execute((HttpUriRequest) anyObject());
+        Mockito.verify(client).execute(any(HttpUriRequest.class));
 
         when(entity.getContent()).thenReturn(new ByteArrayInputStream(responseData.getBytes("UTF-8")));
 
         File file2 = sut.getTile(zoom, x, y + 1);
         String content2 = IOUtils.toString(new FileInputStream(file2), "UTF-8");
         assertThat(content2).isNotNull().isEqualTo(responseData);
-        Mockito.verify(client, times(2)).execute((HttpUriRequest) anyObject());
+        Mockito.verify(client, times(2)).execute(any(HttpUriRequest.class));
     }
 
     @Test(dataProvider = "tileCoordinatesDataProvider")
@@ -228,7 +228,7 @@ public class TileCacheTest extends PowerMockTestCase
     {
         String msg = "thrown on purpose";
         assertThat(sut).isNotNull();
-        PowerMockito.doThrow(new IOException(msg)).when(client).execute((HttpUriRequest) anyObject());
+        PowerMockito.doThrow(new IOException(msg)).when(client).execute(any(HttpUriRequest.class));
 
         try
         {

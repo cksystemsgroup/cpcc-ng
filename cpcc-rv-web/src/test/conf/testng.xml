@@ -1,8 +1,17 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="real-vehicle Application Test Suite" annotations="1.5">
-    <test name="Unit Tests">
-        <packages>
-            <package name="at.uni-salzburg.cs.cpcc.rv"/>
-        </packages>
-    </test>
+	<test name="Unit Tests">
+		<packages>
+			<package name="cpcc.rv.web.services" />
+		</packages>
+	</test>
+	<test name="Integration Tests" enabled="false">
+		<parameter name="tapestry.servlet-container" value="tomcat6" />
+		<parameter name="tapestry.browser-start-command" value="*firefox" />
+		<parameter name="tapestry.port" value="9091" />
+		<parameter name="tapestry.web-app-folder" value="src/test/webapp" />
+		<classes>
+			<class name="cpcc.rv.web.RvIntegrationTest"></class>
+		</classes>
+	</test>
 </suite>

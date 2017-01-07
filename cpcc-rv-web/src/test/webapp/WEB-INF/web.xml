@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+        PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+	<display-name>CPCC Real Vehicle</display-name>
+	<context-param>
+		<param-name>tapestry.app-package</param-name>
+		<param-value>cpcc.rv.web</param-value>
+	</context-param>
+	<context-param>
+		<param-name>tapestry.development-modules</param-name>
+		<param-value>cpcc.rv.web.services.DevelopmentModule</param-value>
+	</context-param>
+	<context-param>
+		<param-name>tapestry.qa-modules</param-name>
+		<param-value>cpcc.rv.web.services.QaModule</param-value>
+	</context-param>
+	<filter>
+		<filter-name>rvWeb</filter-name>
+		<filter-class>org.apache.tapestry5.TapestryFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>rvWeb</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<resource-ref>
+		<description>My Application DataSource Reference</description>
+		<res-ref-name>jdbc/RV</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	<resource-ref>
+		<description>My Liquibase DataSource Reference</description>
+		<res-ref-name>jdbc/LIQUIBASE</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+</web-app>

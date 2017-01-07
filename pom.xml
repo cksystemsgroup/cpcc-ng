@@ -57,7 +57,7 @@
 	</scm>
 
 	<properties>
-		<assertj-version>3.3.0</assertj-version>
+		<assertj-version>3.6.1</assertj-version>
 		<c3p0.version>0.9.5.2</c3p0.version>
 		<mchange-commons-version>0.2.12</mchange-commons-version>
 		<com.h2database.version>1.4.192</com.h2database.version>
@@ -65,23 +65,24 @@
 		<easymock-version>3.4</easymock-version>
 		<java-version>1.8</java-version>
 		<javax.mail.version>1.4.7</javax.mail.version>
-		<liquibase-version>3.5.1</liquibase-version>
-		<snakeyaml-version>1.13</snakeyaml-version>
-		<mockito-all-version>1.10.19</mockito-all-version>
-		<powermock.version>1.6.4</powermock.version>
+		<liquibase-version>3.5.3</liquibase-version>
+		<snakeyaml-version>1.17</snakeyaml-version>
+		<mockito-version>1.10.19</mockito-version>
+		<powermock.version>1.6.6</powermock.version>
 		<rosjava-version>0.0.6</rosjava-version>
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
 		<tapestry-release-version>5.4.1</tapestry-release-version>
-		<testng-release-version>6.9.10</testng-release-version>
-		<tomcat8Version>8.0.36</tomcat8Version>
+		<testng-release-version>6.10</testng-release-version>
+		<tomcat8Version>8.0.39</tomcat8Version>
 		<!-- <jacoco.version>0.7.6.201602180812</jacoco.version> not working -->
 		<!-- <jacoco.version>0.7.5.201505241946</jacoco.version> not working either -->
 		<!-- <jacoco.version>0.7.4.201502262128</jacoco.version> -->
 		<cobertura.report.format>xml</cobertura.report.format>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.testng.reportsPath>target/site</sonar.testng.reportsPath>
-		<sonar.java.coveragePlugin>cobertura</sonar.java.coveragePlugin>
-		<sonar.cobertura.reportPath>target/site/cobertura/coverage.xml</sonar.cobertura.reportPath>
+		<!-- <sonar.core.codeCoveragePlugin>cobertura</sonar.core.codeCoveragePlugin> -->
+		<!-- <sonar.java.coveragePlugin>cobertura</sonar.java.coveragePlugin> -->
+		<!-- <sonar.cobertura.reportPath>target/site/cobertura/coverage.xml</sonar.cobertura.reportPath> -->
 		<argLine>-XX:-UseSplitVerifier</argLine>
 		<additionalparam>-Xdoclint:none</additionalparam>
 	</properties>
@@ -123,13 +124,13 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.4</version>
+				<version>3.5</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.owlike</groupId>
 				<artifactId>genson</artifactId>
-				<version>1.3</version>
+				<version>1.4</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -174,8 +175,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
-				<artifactId>mockito-all</artifactId>
-				<version>${mockito-all-version}</version>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito-version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -193,13 +194,13 @@
 			<dependency>
 				<groupId>com.google.code.findbugs</groupId>
 				<artifactId>annotations</artifactId>
-				<version>2.0.1</version>
+				<version>3.0.1u2</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.skyscreamer</groupId>
 				<artifactId>jsonassert</artifactId>
-				<version>1.3.0</version>
+				<version>1.4.0</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -232,11 +233,17 @@
 				<version>${powermock.version}</version>
 				<scope>test</scope>
 			</dependency>
+			<!-- <dependency> -->
+			<!-- <groupId>org.powermock</groupId> -->
+			<!-- <artifactId>powermock-easymock-release-full</artifactId> -->
+			<!-- <version>${powermock.version}</version> -->
+			<!-- <classifier>full</classifier> -->
+			<!-- <scope>test</scope> -->
+			<!-- </dependency> -->
 			<dependency>
 				<groupId>org.powermock</groupId>
-				<artifactId>powermock-easymock-release-full</artifactId>
+				<artifactId>powermock-module-test-easymock-testng</artifactId>
 				<version>${powermock.version}</version>
-				<classifier>full</classifier>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -499,13 +506,24 @@
 				<artifactId>tomcat-websocket-api</artifactId>
 				<version>${tomcat8Version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity</artifactId>
+				<version>1.7</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>3.2.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -524,6 +542,11 @@
 		<!-- <classifier>runtime</classifier> -->
 		<!-- <scope>test</scope> -->
 		<!-- </dependency> -->
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -573,11 +596,16 @@
 				<!-- <artifactId>jacoco-maven-plugin</artifactId> -->
 				<!-- <version>${jacoco.version}</version> -->
 				<!-- </plugin> -->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>cobertura-maven-plugin</artifactId>
-					<version>2.7</version>
-				</plugin>
+				<!-- <plugin> -->
+				<!-- <groupId>org.codehaus.mojo</groupId> -->
+				<!-- <artifactId>cobertura-maven-plugin</artifactId> -->
+				<!-- <version>2.7</version> -->
+				<!-- <configuration> -->
+				<!-- <formats> -->
+				<!-- <format>xml</format> -->
+				<!-- </formats> -->
+				<!-- </configuration> -->
+				<!-- </plugin> -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+
+	<Resource name="jdbc/RV" auth="Container" type="javax.sql.DataSource" driverClassName="org.h2.Driver"
+		username="sa" password="" url="jdbc:h2:file:./target/integration_test" />
+
+	<Resource name="jdbc/LIQUIBASE" auth="Container" type="javax.sql.DataSource" driverClassName="org.h2.Driver"
+		username="sa" password="" url="jdbc:h2:file:./target/integration_test" />
+
+</Context>

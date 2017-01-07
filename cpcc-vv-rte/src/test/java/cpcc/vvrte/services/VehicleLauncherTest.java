@@ -21,7 +21,6 @@ package cpcc.vvrte.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -123,7 +122,7 @@ public class VehicleLauncherTest
                 jobListener = (JavascriptWorkerStateListener) args[0];
                 return null;
             }
-        }).when(worker).addStateListener((JavascriptWorkerStateListener) anyObject());
+        }).when(worker).addStateListener(any(JavascriptWorkerStateListener.class));
 
         doAnswer(new Answer<Object>()
         {

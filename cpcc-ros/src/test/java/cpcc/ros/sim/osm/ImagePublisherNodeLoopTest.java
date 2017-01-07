@@ -20,7 +20,6 @@ package cpcc.ros.sim.osm;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -116,10 +115,10 @@ public class ImagePublisherNodeLoopTest extends PowerMockTestCase
 
         connectedNode = mock(ConnectedNode.class);
         when(connectedNode.getTopicMessageFactory()).thenReturn(messageFactory);
-        when(connectedNode.<sensor_msgs.Image>
-            newPublisher(IMAGE_TOPIC, sensor_msgs.Image._TYPE)).thenReturn(imagePublisher);
-        when(connectedNode.<sensor_msgs.CameraInfo>
-            newPublisher(INFO_TOPIC, sensor_msgs.CameraInfo._TYPE)).thenReturn(infoPublisher);
+        when(connectedNode.<sensor_msgs.Image>newPublisher(IMAGE_TOPIC, sensor_msgs.Image._TYPE))
+            .thenReturn(imagePublisher);
+        when(connectedNode.<sensor_msgs.CameraInfo>newPublisher(INFO_TOPIC, sensor_msgs.CameraInfo._TYPE))
+            .thenReturn(infoPublisher);
 
         message = mock(NavSatFix.class);
         when(message.getAltitude()).thenReturn(8.76);
@@ -137,7 +136,7 @@ public class ImagePublisherNodeLoopTest extends PowerMockTestCase
         PowerMockito.when(response.getEntity()).thenReturn(entity);
 
         client = PowerMockito.mock(CloseableHttpClient.class);
-        PowerMockito.doReturn(response).when(client).execute((HttpUriRequest) anyObject());
+        PowerMockito.doReturn(response).when(client).execute(any(HttpUriRequest.class));
 
         httpClientBuilderMock = mock(HttpClientBuilder.class);
         when(httpClientBuilderMock.build()).thenReturn(client);
