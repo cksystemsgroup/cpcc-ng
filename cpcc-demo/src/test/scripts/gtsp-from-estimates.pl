@@ -41,9 +41,10 @@ use lib dirname($0);
 use List::Pairwise qw(mapp);
 
 use constant COLS => qw{
-  CellSize NumberOfRVs GTspPathLength AverageDistance AverageFlightVelocity AveragePeakVelocity AverageTravelTime
+  CellSize NumberOfRVs GTspPathLength AverageDistance AverageFlightVelocity AveragePeakVelocity
+  RelativeAverageDistance RelativeStdevDistance AverageTravelTime StdevTravelTime P90TravelTime P95TravelTime P99TravelTime
   TotalFlightDistance TotalFlightTime AverageTotalFlightDistancePerRV AverageTotalFlightTimePerRV
-  AverageNumberOfFlightsPerRV RelativeAverageDistance DistanceGain AlgOneRelative
+  AverageNumberOfFlightsPerRV DistanceGain AlgOneRelative
   AlgTwoRelative ExecutionTimeGain
 };
 
@@ -55,12 +56,17 @@ use constant TITLES => {
 	AverageFlightVelocity           => 'Average Flight Velocity',
 	AveragePeakVelocity             => 'Average Peak Velocity',
 	AverageTravelTime               => 'Average Travel Time',
+	StdevTravelTime                 => 'Stdev Travel Time',
+	P90TravelTime                   => 'P90TravelTime',
+	P95TravelTime                   => 'P95TravelTime',
+	P99TravelTime                   => 'P99TravelTime',
 	TotalFlightDistance             => 'Total Flight Distance',
 	TotalFlightTime                 => 'Total Flight Time',
 	AverageTotalFlightDistancePerRV => 'Average Total Flight Distance per RV',
 	AverageTotalFlightTimePerRV     => 'Average Total Flight Time per RV',
 	AverageNumberOfFlightsPerRV     => 'Average Number of Flights per RV',
 	RelativeAverageDistance         => 'Relative Average Distance',
+	RelativeStdevDistance           => 'Relative Stdev Distance',
 	DistanceGain                    => 'Distance Gain',
 	AlgOneRelative                  => 'Alg One / Total',
 	AlgTwoRelative                  => 'Alg Two / Total',
@@ -82,6 +88,7 @@ sub run {
 	my $nrRvs = $self->readConfig( $dir . '/config.sh' );
 	my $plen  = $self->readCustomConfig( $dir . '/custom-config.sh' );
 	my $stat  = $self->readEstimates( $dir . '/estimates.csv', $nrRvs );
+	
 	$stat->{NumberOfRVs}    = $nrRvs;
 	$stat->{GTspPathLength} = $plen;
 	$stat->{CellSize}       = $self->{CELL_SIZE};
@@ -191,12 +198,17 @@ sub readEstimates {
 		AverageFlightVelocity           => $distance->sum() / $travelTime->sum(),
 		AveragePeakVelocity             => $peakVelocity->mean(),
 		AverageTravelTime               => $travelTime->mean(),
+		StdevTravelTime                 => $travelTime->standard_deviation(),
+		P90TravelTime                   => ($travelTime->percentile(90))[0],
+		P95TravelTime                   => ($travelTime->percentile(95))[0],
+		P99TravelTime                   => ($travelTime->percentile(99))[0],
 		TotalFlightDistance             => $distance->sum(),
 		TotalFlightTime                 => $travelTime->sum(),
 		AverageTotalFlightDistancePerRV => $distance->sum() / $nrRvs,
 		AverageTotalFlightTimePerRV     => $travelTime->sum() / $nrRvs,
 		AverageNumberOfFlightsPerRV     => $travelTime->count() / $nrRvs,
 		RelativeAverageDistance         => $distance->mean() / $self->{CELL_SIZE},
+		RelativeStdevDistance           => $distance->standard_deviation() / $self->{CELL_SIZE},
 		AlgOneRelative                  => $algOne / $travelTime->count(),
 		AlgTwoRelative                  => $algTwo / $travelTime->count()
 	};
