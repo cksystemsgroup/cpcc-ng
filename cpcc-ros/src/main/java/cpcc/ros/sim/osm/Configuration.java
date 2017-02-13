@@ -45,44 +45,16 @@ public class Configuration
     static final String CFG_TILE_CACHE_DIR = "osmTileCache.dir";
     static final String CFG_TILE_DOWNLOAD_URL = "osmTileServerUrl";
 
-    private static final String TILE_DEFAULT_CACHE_DIR = "/tmp/tiles";
     private static final String TILE_DEFAULT_DOWNLOAD_URL =
         "http://otile1.mqcdn.com/tiles/1.0.0/sat/%1$d/%2$d/%3$d.png";
 
     // OK:
-    // http://otile1.mqcdn.com/tiles/1.0.0/sat/%1$d/%2$d/%3$d.png
-    // http://mtile03.mqcdn.com/tiles/1.0.0/vy/sat/%1$d/%2$d/%3$d.png
-    //?? http://khm1.google.com/kh/v=128&src=app&x=%2$d&y=%3$d&z=%1$d&s=Galileo
-
-    // http://khm1.google.com/kh/v=128&src=app&x={x}&y={y}&z={z}&s=Galileo
-    // http://otile1.mqcdn.com/tiles/1.0.0/map/%1$d/%2$d/%3$d.png
-    // http://c.tile.openstreetmap.org/18/140611/90996.png
-    // http://c.tile.openstreetmap.org/%1$d/%2$d/%3$d.png
-    // http://mtile03.mqcdn.com/tiles/1.0.0/vy/sat/18/54624/99490.png
-    // http://otile1.mqcdn.com/tiles/1.0.0/sat/%1$d/%2$d/%3$d.jpg
-    // http://khm1.google.com/kh/v=84&x=%2$d&y=%3$d&z=%1$d&s=Gal
-    // https://khms1.google.at/kh/v=117&src=app&x=%2$d&y=%3$d&z=%1$d&s=Gali
     // http://a.tile.osm.org/%1$d/%2$d/%3$d.png
-    // https://khms0.google.com/kh?v=81&src=app&x=%2$d&y=%3$d&z=%1$d&s=G&deg=0
-    //
-    // http://khm1.google.com/kh/v=128&src=app&x={x}&y={y}&z={z}&s=Galileo
     // http://{s}.tile.osm.org/{z}/{x}/{y}.png
+    // http://otile1.mqcdn.com/tiles/1.0.0/sat/%1$d/%2$d/%3$d.png
+    // http://c.tile.openstreetmap.org/%1$d/%2$d/%3$d.png
     // http://tile.opencyclemap.org/cycle/%1$d/%2$d/%3$d.png
-    // http://otile1.mqcdn.com/tiles/1.0.0/sat/15/5240/12661.jpg
-    // http://mt1.google.com/vt/lyrs=y&x=[x]&y=[y]&z=[z]
-    // http://khm1.google.com/kh/v=84&x=166&y=397&z=10&s=Gal
-    // http://khm.google.com/maptilecompress/t=3&x=[X]&y=[Y]&z=[INVZ] 
-    // http://khm.google.com/maptilecompress/t=3&x=1001&y=1030&z=11
-    //
-    // https://khms1.google.at/kh/v=137&src=app&x=277&y=181&z=9&s=Gali
-    // https://khms1.google.at/kh/v=137&src=app&x=277&y=179&z=9&s=Ga
-    // https://khms1.google.de/kh/v=117&src=app&x=17623&s=&y=10959&z=15&s=Gali
 
-    // https://mts0.google.com/vt/lyrs=h@231053698&hl=de&src=app&opts=o&deg=0&x=70278&s=&y=51482&z=17&s=Gali&deg=0
-    // https://mts0.google.com/vt/lyrs=h@231017399&hl=de&src=app&opts=o&deg=0&x=70282&s=&y=51482&z=17&s=&deg=0
-    // https://khms0.google.com/kh?v=81&src=app&x=140560&y=102961&z=18&s=G&deg=0
-    // http://khm0.googleapis.com/kh?v=177&hl=en-US&x={x}&y={y}&z={z}&token=15420
-    
     private String topicRoot;
     private PolarCoordinate originPosition = null;
     private String gpsTopic;
@@ -103,9 +75,8 @@ public class Configuration
     public Configuration(NodeConfiguration nodeConfiguration, Map<String, List<String>> config)
     {
         topicRoot = config.get(CFG_TOPIC_ROOT).get(0);
-        // gpsTopic = config.get(CFG_GPS_TOPIC).get(0);
         gpsTopic = ConfigUtils.parseString(config, CFG_GPS_TOPIC, 0, "/unknown");
-        
+
         geodeticSystem = new WGS84();
 
         if (config.containsKey(CFG_ORIGIN))
@@ -120,7 +91,9 @@ public class Configuration
         tileHeight = ConfigUtils.parseInteger(config, CFG_TILE_HEIGTH, 0, 256);
         zoomLevel = ConfigUtils.parseInteger(config, CFG_ZOOM_LEVEL, 0, 18);
 
-        tileCacheBaseDir = ConfigUtils.parseString(config, CFG_TILE_CACHE_DIR, 0, TILE_DEFAULT_CACHE_DIR);
+        String defaultCacheDir = System.getProperty("user.home") + "/.cpcc/tiles";
+
+        tileCacheBaseDir = ConfigUtils.parseString(config, CFG_TILE_CACHE_DIR, 0, defaultCacheDir);
         tileServerUrl = ConfigUtils.parseString(config, CFG_TILE_DOWNLOAD_URL, 0, TILE_DEFAULT_DOWNLOAD_URL);
     }
 
