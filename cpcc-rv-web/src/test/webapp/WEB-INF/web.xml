@@ -25,13 +25,11 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	<resource-ref>
-		<description>My Application DataSource Reference</description>
 		<res-ref-name>jdbc/RV</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>
 		<res-auth>Container</res-auth>
 	</resource-ref>
 	<resource-ref>
-		<description>My Liquibase DataSource Reference</description>
 		<res-ref-name>jdbc/LIQUIBASE</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>
 		<res-auth>Container</res-auth>

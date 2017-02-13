@@ -60,7 +60,7 @@
 		<assertj-version>3.6.1</assertj-version>
 		<c3p0.version>0.9.5.2</c3p0.version>
 		<mchange-commons-version>0.2.12</mchange-commons-version>
-		<com.h2database.version>1.4.192</com.h2database.version>
+		<com.h2database.version>1.4.193</com.h2database.version>
 		<com.hsqldb.version>2.3.4</com.hsqldb.version>
 		<easymock-version>3.4</easymock-version>
 		<java-version>1.8</java-version>
@@ -73,7 +73,7 @@
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
 		<tapestry-release-version>5.4.1</tapestry-release-version>
 		<testng-release-version>6.10</testng-release-version>
-		<tomcat8Version>8.0.39</tomcat8Version>
+		<tomcat8Version>8.0.41</tomcat8Version>
 		<!-- <jacoco.version>0.7.6.201602180812</jacoco.version> not working -->
 		<!-- <jacoco.version>0.7.5.201505241946</jacoco.version> not working either -->
 		<!-- <jacoco.version>0.7.4.201502262128</jacoco.version> -->
