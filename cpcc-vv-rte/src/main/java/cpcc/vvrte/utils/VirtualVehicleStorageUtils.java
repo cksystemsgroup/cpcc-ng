@@ -68,6 +68,10 @@ public final class VirtualVehicleStorageUtils
      */
     public static boolean isItemAnImage(VirtualVehicleStorage item)
     {
+        if (item == null || item.getContent() == null)
+        {
+            return false;
+        }
         String messageType = (String) item.getContent().get("messageType", item.getContent());
         return sensor_msgs.Image._TYPE.equals(messageType);
     }

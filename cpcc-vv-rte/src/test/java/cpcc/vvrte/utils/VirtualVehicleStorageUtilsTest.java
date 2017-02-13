@@ -87,9 +87,13 @@ public class VirtualVehicleStorageUtilsTest
         VirtualVehicleStorage item2 = mock(VirtualVehicleStorage.class);
         when(item2.getContent()).thenReturn(content2);
 
+        VirtualVehicleStorage item3 = mock(VirtualVehicleStorage.class);
+
         return new Object[][]{
+            new Object[]{null, false},
             new Object[]{item1, true},
             new Object[]{item2, false},
+            new Object[]{item3, false},
         };
     }
 
