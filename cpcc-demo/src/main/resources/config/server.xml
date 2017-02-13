@@ -8,7 +8,7 @@
 		<Connector port="${http.connector.port}" URIEncoding="UTF-8" connectionTimeout="30000" keepAliveTimeout="30000" maxThreads="50" maxConnections="50" />
 		<Engine name="Catalina" defaultHost="localhost">
 			<Host name="localhost" appBase="${app.base}" autoDeploy="false" copyXML="false">
-				<Context path="/" docBase="${app.war.file}" privileged="false" cookies="false" antiResourceLocking="false"
+				<Context path="${cpcc.context.path}" docBase="${app.war.file}" privileged="false" cookies="false" antiResourceLocking="false"
 					useHttpOnly="true">
 
 					<Resource name="jdbc/GS" auth="Container" type="javax.sql.DataSource" username="sa" password=""

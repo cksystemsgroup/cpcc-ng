@@ -40,7 +40,7 @@ for (var i = 0; i < zones.length; ++i)
 }
 
 var gps = VV.sensor.get('GPS');
-var camera = VV.sensor.get('FPV Camera 640x480');
+var camera = VV.sensor.get('Belly Mounted Camera 640x480');
 
 var anzahl = 5;
 

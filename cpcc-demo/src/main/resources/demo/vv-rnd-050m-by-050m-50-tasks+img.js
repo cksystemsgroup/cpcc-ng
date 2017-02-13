@@ -4,7 +4,7 @@ var minLng = 13.040465561705245;
 var maxLng = 13.04113451106066;
 
 var gps = VV.sensor.get('GPS');
-var camera = VV.sensor.get('FPV Camera 640x480');
+var camera = VV.sensor.get('Belly Mounted Camera 640x480');
 
 var numberOfTasks = 50;
 
