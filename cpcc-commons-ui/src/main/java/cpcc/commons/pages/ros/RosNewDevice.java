@@ -18,11 +18,14 @@
 
 package cpcc.commons.pages.ros;
 
+import org.apache.tapestry5.annotations.Import;
+
 import cpcc.core.entities.Device;
 
 /**
  * RosNewDevice
  */
+@Import(module = "bootstrap/modal")
 public class RosNewDevice extends AbstractRosModifyDevice
 {
     void onPrepare()
