@@ -76,9 +76,10 @@ public class SystemMonitorTest
 
         o.verify(logger).info(matches(";SH;osName;osVersion;processors;jvmName;jvmArch;startTime"));
         o.verify(logger).info(matches(";SV;.*"));
-        o.verify(logger).info(matches(";H;time;freeMemory;maxMemory;totalMemory;heap.init;heap.used;heap.max;"
-            + "heap.committed;nonheap.init;nonheap.used;nonheap.max;nonheap.committed;objPendingFinCount;sysLoadAvg;"
-            + "uptime;threadCount;peakThreadCount;daemonThreadCount;totalStartedTheadCount;.*"));
+        o.verify(logger).info(matches(";H;time;uptime;processCpuTime;processCpuLoad;systemCpuLoad;systemLoadAvg;"
+            + "openFileCount;threadCount;peakThreadCount;daemonThreadCount;totalStartedTheadCount;"
+            + "freeMemory;maxMemory;totalMemory;heap.init;heap.used;heap.max;heap.committed;"
+            + "nonheap.init;nonheap.used;nonheap.max;nonheap.committed;objPendingFinCount;.*"));
 
         o.verify(logger, times(4)).info(matches(";V;.*"));
     }
