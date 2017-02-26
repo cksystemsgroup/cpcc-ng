@@ -8,7 +8,7 @@
 	<t:Errors />
 
 	<div class="form-group">
-		<t:BeanEditor t:object="sensor" t:exclude="id,lastUpdate"
+		<t:BeanEditor t:object="sensor" t:exclude="id,lastUpdate,deleted"
 			t:reorder="description,type,visibility,messageType,parameters">
 
 			<p:description>

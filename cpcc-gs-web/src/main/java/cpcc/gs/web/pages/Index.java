@@ -18,20 +18,15 @@
 
 package cpcc.gs.web.pages;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.tapestry5.annotations.Property;
-
 import cpcc.core.entities.Device;
-import cpcc.core.entities.RealVehicleState;
 import cpcc.core.services.QueryManager;
 
 /**
- * Index
+ * Start page of ground-station web application.
  */
 public class Index
 {
@@ -44,16 +39,5 @@ public class Index
     public List<Device> getDeviceList()
     {
         return qm.findAllDevices();
-    }
-
-    @Property
-    private RealVehicleState rvState;
-
-    /**
-     * @return the state list.
-     */
-    public Collection<RealVehicleState> getRvStateList()
-    {
-        return Collections.emptyList();
     }
 }

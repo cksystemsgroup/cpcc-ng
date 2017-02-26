@@ -1,16 +1,86 @@
-<html t:type="layout" title="${message:realVehicleIndex}"
-	t:sidebarTitle="Framework Version" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+<html t:type="layout" title="Real Vehicle" t:sidebarTitle="Framework Version" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
 	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
 	<div class="row">
-		<div class="col-xs-6 col-md-3">
+		<div class="col-xs-6 col-md-2">
 			<h4>
-				<t:Pagelink page="index">${message:device.tree.label}
-				</t:Pagelink>
+				<t:Pagelink page="index">Configured Root Topics</t:Pagelink>
 			</h4>
 			<t:If test="deviceList">
 				<c:DeviceTree t:devices="deviceList" />
 			</t:If>
+		</div>
+
+		<div class="col-xs-12 col-md-10 col-lg-8">
+			<h2>Real Vehicle</h2>
+			<p>Real vehicles are servers that can move in space and carry sensors, as well as actuators.
+				Real vehicles provide a
+				runtime environment for virtual abstractions of networked autonomous vehicles, which
+				execute the actual missions.
+				Virtual autonomous vehicles, or virtual vehicles, for short, represent
+				a virtual mobile sensor network, whose nodes
+				may be dynamically created and deployed for efficient
+				and fast information aquisition.</p>
+
+			<h3>Configuration</h3>
+			<p>
+				The
+				<em>Configuration</em>
+				tab is where you can manage all the ground station settings like
+				the ground station name, the ROS parameters, and the
+				ground station own devices like the GPS receiver simulator.
+			</p>
+
+			<h3>ROS</h3>
+			<p>
+				The
+				<em>ROS</em>
+				tab lists the state of the configured ROS nodes and adapters.
+			</p>
+
+			<h3>Sensors</h3>
+			<p>
+				The
+				<em>Sensors</em>
+				tab allows you to manage the system wide sensor definitions.
+				The
+				<em>description</em>
+				column displays the
+				sensor names to be
+				used in the virtual vehicles. The ground station
+				automatically propagates
+				changes in the sensor
+				definitions to all
+				real vehicles.
+			</p>
+
+			<h3>Virtual Vehicles</h3>
+			<p>
+				This tab permits the management of your
+				<em>Virtual Vehicles.</em>
+				Here, they may edited online, uploaded,
+				replicated,
+				terminated, deleted, downloaded, restarted, and viewed.
+			</p>
+
+			<h3>Tasks</h3>
+			<p>This tab shows an overview of unfinished virtual vehicle tasks. On the ground station, new tasks
+				only lead to
+				virtual vehicle migration. Hence, this overview will be notoriously empty on ground stations.</p>
+
+			<h3>Jobs</h3>
+			<p>
+				On both ground stations and real vehicles,
+				<em>Jobs</em>
+				take care of changes. Jobs are intended to be small, independent pieces
+				of work that may run in parallel within a
+				thread pool. There are jobs for
+				synchronizing configuration data,
+				for migrating virtual vehicles, for querying the
+				state of real vehicles,
+				as well as other ground stations, for
+				handling stuck migrations, and for other purposes.
+			</p>
 		</div>
 	</div>
 </html>

@@ -20,8 +20,7 @@ package cpcc.rv.web.pages;
 
 import java.util.List;
 
-import org.apache.tapestry5.ioc.annotations.Inject;
-import org.slf4j.Logger;
+import javax.inject.Inject;
 
 import cpcc.core.entities.Device;
 import cpcc.core.services.QueryManager;
@@ -33,12 +32,6 @@ public class Index
 {
     @Inject
     private QueryManager qm;
-
-//    @Inject
-//    private StateSynchronizer stateSyncService;
-
-    @Inject
-    private Logger logger;
 
     /**
      * @return the list of devices.

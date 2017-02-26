@@ -1,0 +1,104 @@
+<html t:type="layout" title="Reales Vehikel" t:sidebarTitle="Framework Version" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
+
+	<div class="row">
+		<div class="col-xs-6 col-md-2">
+			<h4>
+				<t:Pagelink page="index">ROS Hauptpfade</t:Pagelink>
+			</h4>
+			<t:If test="deviceList">
+				<c:DeviceTree t:devices="deviceList" />
+			</t:If>
+		</div>
+
+		<div class="col-xs-12 col-md-10 col-lg-8">
+			<h2>Reales Vehikel</h2>
+			<p>
+				Reale Vehikel sind Server, die sich im Raum bewegen k&ouml;nnen
+				und Sensoren, sowie Aktuatoren mit sich f&uuml;hren.
+				Reale Vehikel stellen eine Laufzeitumgebung f&uuml;r
+				virtuelle Abstraktionen vernetzter autonomer Vehikel zur
+				Verf&uuml;gung,
+				welche die eigentlichen Missionen durchf&uuml;hren.
+				Virtuelle autonome Vehikel, kurz virtuelle Vehikel, bilden ein virtuelles mobiles Sensornetzwerk,
+				dessen Knoten
+				jederzeit dynamisch erzeugt und eingesetzt werden k&ouml;nnen
+				um Daten m&ouml;glichst
+				effizient und rasch zu sammeln.
+			</p>
+
+			<!-- Anforderung des Transports zu Punkten im Raum, Einlesen von Sensorwerten, und deren Verarbeitung. -->
+
+			<h3>Konfiguration</h3>
+			<p>
+				Tab
+				<em>Konfiguration</em>
+				verwaltet die Einstellungen des realen Vehikels.
+				Neben dem Namen und den ROS-Parametern ist es
+				m&ouml;glich
+				Ger&auml;te &uuml;ber
+				ROS anzubinden.
+			</p>
+
+			<h3>ROS</h3>
+			<p>
+				Tab
+				<em>ROS</em>
+				zeigt eine &Uuml;bersicht
+				der konfigurierten ROS-Knoten und ROS-Adapter.
+			</p>
+
+			<h3>Sensordefinitionen</h3>
+			<p>
+				Tab
+				<em>Sensordefinitionen</em>
+				administriert
+				die systemweiten Sensordefinitionen. Die Spalte
+				<em>Beschreibung</em>
+				zeigt die Sensornamen &uuml;ber
+				die virtuelle Vehikel auf die Sensoren zugreifen k&ouml;nnen.
+				Neue oder ge&auml;nderte
+				Sensordefinitionen werden automatisch zu allen realen Vehikeln und Bodenstationen synchronisiert.
+			</p>
+
+			<h3>Virtuelle Vehikel</h3>
+			<p>
+				Tab
+				<em>Virtuelle Vehikel</em>
+				erm&ouml;glicht
+				die Verwaltung der virtuellen Vehikel.
+				Diese k&ouml;nnen
+				hier ver&auml;ndert,
+				hochgeladen, repliziert, beendet, gel&ouml;scht,
+				heruntergeladen, neu gestartet und eingesehen werden.
+			</p>
+
+			<h3>Aufgaben</h3>
+			<p>
+				Tab
+				<em>Aufgaben</em>
+				zeigt eine &Uuml;bersicht
+				der offenen Aufgaben von virtuellen Vehikeln. Eine Aufgabe besteht aus einer Position im Raum und einer Menge von
+				Sensoren, die ausgelesen werden , sobald die Position erreicht wird.
+			</p>
+
+			<h3>Jobs</h3>
+			<p>
+				Eine &Uuml;bersicht
+				laufender
+				<em>Jobs</em>
+				ist im gleichnamigen Tab ersichtlich.
+				In Bodenstationen und realen Vehikeln &uuml;bernehmen
+				Jobs die Durchf&uuml;hrung
+				von Ver&auml;nderungen.
+				Jobs sind kleine, unabh&auml;ngige
+				Arbeitseinheiten, die parallel in einem Thread-Pool laufen. Es gibt Jobs f&uuml;r
+				die Synchronisation der Konfigurationsdaten,
+				die Migration virtueller Vehikel, die Statusabfragen von realen
+				Vehikeln, die Behandlung abgebrochener Migrationen und
+				andere Zwecke.
+			</p>
+
+		</div>
+	</div>
+</html>

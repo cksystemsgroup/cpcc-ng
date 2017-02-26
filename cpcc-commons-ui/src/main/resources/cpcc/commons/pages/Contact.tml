@@ -1,7 +1,9 @@
-<html t:type="layout" title="${message:titleContact}"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
-	xmlns:p="tapestry:parameter">
+<html t:type="layout" title="Contact" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter">
 
-<p>${message:textContact}</p>
+	<p>
+		Please visit us at
+		<a href="http://cpcc.cs.uni-salzburg.at/">cpcc.cs.uni-salzburg.at</a>
+		for more information about this project.
+	</p>
 
 </html>

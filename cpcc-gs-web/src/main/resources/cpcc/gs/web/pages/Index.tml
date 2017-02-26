@@ -1,38 +1,115 @@
-<html t:type="layout" title="${message:groundStationIndex}" t:sidebarTitle="Framework Version"
-	xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd" xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
+<html t:type="layout" title="Ground Station" t:sidebarTitle="Framework Version" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
 
 	<div class="row">
-		<div class="col-xs-6 col-md-3">
+		<div class="col-xs-6 col-md-2">
 			<h4>
-				<t:pagelink page="index">${message:device.tree.label}
-				</t:pagelink>
+				<t:Pagelink page="index">Configured Root Topics</t:Pagelink>
 			</h4>
-			<c:DeviceTree t:devices="deviceList" />
+			<t:If test="deviceList">
+				<c:DeviceTree t:devices="deviceList" />
+			</t:If>
 		</div>
 
-		<div class="col-xs-12 col-md-9">
-			<h4>${message:rvStateList}</h4>
+		<div class="col-xs-12 col-md-10 col-lg-8">
+			<h2>Ground Station</h2>
+			<p>Real vehicles are servers that can move in space and carry sensors, as well as actuators.
+				Real vehicles provide a
+				runtime environment for virtual abstractions of networked autonomous vehicles, which
+				execute the actual missions.
+				Virtual autonomous vehicles, or virtual vehicles, for short, represent
+				a virtual mobile sensor network, whose nodes
+				may be dynamically created and deployed for efficient
+				and fast information aquisition.</p>
+			<p>Ground stations are built like real vehicles, but do not move autonomously in space. With the
+				exception of their
+				GPS positions, ground stations have neither sensors, nor actuators. Real vehicles
+				migrate terminated and defective
+				virtual vehicles to the ground station for further use.</p>
 
-			<t:zone t:id="zone3">
-				<!-- t:mixins="ZoneRefresh" ZoneRefresh.period="5" -->
-				<table t:type="grid" t:source="rvStateList" t:row="rvState" t:reorder="realVehicleName,lastUpdate"
-					class="table table-striped table-condensed topic-table">
+			<h3>Configuration</h3>
+			<p>
+				The
+				<em>Configuration</em>
+				tab is where you can manage all the ground station settings like
+				the ground station name, the ROS parameters, and the
+				ground station own devices like the GPS receiver simulator.
+			</p>
 
-					<p:realVehicleNameCell>
-						<!-- <a href="${rvState.RealVehicle.url}" target="_blank">${rvState.RealVehicle.Name}</a> -->
-						${rvState.realVehicleName}
-					</p:realVehicleNameCell>
+			<h3>ROS</h3>
+			<p>
+				The
+				<em>ROS</em>
+				tab lists the state of the configured ROS nodes and adapters.
+			</p>
 
-					<p:lastUpdateCell>
-						<t:output t:format="${message:dateFormat}" t:value="rvState.LastUpdate" />
-					</p:lastUpdateCell>
+			<h3>Sensors</h3>
+			<p>
+				The
+				<em>Sensors</em>
+				tab allows you to manage the system wide sensor definitions.
+				The
+				<em>description</em>
+				column displays the
+				sensor names to be
+				used in the virtual vehicles. The ground station
+				automatically propagates
+				changes in the sensor
+				definitions to all
+				real vehicles.
+			</p>
 
-					<p:empty>
-						<p>${message:noRealVehicleConnected}</p>
-					</p:empty>
-				</table>
-			</t:zone>
+			<h3>Real Vehicles</h3>
+			<p>
+				The
+				<em>Real Vehicles</em>
+				tab offers to administer your vehicle fleet. Each configured vehicle and
+				ground station shows up
+				here. Additionally to
+				a real vehicle's name, type, and connection URL, it is
+				this tab where you define its (convex)
+				area of operation.
+			</p>
+
+			<h3>Virtual Vehicles</h3>
+			<p>
+				This tab permits the management of your
+				<em>Virtual Vehicles.</em>
+				Here, they may edited online, uploaded,
+				replicated,
+				terminated, deleted, downloaded, restarted, and viewed.
+			</p>
+
+			<h3>Tasks</h3>
+			<p>This tab shows an overview of unfinished virtual vehicle tasks. On the ground station, new tasks
+				only lead to
+				virtual vehicle migration. Hence, this overview will be notoriously empty on ground stations.</p>
+
+			<h3>Jobs</h3>
+			<p>
+				On both ground stations and real vehicles,
+				<em>Jobs</em>
+				take care of changes. Jobs are intended to be small, independent pieces
+				of work that may run in parallel within a
+				thread pool. There are jobs for
+				synchronizing configuration data,
+				for migrating virtual vehicles, for querying the
+				state of real vehicles,
+				as well as other ground stations, for
+				handling stuck migrations, and for other purposes.
+			</p>
+
+			<h3>Map</h3>
+			<p>
+				The
+				<em>Map</em>
+				tab gives you a geographical overview of ongoing missions. You may choose between
+				<a href="http://www.openstreetmap.org">OpenStreetMap</a>
+				or an empty map. The provided map menu allows you to view or hide
+				real vehicles, real vehicle regions, planned real
+				vehicle paths, and sensors to read.
+			</p>
+
 		</div>
 	</div>
-
 </html>

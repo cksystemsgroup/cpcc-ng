@@ -1,0 +1,136 @@
+<html t:type="layout" title="Bodenstation" t:sidebarTitle="Framework Version" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_4.xsd"
+	xmlns:p="tapestry:parameter" xmlns:c="tapestry-library:commons">
+
+	<div class="row">
+		<div class="col-xs-6 col-md-2">
+			<h4>
+				<t:Pagelink page="index">ROS Hauptpfade</t:Pagelink>
+			</h4>
+			<t:If test="deviceList">
+				<c:DeviceTree t:devices="deviceList" />
+			</t:If>
+		</div>
+
+		<div class="col-xs-12 col-md-10 col-lg-8">
+			<h2>Bodenstation</h2>
+			<p>
+				Reale Vehikel sind Server, die sich im Raum bewegen k&ouml;nnen
+				und Sensoren, sowie Aktuatoren mit sich f&uuml;hren.
+				Reale Vehikel stellen eine Laufzeitumgebung f&uuml;r
+				virtuelle Abstraktionen vernetzter autonomer Vehikel zur
+				Verf&uuml;gung,
+				welche die eigentlichen Missionen durchf&uuml;hren.
+				Virtuelle autonome Vehikel, kurz virtuelle Vehikel, bilden ein virtuelles mobiles Sensornetzwerk,
+				dessen Knoten
+				jederzeit dynamisch erzeugt und eingesetzt werden k&ouml;nnen
+				um Daten m&ouml;glichst
+				effizient und rasch zu sammeln.
+			</p>
+			<p>
+				Bodenstationen sind aufgebaut wie reale Vehikel, sind aber nicht mobil. Mit Ausnahme der eigenen GPS-Position
+				haben
+				sie auch keine Sensoren und Aktuatoren. Terminierte oder defekte virtuelle Vehikel werden von den realen Vehikeln zu
+				einer Bodenstation migriert und stehen dort f&uuml;r
+				die weitere Bearbeitung zur Verfügung.
+			</p>
+
+			<h3>Konfiguration</h3>
+			<p>
+				Im Tab
+				<em>Konfiguration</em>
+				werden Einstellungen, wie der Bodenstationsname, die ROS-Parameter
+				und die GPS-Koordinaten der Bodenstation
+				vorgenommen.
+			</p>
+
+			<h3>ROS</h3>
+			<p>
+				Tab
+				<em>ROS</em>
+				zeigt eine &Uuml;bersicht
+				der konfigurierten ROS-Knoten und ROS-Adapter.
+			</p>
+
+			<h3>Sensordefinitionen</h3>
+			<p>
+				Tab
+				<em>Sensordefinitionen</em>
+				administriert
+				die systemweiten Sensordefinitionen. Die Spalte
+				<em>Beschreibung</em>
+				zeigt die Sensornamen &uuml;ber
+				die virtuelle Vehikel auf die Sensoren zugreifen k&ouml;nnen.
+				Neue oder ge&auml;nderte
+				Sensordefinitionen werden automatisch zu allen realen Vehikeln und Bodenstationen synchronisiert.
+			</p>
+
+			<h3>Reale Vehikel</h3>
+			<p>
+				Tab
+				<em>Reale Vehikel</em>
+				erlaubt die Administration der verf&uuml;gbaren
+				realen Vehikel und Bodenstationen. Zus&auml;tzlich
+				zum Namen eines realen Vehikels werden hier der Typ, die Verbindungs-URL und der (konvexe) Einsatzbereich definiert.
+			</p>
+
+			<h3>Virtuelle Vehikel</h3>
+			<p>
+				Tab
+				<em>Virtuelle Vehikel</em>
+				erm&ouml;glicht
+				die Verwaltung der virtuellen Vehikel.
+				Diese k&ouml;nnen
+				hier ver&auml;ndert,
+				hochgeladen, repliziert, beendet, gel&ouml;scht,
+				heruntergeladen, neu gestartet und eingesehen werden.
+			</p>
+
+			<h3>Aufgaben</h3>
+			<p>
+				Tab
+				<em>Aufgaben</em>
+				zeigt eine &Uuml;bersicht
+				der offenen Aufgaben von virtuellen Vehikeln.
+				Eine Aufgabe besteht aus einer Position im Raum und einer Menge von
+				Sensoren, die ausgelesen werden, sobald die Position
+				erreicht wird.
+				In der Bodenstation f&uuml;hren
+				neue Aufgaben immer zu Migrationen von virtuellen Vehikeln, das hei&szlig;t,
+				dass die Aufgaben&uuml;bersicht
+				einer Bodenstation immer leer ist.
+			</p>
+
+			<h3>Jobs</h3>
+			<p>
+				Eine &Uuml;bersicht
+				laufender
+				<em>Jobs</em>
+				ist im gleichnamigen Tab ersichtlich.
+				In Bodenstationen und realen Vehikeln &uuml;bernehmen
+				Jobs die Durchf&uuml;hrung
+				von Ver&auml;nderungen.
+				Jobs sind kleine, unabh&auml;ngige
+				Arbeitseinheiten, die parallel in einem Thread-Pool laufen. Es gibt Jobs f&uuml;r
+				die Synchronisation der Konfigurationsdaten,
+				die Migration virtueller Vehikel, die Statusabfragen von realen
+				Vehikeln, die Behandlung abgebrochener Migrationen und
+				andere Zwecke.
+			</p>
+
+			<h3>Karte</h3>
+			<p>
+				Tab
+				<em>Karte</em>
+				zeigt eine geographische Ansicht laufender Missionen. Als Karte k&ouml;nnen
+				<a href="http://www.openstreetmap.org">OpenStreetMap</a>
+				oder eine leere Ansicht ausgew&auml;hlt
+				werden.
+				&Uuml;ber
+				ein eigenes Men&uuml;
+				kann die Anzeige von realen Vehikeln, Einsatzregionen, geplanten Vehikelpfaden und Sensoren ein- und ausgeschaltet
+				werden.
+			</p>
+
+		</div>
+	</div>
+</html>
