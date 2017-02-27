@@ -52,7 +52,7 @@
 	</modules>
 
 	<scm>
-		<connection>scm:git:https://github.com/cksystemsgroup/cpcc-ng.git</connection>
+		<connection>scm:git:https://github.com/cksystemsgroup/cpcc.git</connection>
 		<tag>HEAD</tag>
 	</scm>
 
