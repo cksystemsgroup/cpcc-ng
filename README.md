@@ -53,9 +53,9 @@ To shutdown the demo run:
 The easiest way to get started with the code is to [create your own fork](http://help.github.com/forking/)
 of this repository, and then clone your fork:
 
-	$ git clone git@github.com:<you>/cpcc-ng.git
-	$ cd cpcc-ng
-	$ git remote add upstream git://github.com/cksystemsgroup/cpcc-ng.git
+	$ git clone git@github.com:<you>/cpcc.git
+	$ cd cpcc
+	$ git remote add upstream git://github.com/cksystemsgroup/cpcc.git
 
 At any time, you can pull changes from the upstream and merge them onto your master:
 
@@ -66,7 +66,7 @@ At any time, you can pull changes from the upstream and merge them onto your mas
 The general idea is to keep your 'master' branch in-sync with the 'upstream/master'.
 
 
-## Building cpcc-ng
+## Building cpcc
 
 ### Requirements
 - Maven 3.x

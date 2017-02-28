@@ -93,7 +93,8 @@ a.nolink:hover, a.nolink:visited, a.nolink:link, a.nolink:active {
 	padding: 0.5em 3.5em;
 	text-align: center;
 	text-decoration: none;
-	shadow text-shadow: 0 0 0.5em #444;
+	shadow: 0 0 0.5em #444;
+	text-shadow: 0 0 0.5em #444;
 }
 
 @media ( min-width : 768px) {
