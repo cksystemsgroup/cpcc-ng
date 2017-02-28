@@ -1,5 +1,5 @@
 
-# Cyber Physical Cloud Computing
+# Cyber-Physical Cloud Computing
 
 ## Summary
 
