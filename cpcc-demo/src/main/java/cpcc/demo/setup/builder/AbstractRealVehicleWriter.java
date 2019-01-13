@@ -70,7 +70,7 @@ public class AbstractRealVehicleWriter
 
         writer.append(String.format("INSERT INTO MAPPING_ATTRIBUTES "
             + "(CONNECTED_TO_AUTOPILOT,VV_VISIBLE,TOPIC_ID,DEVICE_ID,SENSORDEFINITION_ID) "
-            + "VALUES (1,0,%1$d,%2$d,%3$s);%n"
+            + "VALUES (1,1,%1$d,%2$d,%3$s);%n"
             , topic.getId()
             , device.getId()
             , sds.isEmpty() ? "null" : sds.get(0).getId()

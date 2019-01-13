@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import cpcc.core.entities.RealVehicle;
@@ -39,8 +38,6 @@ import cpcc.core.entities.SensorType;
  */
 public class GlobalSetupWriter
 {
-    private static final String TIME_STAMP_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS'000000'";
-
     /**
      * @param file the output file.
      * @param rvs the list of real vehicles.
@@ -69,14 +66,11 @@ public class GlobalSetupWriter
      */
     private static void writeSensor(Writer writer, SensorDefinition sensor) throws IOException
     {
-        SimpleDateFormat sdf = new SimpleDateFormat(TIME_STAMP_DATE_FORMAT);
-
         writer.append(String.format("INSERT INTO SENSOR_DEFINITIONS ("
             + "ID,DESCRIPTION,LAST_UPDATE,MESSAGE_TYPE,PARAMETERS,TYPE,VISIBILITY,DELETED)%n"
-            + "VALUES (%1$d,'%2$s',{ts '%3$s'},'%4$s',%5$s,'%6$s','%7$s',%8$d);%n"
+            + "VALUES (%1$d,'%2$s',current_timestamp,'%3$s',%4$s,'%5$s','%6$s',%7$d);%n"
             , sensor.getId()
             , sensor.getDescription()
-            , sdf.format(sensor.getLastUpdate())
             , sensor.getMessageType()
             , sensor.getParameters() != null ? "'" + sensor.getParameters() + "'" : "null"
             , sensor.getType().name()
@@ -91,12 +85,10 @@ public class GlobalSetupWriter
      */
     private static void writeRealVehicle(Writer writer, RealVehicle rv) throws IOException
     {
-        SimpleDateFormat sdf = new SimpleDateFormat(TIME_STAMP_DATE_FORMAT);
         writer.append(String.format("INSERT INTO REAL_VEHICLES ("
             + "ID,LAST_UPDATE,NAME,URL,TYPE,AREA_OF_OPERATION,DELETED)%n"
-            + "VALUES (%1$2d,{ts '%2$s'},'%3$s','%4$s','%5$s','%6$s',%7$d);%n"
+            + "VALUES (%1$2d,current_timestamp,'%2$s','%3$s','%4$s','%5$s',%6$d);%n"
             , rv.getId()
-            , sdf.format(rv.getLastUpdate())
             , rv.getName()
             , rv.getUrl()
             , rv.getType().name()

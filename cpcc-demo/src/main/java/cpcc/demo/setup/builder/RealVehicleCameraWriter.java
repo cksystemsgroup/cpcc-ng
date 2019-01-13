@@ -39,8 +39,8 @@ import cpcc.core.entities.RealVehicleType;
  */
 public class RealVehicleCameraWriter extends AbstractRealVehicleWriter
 {
-    private static final String RV_CONFIG_FORMAT = "gps=''/%1$s/gps'' osmZoomLevel=21 "
-        + "osmTileServerUrl=''http://khm0.googleapis.com/kh?v=192&hl=en-US&x=%%2$s&y=%%3$s&z=%%1$s&token=108840''";
+    private static final String RV_CONFIG_FORMAT = "gps=''/%1$s/gps'' osmZoomLevel=19 "
+        + "osmTileServerUrl=''http://a.tile.osm.org/%%1$d/%%2$d/%%3$d.png''";
 
     /**
      * @param file the output file
