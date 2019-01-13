@@ -58,7 +58,6 @@
 
 	<properties>
 		<assertj-version>3.10.0</assertj-version>
-		<c3p0.version>0.9.5.2</c3p0.version>
 		<mchange-commons-version>0.2.12</mchange-commons-version>
 		<com.h2database.version>1.4.197</com.h2database.version>
 		<com.hsqldb.version>2.4.0</com.hsqldb.version>
@@ -73,7 +72,7 @@
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
 		<tapestry-release-version>5.4.3</tapestry-release-version>
 		<testng-release-version>6.14.3</testng-release-version>
-		<tomcat8Version>9.0.8</tomcat8Version>
+		<tomcat.version>9.0.14</tomcat.version>
 		<cobertura.report.format>xml</cobertura.report.format>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.testng.reportsPath>target/site</sonar.testng.reportsPath>
@@ -327,11 +326,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.mchange</groupId>
-				<artifactId>c3p0</artifactId>
-				<version>${c3p0.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.mchange</groupId>
 				<artifactId>mchange-commons-java</artifactId>
 				<version>${mchange-commons-version}</version>
 			</dependency>
@@ -372,107 +366,107 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-annotations-api</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-catalina-ant</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-catalina-ha</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-catalina</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-storeconfig</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-tribes</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-el-api</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper-el</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jaspic-api</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jsp-api</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-servlet-api</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-api</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-coyote</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-dbcp</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jdbc</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jni</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-juli</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-util</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-util-scan</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-websocket-api</artifactId>
-				<version>${tomcat8Version}</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>

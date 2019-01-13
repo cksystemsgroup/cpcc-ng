@@ -25,10 +25,6 @@
 			<artifactId>tapestry-hibernate</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.mchange</groupId>
-			<artifactId>c3p0</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>provided</scope>
@@ -149,11 +145,6 @@
 						<groupId>org.hsqldb</groupId>
 						<artifactId>hsqldb</artifactId>
 						<version>${com.hsqldb.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>com.mchange</groupId>
-						<artifactId>c3p0</artifactId>
-						<version>${c3p0.version}</version>
 					</dependency>
 					<dependency>
 						<groupId>javax.mail</groupId>
