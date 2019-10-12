@@ -324,13 +324,6 @@
 				<artifactId>hibernate-validator</artifactId>
 				<version>4.3.2.Final</version>
 			</dependency>
-<!--
-			<dependency>
-				<groupId>com.mchange</groupId>
-				<artifactId>mchange-commons-java</artifactId>
-				<version>${mchange-commons-version}</version>
-			</dependency>
--->
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
