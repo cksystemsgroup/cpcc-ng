@@ -70,7 +70,7 @@
 		<powermock.version>1.6.6</powermock.version>
 		<rosjava-version>0.0.6</rosjava-version>
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
-		<tapestry-release-version>5.4.5</tapestry-release-version>
+		<tapestry-release-version>5.4.3</tapestry-release-version>
 		<testng-release-version>6.14.3</testng-release-version>
 		<tomcat.version>9.0.14</tomcat.version>
 		<cobertura.report.format>xml</cobertura.report.format>
@@ -110,7 +110,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
-				<version>1.18</version>
+				<version>1.19</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -324,11 +324,13 @@
 				<artifactId>hibernate-validator</artifactId>
 				<version>4.3.2.Final</version>
 			</dependency>
+<!--
 			<dependency>
 				<groupId>com.mchange</groupId>
 				<artifactId>mchange-commons-java</artifactId>
 				<version>${mchange-commons-version}</version>
 			</dependency>
+-->
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
