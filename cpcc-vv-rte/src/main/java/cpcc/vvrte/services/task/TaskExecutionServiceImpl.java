@@ -32,10 +32,12 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.mozilla.javascript.NativeObject;
+import org.ros.internal.message.Message;
 import org.slf4j.Logger;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
+import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
@@ -54,6 +56,7 @@ import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.TaskState;
 import cpcc.vvrte.entities.VirtualVehicle;
+import cpcc.vvrte.services.db.TaskRepository;
 import cpcc.vvrte.services.ros.MessageConverter;
 import sensor_msgs.NavSatFix;
 
@@ -77,6 +80,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     private GeodeticSystem gs = new WGS84();
     private Set<TaskCompletionListener> listeners = new HashSet<>();
     private RealVehicleRepository rvRepo;
+    private RealVehicle myself;
 
     private List<PolarCoordinate> depotPositions;
 
@@ -89,8 +93,8 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
      * @param timeService the time service instance.
      * @param rvRepo the Real Vehicle repository instance.
      */
-    public TaskExecutionServiceImpl(Logger logger, ServiceResources serviceResources, TaskSchedulerService scheduler
-        , RosNodeService rosNodeService, MessageConverter conv, TimeService timeService, RealVehicleRepository rvRepo)
+    public TaskExecutionServiceImpl(Logger logger, ServiceResources serviceResources, TaskSchedulerService scheduler,
+        RosNodeService rosNodeService, MessageConverter conv, TimeService timeService, RealVehicleRepository rvRepo)
     {
         this.serviceResources = serviceResources;
         this.logger = logger;
@@ -130,7 +134,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
             }
         }
 
-        RealVehicle myself = rvRepo.findOwnRealVehicle();
+        myself = rvRepo.findOwnRealVehicle();
 
         String areaOfOperation = myself != null ? myself.getAreaOfOperation() : "";
 
@@ -183,6 +187,8 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     {
         PerthreadManager tm = serviceResources.getService(PerthreadManager.class);
         HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
+
+        logUnfinishedTasks();
 
         PolarCoordinate vehiclePosition = getCurrentVehiclePosition();
 
@@ -246,6 +252,13 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         tm.cleanup();
     }
 
+    private void logUnfinishedTasks()
+    {
+        TaskRepository repo = serviceResources.getService(TaskRepository.class);
+        logger.info("Unfinished tasks: ;time;{};name;{};id;{};incompleteTasks;{}",
+            System.currentTimeMillis(), myself.getName(), myself.getId(), repo.countAllIncompleteTasks());
+    }
+
     private void logExecutionCompleted(Task task, double distance)
     {
         logger.info(String.format("Task executed: ;%s;%s;%s;%s;%s;%.1f;",
@@ -301,6 +314,11 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
             .forEach(sd -> sensorValues.put(sd.getDescription(), sensorValues,
                 conv.convertMessageToJS(rosNodeService.findAdapterNodeBySensorDefinitionId(sd.getId()).getValue())));
 
+//        SensorDefinition a = task.getSensors().get(0);
+//        AbstractRosAdapter b = rosNodeService.findAdapterNodeBySensorDefinitionId(a.getId());
+//        Message v = b.getValue();
+        // TODO check me!
+        
         task.setSensorValues(sensorValues);
     }
 

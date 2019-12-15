@@ -57,6 +57,7 @@ CP="$CP:$LIBDIR/tomcat-dbcp-${TOMCAT_VERSION}.jar";
 CP="$CP:$LIBDIR/tomcat-el-api-${TOMCAT_VERSION}.jar";
 CP="$CP:$LIBDIR/tomcat-jasper-${TOMCAT_VERSION}.jar";
 CP="$CP:$LIBDIR/tomcat-jasper-el-${TOMCAT_VERSION}.jar";
+CP="$CP:$LIBDIR/tomcat-jaspic-api-${TOMCAT_VERSION}.jar";
 CP="$CP:$LIBDIR/tomcat-jdbc-${TOMCAT_VERSION}.jar";
 CP="$CP:$LIBDIR/tomcat-jni-${TOMCAT_VERSION}.jar";
 CP="$CP:$LIBDIR/tomcat-jsp-api-${TOMCAT_VERSION}.jar";
@@ -68,7 +69,7 @@ CP="$CP:$LIBDIR/tomcat-util-${TOMCAT_VERSION}.jar";
 CP="$CP:$LIBDIR/tomcat-util-scan-${TOMCAT_VERSION}.jar";
 CP="$CP:$LIBDIR/tomcat-websocket-api-${TOMCAT_VERSION}.jar";
 
-[ -f "$LIBDIR/scrutiny-javaagent-1.2.8.jar" ] && AGENT="-javaagent:$LIBDIR/scrutiny-javaagent-1.2.8.jar=scrutiny.logs.dir=$CPCC_DIR/work/javaagent-$APP_CONTEXT_PATH"
+[ -f "$LIBDIR/scrutiny-javaagent-1.3.8.jar" ] && AGENT="-javaagent:$LIBDIR/scrutiny-javaagent-1.3.8.jar=scrutiny.logs.dir=$CPCC_DIR/work/javaagent-$APP_CONTEXT_PATH"
 
 cd $CATALINA_BASE
 # exec "$JAVA_HOME/bin/java" -cp $CP $AGENT $OPTS org.apache.catalina.startup.Bootstrap start

@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -39,7 +39,9 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.entity.ContentType;
-import org.apache.http.localserver.LocalTestServer;
+import org.apache.http.impl.bootstrap.HttpServer;
+import org.apache.http.impl.bootstrap.ServerBootstrap;
+import org.apache.http.localserver.LocalServerTestBase;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
@@ -60,7 +62,7 @@ public class CommunicationServiceTest
     private static final String REASON_PHRASE = "this is the reason phrase.";
 
     private RealVehicle realVehicle;
-    private LocalTestServer server;
+    private HttpServer server;
     private HttpRequestHandler handler;
     private BasicHttpEntityEnclosingRequest request;
     private byte[] content;
@@ -83,7 +85,6 @@ public class CommunicationServiceTest
                 Object[] args = invocation.getArguments();
                 request = (BasicHttpEntityEnclosingRequest) args[0];
                 HttpResponse response = (HttpResponse) args[1];
-                // HttpContext context = (HttpContext) args[2];
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 IOUtils.copy(request.getEntity().getContent(), baos);
@@ -99,6 +100,7 @@ public class CommunicationServiceTest
                 final ProtocolVersion protocolVersion = response.getProtocolVersion();
 
                 response.setStatusLine(new MyStatusLine(protocolVersion, statusCode, reasonPhrase));
+
                 HttpEntity entity = EntityBuilder.create()
                     .setContentType(ContentType.TEXT_PLAIN)
                     .setText(REASON_PHRASE)
@@ -109,11 +111,14 @@ public class CommunicationServiceTest
             }
         }).when(handler).handle(any(HttpRequest.class), any(HttpResponse.class), any(HttpContext.class));
 
-        server = new LocalTestServer(null, null);
-        server.register("/*", handler);
+        server = ServerBootstrap.bootstrap()
+            .setServerInfo(LocalServerTestBase.ORIGIN)
+            .registerHandler("/*", handler)
+            .create();
+
         server.start();
-        InetSocketAddress addr = server.getServiceAddress();
-        String serverUrl = "http://" + addr.getHostString() + ":" + addr.getPort();
+
+        String serverUrl = "http://" + server.getInetAddress().getHostAddress() + ":" + server.getLocalPort();
 
         realVehicle = mock(RealVehicle.class);
         when(realVehicle.getUrl()).thenReturn(serverUrl + "/rv001");
@@ -125,7 +130,7 @@ public class CommunicationServiceTest
     public void tearDown() throws Exception
     {
         server.stop();
-        server.awaitTermination(0);
+        server.awaitTermination(30, TimeUnit.SECONDS);
     }
 
     @DataProvider

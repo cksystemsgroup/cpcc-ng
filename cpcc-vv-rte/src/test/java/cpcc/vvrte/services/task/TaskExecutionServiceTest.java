@@ -42,6 +42,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
+import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.ros.actuators.AbstractActuatorAdapter;
@@ -54,6 +55,7 @@ import cpcc.ros.sensors.AltimeterAdapter;
 import cpcc.ros.sensors.SensorType;
 import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.entities.Task;
+import cpcc.vvrte.services.db.TaskRepository;
 import cpcc.vvrte.services.ros.MessageConverter;
 import sensor_msgs.NavSatFix;
 import std_msgs.Float32;
@@ -94,6 +96,8 @@ public class TaskExecutionServiceTest
     private MessageConverter conv;
     private TimeService timeService;
     private RealVehicleRepository rvRepo;
+    private TaskRepository taskRepository;
+    private RealVehicle hostingRv;
 
     /**
      * Test setup.
@@ -208,14 +212,23 @@ public class TaskExecutionServiceTest
         sessionManager = mock(HibernateSessionManager.class);
         when(sessionManager.getSession()).thenReturn(session);
 
+        hostingRv = mock(RealVehicle.class);
+        when(hostingRv.getName()).thenReturn("RV0001");
+        when(hostingRv.getId()).thenReturn(1);
+
+        rvRepo = mock(RealVehicleRepository.class);
+        when(rvRepo.findOwnRealVehicle()).thenReturn(hostingRv);
+
+        taskRepository = mock(TaskRepository.class);
+        when(taskRepository.countAllIncompleteTasks()).thenReturn(0L);
+
         serviceResources = mock(ServiceResources.class);
         when(serviceResources.getService(PerthreadManager.class)).thenReturn(threadManager);
         when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
+        when(serviceResources.getService(TaskRepository.class)).thenReturn(taskRepository);
 
-        rvRepo = mock(RealVehicleRepository.class);
-
-        sut = new TaskExecutionServiceImpl(logger, serviceResources, scheduler, rosNodeService, conv, timeService
-            , rvRepo);
+        sut = new TaskExecutionServiceImpl(logger, serviceResources, scheduler, rosNodeService, conv, timeService,
+            rvRepo);
     }
 
     /**

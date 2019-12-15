@@ -68,8 +68,7 @@ public class GeoJsonUtilsTest
             + "{\"type\":\"Point\",\"coordinates\":[-122.4255,37.8085]}},"
             + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},\"geometry\":"
             + "{\"type\":\"Polygon\",\"coordinates\":[[[-122.425,37.808],[-122.426,37.808],[-122.426,37.809],"
-            + "[-122.425,37.809],[-122.425,37.808]]]}}]}"
-            );
+            + "[-122.425,37.809],[-122.425,37.808]]]}}]}");
         when(rv2.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
         when(rv2.getId()).thenReturn(2);
 
@@ -95,7 +94,7 @@ public class GeoJsonUtilsTest
     {
         return new Object[][]{
             new Object[]{
-                new GeoJsonObject()
+                new Feature()
                 {
                 },
                 new double[]{}
@@ -110,8 +109,7 @@ public class GeoJsonUtilsTest
                     new LngLatAlt(-122.427, 37.808),
                     new LngLatAlt(-122.427, 37.809),
                     new LngLatAlt(-122.426, 37.809),
-                    new LngLatAlt(-122.426, 37.808)
-                ),
+                    new LngLatAlt(-122.426, 37.808)),
                 new double[]{-122.427, 37.808, -122.426, 37.809}
             },
         };

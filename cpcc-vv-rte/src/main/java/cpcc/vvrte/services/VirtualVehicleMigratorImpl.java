@@ -306,28 +306,31 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         boolean lastChunk = false;
         String chunkName = "unknown-" + System.currentTimeMillis();
         ArchiveStreamFactory f = new ArchiveStreamFactory();
-        ArchiveInputStream ais = f.createArchiveInputStream("tar", inStream);
+
         VirtualVehicleHolder virtualVehicleHolder = new VirtualVehicleHolder();
 
-        for (TarArchiveEntry entry = (TarArchiveEntry) ais.getNextEntry(); entry != null; entry =
-            (TarArchiveEntry) ais.getNextEntry())
+        try (ArchiveInputStream ais = f.createArchiveInputStream("tar", inStream))
         {
-            chunkName = entry.getName();
+            for (TarArchiveEntry entry = (TarArchiveEntry) ais.getNextEntry(); entry != null; entry =
+                (TarArchiveEntry) ais.getNextEntry())
+            {
+                chunkName = entry.getName();
 
-            if (chunkName.startsWith("vv/"))
-            {
-                lastChunk |= storeVirtualVehicleEntry(ais, entry, virtualVehicleHolder);
-                logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle(), lastChunk);
-            }
-            else if (chunkName.startsWith("storage/"))
-            {
-                storeStorageEntry(ais, entry, virtualVehicleHolder.getVirtualVehicle());
-                logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle(), lastChunk);
-            }
-            // TODO message queue
-            else
-            {
-                throw new IOException("Can not store unknown type of entry " + chunkName);
+                if (chunkName.startsWith("vv/"))
+                {
+                    lastChunk |= storeVirtualVehicleEntry(ais, entry, virtualVehicleHolder);
+                    logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle(), lastChunk);
+                }
+                else if (chunkName.startsWith("storage/"))
+                {
+                    storeStorageEntry(ais, entry, virtualVehicleHolder.getVirtualVehicle());
+                    logMigratedChunk(chunkName, virtualVehicleHolder.getVirtualVehicle(), lastChunk);
+                }
+                // TODO message queue
+                else
+                {
+                    throw new IOException("Can not store unknown type of entry " + chunkName);
+                }
             }
         }
 

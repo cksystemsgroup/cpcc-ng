@@ -39,7 +39,6 @@ import cpcc.core.services.opts.Option;
 import cpcc.core.services.opts.OptionsParserService;
 import cpcc.core.services.opts.ParseException;
 import cpcc.core.services.opts.Token;
-import cpcc.ros.base.AbstractRosAdapter;
 import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.base.VirtualVehicleMappingDecision;
 import cpcc.vvrte.entities.Task;
@@ -67,9 +66,9 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private static final String SEQUENCE = "sequence";
     private static final String REPEAT = "repeat";
 
-    private RosNodeService rns;
+    //    private RosNodeService rns;
     private OptionsParserService opts;
-    private MessageConverter conv;
+    //    private MessageConverter conv;
     private VirtualVehicleMapper mapper;
     private TaskAnalyzer taskAnalyzer;
     private VvRteRepository vvRteRepo;
@@ -88,13 +87,13 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      * @param sessionManager the Hibernate session manager.
      * @param logger the application logger.
      */
-    public BuiltInFunctionsImpl(RosNodeService rns, OptionsParserService opts, MessageConverter conv
-        , VirtualVehicleMapper mapper, TaskAnalyzer taskAnalyzer, VvRteRepository vvRteRepo, QueryManager qm
-        , HibernateSessionManager sessionManager, Logger logger)
+    public BuiltInFunctionsImpl(RosNodeService rns, OptionsParserService opts, MessageConverter conv,
+        VirtualVehicleMapper mapper, TaskAnalyzer taskAnalyzer, VvRteRepository vvRteRepo, QueryManager qm,
+        HibernateSessionManager sessionManager, Logger logger)
     {
-        this.rns = rns;
+        //        this.rns = rns;
         this.opts = opts;
-        this.conv = conv;
+        //        this.conv = conv;
         this.mapper = mapper;
         this.taskAnalyzer = taskAnalyzer;
         this.vvRteRepo = vvRteRepo;
@@ -195,11 +194,11 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         }
 
         NativeArray a = new NativeArray(tokenList.size());
-        for (int k=0; k < tokenList.size(); ++k)
+        for (int k = 0; k < tokenList.size(); ++k)
         {
             a.put(k, a, tokenList.get(k).getValue());
         }
-        
+
         return a;
     }
 
@@ -219,22 +218,22 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         return convertSensorDefinition(sd);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ScriptableObject getSensorValue(ScriptableObject sensor)
-    {
-        SensorDefinition sd = qm.findSensorDefinitionByDescription((String) sensor.get(DESCRIPTION));
-
-        if (sd == null || sd.getVisibility() == SensorVisibility.NO_VV)
-        {
-            return null;
-        }
-
-        AbstractRosAdapter node = rns.findAdapterNodeBySensorDefinitionId(sd.getId());
-        return conv.convertMessageToJS(node.getValue());
-    }
+    //    /**
+    //     * {@inheritDoc}
+    //     */
+    //    @Override
+    //    public ScriptableObject getSensorValue(ScriptableObject sensor)
+    //    {
+    //        SensorDefinition sd = qm.findSensorDefinitionByDescription((String) sensor.get(DESCRIPTION));
+    //
+    //        if (sd == null || sd.getVisibility() == SensorVisibility.NO_VV)
+    //        {
+    //            return null;
+    //        }
+    //
+    //        AbstractRosAdapter node = rns.findAdapterNodeBySensorDefinitionId(sd.getId());
+    //        return conv.convertMessageToJS(node.getValue());
+    //    }
 
     /**
      * {@inheritDoc}
@@ -331,8 +330,8 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      * @param managementParameters the management parameters.
      * @param taskParameters the task parameters.
      */
-    private void initiateTaskExecution(ScriptableObject managementParameters, ScriptableObject taskParameters
-        , Task task)
+    private void initiateTaskExecution(ScriptableObject managementParameters, ScriptableObject taskParameters,
+        Task task)
     {
         logger.debug("*** no migration (execute task).");
 

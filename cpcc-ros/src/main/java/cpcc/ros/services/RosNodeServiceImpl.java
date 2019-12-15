@@ -82,8 +82,8 @@ public class RosNodeServiceImpl implements RosNodeService
      * @param optionsParser the options parser.
      * @param objectLocator the object locator.
      */
-    public RosNodeServiceImpl(Logger logger, QueryManager qm, OptionsParserService optionsParser
-        , ObjectLocator objectLocator)
+    public RosNodeServiceImpl(Logger logger, QueryManager qm, OptionsParserService optionsParser,
+        ObjectLocator objectLocator)
     {
         this.logger = logger;
         this.qm = qm;
@@ -202,7 +202,7 @@ public class RosNodeServiceImpl implements RosNodeService
             MappingAttributes attribute = qm.findMappingAttribute(device, topic);
             adapter.setConnectedToAutopilot(attribute.getConnectedToAutopilot());
             SensorDefinition sd = attribute.getSensorDefinition();
-            if (sd != null && sd.getId() != null)
+            if (sd != null && sd.getId() != null && !sensorDefinitionMap.containsKey(sd.getId()))
             {
                 sensorDefinitionMap.put(sd.getId(), adapter);
             }

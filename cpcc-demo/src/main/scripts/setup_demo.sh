@@ -39,7 +39,7 @@ setup() {
 	info "Creating file $CONFIG"
 	{
 		echo "GS_OPTS=\"\$GS_OPTS -Xmx1500m -Xss256k \""
-		echo "RV_OPTS=\"\$RV_OPTS -Xmx900m -Xss160k \""
+		echo "RV_OPTS=\"\$RV_OPTS -Xmx900m -Xss228k \""
 		echo
 		echo "declare -A RVS"
 		ls -1 $WORKDIR/temp/db-setup-*-rv.sql | sed -e 's#^.*/db-setup-##' -e 's#-rv\.sql$##' | while read rv; do echo "RVS['$rv']='$rv'"; done;

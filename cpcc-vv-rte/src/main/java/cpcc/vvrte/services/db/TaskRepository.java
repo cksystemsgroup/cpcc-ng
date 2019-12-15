@@ -31,6 +31,11 @@ public interface TaskRepository
      * @return list of not completed tasks.
      */
     List<Task> findAllIncompleteTasks();
+    
+    /**
+     * @return the number of incomplete tasks.
+     */
+    long countAllIncompleteTasks();
 
     /**
      * @param taskId the task identification.

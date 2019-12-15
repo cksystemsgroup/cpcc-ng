@@ -79,6 +79,7 @@
 				<include>org.apache.tomcat:tomcat-el-api</include>
 				<include>org.apache.tomcat:tomcat-jasper-el</include>
 				<include>org.apache.tomcat:tomcat-jasper</include>
+				<include>org.apache.tomcat:tomcat-jaspic-api</include>
 				<include>org.apache.tomcat:tomcat-jdbc</include>
 				<include>org.apache.tomcat:tomcat-jni</include>
 				<include>org.apache.tomcat:tomcat-jsp-api</include>
@@ -92,6 +93,9 @@
 				<include>com.h2database:h2</include>
 				<include>org.liquibase:liquibase-core</include>
 				<include>org.yaml:snakeyaml</include>
+				<include>ch.qos.logback:logback-classic</include>
+				<include>ch.qos.logback:logback-core</include>
+				<include>org.slf4j:slf4j-api</include>
 			</includes>
 			<unpack>false</unpack>
 		</dependencySet>

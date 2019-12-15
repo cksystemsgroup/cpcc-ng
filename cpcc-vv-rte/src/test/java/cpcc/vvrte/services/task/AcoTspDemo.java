@@ -50,7 +50,7 @@ public class AcoTspDemo extends JPanel implements ActionListener
 {
     private static final Logger LOG = LoggerFactory.getLogger(AcoTspDemo.class);
     
-    private static final int PATH_LENGTH = 50;
+    private static final int PATH_LENGTH = 10;
     private static final String BTN_REFRESH = "Refresh";
     private static final String BTN_AGAIN = "Again";
 
@@ -112,6 +112,7 @@ public class AcoTspDemo extends JPanel implements ActionListener
             Task newTask = new Task();
             newTask.setPosition(new PolarCoordinate(toLat(Math.random()), toLng(Math.random()), 0.0));
             tasks.add(newTask);
+            System.out.println("Generated Task: " + newTask);
         }
 
         return tasks;
@@ -219,6 +220,7 @@ public class AcoTspDemo extends JPanel implements ActionListener
 
             for (int k = 0; k < tasks.size(); ++k)
             {
+                System.out.println("Draw Task: " + tasks.get(k));
                 pos = tasks.get(k).getPosition();
                 int newX = toXpos(pos.getLongitude());
                 int newY = toYpos(pos.getLatitude());

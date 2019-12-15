@@ -43,11 +43,11 @@ public interface BuiltInFunctions
      */
     ScriptableObject getSensor(String name);
 
-    /**
-     * @param sensor the sensor instance.
-     * @return the sensor value.
-     */
-    ScriptableObject getSensorValue(ScriptableObject sensor);
+    //    /**
+    //     * @param sensor the sensor instance.
+    //     * @return the sensor value.
+    //     */
+    //    ScriptableObject getSensorValue(ScriptableObject sensor);
 
     /**
      * @param managementParameters the management parameters.
@@ -72,7 +72,7 @@ public interface BuiltInFunctions
      * @return the list of found objects.
      */
     List<String> listObjects(String pattern);
-    
+
     /**
      * @param name the object's name.
      */

@@ -415,14 +415,14 @@ public class JavascriptServiceTest
         /**
          * {@inheritDoc}
          */
-        @Override
-        public ScriptableObject getSensorValue(ScriptableObject sensor)
+//        @Override
+        private ScriptableObject getSensorValue(ScriptableObject sensor)
         {
             NativeObject sensorValue = new NativeObject();
             sensorValue.put("name", sensorValue, sensor.get("name"));
             sensorValue.put("value", sensorValue, "value");
 
-            // System.out.println("getSensorValue for " + sensor.get("name"));
+            System.out.println("getSensorValue for " + sensor.get("name"));
             return sensorValue;
         }
 

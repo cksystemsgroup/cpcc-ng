@@ -23,6 +23,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -85,13 +86,17 @@ public class TaskSchedulerServiceTest
         depotList = Collections.<PolarCoordinate>emptyList();
 
         rvPosition = mock(PolarCoordinate.class);
-
+        when(rvPosition.getLatitude()).thenReturn(47.1000);
+        when(rvPosition.getLongitude()).thenReturn(13.7897);
+        when(rvPosition.getAltitude()).thenReturn(8.0);
+        
         posA = mock(PolarCoordinate.class);
         when(posA.getLatitude()).thenReturn(47.1234);
         when(posA.getLongitude()).thenReturn(13.7897);
         when(posA.getAltitude()).thenReturn(8.0);
 
         taskA = mock(Task.class);
+        when(taskA.getId()).thenReturn(1);
         when(taskA.getPosition()).thenReturn(posA);
         when(taskA.getCreationTime()).thenReturn(new Date(1L));
         when(taskA.toString()).thenReturn("taskA (47.1234, 13.7897, 8), time=1");
@@ -102,6 +107,7 @@ public class TaskSchedulerServiceTest
         when(posB.getAltitude()).thenReturn(23.0);
 
         taskB = mock(Task.class);
+        when(taskB.getId()).thenReturn(2);
         when(taskB.getPosition()).thenReturn(posB);
         when(taskB.getCreationTime()).thenReturn(new Date(2L));
         when(taskB.toString()).thenReturn("taskB (47.2345, 13.1234, 23), time=2");
@@ -112,6 +118,7 @@ public class TaskSchedulerServiceTest
         when(posC.getAltitude()).thenReturn(13.0);
 
         taskC = mock(Task.class);
+        when(taskC.getId()).thenReturn(3);
         when(taskC.getPosition()).thenReturn(posC);
         when(taskC.getCreationTime()).thenReturn(new Date(3L));
         when(taskC.toString()).thenReturn("taskC (47.3345, 13.5234, 13), time=3");
@@ -122,6 +129,7 @@ public class TaskSchedulerServiceTest
         when(posD.getAltitude()).thenReturn(18.0);
 
         taskD = mock(Task.class);
+        when(taskD.getId()).thenReturn(4);
         when(taskD.getPosition()).thenReturn(posD);
         when(taskD.getCreationTime()).thenReturn(new Date(4L));
         when(taskD.toString()).thenReturn("taskD (47.4345, 13.3234, 18), time=4");

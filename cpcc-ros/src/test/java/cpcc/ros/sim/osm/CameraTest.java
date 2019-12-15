@@ -35,7 +35,6 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -62,8 +61,7 @@ import org.testng.annotations.Test;
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.GeodeticSystem;
 import cpcc.core.utils.WGS84;
-import cpcc.ros.sim.osm.Camera;
-import cpcc.ros.sim.osm.Configuration;
+import cpcc.ros.test.ProcessUtils;
 import cpcc.ros.test.RequestListenerThread;
 
 /**
@@ -115,7 +113,7 @@ public class CameraTest
     @BeforeMethod
     public void setUp() throws Exception
     {
-        int port = RandomUtils.nextInt(30000, 50000); 
+        int port = ProcessUtils.getRandomPortNumber(30000, 60000);
 
         gs = new WGS84();
 

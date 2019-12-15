@@ -21,7 +21,7 @@ package cpcc.ros.sim.quadrotor;
 /**
  * Plant motion algorithm interface.
  */
-interface PlantMotionAlgorithm
+public interface PlantMotionAlgorithm
 {
     /**
      * @param time the current flight time.

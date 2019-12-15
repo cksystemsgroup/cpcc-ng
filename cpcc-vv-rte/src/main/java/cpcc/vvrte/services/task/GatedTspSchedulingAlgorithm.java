@@ -72,6 +72,8 @@ public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
             try
             {
                 scheduledTasks.addAll(new HeldKarpTspSolver(timeService).calculateBestPath(position, taskList));
+                // List<Task> bugger = new VRPSolver().calculateBestPath(position, taskList);
+                // scheduledTasks.addAll(bugger);
                 shift(pendingTasks, taskList.size());
                 return true;
             }

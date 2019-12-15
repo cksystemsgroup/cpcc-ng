@@ -65,26 +65,32 @@ public class GatedTspSchedulingAlgorithmTest
     public Object[][] pendingTasksDataProvider()
     {
         Task taskA = mock(Task.class);
+        when(taskA.getId()).thenReturn(65);
         when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1, 13.2, 5.0));
         when(taskA.toString()).thenReturn("taskA");
 
         Task taskB = mock(Task.class);
+        when(taskB.getId()).thenReturn(66);
         when(taskB.getPosition()).thenReturn(new PolarCoordinate(47.9, 13.45, 5.0));
         when(taskB.toString()).thenReturn("taskB");
 
         Task taskC = mock(Task.class);
+        when(taskC.getId()).thenReturn(67);
         when(taskC.getPosition()).thenReturn(new PolarCoordinate(47.8, 13.2, 5.0));
         when(taskC.toString()).thenReturn("taskC");
 
         Task taskD = mock(Task.class);
+        when(taskD.getId()).thenReturn(68);
         when(taskD.getPosition()).thenReturn(new PolarCoordinate(47.3, 13.5, 5.0));
         when(taskD.toString()).thenReturn("taskD");
 
         Task taskE = mock(Task.class);
+        when(taskE.getId()).thenReturn(69);
         when(taskE.getPosition()).thenReturn(new PolarCoordinate(47.3, 13.8, 5.0));
         when(taskE.toString()).thenReturn("taskE");
 
         Task taskF = mock(Task.class);
+        when(taskF.getId()).thenReturn(70);
         when(taskF.getPosition()).thenReturn(new PolarCoordinate(47.9, 13.7, 5.0));
         when(taskF.toString()).thenReturn("taskF");
 
@@ -109,9 +115,8 @@ public class GatedTspSchedulingAlgorithmTest
     }
 
     @Test(dataProvider = "pendingTasksDataProvider")
-    public void shouldSchedulePendingTasksIfNoTasksAreScheduled(PolarCoordinate rvPosition
-        , List<Task> scheduled, List<Task> pending
-        , List<Task> expectedScheduled, List<Task> expectedPending, boolean expectedChange)
+    public void shouldSchedulePendingTasksIfNoTasksAreScheduled(PolarCoordinate rvPosition, List<Task> scheduled,
+        List<Task> pending, List<Task> expectedScheduled, List<Task> expectedPending, boolean expectedChange)
     {
         List<Task> scheduledTasks = new ArrayList<>(scheduled);
         List<Task> pendingTasks = new ArrayList<>(pending);
@@ -174,10 +179,9 @@ public class GatedTspSchedulingAlgorithmTest
     }
 
     @Test(dataProvider = "pendingTasksDataProviderWithDepot")
-    public void shouldSchedulePendingTasksIfNoTasksAreScheduledAndConsiderDepotPositions(PolarCoordinate rvPosition
-        , PolarCoordinate depotPosition
-        , List<Task> scheduled, List<Task> pending
-        , List<Task> expectedScheduled, List<Task> expectedPending, boolean expectedChange)
+    public void shouldSchedulePendingTasksIfNoTasksAreScheduledAndConsiderDepotPositions(PolarCoordinate rvPosition,
+        PolarCoordinate depotPosition, List<Task> scheduled, List<Task> pending, List<Task> expectedScheduled,
+        List<Task> expectedPending, boolean expectedChange)
     {
         depots.add(depotPosition);
         List<Task> scheduledTasks = new ArrayList<>(scheduled);

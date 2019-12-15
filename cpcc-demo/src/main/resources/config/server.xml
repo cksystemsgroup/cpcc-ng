@@ -5,16 +5,16 @@
 	<Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
 
 	<Service name="Catalina">
-		<Connector port="${http.connector.port}" URIEncoding="UTF-8" connectionTimeout="30000" keepAliveTimeout="30000" maxThreads="50" maxConnections="50" />
+		<Connector port="${http.connector.port}" URIEncoding="UTF-8" connectionTimeout="30000" keepAliveTimeout="30000" maxThreads="20" maxConnections="20" />
 		<Engine name="Catalina" defaultHost="localhost">
 			<Host name="localhost" appBase="${app.base}" autoDeploy="false" copyXML="false">
 				<Context path="${cpcc.context.path}" docBase="${app.war.file}" privileged="false" cookies="false" antiResourceLocking="false"
 					useHttpOnly="true">
 
 					<Resource name="jdbc/GS" auth="Container" type="javax.sql.DataSource" username="sa" password=""
-						driverClassName="${db.driver}" url="${db.url}" maxTotal="60" />
+						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
 					<Resource name="jdbc/RV" auth="Container" type="javax.sql.DataSource" username="sa" password=""
-						driverClassName="${db.driver}" url="${db.url}" maxTotal="60" />
+						driverClassName="${db.driver}" url="${db.url}" maxTotal="30" />
 					<Resource name="jdbc/LIQUIBASE" auth="Container" type="javax.sql.DataSource" username="sa" password=""
 						driverClassName="${db.driver}" url="${db.url}" maxTotal="5" />
 				</Context>

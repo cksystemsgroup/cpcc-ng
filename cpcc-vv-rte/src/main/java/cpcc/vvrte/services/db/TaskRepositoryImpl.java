@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 
@@ -57,6 +58,19 @@ public class TaskRepositoryImpl implements TaskRepository
             .addOrder(Order.desc("order"))
             .addOrder(Order.desc("creationTime"))
             .list();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long countAllIncompleteTasks()
+    {
+        return (Long) session.createCriteria(Task.class)
+            .add(Restrictions.not(Restrictions.eq("taskState", TaskState.COMPLETED)))
+            .add(Restrictions.not(Restrictions.eq("taskState", TaskState.EXECUTED)))
+            .setProjection(Projections.rowCount())
+            .uniqueResult();
     }
 
     /**

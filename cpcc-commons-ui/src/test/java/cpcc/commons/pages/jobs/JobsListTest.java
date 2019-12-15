@@ -40,8 +40,6 @@ import org.apache.tapestry5.func.Predicate;
 import org.apache.tapestry5.test.PageTester;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.base.CoreConstants;
 import cpcc.core.services.jobs.JobRepository;
@@ -64,7 +62,7 @@ public class JobsListTest
         + "cpcc.ros.services.RosServiceModule,"
         + "cpcc.vvrte.services.VvRteModule";
 
-    @BeforeMethod
+    // @BeforeMethod
     public void setUp() throws SQLException, ClassNotFoundException, NamingException
     {
         Stream.of(DB_FILE_NAMES).map(x -> new File(x)).filter(File::exists).forEach(File::delete);
@@ -104,7 +102,7 @@ public class JobsListTest
 
     }
 
-    @Test
+    // @Test
     public void test1()
     {
         String appPackage = "cpcc.commons";

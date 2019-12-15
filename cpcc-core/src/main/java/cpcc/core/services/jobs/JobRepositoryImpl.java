@@ -48,8 +48,7 @@ public class JobRepositoryImpl implements JobRepository
      * @param session the database session.
      * @param maxJobAge the maximum job age in milliseconds.
      */
-    public JobRepositoryImpl(Logger logger, Session session
-        , @Symbol(CoreConstants.PROP_MAX_JOB_AGE) long maxJobAge)
+    public JobRepositoryImpl(Logger logger, Session session, @Symbol(CoreConstants.PROP_MAX_JOB_AGE) long maxJobAge)
     {
         this.logger = logger;
         this.session = session;
@@ -149,8 +148,12 @@ public class JobRepositoryImpl implements JobRepository
                 Restrictions.le("end", new Date(System.currentTimeMillis() - maxJobAge)),
                 Restrictions.and(
                     Restrictions.le("end", new Date(System.currentTimeMillis() - 30000)),
-                    Restrictions.in("status", new JobStatus[]{JobStatus.OK, JobStatus.FAILED, JobStatus.NO_FACTORY}))
-                )).list();
+                    Restrictions.in("status", new JobStatus[]{JobStatus.OK, JobStatus.FAILED, JobStatus.NO_FACTORY})),
+                Restrictions.and(
+                    Restrictions.le("start", new Date(System.currentTimeMillis() - maxJobAge)),
+                    Restrictions.isNull("end"),
+                    Restrictions.eq("status", JobStatus.NO_FACTORY))))
+            .list();
 
         for (Job job : oldJobs)
         {
