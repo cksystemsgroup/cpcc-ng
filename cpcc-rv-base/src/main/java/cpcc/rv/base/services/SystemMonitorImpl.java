@@ -25,7 +25,6 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,7 @@ import java.util.stream.Stream;
 
 import javax.management.JMException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
 /**
@@ -41,13 +41,6 @@ import org.slf4j.Logger;
  */
 public class SystemMonitorImpl implements SystemMonitor
 {
-    // private static final Set<String> ADDITIONAL_ATTRIBUTES = Collections.unmodifiableSet(Stream.of(
-    // "java.lang:type=OperatingSystem/ProcessCpuTime",
-    // "java.lang:type=OperatingSystem/ProcessCpuLoad",
-    // "java.lang:type=OperatingSystem/SystemCpuLoad",
-    // "java.lang:type=OperatingSystem/SystemLoadAverage",
-    // "java.lang:type=OperatingSystem/OpenFileDescriptorCount").collect(Collectors.toSet()));
-
     private static final String PROCESS_CPU_TIME = "java.lang:type=OperatingSystem/ProcessCpuTime";
     private static final String PROCESS_CPU_LOAD = "java.lang:type=OperatingSystem/ProcessCpuLoad";
     private static final String SYSTEM_CPU_LOAD = "java.lang:type=OperatingSystem/SystemCpuLoad";
@@ -63,7 +56,6 @@ public class SystemMonitorImpl implements SystemMonitor
     private RuntimeMXBean runtimeBean;
     private ThreadMXBean threadBean;
     private String header = "";
-    //    private List<String> attributes;
     private MxBeanUtils mxb = new MxBeanUtils();
 
     /**
@@ -81,10 +73,6 @@ public class SystemMonitorImpl implements SystemMonitor
         runtimeBean = ManagementFactory.getRuntimeMXBean();
         threadBean = ManagementFactory.getThreadMXBean();
 
-        //        attributes = mxb.listMxBeans().stream()
-        //            .filter(x -> ADDITIONAL_ATTRIBUTES.contains(x))
-        //            .collect(Collectors.toList());
-
         writeStaticValues();
     }
 
@@ -93,23 +81,27 @@ public class SystemMonitorImpl implements SystemMonitor
      */
     private void writeStaticValues()
     {
-        List<SimpleEntry<String, Object>> entries = new ArrayList<>(Stream.of(
-            new SimpleEntry<String, Object>("osName", opsysBean.getName()),
-            new SimpleEntry<String, Object>("osVersion", opsysBean.getVersion()),
-            new SimpleEntry<String, Object>("processors", opsysBean.getAvailableProcessors()),
-            new SimpleEntry<String, Object>("jvmName", runtimeBean.getName()),
-            new SimpleEntry<String, Object>("jvmArch", opsysBean.getArch()),
-            new SimpleEntry<String, Object>("startTime", runtimeBean.getStartTime())).collect(Collectors.toList()));
+        List<Pair<String, String>> entries = new ArrayList<>(Stream
+            .of(Pair.of("osName", opsysBean.getName()),
+                Pair.of("osVersion", opsysBean.getVersion()),
+                Pair.of("processors", Integer.toString(opsysBean.getAvailableProcessors())),
+                Pair.of("jvmName", runtimeBean.getName()),
+                Pair.of("jvmArch", opsysBean.getArch()),
+                Pair.of("startTime", Long.toString(runtimeBean.getStartTime())))
+            .collect(Collectors.toList()));
 
-        logger.info(";SH;" + entries.stream().map(x -> x.getKey().toString()).collect(Collectors.joining(";")));
-        logger.info(";SV;" + entries.stream().map(x -> x.getValue().toString()).collect(Collectors.joining(";")));
+        String keys = entries.stream().map(Pair::getLeft).collect(Collectors.joining(";"));
+        String values = entries.stream().map(Pair::getRight).collect(Collectors.joining(";"));
+
+        logger.info(";SH;{}", keys);
+        logger.info(";SV;{}", values);
     }
 
     private double readDoubleAttribute(String mxBeanAttributeName)
     {
         try
         {
-            return Double.valueOf(mxb.readMxBeanAttribute(mxBeanAttributeName)).doubleValue();
+            return Double.parseDouble(mxb.readMxBeanAttribute(mxBeanAttributeName));
         }
         catch (NumberFormatException | JMException e)
         {
@@ -121,7 +113,7 @@ public class SystemMonitorImpl implements SystemMonitor
     {
         try
         {
-            return Long.valueOf(mxb.readMxBeanAttribute(mxBeanAttributeName)).longValue();
+            return Long.parseLong(mxb.readMxBeanAttribute(mxBeanAttributeName));
         }
         catch (NumberFormatException | JMException e)
         {
@@ -135,41 +127,41 @@ public class SystemMonitorImpl implements SystemMonitor
     @Override
     public void writeLogEntry()
     {
-        List<SimpleEntry<String, Number>> entries = new ArrayList<>();
+        List<Pair<String, String>> entries = new ArrayList<>();
 
-        entries.addAll(Stream.of(
-            new SimpleEntry<String, Number>("time", System.currentTimeMillis()),
-            new SimpleEntry<String, Number>("uptime", runtimeBean.getUptime()),
+        entries.addAll(Stream
+            .of(Pair.of("time", Long.toString(System.currentTimeMillis())),
+                Pair.of("uptime", Long.toString(runtimeBean.getUptime())),
 
-            new SimpleEntry<String, Number>("processCpuTime", readLongAttribute(PROCESS_CPU_TIME) / 1E6),
-            new SimpleEntry<String, Number>("processCpuLoad", readDoubleAttribute(PROCESS_CPU_LOAD)),
+                Pair.of("processCpuTime", Double.toString(readLongAttribute(PROCESS_CPU_TIME) / 1E6)),
+                Pair.of("processCpuLoad", Double.toString(readDoubleAttribute(PROCESS_CPU_LOAD))),
 
-            new SimpleEntry<String, Number>("systemCpuLoad", readDoubleAttribute(SYSTEM_CPU_LOAD)),
-            new SimpleEntry<String, Number>("systemLoadAvg", readDoubleAttribute(SYSTEM_LOAD_AVERAGE)),
+                Pair.of("systemCpuLoad", Double.toString(readDoubleAttribute(SYSTEM_CPU_LOAD))),
+                Pair.of("systemLoadAvg", Double.toString(readDoubleAttribute(SYSTEM_LOAD_AVERAGE))),
 
-            new SimpleEntry<String, Number>("openFileCount", readLongAttribute(OPEN_FILE_COUNT)),
+                Pair.of("openFileCount", Long.toString(readLongAttribute(OPEN_FILE_COUNT))),
 
-            new SimpleEntry<String, Number>("threadCount", threadBean.getThreadCount()),
-            new SimpleEntry<String, Number>("peakThreadCount", threadBean.getPeakThreadCount()),
-            new SimpleEntry<String, Number>("daemonThreadCount", threadBean.getDaemonThreadCount()),
-            new SimpleEntry<String, Number>("totalStartedTheadCount", threadBean.getTotalStartedThreadCount()),
+                Pair.of("threadCount", Integer.toString(threadBean.getThreadCount())),
+                Pair.of("peakThreadCount", Integer.toString(threadBean.getPeakThreadCount())),
+                Pair.of("daemonThreadCount", Integer.toString(threadBean.getDaemonThreadCount())),
+                Pair.of("totalStartedTheadCount", Long.toString(threadBean.getTotalStartedThreadCount())),
 
-            new SimpleEntry<String, Number>("freeMemory", runtime.freeMemory()),
-            new SimpleEntry<String, Number>("maxMemory", runtime.maxMemory()),
-            new SimpleEntry<String, Number>("totalMemory", runtime.totalMemory()),
+                Pair.of("freeMemory", Long.toString(runtime.freeMemory())),
+                Pair.of("maxMemory", Long.toString(runtime.maxMemory())),
+                Pair.of("totalMemory", Long.toString(runtime.totalMemory())),
 
-            new SimpleEntry<String, Number>("heap.init", memBean.getHeapMemoryUsage().getInit()),
-            new SimpleEntry<String, Number>("heap.used", memBean.getHeapMemoryUsage().getUsed()),
-            new SimpleEntry<String, Number>("heap.max", memBean.getHeapMemoryUsage().getMax()),
-            new SimpleEntry<String, Number>("heap.committed", memBean.getHeapMemoryUsage().getCommitted()),
+                Pair.of("heap.init", Long.toString(memBean.getHeapMemoryUsage().getInit())),
+                Pair.of("heap.used", Long.toString(memBean.getHeapMemoryUsage().getUsed())),
+                Pair.of("heap.max", Long.toString(memBean.getHeapMemoryUsage().getMax())),
+                Pair.of("heap.committed", Long.toString(memBean.getHeapMemoryUsage().getCommitted())),
 
-            new SimpleEntry<String, Number>("nonheap.init", memBean.getNonHeapMemoryUsage().getInit()),
-            new SimpleEntry<String, Number>("nonheap.used", memBean.getNonHeapMemoryUsage().getMax()),
-            new SimpleEntry<String, Number>("nonheap.max", memBean.getNonHeapMemoryUsage().getUsed()),
-            new SimpleEntry<String, Number>("nonheap.committed", memBean.getNonHeapMemoryUsage().getCommitted()),
+                Pair.of("nonheap.init", Long.toString(memBean.getNonHeapMemoryUsage().getInit())),
+                Pair.of("nonheap.used", Long.toString(memBean.getNonHeapMemoryUsage().getMax())),
+                Pair.of("nonheap.max", Long.toString(memBean.getNonHeapMemoryUsage().getUsed())),
+                Pair.of("nonheap.committed", Long.toString(memBean.getNonHeapMemoryUsage().getCommitted())),
 
-            new SimpleEntry<String, Number>("objPendingFinCount", memBean.getObjectPendingFinalizationCount()),
-            new SimpleEntry<String, Number>("sysLoadAvg", opsysBean.getSystemLoadAverage()))
+                Pair.of("objPendingFinCount", Integer.toString(memBean.getObjectPendingFinalizationCount())),
+                Pair.of("sysLoadAvg", Double.toString(opsysBean.getSystemLoadAverage())))
             .collect(Collectors.toList()));
 
         for (GarbageCollectorMXBean bean : gcBean)
@@ -178,9 +170,9 @@ public class SystemMonitorImpl implements SystemMonitor
             {
                 String prefix = bean.getName().replace(' ', '_');
 
-                entries.addAll(Stream.of(
-                    new SimpleEntry<String, Number>(prefix + ".gcTime", bean.getCollectionTime()),
-                    new SimpleEntry<String, Number>(prefix + ".gcCount", bean.getCollectionCount()))
+                entries.addAll(Stream
+                    .of(Pair.of(prefix + ".gcTime", Long.toString(bean.getCollectionTime())),
+                        Pair.of(prefix + ".gcCount", Long.toString(bean.getCollectionCount())))
                     .collect(Collectors.toList()));
             }
         }
@@ -191,16 +183,16 @@ public class SystemMonitorImpl implements SystemMonitor
             {
                 String prefix = bean.getName().replace(' ', '_');
 
-                entries.addAll(Stream.of(
-                    new SimpleEntry<String, Number>(prefix + ".init", bean.getUsage().getInit()),
-                    new SimpleEntry<String, Number>(prefix + ".max", bean.getUsage().getMax()),
-                    new SimpleEntry<String, Number>(prefix + ".used", bean.getUsage().getUsed()),
-                    new SimpleEntry<String, Number>(prefix + ".commmitted", bean.getUsage().getCommitted()))
+                entries.addAll(Stream
+                    .of(Pair.of(prefix + ".init", Long.toString(bean.getUsage().getInit())),
+                        Pair.of(prefix + ".max", Long.toString(bean.getUsage().getMax())),
+                        Pair.of(prefix + ".used", Long.toString(bean.getUsage().getUsed())),
+                        Pair.of(prefix + ".commmitted", Long.toString(bean.getUsage().getCommitted())))
                     .collect(Collectors.toList()));
             }
         }
 
-        String newHeader = ";H;" + entries.stream().map(x -> x.getKey()).collect(Collectors.joining(";"));
+        String newHeader = ";H;" + entries.stream().map(Pair::getLeft).collect(Collectors.joining(";"));
 
         if (!header.equals(newHeader))
         {
@@ -208,7 +200,7 @@ public class SystemMonitorImpl implements SystemMonitor
             header = newHeader;
         }
 
-        logger.info(";V;" + entries.stream().map(x -> x.getValue().toString()).collect(Collectors.joining(";")));
+        String values = entries.stream().map(Pair::getRight).collect(Collectors.joining(";"));
+        logger.info(";V;{}", values);
     }
-
 }

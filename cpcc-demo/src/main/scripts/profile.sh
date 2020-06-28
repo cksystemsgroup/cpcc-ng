@@ -12,12 +12,10 @@ export CONFIG=$CPCC_DIR/work/config.sh
 export CUSTOM_CONFIG=$CPCC_DIR/work/custom-config.sh
 
 export COM_H2DB_VERSION="${com.h2database.version}";
-export COM_HSQLDB_VERSION="${com.hsqldb.version}";
 export LIQUIBASE_VERSION="${liquibase-version}";
 export SNAKEYAML_VERSION="${snakeyaml-version}";
 export TOMCAT_VERSION="${tomcat.version}";
 export CPCC_VERSION="${project.parent.version}";
-# export C3P0_VERSION="${c3p0.version}";
 export MCHANGE_COMMONS_VERSION="${mchange-commons-version}";
 export LOGBACK_VERSION="${logback-version}";
 export SLF4J_VERSION="${slf4j-version}";

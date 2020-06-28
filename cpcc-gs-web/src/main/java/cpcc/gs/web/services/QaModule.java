@@ -20,7 +20,6 @@ package cpcc.gs.web.services;
 
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.ServiceBinder;
 
 /**
  * This module is automatically included as part of the Tapestry IoC Registry if <em>tapestry.execution-mode</em>
@@ -30,17 +29,8 @@ public final class QaModule
 {
     private QaModule()
     {
-        // intentionally empty.
+        // Intentionally empty.
     }
-    
-    /**
-     * @param binder the service binder.
-     */
-    public static void bind(ServiceBinder binder)
-    {
-        // Bind any services needed by the QA team to produce their reports
-    }
-
 
     /**
      * @param configuration the application configuration.

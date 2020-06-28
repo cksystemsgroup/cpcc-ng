@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.ros.RosCore;
@@ -80,7 +81,7 @@ public class SonarEmulatorTest
         sut.setNodeConfiguration(nodeConfiguration);
         sut.start();
 
-        Thread.sleep(1000);
+        TimeUnit.SECONDS.sleep(1);
     }
 
     @AfterMethod
@@ -94,7 +95,7 @@ public class SonarEmulatorTest
 
         System.out.println("SUT: shutdown");
         sut.shutdown();
-        Thread.sleep(1000);
+        TimeUnit.SECONDS.sleep(1);
 
         System.out.println("ROS core: shutdown");
         rosCore.shutdown();
@@ -118,7 +119,7 @@ public class SonarEmulatorTest
                     protected void loop() throws InterruptedException
                     {
                         publisher.publish(getReceivedMessage());
-                        Thread.sleep(200);
+                        TimeUnit.MILLISECONDS.sleep(200);
                     }
                 };
 
@@ -144,7 +145,7 @@ public class SonarEmulatorTest
     {
         setupMessageSender();
 
-        Thread.sleep(1000);
+        TimeUnit.SECONDS.sleep(1);
 
         Map<String, List<String>> actual = sut.getCurrentState();
 

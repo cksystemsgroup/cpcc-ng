@@ -28,9 +28,6 @@ import java.lang.reflect.Constructor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.vvrte.services.js.BuiltInFunctions;
-import cpcc.vvrte.services.js.VvRteFunctions;
-
 /**
  * VvRteFunctionsTest
  */
@@ -62,8 +59,7 @@ public class VvRteFunctionsTest
         VvRteFunctions.setVvRte(vvRte);
         assertThat(VvRteFunctions.getVvRte()).isNotNull().isEqualTo(vvRte);
     }
-    
-    
+
     @DataProvider
     public Object[][] stdOutDataProvider()
     {
@@ -80,5 +76,5 @@ public class VvRteFunctionsTest
         VvRteFunctions.setStdOut(stdOut);
         assertThat(VvRteFunctions.getStdOut()).isNotNull().isEqualTo(stdOut);
     }
-    
+
 }

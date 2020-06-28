@@ -59,7 +59,7 @@ public final class AcoTspSimple
         }
 
         double bestLen = Double.POSITIVE_INFINITY;
-        List<Integer> bestPath = new ArrayList<Integer>();
+        List<Integer> bestPath = new ArrayList<>();
 
         for (int iteration = 0; iteration < maxIterations; iteration++)
         {
@@ -142,7 +142,7 @@ public final class AcoTspSimple
     {
         // int current = (int) (costMatrix.length * Math.random());
         int current = RandomUtils.nextInt(0, costMatrix.length);
-        List<Integer> used = new ArrayList<Integer>();
+        List<Integer> used = new ArrayList<>();
         used.add(current);
 
         while (used.size() < costMatrix.length)

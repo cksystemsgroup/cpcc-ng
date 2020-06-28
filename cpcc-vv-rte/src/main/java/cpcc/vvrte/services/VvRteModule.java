@@ -147,26 +147,11 @@ public final class VvRteModule
     {
         vvRteRepo.resetVirtualVehicleStates();
 
-        // TODO check cycle
-        executor.addJob(new CronSchedule("* * * * * ?"), "VvRte Task execution.", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                taskExecutionService.executeTasks();
-            }
-        });
+        executor.addJob(new CronSchedule("* * * * * ?"), "VvRte Task execution.", taskExecutionService::executeTasks);
 
-        // TODO check cycle
-        executor.addJob(new CronSchedule("0,30 * * * * ?"), "VvRte handle stuck migrations.", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                logger.debug("### Add job for stuck migrations.");
-                jobService.addJobIfNotExists(
-                    VvRteConstants.MIGRATION_JOB_QUEUE_NAME, VvRteConstants.STUCK_MIGRATIONS);
-            }
+        executor.addJob(new CronSchedule("0,30 * * * * ?"), "VvRte handle stuck migrations.", () -> {
+            logger.debug("### Add job for stuck migrations.");
+            jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME, VvRteConstants.STUCK_MIGRATIONS);
         });
     }
 

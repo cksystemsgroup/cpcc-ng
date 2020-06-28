@@ -30,8 +30,6 @@ import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.testng.annotations.Test;
 
-import cpcc.rv.web.services.RvWebModule;
-
 /**
  * AppModuleTest
  */

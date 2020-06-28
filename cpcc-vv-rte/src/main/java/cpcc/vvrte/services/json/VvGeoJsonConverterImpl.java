@@ -52,7 +52,7 @@ public class VvGeoJsonConverterImpl implements VvGeoJsonConverter
     @Override
     public List<GeoJsonObject> toGeometryObjectsList(List<VirtualVehicle> vvList)
     {
-        List<GeoJsonObject> fc = new ArrayList<GeoJsonObject>();
+        List<GeoJsonObject> fc = new ArrayList<>();
 
         for (VirtualVehicle vv : vvList)
         {

@@ -37,6 +37,7 @@ import java.util.Date;
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -153,8 +154,19 @@ public class VehicleLauncherTest
 
         TaskRepository taskRepository = mock(TaskRepository.class);
 
-        launcher = new VirtualVehicleLauncherImpl(logger, sessionManager, jss, migrator, vvRteRepository, rvRepository,
-            timeService, messages, taskRepository, jobService);
+        ServiceResources serviceResources = mock(ServiceResources.class);
+        when(serviceResources.getService(Logger.class)).thenReturn(logger);
+        when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
+        when(serviceResources.getService(JavascriptService.class)).thenReturn(jss);
+        when(serviceResources.getService(VirtualVehicleMigrator.class)).thenReturn(migrator);
+        when(serviceResources.getService(VvRteRepository.class)).thenReturn(vvRteRepository);
+        when(serviceResources.getService(RealVehicleRepository.class)).thenReturn(rvRepository);
+        when(serviceResources.getService(TimeService.class)).thenReturn(timeService);
+        when(serviceResources.getService(Messages.class)).thenReturn(messages);
+        when(serviceResources.getService(TaskRepository.class)).thenReturn(taskRepository);
+        when(serviceResources.getService(JobService.class)).thenReturn(jobService);
+
+        launcher = new VirtualVehicleLauncherImpl(serviceResources);
     }
 
     @Test

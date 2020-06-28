@@ -21,26 +21,26 @@ package cpcc.core.services.opts;
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * OptionsScanner
  */
 public class OptionsScanner
 {
-    @SuppressWarnings("serial")
-    private static final Map<String, Token> CHAR_MAP = new HashMap<String, Token>()
-    {
-        {
-            put(Symbol.EQUALS.getSymbolString(), Token.EQUALS);
-            put(Symbol.LEFT_PAREN.getSymbolString(), Token.LEFT_PAREN);
-            put(Symbol.RIGHT_PAREN.getSymbolString(), Token.RIGHT_PAREN);
-            put(Symbol.SEMICOLON.getSymbolString(), Token.SEMICOLON);
-            put(Symbol.COLON.getSymbolString(), Token.COLON);
-            put(Symbol.COMMA.getSymbolString(), Token.COMMA);
-        }
-    };
+    private static final Map<String, Token> CHAR_MAP = Collections.unmodifiableMap(Stream
+        .of(Pair.of(Symbol.EQUALS.getSymbolString(), Token.EQUALS),
+            Pair.of(Symbol.LEFT_PAREN.getSymbolString(), Token.LEFT_PAREN),
+            Pair.of(Symbol.RIGHT_PAREN.getSymbolString(), Token.RIGHT_PAREN),
+            Pair.of(Symbol.SEMICOLON.getSymbolString(), Token.SEMICOLON),
+            Pair.of(Symbol.COLON.getSymbolString(), Token.COLON),
+            Pair.of(Symbol.COMMA.getSymbolString(), Token.COMMA))
+        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
     private Reader reader;
     private Character ch = null;

@@ -72,14 +72,7 @@ public final class GsWebModule
     public static void scheduleJobs(PeriodicExecutor executor, final StateSynchronizer stateSync)
     {
         // Taken from RealVehicleBaseModule to reduce network traffic.
-        // TODO check cycle time!
-        executor.addJob(new CronSchedule("* * * * * ?"), "Real Vehicle status update", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                stateSync.realVehicleStatusUpdate();
-            }
-        });
+        executor.addJob(new CronSchedule("* * * * * ?"), "Real Vehicle status update",
+            stateSync::realVehicleStatusUpdate);
     }
 }

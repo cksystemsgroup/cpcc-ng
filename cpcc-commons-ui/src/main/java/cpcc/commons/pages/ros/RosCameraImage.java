@@ -60,8 +60,8 @@ public class RosCameraImage
 
         if (logger.isDebugEnabled())
         {
-            logger.debug("ctx=" + ctx + ", rootTopic=" + rootTopic);
-            logger.debug("Preparing image for root topic " + rootTopicParam);
+            logger.debug("ctx={}, rootTopic={}", ctx, rootTopic);
+            logger.debug("Preparing image for root topic {}", rootTopicParam);
         }
 
         AbstractRosAdapter adapter = rns.getAdapterNodeByTopic(rootTopic);
@@ -74,7 +74,7 @@ public class RosCameraImage
 
         if (image == null)
         {
-            logger.error("No image adapter found for root topic " + rootTopic);
+            logger.error("No image adapter found for root topic {}", rootTopic);
             return new PngImageStreamResponse();
         }
 
@@ -82,7 +82,7 @@ public class RosCameraImage
 
         try
         {
-            return PngImageStreamResponse.convertImageToStreamResponse(bufferedImage, rootTopic);
+            return PngImageStreamResponse.convertImageToStreamResponse(bufferedImage);
         }
         catch (IOException e)
         {

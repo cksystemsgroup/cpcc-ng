@@ -80,7 +80,7 @@ public class DeviceTree
             }
         };
 
-        return new DefaultTreeModel<ITreeNode>(encoder, new TreeNodeAdapter(), deviceList);
+        return new DefaultTreeModel<>(encoder, new TreeNodeAdapter(), deviceList);
     }
 
     /**
@@ -90,7 +90,7 @@ public class DeviceTree
     {
         if (expansionModel == null)
         {
-            expansionModel = new DefaultTreeExpansionModel<ITreeNode>();
+            expansionModel = new DefaultTreeExpansionModel<>();
         }
 
         return expansionModel;

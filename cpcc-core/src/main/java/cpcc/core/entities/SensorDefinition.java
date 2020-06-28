@@ -254,12 +254,7 @@ public class SensorDefinition implements Serializable
             return false;
         }
 
-        if (!StringUtils.equals(getMessageType(), other.getMessageType()))
-        {
-            return false;
-        }
-
-        return true;
+        return StringUtils.equals(getMessageType(), other.getMessageType());
     }
 
     @Override

@@ -23,16 +23,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.lang.reflect.Constructor;
 
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.ServiceBinder;
 import org.testng.annotations.Test;
-
-import cpcc.rv.web.services.QaModule;
 
 /**
  * QaModuleTest
@@ -58,15 +54,5 @@ public class QaModuleTest
 
         verify(configuration).add(eq(SymbolConstants.PRODUCTION_MODE), any());
         verify(configuration).add(eq(SymbolConstants.APPLICATION_VERSION), any());
-    }
-
-    @Test
-    public void shouldBindServices()
-    {
-        ServiceBinder binder = mock(ServiceBinder.class);
-
-        QaModule.bind(binder);
-
-        verifyZeroInteractions(binder);
     }
 }

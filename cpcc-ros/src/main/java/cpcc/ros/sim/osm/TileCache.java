@@ -74,7 +74,7 @@ public class TileCache
 
         if (tileCacheFile.exists())
         {
-            LOG.debug(String.format("Cached tile found for zoom=%d, x=%d, y=%d", zoom, x, y));
+            LOG.debug("Cached tile found for zoom={}, x={}, y={}", zoom, x, y);
             return tileCacheFile;
         }
 
@@ -87,7 +87,7 @@ public class TileCache
 
         String tileDownloadUrl = String.format(Locale.US, tileServerUrl, zoom, x, y);
 
-        LOG.debug(String.format("Downloading tile for zoom=%d, x=%d, y=%d, url=%s", zoom, x, y, tileDownloadUrl));
+        LOG.debug("Downloading tile for zoom={}, x={}, y={}, url={}", zoom, x, y, tileDownloadUrl);
 
         downloadFile(tileDownloadUrl, tileCacheFile);
 
@@ -101,7 +101,6 @@ public class TileCache
      */
     public static void downloadFile(String url, File file) throws IOException
     {
-        // TODO extract in a service.
         HttpResponse response = null;
         try
         {
@@ -111,15 +110,13 @@ public class TileCache
         }
         catch (IOException e)
         {
-            LOG.error("Can not load URL '" + url.toString() + "'", e);
-            throw e;
+            throw new IOException("Can not load URL '" + url + "'", e);
         }
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
         {
-            String msg = String.format("Can not load URL '%s' code=%d (%s)", url.toString(), response.getStatusLine()
-                .getStatusCode(), response.getStatusLine().getReasonPhrase());
-            LOG.error(msg);
+            String msg = String.format("Can not load URL '%s' code=%d (%s)",
+                url, response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
             throw new IOException(msg);
         }
 

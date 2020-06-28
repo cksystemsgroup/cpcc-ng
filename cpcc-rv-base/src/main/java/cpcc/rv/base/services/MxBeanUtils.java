@@ -77,7 +77,7 @@ public class MxBeanUtils
 
         if ("javax.management.openmbean.TabularDataSupport".equals(a.getClass().getName()))
         {
-            HashMap<String, String> m = new HashMap<String, String>();
+            HashMap<String, String> m = new HashMap<>();
             TabularDataSupport data = (TabularDataSupport) a;
             for (Iterator iter = data.keySet().iterator(); iter.hasNext();)
             {
@@ -96,7 +96,7 @@ public class MxBeanUtils
             Arrays.sort(key);
 
             boolean first = true;
-            StringBuffer b = new StringBuffer();
+            StringBuilder b = new StringBuilder();
             for (int i = 0; i < key.length; i++)
             {
                 if (!first)
@@ -119,7 +119,7 @@ public class MxBeanUtils
     @SuppressWarnings("rawtypes")
     public List<String> listMxBeans()
     {
-        ArrayList<String> beans = new ArrayList<String>();
+        ArrayList<String> beans = new ArrayList<>();
 
         Set mbNameSet = pmbs.queryNames(null, null);
         Iterator mbNameSetIterator = mbNameSet.iterator();
@@ -135,7 +135,7 @@ public class MxBeanUtils
                 {
                     String s = o.toString();
                     String attributeName =
-                        s.replaceAll(PATH_SEPARATOR, "\\\\" + PATH_SEPARATOR) + PATH_SEPARATOR + ai[k].getName();
+                        s.replace(PATH_SEPARATOR, "\\\\" + PATH_SEPARATOR) + PATH_SEPARATOR + ai[k].getName();
                     if ("javax.management.openmbean.CompositeData".equals(ai[k].getType()))
                     {
                         CompositeData cmp = (CompositeData) pmbs.getAttribute(on, ai[k].getName());

@@ -39,8 +39,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import cpcc.core.entities.RealVehicle;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.vvrte.services.json.VvGeoJsonConverter;
-import cpcc.vvrte.services.json.VvGeoJsonConverterImpl;
 
 public class VvGeoJsonConverterTest
 {

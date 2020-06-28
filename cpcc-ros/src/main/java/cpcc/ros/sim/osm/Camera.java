@@ -29,6 +29,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.PolarCoordinate;
 
@@ -37,6 +39,8 @@ import cpcc.core.entities.PolarCoordinate;
  */
 public class Camera
 {
+    private static final Logger LOG = LoggerFactory.getLogger(Camera.class);
+
     private TileCache tileCache;
     private BufferedImage map;
     private MercatorProjection topLeftTile;
@@ -63,8 +67,8 @@ public class Camera
      */
     private void initMap()
     {
-        map = new BufferedImage(mapWidth * cfg.getTileWidth(), mapHeight * cfg.getTileHeight()
-            , BufferedImage.TYPE_INT_RGB);
+        map = new BufferedImage(mapWidth * cfg.getTileWidth(), mapHeight * cfg.getTileHeight(),
+            BufferedImage.TYPE_INT_RGB);
 
         Graphics2D g2d = map.createGraphics();
         tiles = new Graphics[mapWidth][mapHeight];
@@ -73,8 +77,8 @@ public class Camera
         {
             for (int h = 0; h < mapHeight; ++h)
             {
-                tiles[w][h] = g2d.create(w * cfg.getTileWidth(), h * cfg.getTileHeight()
-                    , cfg.getTileWidth(), cfg.getTileHeight());
+                tiles[w][h] = g2d.create(w * cfg.getTileWidth(), h * cfg.getTileHeight(), cfg.getTileWidth(),
+                    cfg.getTileHeight());
             }
         }
     }
@@ -100,8 +104,8 @@ public class Camera
 
         if (cfg.getOriginPosition() != null)
         {
-            pos = cfg.getGeodeticSystem().walk(cfg.getOriginPosition()
-                , -pos.getLatitude(), pos.getLongitude(), pos.getAltitude());
+            pos = cfg.getGeodeticSystem().walk(cfg.getOriginPosition(), -pos.getLatitude(), pos.getLongitude(),
+                pos.getAltitude());
         }
 
         double dx = pos.getAltitude() * Math.tan(cfg.getCameraApertureAngle() / 2.0);
@@ -110,11 +114,11 @@ public class Camera
         PolarCoordinate topLeftPosition = cfg.getGeodeticSystem().walk(pos, -dy, -dx, 0);
         PolarCoordinate bottomRightPosition = cfg.getGeodeticSystem().walk(pos, dy, dx, 0);
 
-        MercatorProjection newTopLeftTile = new MercatorProjection(cfg.getZoomLevel()
-            , topLeftPosition.getLatitude(), topLeftPosition.getLongitude());
+        MercatorProjection newTopLeftTile =
+            new MercatorProjection(cfg.getZoomLevel(), topLeftPosition.getLatitude(), topLeftPosition.getLongitude());
 
-        MercatorProjection newBottomRightTile = new MercatorProjection(cfg.getZoomLevel()
-            , bottomRightPosition.getLatitude(), bottomRightPosition.getLongitude());
+        MercatorProjection newBottomRightTile = new MercatorProjection(cfg.getZoomLevel(),
+            bottomRightPosition.getLatitude(), bottomRightPosition.getLongitude());
 
         boolean reloadTiles = topLeftTile == null || !topLeftTile.equalsTile(newTopLeftTile);
         topLeftTile = newTopLeftTile;
@@ -159,6 +163,7 @@ public class Camera
                 }
                 catch (IOException e)
                 {
+                    LOG.error("Can not get tile " + cfg.getZoomLevel() + " " + xt + " " + w, yt + h, e);
                     image = new BufferedImage(cfg.getTileWidth(), cfg.getTileHeight(), BufferedImage.TYPE_INT_ARGB);
                 }
                 tiles[w][h].drawImage(image, 0, 0, null);
@@ -172,8 +177,8 @@ public class Camera
      */
     private byte[] extractImage() throws IOException
     {
-        double dTilesX = bottomRightTile.getxTile() - topLeftTile.getxTile();
-        double dTilesY = bottomRightTile.getyTile() - topLeftTile.getyTile();
+        double dTilesX = (double) bottomRightTile.getxTile() - topLeftTile.getxTile();
+        double dTilesY = (double) bottomRightTile.getyTile() - topLeftTile.getyTile();
 
         int height = (int) (dTilesY * cfg.getTileHeight()) + bottomRightTile.getyPixel() - topLeftTile.getyPixel();
         int width = (int) (dTilesX * cfg.getTileWidth()) + bottomRightTile.getxPixel() - topLeftTile.getxPixel();

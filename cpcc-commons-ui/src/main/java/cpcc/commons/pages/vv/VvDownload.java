@@ -19,6 +19,7 @@
 package cpcc.commons.pages.vv;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.inject.Inject;
 
@@ -47,6 +48,7 @@ public class VvDownload
         }
 
         String fileName = String.format("vv-%s-%d.js", vv.getName().replaceAll("\\s+", "_"), vv.getId());
-        return new DownloadStreamResponse("text/javascript", vv.getCode().getBytes("UTF-8"), fileName);
+        byte[] code = vv.getCode().getBytes(StandardCharsets.UTF_8.name());
+        return new DownloadStreamResponse("text/javascript", code, fileName);
     }
 }

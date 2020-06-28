@@ -79,6 +79,6 @@ public class RvList
 
     public boolean getConnected()
     {
-        return realVehicle != null ? rvRepo.isRealVehicleConnected(realVehicle.getId()) : false;
+        return realVehicle != null && rvRepo.isRealVehicleConnected(realVehicle.getId());
     }
 }

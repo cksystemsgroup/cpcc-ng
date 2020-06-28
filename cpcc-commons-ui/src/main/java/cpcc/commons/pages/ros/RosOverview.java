@@ -54,7 +54,7 @@ public class RosOverview
     {
         Map<String, List<AbstractRosAdapter>> nodeMap = nodeService.getAdapterNodes();
 
-        List<AdapterNodeEntry> list = new ArrayList<AdapterNodeEntry>();
+        List<AdapterNodeEntry> list = new ArrayList<>();
 
         for (Entry<String, List<AbstractRosAdapter>> entry : nodeMap.entrySet())
         {
@@ -75,7 +75,7 @@ public class RosOverview
     {
         Map<String, RosNodeGroup> groupMap = nodeService.getDeviceNodes();
 
-        List<RosNodeGroupEntry> list = new ArrayList<RosNodeGroupEntry>();
+        List<RosNodeGroupEntry> list = new ArrayList<>();
 
         for (Entry<String, RosNodeGroup> group : groupMap.entrySet())
         {

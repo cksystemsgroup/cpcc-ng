@@ -32,10 +32,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.entities.RealVehicle;
-import cpcc.core.entities.RealVehicleType;
-import cpcc.core.entities.SensorDefinition;
-
 /**
  * RealVehicleTest
  */
@@ -200,14 +196,14 @@ public class RealVehicleTest
     {
         SensorDefinition sen1 = mock(SensorDefinition.class);
 
-        RealVehicle rvA = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1)
-            , RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvA = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        RealVehicle rvB = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1)
-            , RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvB = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        RealVehicle rvC = setupRealVehicle("abc", true, 10, new Date(123456789), "rv01", Arrays.asList(sen1)
-            , RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvC = setupRealVehicle("abc", true, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
         return new Object[][]{
             new Object[]{rvA, rvA},
@@ -231,38 +227,45 @@ public class RealVehicleTest
         SensorDefinition sen2 = mock(SensorDefinition.class);
         Mockito.when(sen1.getId()).thenReturn(2);
 
-        RealVehicle rvA = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-            , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvA = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        RealVehicle rvB = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-            , Arrays.asList(new SensorDefinition[0]), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvB = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01",
+            Arrays.asList(new SensorDefinition[0]), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        RealVehicle rvC = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-            , Arrays.asList(sen2), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvC = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen2),
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        RealVehicle rvD = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-            , null, RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvD = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", null,
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        RealVehicle rvE = setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01"
-            , null, RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvE = setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01", null,
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
         return new Object[][]{
-            new Object[]{rvA, setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01"
-                , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA, setupRealVehicle("abc", false, 20, new Date(123456789), "rv01"
-                , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA, setupRealVehicle("abc", false, 10, new Date(987654321), "rv01"
-                , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA, setupRealVehicle("abc", false, 10, new Date(123456789), "rv02"
-                , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA, setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-                , Arrays.asList(sen1, sen2), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA, setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-                , Arrays.asList(sen1), RealVehicleType.GROUND_STATION, "http://localhost:8080/rv01")},
-            new Object[]{rvA, setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-                , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv02")},
-            new Object[]{setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-                , Arrays.asList(sen1, sen2), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"), rvA},
+            new Object[]{rvA,
+                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
+            new Object[]{rvA,
+                setupRealVehicle("abc", false, 20, new Date(123456789), "rv01", Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
+            new Object[]{rvA,
+                setupRealVehicle("abc", false, 10, new Date(987654321), "rv01", Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
+            new Object[]{rvA,
+                setupRealVehicle("abc", false, 10, new Date(123456789), "rv02", Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
+            new Object[]{rvA,
+                setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1, sen2),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
+            new Object[]{rvA,
+                setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
+                    RealVehicleType.GROUND_STATION, "http://localhost:8080/rv01")},
+            new Object[]{rvA,
+                setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv02")},
+            new Object[]{setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1, sen2),
+                RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"), rvA},
             new Object[]{rvA, rvB},
             new Object[]{rvB, rvA},
             new Object[]{rvA, rvC},
@@ -284,8 +287,8 @@ public class RealVehicleTest
     @Test
     public void shouldReturnFalseOnComparisonWithNull()
     {
-        RealVehicle a = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList()
-            , RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle a = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(),
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
         assertThat(a.equals(null)).isFalse();
     }
@@ -293,8 +296,8 @@ public class RealVehicleTest
     @Test
     public void shouldReturnFalseOnComparisonWithOtherTypes()
     {
-        RealVehicle a = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList()
-            , RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle a = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(),
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
         assertThat(a.equals(new Object[0])).isFalse();
     }
@@ -307,22 +310,22 @@ public class RealVehicleTest
 
         return new Object[][]{
             new Object[]{Arrays.asList(
-                setupRealVehicle("abcd", false, 10, new Date(123456789L), "rv01"
-                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
-                setupRealVehicle(null, false, 10, new Date(123456789L), "rv01"
-                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
-                setupRealVehicle("abcd", false, null, new Date(123456789), "rv01"
-                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
-                setupRealVehicle("abcd", false, 10, null, "rv01"
-                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
-                setupRealVehicle("abcd", false, 10, new Date(123456789), null
-                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
-                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01"
-                    , null, RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
-                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01"
-                    , Arrays.asList(sen1), null, "http://localhost:8080/rv01"),
-                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01"
-                    , Arrays.asList(sen1), RealVehicleType.QUADROCOPTER, null))
+                setupRealVehicle("abcd", false, 10, new Date(123456789L), "rv01", Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle(null, false, 10, new Date(123456789L), "rv01", Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, null, new Date(123456789), "rv01", Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, null, "rv01", Arrays.asList(sen1), RealVehicleType.QUADROCOPTER,
+                    "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, new Date(123456789), null, Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01", null, RealVehicleType.QUADROCOPTER,
+                    "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1), null,
+                    "http://localhost:8080/rv01"),
+                setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
+                    RealVehicleType.QUADROCOPTER, null))
             },
         };
     }

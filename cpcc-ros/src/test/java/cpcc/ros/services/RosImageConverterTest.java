@@ -38,7 +38,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.ros.services.RosImageConverterImpl;
 import sensor_msgs.Image;
 
 /**

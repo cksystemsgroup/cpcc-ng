@@ -30,9 +30,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.vvrte.entities.VirtualVehicle;
-import cpcc.vvrte.entities.VirtualVehicleStorage;
-
 public class VirtualVehicleStorageTest
 {
     private VirtualVehicleStorage storage;

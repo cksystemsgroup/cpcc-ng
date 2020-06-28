@@ -71,8 +71,8 @@ public class RealVehicleJobRunnableFactory implements JobRunnableFactory
             return new RealVehicleInitJobRunnable(logger, serviceResources);
         }
 
-        logger.error("RealVehicleJobRunnableFactory: Can not create a runnable for mode " + mode
-            + " parameters are " + parameters);
+        logger.error("RealVehicleJobRunnableFactory: Can not create a runnable for mode {} parameters are {}",
+            mode, parameters);
         return null;
     }
 }

@@ -93,19 +93,17 @@ public class VRPSolver implements TspSolver
                 scale(x.getPosition().getLatitude(), minLat, maxLat),
                 scale(x.getPosition().getLongitude(), minLng, maxLng)))
             .build())
-            .forEach(x -> vrpBuilder.addJob(x));
+            .forEach(vrpBuilder::addJob);
 
         VehicleRoutingProblem problem = vrpBuilder.build();
         VehicleRoutingAlgorithm algorithm = Jsprit.createAlgorithm(problem);
         Collection<VehicleRoutingProblemSolution> solutions = algorithm.searchSolutions();
         VehicleRoutingProblemSolution bestSolution = Solutions.bestOf(solutions);
 
-        List<Task> res = bestSolution.getRoutes().stream()
+        return bestSolution.getRoutes().stream()
             .map(x -> (TourActivity.JobActivity) x.getTourActivities().getActivities().get(0))
             .map(x -> (Service) x.getJob())
             .map(x -> taskMap.get(x.getId()))
             .collect(Collectors.toList());
-
-        return res;
     }
 }

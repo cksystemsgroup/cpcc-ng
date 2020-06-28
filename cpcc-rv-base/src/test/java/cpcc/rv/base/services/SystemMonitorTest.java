@@ -19,6 +19,7 @@
 package cpcc.rv.base.services;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
@@ -74,13 +75,14 @@ public class SystemMonitorTest
 
         InOrder o = inOrder(logger);
 
-        o.verify(logger).info(matches(";SH;osName;osVersion;processors;jvmName;jvmArch;startTime"));
-        o.verify(logger).info(matches(";SV;.*"));
+        o.verify(logger).info(eq(";SH;{}"), eq("osName;osVersion;processors;jvmName;jvmArch;startTime"));
+        o.verify(logger).info(eq(";SV;{}"), anyString());
         o.verify(logger).info(matches(";H;time;uptime;processCpuTime;processCpuLoad;systemCpuLoad;systemLoadAvg;"
             + "openFileCount;threadCount;peakThreadCount;daemonThreadCount;totalStartedTheadCount;"
             + "freeMemory;maxMemory;totalMemory;heap.init;heap.used;heap.max;heap.committed;"
             + "nonheap.init;nonheap.used;nonheap.max;nonheap.committed;objPendingFinCount;.*"));
 
-        o.verify(logger, times(4)).info(matches(";V;.*"));
+        o.verify(logger, times(4)).info(eq(";V;{}"), anyString());
+        o.verifyNoMoreInteractions();
     }
 }

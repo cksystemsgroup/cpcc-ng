@@ -21,7 +21,6 @@ package cpcc.ros.sensors;
 import java.util.List;
 import java.util.Map;
 
-import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
@@ -59,14 +58,7 @@ public class Float32SensorAdapter extends AbstractSensorAdapter
         Subscriber<std_msgs.Float32> float32Subscriber =
             connectedNode.newSubscriber(getTopic().getName(), std_msgs.Float32._TYPE);
 
-        float32Subscriber.addMessageListener(new MessageListener<std_msgs.Float32>()
-        {
-            @Override
-            public void onNewMessage(std_msgs.Float32 message)
-            {
-                value = message;
-            }
-        });
+        float32Subscriber.addMessageListener(message -> value = message);
 
         setStartCompleted();
     }

@@ -38,7 +38,7 @@ import cpcc.vvrte.entities.VirtualVehicle;
  */
 public class JavascriptServiceImpl implements JavascriptService
 {
-    private Set<String> allowedClassesRegex = new HashSet<String>();
+    private Set<String> allowedClassesRegex = new HashSet<>();
 
     private Logger logger;
     private ServiceResources serviceResources;

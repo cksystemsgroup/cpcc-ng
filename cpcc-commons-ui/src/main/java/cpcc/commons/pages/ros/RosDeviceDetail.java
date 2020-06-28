@@ -176,7 +176,7 @@ public class RosDeviceDetail
             return Collections.emptySet();
         }
 
-        Map<String, String> parameterMap = new TreeMap<String, String>();
+        Map<String, String> parameterMap = new TreeMap<>();
         for (Entry<String, List<String>> entry : state.entrySet())
         {
             parameterMap.put(entry.getKey(), getEntryString(entry.getKey(), entry.getValue()));
@@ -192,8 +192,6 @@ public class RosDeviceDetail
      */
     private static String getEntryString(String key, List<String> valueList)
     {
-        // TODO move to utility class!
-
         StringBuilder b = new StringBuilder(key).append(" = ");
 
         if (valueList.size() > 1)

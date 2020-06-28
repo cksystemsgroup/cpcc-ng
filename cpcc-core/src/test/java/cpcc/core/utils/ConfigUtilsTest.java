@@ -18,8 +18,8 @@
 
 package cpcc.core.utils;
 
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -31,7 +31,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
-import cpcc.core.utils.ConfigUtils;
 
 /**
  * ConfigUtilsTest

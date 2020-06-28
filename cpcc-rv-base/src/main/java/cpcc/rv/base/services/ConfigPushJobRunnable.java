@@ -18,6 +18,7 @@
 
 package cpcc.rv.base.services;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public class ConfigPushJobRunnable implements JobRunnable
      * {@inheritDoc}
      */
     @Override
-    public void run() throws Exception
+    public void run() throws IOException
     {
         QueryManager queryManager = serviceResources.getService(QueryManager.class);
         CommunicationService com = serviceResources.getService(CommunicationService.class);

@@ -34,8 +34,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.StreamResponse;
 import org.testng.annotations.Test;
 
-import cpcc.core.utils.PngImageStreamResponse;
-
 /**
  * PngImageStreamResponseTest
  */

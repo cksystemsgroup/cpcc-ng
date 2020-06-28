@@ -54,7 +54,7 @@ public class MigrationReceiveJobRunnable implements JobRunnable
      * {@inheritDoc}
      */
     @Override
-    public void run() throws Exception
+    public void run()
     {
         PerthreadManager perthreadManager = serviceResources.getService(PerthreadManager.class);
         VirtualVehicleMigrator migrator = serviceResources.getService(VirtualVehicleMigrator.class);
@@ -62,9 +62,8 @@ public class MigrationReceiveJobRunnable implements JobRunnable
         String name = Thread.currentThread().getName();
         Thread.currentThread().setName("MIG-RCV-" + name);
 
-        try
+        try (InputStream inStream = new ByteArrayInputStream(data))
         {
-            InputStream inStream = new ByteArrayInputStream(data);
             migrator.storeChunk(inStream);
         }
         catch (Throwable e)

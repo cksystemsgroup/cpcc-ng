@@ -52,13 +52,13 @@ public class AcoTspTasks extends AbstractTspSolver
         {
             return path;
         }
-        
+
         double[][] costMatrix = setupCostMatrix(position, path);
 
         List<Integer> bestPath = AcoTspSimple.calculateBestPath(costMatrix, iterations, boost);
         bestPath = reorderPath(bestPath, START_POINT_INDEX, START_POINT_INDEX);
 
-        List<Task> r = new ArrayList<Task>();
+        List<Task> r = new ArrayList<>();
         for (Integer k : bestPath)
         {
             if (k - 1 >= 0 && k - 1 < path.size())
@@ -68,6 +68,8 @@ public class AcoTspTasks extends AbstractTspSolver
         }
 
         return r;
+
+        // return new AcoTspSolver().calculateBestPath(position, path);
     }
 
     /**
@@ -89,7 +91,7 @@ public class AcoTspTasks extends AbstractTspSolver
                 + path.toString());
         }
 
-        List<Integer> newPath = new ArrayList<Integer>();
+        List<Integer> newPath = new ArrayList<>();
 
         if (l + 1 == f)
         {

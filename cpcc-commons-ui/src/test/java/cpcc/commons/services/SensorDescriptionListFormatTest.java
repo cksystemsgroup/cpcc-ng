@@ -32,7 +32,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.commons.services.SensorDescriptionListFormat;
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;

@@ -93,28 +93,11 @@ public final class RealVehicleBaseModule
      * @param monitor the system monitor.
      */
     @Startup
-    public static void scheduleJobs(PeriodicExecutor executor, final StateSynchronizer stateSync
-        , final SystemMonitor monitor)
+    public static void scheduleJobs(PeriodicExecutor executor, final StateSynchronizer stateSync,
+        final SystemMonitor monitor)
     {
-        // TODO check cycle time!
-        executor.addJob(new CronSchedule("0 * * * * ?"), "Push Configuration", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                stateSync.pushConfiguration();
-            }
-        });
-
-        // TODO check cycle time!
-        executor.addJob(new CronSchedule("*/15 * * * * ?"), "System Monitor", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                monitor.writeLogEntry();
-            }
-        });
+        executor.addJob(new CronSchedule("0 * * * * ?"), "Push Configuration", stateSync::pushConfiguration);
+        executor.addJob(new CronSchedule("*/15 * * * * ?"), "System Monitor", monitor::writeLogEntry);
     }
 
     /**
@@ -141,12 +124,12 @@ public final class RealVehicleBaseModule
      * @param numberOfPoolThreads the number of job queue pool threads.
      */
     @Startup
-    public static void setupJobQueues(Logger logger, JobService jobService, HibernateSessionManager sessionManager
-        , TimeService timeService, JobRepository jobRepository
-        , @Symbol(RealVehicleBaseConstants.RV_BASE_JOB_POOL_THREADS) int numberOfPoolThreads)
+    public static void setupJobQueues(Logger logger, JobService jobService, HibernateSessionManager sessionManager,
+        TimeService timeService, JobRepository jobRepository,
+        @Symbol(RealVehicleBaseConstants.RV_BASE_JOB_POOL_THREADS) int numberOfPoolThreads)
     {
-        logger.info("Creating job queue '" + RealVehicleBaseConstants.JOB_QUEUE_NAME + "' having "
-            + numberOfPoolThreads + " pool threads.");
+        logger.info("Creating job queue '{}' having {} pool threads.",
+            RealVehicleBaseConstants.JOB_QUEUE_NAME, numberOfPoolThreads);
 
         JobRunnableFactory factory = new RealVehicleJobRunnableFactory();
 
@@ -154,7 +137,7 @@ public final class RealVehicleBaseModule
             RealVehicleBaseConstants.JOB_QUEUE_NAME, logger, sessionManager, timeService, Arrays.asList(factory),
             numberOfPoolThreads));
 
-        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME
-            , "mode=" + RealVehicleBaseConstants.JOB_MODE_INIT);
+        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME,
+            "mode=" + RealVehicleBaseConstants.JOB_MODE_INIT);
     }
 }

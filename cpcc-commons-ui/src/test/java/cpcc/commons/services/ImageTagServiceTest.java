@@ -32,8 +32,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.commons.services.ImageTagService;
-import cpcc.commons.services.ImageTagServiceImpl;
 import cpcc.ros.base.AbstractRosAdapter;
 import cpcc.ros.base.RosTopic;
 import cpcc.ros.sensors.GpsSensorAdapter;

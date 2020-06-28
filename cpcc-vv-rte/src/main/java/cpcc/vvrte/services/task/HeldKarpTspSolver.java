@@ -108,7 +108,7 @@ public class HeldKarpTspSolver extends AbstractTspSolver
 
         currentNode.computeHeldKarp(bestNode.lowerBound);
 
-        PriorityQueue<Node> pq = new PriorityQueue<Node>(11, new NodeComparator());
+        PriorityQueue<Node> pq = new PriorityQueue<>(11, new NodeComparator());
 
         do
         {
@@ -135,7 +135,7 @@ public class HeldKarpTspSolver extends AbstractTspSolver
                     break;
                 }
 
-                PriorityQueue<Node> children = new PriorityQueue<Node>(11, new NodeComparator());
+                PriorityQueue<Node> children = new PriorityQueue<>(11, new NodeComparator());
 
                 addToChildren(n, bestNode, currentNode, i, children);
 
@@ -256,12 +256,12 @@ public class HeldKarpTspSolver extends AbstractTspSolver
                 double previousLowerBound = lowerBound;
                 computeOneTree();
 
-                if (!(lowerBound < bestNodelowerBound))
+                if (lowerBound >= bestNodelowerBound)
                 {
                     return;
                 }
 
-                if (!(lowerBound < previousLowerBound))
+                if (lowerBound >= previousLowerBound)
                 {
                     lambda *= 0.9;
                 }

@@ -62,6 +62,7 @@
 									<action>
 										<execute>
 											<runOnIncremental>true</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
 									</action>
 								</pluginExecution>
@@ -107,18 +108,15 @@
 				<executions>
 					<execution>
 						<id>clean</id>
-						<configuration>
-							<task>
-								<echo>Cleaning deployed website</echo>
-							</task>
-							<tasks>
-								<delete dir="target/generated-resources/cpcc/tapestry/ace" />
-							</tasks>
-						</configuration>
 						<phase>clean</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
+						<configuration>
+							<tasks>
+								<delete dir="target/generated-resources/cpcc/tapestry/ace" />
+							</tasks>
+						</configuration>
 					</execution>
 					<execution>
 						<id>unzip-ace</id>

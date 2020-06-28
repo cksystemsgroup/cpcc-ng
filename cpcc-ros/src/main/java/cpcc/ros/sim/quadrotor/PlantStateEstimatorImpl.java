@@ -44,8 +44,6 @@ public class PlantStateEstimatorImpl implements PlantStateEstimator
     private GeodeticSystem geodeticSystem;
     private PlantMotionAlgorithm algorithm;
 
-    private double distNorm;
-
     /**
      * @param config the configuration.
      * @param plantState the current plant state.
@@ -130,15 +128,12 @@ public class PlantStateEstimatorImpl implements PlantStateEstimator
         CartesianCoordinate distance = targetPosition.subtract(initPosition);
         normalizedDist = distance.normalize();
 
-        distNorm = distance.norm();
-
+        double distNorm = distance.norm();
         double minDistOne = 8.0 * maxV * maxV / 3.0 / maxA;
 
         algorithm = distNorm >= minDistOne
             ? new PlantMotionAlgorithmOne(LOG, distNorm, maxV, maxA)
             : new PlantMotionAlgorithmTwo(LOG, distNorm, maxA);
-
-        // algorithm = new PlantMotionAlgorithmZero(state, distNorm, maxV, maxV);
 
         totalTime = algorithm.getTotalTime();
 

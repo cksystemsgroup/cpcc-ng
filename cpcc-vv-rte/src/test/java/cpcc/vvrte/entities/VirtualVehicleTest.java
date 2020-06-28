@@ -1,16 +1,15 @@
 package cpcc.vvrte.entities;
 
-import cpcc.vvrte.entities.VirtualVehicleState;
-import cpcc.core.entities.RealVehicle;
-import java.util.Date;
-import cpcc.vvrte.entities.Task;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+
+import java.util.Date;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import cpcc.core.entities.RealVehicle;
 
 public class VirtualVehicleTest
 {

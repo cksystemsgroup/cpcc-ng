@@ -37,6 +37,11 @@ import cpcc.core.services.jobs.TimeService;
 public class RealVehicleRepositoryImpl implements RealVehicleRepository
 {
     private static final int TOO_OLD_TO_REMEMBER = 86400000;
+
+    private static final String LAST_UPDATE = "lastUpdate";
+    private static final String TYPE = "type";
+    private static final String DELETED = "deleted";
+    private static final String ID = "id";
     private static final String REAL_VEHICLE_NAME = "name";
     private static final String REAL_VEHICLE_URL = "url";
 
@@ -65,9 +70,9 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public List<RealVehicle> findAllRealVehicles()
     {
-        return (List<RealVehicle>) session
+        return session
             .createCriteria(RealVehicle.class)
-            .addOrder(Property.forName("id").asc())
+            .addOrder(Property.forName(ID).asc())
             .list();
     }
 
@@ -78,10 +83,10 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public List<RealVehicle> findAllActiveRealVehicles()
     {
-        return (List<RealVehicle>) session
+        return session
             .createCriteria(RealVehicle.class)
-            .add(Restrictions.eq("deleted", Boolean.FALSE))
-            .addOrder(Property.forName("id").asc())
+            .add(Restrictions.eq(DELETED, Boolean.FALSE))
+            .addOrder(Property.forName(ID).asc())
             .list();
     }
 
@@ -92,9 +97,9 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public List<RealVehicle> findAllGroundStations()
     {
-        return (List<RealVehicle>) session
+        return session
             .createCriteria(RealVehicle.class, "rv")
-            .add(Restrictions.eq("type", RealVehicleType.GROUND_STATION))
+            .add(Restrictions.eq(TYPE, RealVehicleType.GROUND_STATION))
             .list();
     }
 
@@ -111,10 +116,10 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
             return findAllActiveRealVehicles();
         }
 
-        return (List<RealVehicle>) session
+        return session
             .createCriteria(RealVehicle.class)
             .add(Restrictions.not(Restrictions.eq(REAL_VEHICLE_NAME, rvNameParam.getValue())))
-            .add(Restrictions.eq("deleted", Boolean.FALSE))
+            .add(Restrictions.eq(DELETED, Boolean.FALSE))
             .list();
     }
 
@@ -125,7 +130,7 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public List<RealVehicle> findAllRealVehiclesOrderByName()
     {
-        return (List<RealVehicle>) session
+        return session
             .createCriteria(RealVehicle.class)
             .addOrder(Property.forName(REAL_VEHICLE_NAME).asc())
             .list();
@@ -138,13 +143,13 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public RealVehicle findRealVehicleByName(String name)
     {
-        List<RealVehicle> rvList = (List<RealVehicle>) session
+        List<RealVehicle> rvList = session
             .createCriteria(RealVehicle.class)
             .add(Restrictions.eq(REAL_VEHICLE_NAME, name))
-            .add(Restrictions.eq("deleted", Boolean.FALSE))
+            .add(Restrictions.eq(DELETED, Boolean.FALSE))
             .list();
 
-        return rvList.size() > 0 ? rvList.get(0) : null;
+        return !rvList.isEmpty() ? rvList.get(0) : null;
     }
 
     /**
@@ -167,7 +172,7 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     {
         return (RealVehicle) session
             .createCriteria(RealVehicle.class)
-            .add(Restrictions.eq("id", id))
+            .add(Restrictions.eq(ID, id))
             .uniqueResult();
     }
 
@@ -188,7 +193,7 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public List<RealVehicleState> findAllRealVehicleStates()
     {
-        return (List<RealVehicleState>) session
+        return session
             .createCriteria(RealVehicleState.class)
             .list();
     }
@@ -201,7 +206,7 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     {
         return (RealVehicleState) session
             .createCriteria(RealVehicleState.class)
-            .add(Restrictions.eq("id", id))
+            .add(Restrictions.eq(ID, id))
             .uniqueResult();
     }
 
@@ -212,9 +217,9 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     public void cleanupOldVehicleStates()
     {
         @SuppressWarnings("unchecked")
-        List<RealVehicleState> oldRvStates = (List<RealVehicleState>) session
+        List<RealVehicleState> oldRvStates = session
             .createCriteria(RealVehicleState.class)
-            .add(Restrictions.le("lastUpdate", new Date(timeService.currentTimeMillis() - TOO_OLD_TO_REMEMBER)))
+            .add(Restrictions.le(LAST_UPDATE, new Date(timeService.currentTimeMillis() - TOO_OLD_TO_REMEMBER)))
             .list();
 
         oldRvStates.stream().forEach(x -> session.delete(x));
@@ -227,8 +232,6 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     public boolean isRealVehicleConnected(int id)
     {
         RealVehicleState state = findRealVehicleStateById(id);
-        return state != null
-            ? timeService.currentTimeMillis() - state.getLastUpdate().getTime() < connectionTimeout
-            : false;
+        return state != null && timeService.currentTimeMillis() - state.getLastUpdate().getTime() < connectionTimeout;
     }
 }

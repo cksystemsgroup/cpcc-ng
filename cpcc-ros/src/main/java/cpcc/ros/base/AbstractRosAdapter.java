@@ -165,7 +165,7 @@ public abstract class AbstractRosAdapter extends AbstractNodeMain
      */
     public Map<String, List<String>> getCurrentState()
     {
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        Map<String, List<String>> map = new HashMap<>();
 
         if (getConfig() != null)
         {

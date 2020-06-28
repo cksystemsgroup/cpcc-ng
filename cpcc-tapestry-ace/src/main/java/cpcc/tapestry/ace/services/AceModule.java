@@ -21,14 +21,8 @@ import cpcc.core.utils.VersionUtils;
  */
 public final class AceModule
 {
-    //    private static final String MODULE_VERSION = "module.version";
     private static final String PROPERTY_PATH =
         AceModule.class.getPackage().getName().replace('.', '/') + "/module.properties";
-    //    private static final String RESOURCE_NOT_FOUND = "Property file resource not found: " + PROPERTY_PATH;
-    //    private static final String VERSION_NOT_SET = "Property " + MODULE_VERSION
-    //        + " is not set in resource " + PROPERTY_PATH;
-    //    private static final String RESOURCE_FILTERING_FAILED = "Property " + MODULE_VERSION
-    //        + " is not filtered in resource " + PROPERTY_PATH;
 
     private static final String ROOT = "classpath:META-INF/assets/ace";
 
@@ -69,8 +63,8 @@ public final class AceModule
      * @param aceShim the shim resource.
      */
     @Contribute(ModuleManager.class)
-    public static void setupBaseModules(MappedConfiguration<String, Object> configuration
-        , @Path(ROOT + "/ace-shim.js") Resource aceShim)
+    public static void setupBaseModules(MappedConfiguration<String, Object> configuration,
+        @Path(ROOT + "/ace-shim.js") Resource aceShim)
     {
         configuration.add("ace", new JavaScriptModuleConfiguration(aceShim));
     }
@@ -80,8 +74,8 @@ public final class AceModule
      * @param type the stack extension type.
      * @param paths the extension paths.
      */
-    private static void add(OrderedConfiguration<StackExtension> configuration, StackExtensionType type
-        , String... paths)
+    private static void add(OrderedConfiguration<StackExtension> configuration, StackExtensionType type,
+        String... paths)
     {
         for (String path : paths)
         {
@@ -91,39 +85,4 @@ public final class AceModule
             configuration.add(id, new StackExtension(type, path));
         }
     }
-
-    //    /**
-    //     * @param moduleName the module name
-    //     * @return the module name and module version.
-    //     */
-    //    private static String getModuleVersion(String moduleName)
-    //    {
-    //        try (InputStream stream = AceModule.class.getResourceAsStream("module.properties"))
-    //        {
-    //            Properties props = new Properties();
-    //            props.load(stream);
-    //            String version = props.getProperty("module.version");
-    //
-    //            if (StringUtils.isEmpty(version))
-    //            {
-    //                throw new IllegalArgumentException(VERSION_NOT_SET);
-    //            }
-    //
-    //            if (version.startsWith("${"))
-    //            {
-    //                throw new IllegalArgumentException(RESOURCE_FILTERING_FAILED);
-    //            }
-    //
-    //            if (version.endsWith("SNAPSHOT"))
-    //            {
-    //                version += '-' + System.currentTimeMillis();
-    //            }
-    //
-    //            return moduleName + '/' + version;
-    //        }
-    //        catch (IOException e)
-    //        {
-    //            throw new IllegalArgumentException(RESOURCE_NOT_FOUND);
-    //        }
-    //    }
 }

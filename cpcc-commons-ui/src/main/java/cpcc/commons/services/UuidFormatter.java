@@ -37,7 +37,7 @@ public class UuidFormatter extends Format
         pos.setBeginIndex(0);
         pos.setEndIndex(0);
 
-        if (obj != null && obj instanceof String)
+        if (obj instanceof String)
         {
             String uuid = ((String) obj);
             toAppendTo.append(uuid.length() > 8 ? uuid.substring(0, 8) : uuid).append("...");

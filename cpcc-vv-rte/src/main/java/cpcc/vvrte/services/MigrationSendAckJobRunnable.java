@@ -19,6 +19,7 @@
 package cpcc.vvrte.services;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,9 +43,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class MigrationSendAckJobRunnable implements JobRunnable
 {
-    private static final String LOG_MIG_WRONG_STATE =
-        "Can not acknowledge vehicle %s (%d) because of wrong state %s instead of %s";
-
     private Logger logger;
     private ServiceResources serviceResources;
     private Map<String, String> parameters;
@@ -57,8 +55,8 @@ public class MigrationSendAckJobRunnable implements JobRunnable
      * @param data the optional job data.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
-    public MigrationSendAckJobRunnable(Logger logger, ServiceResources serviceResources
-        , Map<String, String> parameters, byte[] data)
+    public MigrationSendAckJobRunnable(Logger logger, ServiceResources serviceResources, Map<String, String> parameters,
+        byte[] data)
     {
         this.logger = logger;
         this.serviceResources = serviceResources;
@@ -70,12 +68,12 @@ public class MigrationSendAckJobRunnable implements JobRunnable
      * {@inheritDoc}
      */
     @Override
-    public void run() throws Exception
+    public void run() throws IOException
     {
         String id = parameters.get("id");
         if (StringUtils.isBlank(id))
         {
-            logger.error("Can not acknowledge virtual vehicle migration , parameters=" + parameters);
+            logger.error("Can not acknowledge virtual vehicle migration , parameters={}", parameters);
             return;
         }
 
@@ -90,14 +88,14 @@ public class MigrationSendAckJobRunnable implements JobRunnable
 
         if (vehicle == null)
         {
-            logger.error("Can not find VV for ID " + vvId + " (ACK).");
+            logger.error("Can not find VV for ID {} (ACK).", vvId);
             return;
         }
 
         if (vehicle.getState() != VirtualVehicleState.MIGRATION_COMPLETED_SND)
         {
-            logger.error(String.format(LOG_MIG_WRONG_STATE, vehicle.getName(), vehicle.getId()
-                , vehicle.getState().name(), VirtualVehicleState.MIGRATION_COMPLETED_SND.name()));
+            logger.error("Can not acknowledge vehicle {} ({}) because of wrong state {} instead of {}",
+                vehicle.getName(), vehicle.getId(), vehicle.getState(), VirtualVehicleState.MIGRATION_COMPLETED_SND);
             return;
         }
 
@@ -109,25 +107,25 @@ public class MigrationSendAckJobRunnable implements JobRunnable
             CommunicationResponse response = com.transfer(
                 vehicle.getMigrationSource(), VvRteConstants.MIGRATION_ACK_CONNECTOR, data);
 
-            String content = new String(response.getContent(), "UTF-8");
+            String content = new String(response.getContent(), StandardCharsets.UTF_8);
 
             if (response.getStatus() == Status.OK)
             {
-                logger.info("ACK virtual vehicle migration , parameters=" + parameters + " " + content);
+                logger.info("ACK virtual vehicle migration , parameters={} {}", parameters, content);
                 vvRepository.deleteVirtualVehicleById(vehicle);
             }
             else
             {
-                logger.error("Can not ACK VV " + vehicle.getName() + " to RV " + vehicle.getMigrationSource().getName()
-                    + " reason: " + content);
+                logger.error("Can not ACK VV {} to RV {} reason: {}",
+                    vehicle.getName(), vehicle.getMigrationSource().getName(), content);
             }
 
             sessionManager.commit();
         }
         catch (IOException e)
         {
-            logger.error("Migration ACK aborted again! Virtual vehicle: " + vehicle.getName()
-                + " (" + vehicle.getUuid() + ")", e);
+            logger.error("Migration ACK aborted again! Virtual vehicle: {} ({})",
+                vehicle.getName(), vehicle.getUuid(), e);
             sessionManager.abort();
         }
         finally

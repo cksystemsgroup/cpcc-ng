@@ -10,17 +10,6 @@
 
 [ "x$*" = "x" ] && die "Usage:  $(basename $0) dbUrl file1 [file2 ...]";
 
-update_hsqldb () {
-	URL="$1"; shift; CP="$CPCC_DIR/lib/sqltool-${COM_HSQLDB_VERSION}.jar";
-
-	COUNT=$(java -jar $CP --sql 'select count(*) from devices;' "--inlineRc=url=${URL},user=sa,password=");
-
-	[ $COUNT -ne 0 ] && echo "Database '$URL' has been already initialized." && exit 0;
-
-	echo "Executing scripts $*";
-	java -jar $CP "--inlineRc=url=${URL},user=sa,password=" --autoCommit $*;
-}
-
 update_h2db () {
 	URL="$1"; shift; CP="$CPCC_DIR/lib/h2-${COM_H2DB_VERSION}.jar";
 	TMP="tmp.$$";
@@ -35,5 +24,4 @@ update_h2db () {
 	done
 }
 
-# update_hsqldb $*;
 update_h2db $*;

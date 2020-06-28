@@ -45,8 +45,8 @@ public class JobQueue implements JobQueueCallback
     private ExecutorService executorService;
     private ServiceResources serviceResources;
 
-    private Map<Integer, Runnable> taskMap = Collections.synchronizedMap(new HashMap<Integer, Runnable>());
-    private List<Integer> doneList = new ArrayList<Integer>();
+    private Map<Integer, Runnable> taskMap = Collections.synchronizedMap(new HashMap<>());
+    private List<Integer> doneList = new ArrayList<>();
 
     /**
      * @param queueName the (unique) name of this queue.
@@ -56,8 +56,8 @@ public class JobQueue implements JobQueueCallback
      * @param factoryList the factory list.
      * @param numberOfPoolThreads the number of pool threads to be used.
      */
-    public JobQueue(String queueName, Logger logger, HibernateSessionManager sessionManager, TimeService timeService
-        , List<JobRunnableFactory> factoryList, int numberOfPoolThreads)
+    public JobQueue(String queueName, Logger logger, HibernateSessionManager sessionManager, TimeService timeService,
+        List<JobRunnableFactory> factoryList, int numberOfPoolThreads)
     {
         this.logger = logger;
         this.sessionManager = sessionManager;

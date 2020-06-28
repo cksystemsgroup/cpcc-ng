@@ -25,9 +25,6 @@ import java.util.Date;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.entities.Job;
-import cpcc.core.entities.JobStatus;
-
 public class JobTest
 {
     private String resultText;

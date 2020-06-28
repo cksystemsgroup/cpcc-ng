@@ -70,8 +70,8 @@ public class VvRteJobRunnableFactory implements JobRunnableFactory
             return new StuckMigrationsJobRunnable(serviceResources);
         }
 
-        logger.error("VvRteJobRunnableFactory: Can not create a runnable for mode " + mode
-            + " parameters are " + parameters);
+        logger.error("VvRteJobRunnableFactory: Can not create a runnable for mode {} parameters are {}",
+            mode, parameters);
         return null;
     }
 }

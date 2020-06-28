@@ -39,7 +39,6 @@ import cpcc.core.services.opts.Option;
 import cpcc.core.services.opts.OptionsParserService;
 import cpcc.core.services.opts.ParseException;
 import cpcc.core.services.opts.Token;
-import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.base.VirtualVehicleMappingDecision;
 import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.TaskState;
@@ -48,7 +47,6 @@ import cpcc.vvrte.entities.VirtualVehicleStorage;
 import cpcc.vvrte.services.db.VvRteRepository;
 import cpcc.vvrte.services.js.ApplicationState;
 import cpcc.vvrte.services.js.BuiltInFunctions;
-import cpcc.vvrte.services.ros.MessageConverter;
 import cpcc.vvrte.services.task.TaskAnalyzer;
 
 /**
@@ -66,9 +64,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private static final String SEQUENCE = "sequence";
     private static final String REPEAT = "repeat";
 
-    //    private RosNodeService rns;
     private OptionsParserService opts;
-    //    private MessageConverter conv;
     private VirtualVehicleMapper mapper;
     private TaskAnalyzer taskAnalyzer;
     private VvRteRepository vvRteRepo;
@@ -77,9 +73,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private Logger logger;
 
     /**
-     * @param rns the ROS node service.
      * @param opts the options parser service-
-     * @param conv the message converter service.
      * @param mapper the virtual vehicle mapper.
      * @param taskAnalyzer the task analyzer.
      * @param vvRteRepo the virtual vehicle repository.
@@ -87,13 +81,10 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      * @param sessionManager the Hibernate session manager.
      * @param logger the application logger.
      */
-    public BuiltInFunctionsImpl(RosNodeService rns, OptionsParserService opts, MessageConverter conv,
-        VirtualVehicleMapper mapper, TaskAnalyzer taskAnalyzer, VvRteRepository vvRteRepo, QueryManager qm,
-        HibernateSessionManager sessionManager, Logger logger)
+    public BuiltInFunctionsImpl(OptionsParserService opts, VirtualVehicleMapper mapper, TaskAnalyzer taskAnalyzer,
+        VvRteRepository vvRteRepo, QueryManager qm, HibernateSessionManager sessionManager, Logger logger)
     {
-        //        this.rns = rns;
         this.opts = opts;
-        //        this.conv = conv;
         this.mapper = mapper;
         this.taskAnalyzer = taskAnalyzer;
         this.vvRteRepo = vvRteRepo;
@@ -135,7 +126,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             return Collections.emptyList();
         }
 
-        List<ScriptableObject> sensorList = new ArrayList<ScriptableObject>();
+        List<ScriptableObject> sensorList = new ArrayList<>();
 
         for (SensorDefinition sd : sensorDefinitionList)
         {
@@ -218,23 +209,6 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         return convertSensorDefinition(sd);
     }
 
-    //    /**
-    //     * {@inheritDoc}
-    //     */
-    //    @Override
-    //    public ScriptableObject getSensorValue(ScriptableObject sensor)
-    //    {
-    //        SensorDefinition sd = qm.findSensorDefinitionByDescription((String) sensor.get(DESCRIPTION));
-    //
-    //        if (sd == null || sd.getVisibility() == SensorVisibility.NO_VV)
-    //        {
-    //            return null;
-    //        }
-    //
-    //        AbstractRosAdapter node = rns.findAdapterNodeBySensorDefinitionId(sd.getId());
-    //        return conv.convertMessageToJS(node.getValue());
-    //    }
-
     /**
      * {@inheritDoc}
      */
@@ -248,7 +222,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
 
         if (vehicle == null)
         {
-            logger.error("Can not find Virtual Vehicle for UUID " + vehicleUUID);
+            logger.error("Can not find Virtual Vehicle for UUID {}", vehicleUUID);
             return;
         }
 
@@ -281,7 +255,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             task.setVehicle(vehicle);
             sessionManager.getSession().saveOrUpdate(vehicle);
             sessionManager.getSession().saveOrUpdate(task);
-            initiateTaskExecution(managementParameters, taskParameters, task);
+            initiateTaskExecution(taskParameters, task);
         }
     }
 
@@ -326,12 +300,10 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     }
 
     /**
-     * @param vehicle the virtual vehicle.
      * @param managementParameters the management parameters.
-     * @param taskParameters the task parameters.
+     * @param task the task.
      */
-    private void initiateTaskExecution(ScriptableObject managementParameters, ScriptableObject taskParameters,
-        Task task)
+    private void initiateTaskExecution(ScriptableObject managementParameters, Task task)
     {
         logger.debug("*** no migration (execute task).");
 
@@ -375,7 +347,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public List<String> listObjects(String pattern)
     {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         List<String> itemNames = vvRteRepo.findAllStorageItemNames();
         for (String name : itemNames)
         {

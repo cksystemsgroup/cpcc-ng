@@ -34,9 +34,7 @@ import cpcc.core.services.opts.OptionsParserServiceImpl;
 import cpcc.core.services.opts.ParseException;
 import cpcc.core.services.opts.Token;
 import cpcc.ros.base.AbstractRosAdapter;
-import cpcc.ros.services.RosNodeService;
 import cpcc.vvrte.services.db.VvRteRepository;
-import cpcc.vvrte.services.ros.MessageConverter;
 import cpcc.vvrte.services.task.TaskAnalyzer;
 import cpcc.vvrte.utils.JavaScriptUtils;
 
@@ -45,11 +43,8 @@ public class BuiltInFunctionsTest
     private static final String SENSOR_3_PARAMETERS = "bugger=lala looney=3.141592 caspar='xxx uu'";
 
     private BuiltInFunctionsImpl sut;
-    private RosNodeService rns;
     private OptionsParserService opts;
-    private MessageConverter conv;
     private VirtualVehicleMapper mapper;
-    // private TaskExecutionService taskExecutor;
     private TaskAnalyzer taskAnalyzer;
     private VvRteRepository vvRteRepo;
     private QueryManager qm;
@@ -131,18 +126,9 @@ public class BuiltInFunctionsTest
         when(adapter3.toString()).thenReturn("adapter3");
         when(adapter3.getValue()).thenReturn(message3);
 
-        rns = mock(RosNodeService.class);
-        when(rns.findAdapterNodeBySensorDefinitionId(sensor1.getId())).thenReturn(adapter1);
-        when(rns.findAdapterNodeBySensorDefinitionId(sensor2.getId())).thenReturn(adapter2);
-        when(rns.findAdapterNodeBySensorDefinitionId(sensor3.getId())).thenReturn(adapter3);
-
         opts = mock(OptionsParserService.class);
 
-        conv = mock(MessageConverter.class);
-
         mapper = mock(VirtualVehicleMapper.class);
-
-        // taskExecutor = mock(TaskExecutionService.class);
 
         taskAnalyzer = mock(TaskAnalyzer.class);
 
@@ -153,8 +139,7 @@ public class BuiltInFunctionsTest
         sessionManager = mock(HibernateSessionManager.class);
         logger = mock(Logger.class);
 
-        sut = new BuiltInFunctionsImpl(rns, opts, conv, mapper, taskAnalyzer, vvRteRepo, qm
-            , sessionManager, logger);
+        sut = new BuiltInFunctionsImpl(opts, mapper, taskAnalyzer, vvRteRepo, qm, sessionManager, logger);
     }
 
     @Test
@@ -302,39 +287,36 @@ public class BuiltInFunctionsTest
         Collection<Option> opts3 = parser.parse(s3.getParameters());
 
         return new Object[][]{
-            new Object[]{"d1", s1, opts1
-                , "{\"id\":101,\"description\":\"d1\",\"messageType\":\"mt1\""
-                    + ",\"type\":\"ALTIMETER\",\"visibility\":\"ALL_VV\"}"},
-            new Object[]{"d2", s2, opts2
-                , "{\"id\":202,\"description\":\"d2\",\"messageType\":\"mt2\""
-                    + ",\"type\":\"AREA_OF_OPERATIONS\",\"visibility\":\"ALL_VV\"}"},
-            new Object[]{"d3", s3, opts3
-                , "{\"id\":303,\"description\":\"d3\",\"messageType\":\"mt3\""
-                    + ",\"type\":\"CAMERA\",\"visibility\":\"PRIVILEGED_VV\""
-                    + ",\"params\":{\"bugger\":\"lala\",\"looney\":3.141592,\"caspar\":\"xxx uu\"}}"},
+            new Object[]{"d1", s1, opts1, "{\"id\":101,\"description\":\"d1\",\"messageType\":\"mt1\""
+                + ",\"type\":\"ALTIMETER\",\"visibility\":\"ALL_VV\"}"},
+            new Object[]{"d2", s2, opts2, "{\"id\":202,\"description\":\"d2\",\"messageType\":\"mt2\""
+                + ",\"type\":\"AREA_OF_OPERATIONS\",\"visibility\":\"ALL_VV\"}"},
+            new Object[]{"d3", s3, opts3, "{\"id\":303,\"description\":\"d3\",\"messageType\":\"mt3\""
+                + ",\"type\":\"CAMERA\",\"visibility\":\"PRIVILEGED_VV\""
+                + ",\"params\":{\"bugger\":\"lala\",\"looney\":3.141592,\"caspar\":\"xxx uu\"}}"},
         };
     }
 
-//    @Test(dataProvider = "sensorsDataProvider")
-//    public void shouldGetSensors(String description, SensorDefinition sensor, List<Option> options, String expectedJson)
-//        throws JSONException, IOException, ParseException
-//    {
-//        when(qm.findSensorDefinitionByDescription(description)).thenReturn(sensor);
-//        when(opts.parse(sensor.getParameters())).thenReturn(options);
-//
-//        ScriptableObject actual = sut.getSensor(description);
-//
-//        if (actual == null && expectedJson == null)
-//        {
-//            return;
-//        }
-//
-//        String actualJson = JavaScriptUtils.toJsonString(actual);
-//        System.out.println(actualJson.replace("\"", "\\\""));
-//
-//        JSONAssert.assertEquals(expectedJson, actualJson, false);
-//        JSONAssert.assertEquals(actualJson, expectedJson, false);
-//    }
+    //    @Test(dataProvider = "sensorsDataProvider")
+    //    public void shouldGetSensors(String description, SensorDefinition sensor, List<Option> options, String expectedJson)
+    //        throws JSONException, IOException, ParseException
+    //    {
+    //        when(qm.findSensorDefinitionByDescription(description)).thenReturn(sensor);
+    //        when(opts.parse(sensor.getParameters())).thenReturn(options);
+    //
+    //        ScriptableObject actual = sut.getSensor(description);
+    //
+    //        if (actual == null && expectedJson == null)
+    //        {
+    //            return;
+    //        }
+    //
+    //        String actualJson = JavaScriptUtils.toJsonString(actual);
+    //        System.out.println(actualJson.replace("\"", "\\\""));
+    //
+    //        JSONAssert.assertEquals(expectedJson, actualJson, false);
+    //        JSONAssert.assertEquals(actualJson, expectedJson, false);
+    //    }
 
     @DataProvider
     public Object[][] invisibleSensorsDataProvider() throws IOException, ParseException
@@ -381,16 +363,16 @@ public class BuiltInFunctionsTest
         };
     }
 
-//    @Test(dataProvider = "invisibleSensorsDataProvider")
-//    public void shouldNotGetInvisibleSensors(String description, SensorDefinition sensor)
-//        throws JSONException, IOException, ParseException
-//    {
-//        when(qm.findSensorDefinitionByDescription(description)).thenReturn(sensor);
-//
-//        ScriptableObject actual = sut.getSensor(description);
-//
-//        assertThat(actual).isNull();
-//    }
+    //    @Test(dataProvider = "invisibleSensorsDataProvider")
+    //    public void shouldNotGetInvisibleSensors(String description, SensorDefinition sensor)
+    //        throws JSONException, IOException, ParseException
+    //    {
+    //        when(qm.findSensorDefinitionByDescription(description)).thenReturn(sensor);
+    //
+    //        ScriptableObject actual = sut.getSensor(description);
+    //
+    //        assertThat(actual).isNull();
+    //    }
 
     @Test
     public void shouldReturnNullOnEmptyTokenList()
@@ -455,57 +437,57 @@ public class BuiltInFunctionsTest
         JSONAssert.assertEquals(actualJson, expectedJson, false);
     }
 
-//    @Test
-//    public void shouldGetSensorValue()
-//    {
-//        when(qm.findSensorDefinitionByDescription(sensor1.getDescription())).thenReturn(sensor1);
-//        when(qm.findSensorDefinitionByDescription(sensor2.getDescription())).thenReturn(sensor2);
-//        when(qm.findSensorDefinitionByDescription(sensor3.getDescription())).thenReturn(sensor3);
-//        when(qm.findAllVisibleSensorDefinitions()).thenReturn(visibleSensors);
-//
-//        List<ScriptableObject> actualSensors = sut.listSensors();
-//
-//        assertThat(actualSensors).hasSize(2);
-//
-//        sut.getSensorValue(actualSensors.get(0));
-//        sut.getSensorValue(actualSensors.get(1));
-//
-//        verify(conv).convertMessageToJS(message1);
-//        verify(conv).convertMessageToJS(message2);
-//    }
-//
-//    @Test
-//    public void shouldNotGetSensorValuesOfInvisibleSensors()
-//    {
-//        when(qm.findSensorDefinitionByDescription(sensor1.getDescription())).thenReturn(sensor1);
-//        when(qm.findSensorDefinitionByDescription(sensor2.getDescription())).thenReturn(sensor2);
-//        when(qm.findSensorDefinitionByDescription(sensor3.getDescription())).thenReturn(sensor3);
-//        when(qm.findSensorDefinitionByDescription(sensor4.getDescription())).thenReturn(sensor4);
-//        when(qm.findAllActiveSensorDefinitions()).thenReturn(activeSensors);
-//
-//        List<ScriptableObject> actualSensors = sut.listActiveSensors();
-//
-//        assertThat(actualSensors).hasSize(4);
-//
-//        sut.getSensorValue(actualSensors.get(0));
-//        sut.getSensorValue(actualSensors.get(1));
-//        sut.getSensorValue(actualSensors.get(2));
-//        sut.getSensorValue(actualSensors.get(3));
-//
-//        verify(conv).convertMessageToJS(message1);
-//        verify(conv).convertMessageToJS(message2);
-//
-//        ScriptableObject actualValue = sut.getSensorValue(actualSensors.get(2));
-//        assertThat(actualValue).isNull();
-//
-//        actualValue = sut.getSensorValue(actualSensors.get(3));
-//        assertThat(actualValue).isNull();
-//
-//        NativeObject sensor = new NativeObject();
-//        actualValue = sut.getSensorValue(sensor);
-//
-//        assertThat(actualValue).isNull();
-//    }
+    //    @Test
+    //    public void shouldGetSensorValue()
+    //    {
+    //        when(qm.findSensorDefinitionByDescription(sensor1.getDescription())).thenReturn(sensor1);
+    //        when(qm.findSensorDefinitionByDescription(sensor2.getDescription())).thenReturn(sensor2);
+    //        when(qm.findSensorDefinitionByDescription(sensor3.getDescription())).thenReturn(sensor3);
+    //        when(qm.findAllVisibleSensorDefinitions()).thenReturn(visibleSensors);
+    //
+    //        List<ScriptableObject> actualSensors = sut.listSensors();
+    //
+    //        assertThat(actualSensors).hasSize(2);
+    //
+    //        sut.getSensorValue(actualSensors.get(0));
+    //        sut.getSensorValue(actualSensors.get(1));
+    //
+    //        verify(conv).convertMessageToJS(message1);
+    //        verify(conv).convertMessageToJS(message2);
+    //    }
+    //
+    //    @Test
+    //    public void shouldNotGetSensorValuesOfInvisibleSensors()
+    //    {
+    //        when(qm.findSensorDefinitionByDescription(sensor1.getDescription())).thenReturn(sensor1);
+    //        when(qm.findSensorDefinitionByDescription(sensor2.getDescription())).thenReturn(sensor2);
+    //        when(qm.findSensorDefinitionByDescription(sensor3.getDescription())).thenReturn(sensor3);
+    //        when(qm.findSensorDefinitionByDescription(sensor4.getDescription())).thenReturn(sensor4);
+    //        when(qm.findAllActiveSensorDefinitions()).thenReturn(activeSensors);
+    //
+    //        List<ScriptableObject> actualSensors = sut.listActiveSensors();
+    //
+    //        assertThat(actualSensors).hasSize(4);
+    //
+    //        sut.getSensorValue(actualSensors.get(0));
+    //        sut.getSensorValue(actualSensors.get(1));
+    //        sut.getSensorValue(actualSensors.get(2));
+    //        sut.getSensorValue(actualSensors.get(3));
+    //
+    //        verify(conv).convertMessageToJS(message1);
+    //        verify(conv).convertMessageToJS(message2);
+    //
+    //        ScriptableObject actualValue = sut.getSensorValue(actualSensors.get(2));
+    //        assertThat(actualValue).isNull();
+    //
+    //        actualValue = sut.getSensorValue(actualSensors.get(3));
+    //        assertThat(actualValue).isNull();
+    //
+    //        NativeObject sensor = new NativeObject();
+    //        actualValue = sut.getSensorValue(sensor);
+    //
+    //        assertThat(actualValue).isNull();
+    //    }
 
     @Test
     public void shouldExecuteTasks()

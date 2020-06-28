@@ -153,7 +153,7 @@ public class Device implements ITreeNode, Serializable
     @Override
     public String getLabel()
     {
-        return topicRoot;
+        return getTopicRoot();
     }
 
     /**

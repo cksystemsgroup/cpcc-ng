@@ -63,7 +63,7 @@ public class DeviceType implements Serializable
     @JoinTable(name = "device_types_topics"
         , joinColumns = {@JoinColumn(name = "device_types_id")}
         , inverseJoinColumns = {@JoinColumn(name = "subtopics_id")})
-    private List<Topic> subTopics = new ArrayList<Topic>();
+    private List<Topic> subTopics = new ArrayList<>();
 
     /**
      * @return the device ID.

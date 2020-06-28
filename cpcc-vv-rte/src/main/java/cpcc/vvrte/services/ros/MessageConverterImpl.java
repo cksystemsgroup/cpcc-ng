@@ -24,9 +24,12 @@ import static sensor_msgs.NavSatStatus.SERVICE_GLONASS;
 import static sensor_msgs.NavSatStatus.SERVICE_GPS;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
@@ -36,15 +39,22 @@ import org.mozilla.javascript.ScriptableObject;
  */
 public class MessageConverterImpl implements MessageConverter
 {
-    @SuppressWarnings("serial")
-    private static final Map<String, MessageConverter> CONVERTER_MAP = new HashMap<String, MessageConverter>()
-    {
-        {
-            put("MessageImpl<std_msgs/Float32>", new Float32MessageConverter());
-            put("MessageImpl<sensor_msgs/Image>", new ImageMessageConverter());
-            put("MessageImpl<sensor_msgs/NavSatFix>", new NavSatFixMessageConverter());
-        }
-    };
+    private static final String SENSOR_MSGS_NAV_SAT_FIX = "sensor_msgs/NavSatFix";
+    private static final String SENSOR_MSGS_IMAGE = "sensor_msgs/Image";
+    private static final String STD_MSGS_FLOAT32 = "std_msgs/Float32";
+    private static final String VALUE = "value";
+    private static final String DATA = "data";
+    private static final String STEP = "step";
+    private static final String WIDTH = "width";
+    private static final String HEIGHT = "height";
+    private static final String ENCODING = "encoding";
+    private static final String MESSAGE_TYPE = "messageType";
+
+    private static final Map<String, MessageConverter> CONVERTER_MAP = Collections.unmodifiableMap(Stream
+        .of(Pair.of("MessageImpl<std_msgs/Float32>", new Float32MessageConverter()),
+            Pair.of("MessageImpl<sensor_msgs/Image>", new ImageMessageConverter()),
+            Pair.of("MessageImpl<sensor_msgs/NavSatFix>", new NavSatFixMessageConverter()))
+        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
     /**
      * {@inheritDoc}
@@ -74,16 +84,16 @@ public class MessageConverterImpl implements MessageConverter
             sensor_msgs.Image m = (sensor_msgs.Image) message;
 
             NativeObject o = new NativeObject();
-            o.put("messageType", o, "sensor_msgs/Image");
-            o.put("encoding", o, m.getEncoding());
-            o.put("height", o, m.getHeight());
-            o.put("width", o, m.getWidth());
-            o.put("step", o, m.getStep());
+            o.put(MESSAGE_TYPE, o, SENSOR_MSGS_IMAGE);
+            o.put(ENCODING, o, m.getEncoding());
+            o.put(HEIGHT, o, m.getHeight());
+            o.put(WIDTH, o, m.getWidth());
+            o.put(STEP, o, m.getStep());
 
             int offset = m.getData().arrayOffset();
             int length = m.getData().array().length;
             byte[] buf = Arrays.copyOfRange(m.getData().array(), offset, length);
-            o.put("data", o, buf);
+            o.put(DATA, o, buf);
             return o;
         }
     }
@@ -101,8 +111,8 @@ public class MessageConverterImpl implements MessageConverter
         {
             std_msgs.Float32 m = (std_msgs.Float32) message;
             NativeObject o = new NativeObject();
-            o.put("messageType", o, "std_msgs/Float32");
-            o.put("value", o, Float.valueOf(m.getData()));
+            o.put(MESSAGE_TYPE, o, STD_MSGS_FLOAT32);
+            o.put(VALUE, o, Float.valueOf(m.getData()));
             return o;
         }
     }
@@ -112,72 +122,59 @@ public class MessageConverterImpl implements MessageConverter
      */
     private static class NavSatFixMessageConverter implements MessageConverter
     {
+        private static final Map<Byte, String> COVARIANCE_TYPE_MAP = Collections.unmodifiableMap(Stream
+            .of(Pair.of(sensor_msgs.NavSatFix.COVARIANCE_TYPE_UNKNOWN, "unknown"),
+                Pair.of(sensor_msgs.NavSatFix.COVARIANCE_TYPE_APPROXIMATED, "approximated"),
+                Pair.of(sensor_msgs.NavSatFix.COVARIANCE_TYPE_DIAGONAL_KNOWN, "diagonal_known"),
+                Pair.of(sensor_msgs.NavSatFix.COVARIANCE_TYPE_KNOWN, "known"))
+            .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
-        @SuppressWarnings("serial")
-        private static final Map<Byte, String> COVARIANCE_TYPE_MAP = new HashMap<Byte, String>()
-        {
-            {
-                put(sensor_msgs.NavSatFix.COVARIANCE_TYPE_UNKNOWN, "unknown");
-                put(sensor_msgs.NavSatFix.COVARIANCE_TYPE_APPROXIMATED, "approximated");
-                put(sensor_msgs.NavSatFix.COVARIANCE_TYPE_DIAGONAL_KNOWN, "diagonal_known");
-                put(sensor_msgs.NavSatFix.COVARIANCE_TYPE_KNOWN, "known");
-            }
-        };
-
-        @SuppressWarnings("serial")
-        private static final Map<Byte, String> STATUS_MAP = new HashMap<Byte, String>()
-        {
-            {
-                put(sensor_msgs.NavSatStatus.STATUS_NO_FIX, "no_fix");
-                put(sensor_msgs.NavSatStatus.STATUS_FIX, "fix");
-                put(sensor_msgs.NavSatStatus.STATUS_SBAS_FIX, "sbas_fix");
-                put(sensor_msgs.NavSatStatus.STATUS_GBAS_FIX, "gbas_fix");
-            }
-        };
+        private static final Map<Byte, String> STATUS_MAP = Collections.unmodifiableMap(Stream
+            .of(Pair.of(sensor_msgs.NavSatStatus.STATUS_NO_FIX, "no_fix"),
+                Pair.of(sensor_msgs.NavSatStatus.STATUS_FIX, "fix"),
+                Pair.of(sensor_msgs.NavSatStatus.STATUS_SBAS_FIX, "sbas_fix"),
+                Pair.of(sensor_msgs.NavSatStatus.STATUS_GBAS_FIX, "gbas_fix"))
+            .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
         private static final String GPS = "gps";
         private static final String GLONASS = "glonass";
         private static final String COMPASS = "compass";
         private static final String GALILEO = "galileo";
 
-        @SuppressWarnings("serial")
-        private static final Map<Integer, String[]> SERVICE_MAP = new HashMap<Integer, String[]>()
-        {
-            {
-                put(Integer.valueOf(0),
-                    new String[]{});
-                put(Integer.valueOf(SERVICE_GPS),
-                    new String[]{GPS});
-                put(Integer.valueOf(SERVICE_GLONASS),
-                    new String[]{GLONASS});
-                put(Integer.valueOf(SERVICE_GPS | SERVICE_GLONASS),
-                    new String[]{GPS, GLONASS});
-                put(Integer.valueOf(SERVICE_COMPASS),
-                    new String[]{COMPASS});
-                put(Integer.valueOf(SERVICE_GPS | SERVICE_COMPASS),
-                    new String[]{GPS, COMPASS});
-                put(Integer.valueOf(SERVICE_GLONASS | SERVICE_COMPASS),
-                    new String[]{GLONASS, COMPASS});
-                put(Integer.valueOf(SERVICE_GPS | SERVICE_GLONASS | SERVICE_COMPASS),
-                    new String[]{GPS, GLONASS, COMPASS});
-                put(Integer.valueOf(SERVICE_GALILEO),
-                    new String[]{GALILEO});
-                put(Integer.valueOf(SERVICE_GPS | SERVICE_GALILEO),
-                    new String[]{GPS, GALILEO});
-                put(Integer.valueOf(SERVICE_GLONASS | SERVICE_GALILEO),
-                    new String[]{GLONASS, GALILEO});
-                put(Integer.valueOf(SERVICE_GPS | SERVICE_GLONASS | SERVICE_GALILEO),
-                    new String[]{GPS, GLONASS, GALILEO});
-                put(Integer.valueOf(SERVICE_COMPASS | SERVICE_GALILEO),
-                    new String[]{COMPASS, GALILEO});
-                put(Integer.valueOf(SERVICE_GPS | SERVICE_COMPASS | SERVICE_GALILEO),
-                    new String[]{GPS, COMPASS, GALILEO});
-                put(Integer.valueOf(SERVICE_GLONASS | SERVICE_COMPASS | SERVICE_GALILEO),
-                    new String[]{GLONASS, COMPASS, GALILEO});
-                put(Integer.valueOf(SERVICE_GPS | SERVICE_GLONASS | SERVICE_COMPASS | SERVICE_GALILEO),
-                    new String[]{GPS, GLONASS, COMPASS, GALILEO});
-            }
-        };
+        private static final Map<Integer, String[]> SERVICE_MAP = Collections.unmodifiableMap(Stream
+            .of(Pair.of(Integer.valueOf(0),
+                new String[]{}),
+                Pair.of(Integer.valueOf(SERVICE_GPS),
+                    new String[]{GPS}),
+                Pair.of(Integer.valueOf(SERVICE_GLONASS),
+                    new String[]{GLONASS}),
+                Pair.of(Integer.valueOf(SERVICE_GPS | SERVICE_GLONASS),
+                    new String[]{GPS, GLONASS}),
+                Pair.of(Integer.valueOf(SERVICE_COMPASS),
+                    new String[]{COMPASS}),
+                Pair.of(Integer.valueOf(SERVICE_GPS | SERVICE_COMPASS),
+                    new String[]{GPS, COMPASS}),
+                Pair.of(Integer.valueOf(SERVICE_GLONASS | SERVICE_COMPASS),
+                    new String[]{GLONASS, COMPASS}),
+                Pair.of(Integer.valueOf(SERVICE_GPS | SERVICE_GLONASS | SERVICE_COMPASS),
+                    new String[]{GPS, GLONASS, COMPASS}),
+                Pair.of(Integer.valueOf(SERVICE_GALILEO),
+                    new String[]{GALILEO}),
+                Pair.of(Integer.valueOf(SERVICE_GPS | SERVICE_GALILEO),
+                    new String[]{GPS, GALILEO}),
+                Pair.of(Integer.valueOf(SERVICE_GLONASS | SERVICE_GALILEO),
+                    new String[]{GLONASS, GALILEO}),
+                Pair.of(Integer.valueOf(SERVICE_GPS | SERVICE_GLONASS | SERVICE_GALILEO),
+                    new String[]{GPS, GLONASS, GALILEO}),
+                Pair.of(Integer.valueOf(SERVICE_COMPASS | SERVICE_GALILEO),
+                    new String[]{COMPASS, GALILEO}),
+                Pair.of(Integer.valueOf(SERVICE_GPS | SERVICE_COMPASS | SERVICE_GALILEO),
+                    new String[]{GPS, COMPASS, GALILEO}),
+                Pair.of(Integer.valueOf(SERVICE_GLONASS | SERVICE_COMPASS | SERVICE_GALILEO),
+                    new String[]{GLONASS, COMPASS, GALILEO}),
+                Pair.of(Integer.valueOf(SERVICE_GPS | SERVICE_GLONASS | SERVICE_COMPASS | SERVICE_GALILEO),
+                    new String[]{GPS, GLONASS, COMPASS, GALILEO}))
+            .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
         /**
          * {@inheritDoc}
@@ -188,7 +185,7 @@ public class MessageConverterImpl implements MessageConverter
             sensor_msgs.NavSatFix m = (sensor_msgs.NavSatFix) message;
 
             NativeObject o = new NativeObject();
-            o.put("messageType", o, "sensor_msgs/NavSatFix");
+            o.put(MESSAGE_TYPE, o, SENSOR_MSGS_NAV_SAT_FIX);
             o.put("lat", o, m.getLatitude());
             o.put("lng", o, m.getLongitude());
             o.put("alt", o, m.getAltitude());
@@ -198,19 +195,19 @@ public class MessageConverterImpl implements MessageConverter
             o.put("status", o, STATUS_MAP.get(m.getStatus().getStatus()));
             return o;
         }
-    }
 
-    /**
-     * @param a the array of double values.
-     * @return the converted list of Double objects.
-     */
-    private static Double[] convertToDoubleArray(double[] a)
-    {
-        Double[] result = new Double[a.length];
-        for (int k = 0, l = a.length; k < l; ++k)
+        /**
+         * @param a the array of double values.
+         * @return the converted list of Double objects.
+         */
+        private static Double[] convertToDoubleArray(double[] a)
         {
-            result[k] = Double.valueOf(a[k]);
+            Double[] result = new Double[a.length];
+            for (int k = 0, l = a.length; k < l; ++k)
+            {
+                result[k] = Double.valueOf(a[k]);
+            }
+            return result;
         }
-        return result;
     }
 }

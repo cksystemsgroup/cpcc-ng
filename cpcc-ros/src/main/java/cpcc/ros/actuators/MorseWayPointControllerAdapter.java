@@ -45,17 +45,12 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
 
     private static final String CFG_ORIGIN = "origin";
 
-    private Publisher<geometry_msgs.Pose> publisher;
-
-    private geometry_msgs.Pose position;
-
-    private big_actor_msgs.LatLngAlt gpsPosition;
-
-    private PolarCoordinate origin;
-
-    private CartesianCoordinate originCart;
-
     private static final GeodeticSystem GEODETIC_SYSTEM = new WGS84();
+
+    private Publisher<geometry_msgs.Pose> publisher;
+    private geometry_msgs.Pose position;
+    private big_actor_msgs.LatLngAlt gpsPosition;
+    private CartesianCoordinate originCart;
 
     /**
      * {@inheritDoc}
@@ -97,7 +92,7 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
         publisher = connectedNode.newPublisher(getTopic().getName(), geometry_msgs.Pose._TYPE);
         position = (geometry_msgs.Pose) connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Pose._TYPE);
 
-        origin = ConfigUtils.parsePolarCoordinate(getConfig(), CFG_ORIGIN, 0);
+        PolarCoordinate origin = ConfigUtils.parsePolarCoordinate(getConfig(), CFG_ORIGIN, 0);
         originCart = GEODETIC_SYSTEM.polarToRectangularCoordinates(origin);
         setStartCompleted();
     }
@@ -124,16 +119,14 @@ public class MorseWayPointControllerAdapter extends AbstractActuatorAdapter
             map.put("controller.gps.position", Arrays.asList(
                 String.format(Locale.US, "%.8f", gpsPosition.getLatitude()),
                 String.format(Locale.US, "%.8f", gpsPosition.getLongitude()),
-                String.format(Locale.US, "%.3f", gpsPosition.getAltitude())
-                ));
+                String.format(Locale.US, "%.3f", gpsPosition.getAltitude())));
         }
         if (position != null)
         {
             map.put("controller.morse.position", Arrays.asList(
                 String.format(Locale.US, "%.8f", position.getPosition().getX()),
                 String.format(Locale.US, "%.8f", position.getPosition().getY()),
-                String.format(Locale.US, "%.3f", position.getPosition().getZ())
-                ));
+                String.format(Locale.US, "%.3f", position.getPosition().getZ())));
         }
         return map;
     }

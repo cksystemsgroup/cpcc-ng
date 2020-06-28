@@ -20,8 +20,6 @@ package cpcc.com.services;
 
 import java.io.IOException;
 
-import org.apache.http.client.ClientProtocolException;
-
 import cpcc.core.entities.RealVehicle;
 
 /**
@@ -32,19 +30,15 @@ public interface CommunicationService
     /**
      * @param connector the connector to add.
      * @param path the connector's path.
-     * @throws IllegalStateException in case of errors.
      */
-    void addConnector(String connector, String path)
-        throws IllegalStateException;
+    void addConnector(String connector, String path);
 
     /**
      * @param realVehicle the real vehicle to communicate with.
      * @param connector the connector to be used.
      * @param data the data chunk to be transferred.
      * @return the response object
-     * @throws ClientProtocolException thrown in case of errors.
      * @throws IOException thrown in case of errors.
      */
-    CommunicationResponse transfer(RealVehicle realVehicle, String connector, byte[] data)
-        throws ClientProtocolException, IOException;
+    CommunicationResponse transfer(RealVehicle realVehicle, String connector, byte[] data) throws IOException;
 }

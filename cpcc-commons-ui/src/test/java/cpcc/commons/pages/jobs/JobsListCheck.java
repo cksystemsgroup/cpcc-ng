@@ -44,7 +44,7 @@ import org.mockito.stubbing.Answer;
 import cpcc.core.base.CoreConstants;
 import cpcc.core.services.jobs.JobRepository;
 
-public class JobsListTest
+public class JobsListCheck
 {
     private static final String DB_PREFIX = "target/page_test";
 

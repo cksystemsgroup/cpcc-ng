@@ -101,9 +101,13 @@ public class PlantMotionAlgorithmZeroTest
 
         assertThat(sut.getTotalTime()).describedAs("Total flight time").isEqualTo(24.494897, offset(1E-6));
 
-        verify(logger).warn("FLIGHT: maximum acceleration reduced from 2.667 m/s^2 to 1.000 m/s^2");
-        verify(logger).warn("FLIGHT: total time prolonged from 15.000 s to 24.495 s");
-        verify(logger).warn("FLIGHT: maximum velocity reduced from 10.000 m/s to 6.124 m/s");
+        verify(logger).warn("{}: maximum acceleration reduced from {} m/s^2 to {} m/s^2",
+            State.FLIGHT, 2.6666666666666665, 1.0);
 
+        verify(logger).warn("{}: total time prolonged from {} s to {} s",
+            State.FLIGHT, 15.0, 24.49489742783178);
+
+        verify(logger).warn("{}: maximum velocity reduced from {} m/s to {} m/s",
+            State.FLIGHT, 10.0, 6.123724356957945);
     }
 }

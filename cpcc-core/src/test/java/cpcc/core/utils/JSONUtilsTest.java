@@ -29,8 +29,6 @@ import org.apache.tapestry5.json.JSONObject;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.utils.JSONUtils;
-
 /**
  * JSONUtilsTest
  */

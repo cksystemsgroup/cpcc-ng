@@ -30,6 +30,8 @@ import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,6 +44,8 @@ import cpcc.core.entities.RealVehicle;
  */
 public final class RealVehicleUtils
 {
+    private static final Logger LOG = LoggerFactory.getLogger(RealVehicleUtils.class);
+
     private RealVehicleUtils()
     {
         // Intentionally empty.
@@ -81,30 +85,40 @@ public final class RealVehicleUtils
     /**
      * @param areaOfOperation the area of operation as a {@code String}.
      * @return the list of {@code PolygonZone} instances.
-     * @throws IOException in case of errors.
      */
-    public static List<PolygonZone> getPolygons(String areaOfOperation) throws IOException
+    public static List<PolygonZone> getPolygons(String areaOfOperation)
     {
         if (StringUtils.isBlank(areaOfOperation))
         {
             return Collections.emptyList();
         }
 
-        List<PolygonZone> list = new ArrayList<PolygonZone>();
-        FeatureCollection fc =
-            new ObjectMapper().readValue(areaOfOperation.replace("\\n", "\n"), FeatureCollection.class);
+        List<PolygonZone> list = new ArrayList<>();
 
-        for (Feature feature : fc.getFeatures())
+        String aooString = areaOfOperation.replace("\\n", "\n");
+
+        try
         {
-            GeoJsonObject geom = feature.getGeometry();
-            if (geom instanceof Polygon)
+            FeatureCollection fc = new ObjectMapper().readValue(aooString, FeatureCollection.class);
+
+            for (Feature feature : fc.getFeatures())
             {
-                List<LngLatAlt> coordinates = ((Polygon) geom).getCoordinates().get(0);
-                list.add(new PolygonZone(coordinates));
+                GeoJsonObject geom = feature.getGeometry();
+                if (geom instanceof Polygon)
+                {
+                    List<LngLatAlt> coordinates = ((Polygon) geom).getCoordinates().get(0);
+                    list.add(new PolygonZone(coordinates));
+                }
             }
+
+            return list;
+        }
+        catch (IOException e)
+        {
+            LOG.error("Can not de-serialize area of operation {} of RV {} ({})", aooString, e);
+            return Collections.emptyList();
         }
 
-        return list;
     }
 
     /**
@@ -119,23 +133,15 @@ public final class RealVehicleUtils
             return false;
         }
 
-        try
+        for (PolygonZone zone : getPolygons(areaOfOperation))
         {
-            for (PolygonZone zone : getPolygons(areaOfOperation))
+            if (zone.isInside(position))
             {
-                if (zone.isInside(position))
-                {
-                    return true;
-                }
+                return true;
             }
+        }
 
-            return false;
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            return false;
-        }
+        return false;
     }
 
     /**
@@ -167,7 +173,8 @@ public final class RealVehicleUtils
             }
             catch (IOException e)
             {
-                continue;
+                LOG.error("Can not de-serialize area of operation {} of RV {} ({})",
+                    rv.getAreaOfOperation(), rv.getName(), rv.getId(), e);
             }
         }
 

@@ -33,7 +33,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import cpcc.core.utils.GeodeticSystem;
-import cpcc.ros.sim.osm.Configuration;
 
 /**
  * ConfigurationTest
@@ -42,16 +41,16 @@ public class ConfigurationTest
 {
     NodeConfiguration nodeConfiguration;
     Map<String, List<String>> config;
-    
+
     @BeforeMethod
     public void setUp()
     {
         nodeConfiguration = mock(NodeConfiguration.class);
-        
+
         config = new HashMap<String, List<String>>();
-        
+
         config.put(Configuration.CFG_TOPIC_ROOT, Arrays.asList("/quad879"));
-        config.put(Configuration.CFG_ORIGIN, Arrays.asList("37.80806","-122.42661","2.1"));
+        config.put(Configuration.CFG_ORIGIN, Arrays.asList("37.80806", "-122.42661", "2.1"));
         config.put(Configuration.CFG_GPS_TOPIC, Arrays.asList("gps"));
         config.put(Configuration.CFG_CAMERA_APERTURE_ANGLE, Arrays.asList("2"));
         config.put(Configuration.CFG_CAMERA_WIDTH, Arrays.asList("300"));
@@ -62,12 +61,12 @@ public class ConfigurationTest
         config.put(Configuration.CFG_TILE_CACHE_DIR, Arrays.asList("/tmp/test/tile/dir"));
         config.put(Configuration.CFG_TILE_DOWNLOAD_URL, Arrays.asList("http://my.tile.server.eu/%1$d/%2$d/%3$d.png"));
     }
-    
+
     @Test
     public void shouldParseConfigurationWithoutOriginCorrectly()
     {
         config.remove(Configuration.CFG_ORIGIN);
-        
+
         Configuration cfg = new Configuration(nodeConfiguration, config);
         assertThat(cfg.getOriginPosition()).isNull();
         checkParsedValues(cfg);
@@ -78,7 +77,7 @@ public class ConfigurationTest
     public void shouldParseConfigurationWithOriginCorrectly()
     {
         assertThat(config).containsKey(Configuration.CFG_ORIGIN);
-        
+
         Configuration cfg = new Configuration(nodeConfiguration, config);
         assertThat(cfg.getOriginPosition()).isNotNull();
         assertThat(cfg.getOriginPosition().getLatitude()).isEqualTo(37.80806, offset(1E-6));
@@ -87,19 +86,26 @@ public class ConfigurationTest
         checkParsedValues(cfg);
         verifyZeroInteractions(nodeConfiguration);
     }
-    
+
     private void checkParsedValues(Configuration cfg)
     {
         assertThat(cfg.getTopicRoot()).isNotNull().isEqualTo(config.get(Configuration.CFG_TOPIC_ROOT).get(0));
         assertThat(cfg.getGpsTopic()).isNotNull().isEqualTo(config.get(Configuration.CFG_GPS_TOPIC).get(0));
         assertThat(cfg.getCameraApertureAngle()).isNotNull().isEqualTo(2.0, offset(1E-5));
-        assertThat(cfg.getCameraWidth()).isNotNull().isEqualTo(Integer.parseInt(config.get(Configuration.CFG_CAMERA_WIDTH).get(0)));
-        assertThat(cfg.getCameraHeight()).isNotNull().isEqualTo(Integer.parseInt(config.get(Configuration.CFG_CAMERA_HEIGTH).get(0)));
-        assertThat(cfg.getZoomLevel()).isNotNull().isEqualTo(Integer.parseInt(config.get(Configuration.CFG_ZOOM_LEVEL).get(0)));
-        assertThat(cfg.getTileWidth()).isNotNull().isEqualTo(Integer.parseInt(config.get(Configuration.CFG_TILE_WIDTH).get(0)));
-        assertThat(cfg.getTileHeight()).isNotNull().isEqualTo(Integer.parseInt(config.get(Configuration.CFG_TILE_HEIGTH).get(0)));
-        assertThat(cfg.getTileCacheBaseDir()).isNotNull().isEqualTo(config.get(Configuration.CFG_TILE_CACHE_DIR).get(0));
-        assertThat(cfg.getTileServerUrl()).isNotNull().isEqualTo(config.get(Configuration.CFG_TILE_DOWNLOAD_URL).get(0));
+        assertThat(cfg.getCameraWidth()).isNotNull()
+            .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_CAMERA_WIDTH).get(0)));
+        assertThat(cfg.getCameraHeight()).isNotNull()
+            .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_CAMERA_HEIGTH).get(0)));
+        assertThat(cfg.getZoomLevel()).isNotNull()
+            .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_ZOOM_LEVEL).get(0)));
+        assertThat(cfg.getTileWidth()).isNotNull()
+            .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_TILE_WIDTH).get(0)));
+        assertThat(cfg.getTileHeight()).isNotNull()
+            .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_TILE_HEIGTH).get(0)));
+        assertThat(cfg.getTileCacheBaseDir()).isNotNull()
+            .isEqualTo(config.get(Configuration.CFG_TILE_CACHE_DIR).get(0));
+        assertThat(cfg.getTileServerUrl()).isNotNull()
+            .isEqualTo(config.get(Configuration.CFG_TILE_DOWNLOAD_URL).get(0));
         assertThat(cfg.getGeodeticSystem()).isNotNull().isInstanceOf(GeodeticSystem.class);
     }
 }

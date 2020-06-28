@@ -25,10 +25,6 @@ import java.util.Iterator;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.entities.Device;
-import cpcc.core.entities.MappingAttributesPK;
-import cpcc.core.entities.Topic;
-
 /**
  * MappingAttributesPKTest
  */

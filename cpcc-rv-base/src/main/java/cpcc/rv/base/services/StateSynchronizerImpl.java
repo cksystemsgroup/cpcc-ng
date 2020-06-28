@@ -44,8 +44,8 @@ public class StateSynchronizerImpl implements StateSynchronizer
      * @param jobService the job service.
      * @param realVehicleRepository the real vehicle repository.
      */
-    public StateSynchronizerImpl(Logger logger, QueryManager qm, JobService jobService
-        , RealVehicleRepository realVehicleRepository)
+    public StateSynchronizerImpl(Logger logger, QueryManager qm, JobService jobService,
+        RealVehicleRepository realVehicleRepository)
     {
         this.logger = logger;
         this.qm = qm;
@@ -68,8 +68,8 @@ public class StateSynchronizerImpl implements StateSynchronizer
     @Override
     public void importConfiguration(byte[] data) throws JobCreationException
     {
-        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME
-            , "mode=" + RealVehicleBaseConstants.JOB_MODE_IMPORT, data);
+        jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME,
+            "mode=" + RealVehicleBaseConstants.JOB_MODE_IMPORT, data);
     }
 
     /**
@@ -97,14 +97,13 @@ public class StateSynchronizerImpl implements StateSynchronizer
         {
             try
             {
-                jobService.addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME
-                    , String.format("mode=%s,rv=%d", mode, rv.getId()));
+                jobService.addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME,
+                    String.format("mode=%s,rv=%d", mode, rv.getId()));
             }
             catch (JobCreationException e)
             {
-                String msg = String.format("Can not create config sync job for real vehicle %s (%d), mode=%s"
-                    , rv.getName(), rv.getId(), mode);
-                logger.debug(msg + " " + e.getMessage());
+                logger.debug("Can not create config sync job for real vehicle {} ({}), mode={}",
+                    rv.getName(), rv.getId(), mode, e);
             }
         }
     }

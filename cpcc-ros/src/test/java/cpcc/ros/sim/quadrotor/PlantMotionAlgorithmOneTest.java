@@ -92,7 +92,8 @@ public class PlantMotionAlgorithmOneTest
         assertThat(sut.distance(time)).describedAs("Distance").isEqualTo(expDistance, offset(1E-2));
         assertThat(sut.acceleration(time)).describedAs("Acceleration").isEqualTo(expAcceleration, offset(1E-2));
 
-        verify(logger).info(anyString());
+        verify(logger).info("One: dist={}, maxV={}, maxA={}, totalTime={}, timeOne={}, timeTwo={}",
+            distance, maxV, maxA, 55.333333333333336, 8.0, 47.333333333333336);
     }
 
     @Test

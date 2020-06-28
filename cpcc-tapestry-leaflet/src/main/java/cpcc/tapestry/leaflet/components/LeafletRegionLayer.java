@@ -28,7 +28,6 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
-import org.apache.tapestry5.services.ajax.JavaScriptCallback;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 /**
@@ -37,6 +36,11 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 @MixinAfter
 public class LeafletRegionLayer extends AbstractLeafletLayer
 {
+    private static final String REGION_UPDATE = "regionUpdate";
+    private static final String UPDATE_REGION_DATA = "updateRegionData";
+    private static final String INITIALIZE = "initialize";
+    private static final String LEAFLET_REGION_LAYER = "leaflet/regionLayer";
+
     @Inject
     private AjaxResponseRenderer ajaxResponseRenderer;
 
@@ -58,16 +62,16 @@ public class LeafletRegionLayer extends AbstractLeafletLayer
 
     void afterRender()
     {
-        String eventURL = componentResources.createEventLink("regionUpdate", context).toAbsoluteURI();
+        String eventURL = componentResources.createEventLink(REGION_UPDATE, context).toAbsoluteURI();
 
         javaScriptSupport
-            .require("leaflet/regionLayer")
-            .invoke("initialize")
+            .require(LEAFLET_REGION_LAYER)
+            .invoke(INITIALIZE)
             .with(componentResources.getId(), mapId, name, regionZone.getClientId(), eventURL, frequencySecs);
 
         javaScriptSupport
-            .require("leaflet/regionLayer")
-            .invoke("updateRegionData")
+            .require(LEAFLET_REGION_LAYER)
+            .invoke(UPDATE_REGION_DATA)
             .with(componentResources.getId(), mapId);
     }
 
@@ -82,16 +86,10 @@ public class LeafletRegionLayer extends AbstractLeafletLayer
 
     void addRegionDataUpdateCallback()
     {
-        ajaxResponseRenderer.addCallback(new JavaScriptCallback()
-        {
-            public void run(JavaScriptSupport jsSupport)
-            {
-                jsSupport
-                    .require("leaflet/regionLayer")
-                    .invoke("updateRegionData")
-                    .with(componentResources.getId(), mapId);
-            }
-        });
+        ajaxResponseRenderer.addCallback((JavaScriptSupport jsSupport) -> jsSupport
+            .require(LEAFLET_REGION_LAYER)
+            .invoke(UPDATE_REGION_DATA)
+            .with(componentResources.getId(), mapId));
     }
 
     public String getRegions()

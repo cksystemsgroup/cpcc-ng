@@ -33,7 +33,7 @@ import cpcc.vvrte.entities.Task;
  */
 public class TaskAnalyzerImpl implements TaskAnalyzer
 {
-    private Map<String, AbstractTaskAnalyzer> analyzermap = new HashMap<String, AbstractTaskAnalyzer>();
+    private Map<String, AbstractTaskAnalyzer> analyzermap = new HashMap<>();
 
     /**
      * @param qm the query manager.
@@ -42,8 +42,8 @@ public class TaskAnalyzerImpl implements TaskAnalyzer
      * @param minToleranceDistance the minimum tolerance distance in meters.
      * @param qm the query manager.
      */
-    public TaskAnalyzerImpl(@Symbol(VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE) String minToleranceDistance
-        , QueryManager qm)
+    public TaskAnalyzerImpl(@Symbol(VvRteConstants.PROP_MIN_TOLERANCE_DISTANCE) String minToleranceDistance,
+        QueryManager qm)
     {
         analyzermap.put("point", new SimpleTaskAnalyzer(qm, Double.valueOf(minToleranceDistance)));
         // analyzermap.put("patrol-line", new PatrolLineTaskAnalyzer(qm));

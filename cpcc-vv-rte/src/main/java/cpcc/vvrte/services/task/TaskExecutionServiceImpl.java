@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,12 +33,10 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.mozilla.javascript.NativeObject;
-import org.ros.internal.message.Message;
 import org.slf4j.Logger;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
-import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
@@ -73,7 +72,6 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     private RosNodeService rosNodeService;
     private MessageConverter conv;
     private TimeService timeService;
-    private Map<String, List<AbstractRosAdapter>> adapterNodes;
     private SimpleWayPointControllerAdapter wayPointController = null;
     private AbstractGpsSensorAdapter gpsReceiver;
     private AltimeterAdapter altimeter;
@@ -111,7 +109,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
      */
     private void init()
     {
-        adapterNodes = rosNodeService.getAdapterNodes();
+        Map<String, List<AbstractRosAdapter>> adapterNodes = rosNodeService.getAdapterNodes();
 
         for (Map.Entry<String, List<AbstractRosAdapter>> entry : adapterNodes.entrySet())
         {
@@ -261,13 +259,13 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
 
     private void logExecutionCompleted(Task task, double distance)
     {
-        logger.info(String.format("Task executed: ;%s;%s;%s;%s;%s;%.1f;",
+        logger.info("Task executed: ;{};{};{};{};{};{};",
             vvToString(task.getVehicle()),
             dateFormatter(task.getCreationTime()),
             dateFormatter(task.getExecutionStart()),
             dateFormatter(task.getExecutionEnd()),
             positionToString(task.getPosition()),
-            distance));
+            distance);
     }
 
     private static String dateFormatter(Date date)
@@ -292,10 +290,13 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     {
         NavSatFix pos = gpsReceiver.getPosition();
 
-        return pos == null
-            ? null
-            : new PolarCoordinate(pos.getLatitude(), pos.getLongitude(),
-                altimeter != null ? altimeter.getValue().getData() : pos.getAltitude());
+        if (pos == null)
+        {
+            return null;
+        }
+
+        return new PolarCoordinate(pos.getLatitude(), pos.getLongitude(),
+            altimeter != null ? altimeter.getValue().getData() : pos.getAltitude());
     }
 
     /**
@@ -309,16 +310,16 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
         NativeObject sensorValues = new NativeObject();
 
         task.getSensors().stream()
-            .filter(sd -> sd != null)
+            .filter(Objects::nonNull)
             .filter(sd -> sd.getVisibility() != SensorVisibility.NO_VV)
             .forEach(sd -> sensorValues.put(sd.getDescription(), sensorValues,
                 conv.convertMessageToJS(rosNodeService.findAdapterNodeBySensorDefinitionId(sd.getId()).getValue())));
 
-//        SensorDefinition a = task.getSensors().get(0);
-//        AbstractRosAdapter b = rosNodeService.findAdapterNodeBySensorDefinitionId(a.getId());
-//        Message v = b.getValue();
+        // SensorDefinition a = task.getSensors().get(0);
+        // AbstractRosAdapter b = rosNodeService.findAdapterNodeBySensorDefinitionId(a.getId());
+        // Message v = b.getValue();
         // TODO check me!
-        
+
         task.setSensorValues(sensorValues);
     }
 

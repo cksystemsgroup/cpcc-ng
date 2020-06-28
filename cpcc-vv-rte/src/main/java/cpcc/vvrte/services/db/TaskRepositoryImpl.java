@@ -34,6 +34,12 @@ import cpcc.vvrte.entities.TaskState;
  */
 public class TaskRepositoryImpl implements TaskRepository
 {
+    private static final String ID = "id";
+    private static final String CREATION_TIME = "creationTime";
+    private static final String ORDER = "order";
+    private static final String EXECUTION_START = "executionStart";
+    private static final String TASK_STATE = "taskState";
+
     private Session session;
 
     /**
@@ -52,11 +58,11 @@ public class TaskRepositoryImpl implements TaskRepository
     public List<Task> findAllIncompleteTasks()
     {
         return session.createCriteria(Task.class)
-            .add(Restrictions.not(Restrictions.eq("taskState", TaskState.COMPLETED)))
-            .add(Restrictions.not(Restrictions.eq("taskState", TaskState.EXECUTED)))
-            .addOrder(Order.desc("executionStart"))
-            .addOrder(Order.desc("order"))
-            .addOrder(Order.desc("creationTime"))
+            .add(Restrictions.not(Restrictions.eq(TASK_STATE, TaskState.COMPLETED)))
+            .add(Restrictions.not(Restrictions.eq(TASK_STATE, TaskState.EXECUTED)))
+            .addOrder(Order.desc(EXECUTION_START))
+            .addOrder(Order.desc(ORDER))
+            .addOrder(Order.desc(CREATION_TIME))
             .list();
     }
 
@@ -67,8 +73,8 @@ public class TaskRepositoryImpl implements TaskRepository
     public long countAllIncompleteTasks()
     {
         return (Long) session.createCriteria(Task.class)
-            .add(Restrictions.not(Restrictions.eq("taskState", TaskState.COMPLETED)))
-            .add(Restrictions.not(Restrictions.eq("taskState", TaskState.EXECUTED)))
+            .add(Restrictions.not(Restrictions.eq(TASK_STATE, TaskState.COMPLETED)))
+            .add(Restrictions.not(Restrictions.eq(TASK_STATE, TaskState.EXECUTED)))
             .setProjection(Projections.rowCount())
             .uniqueResult();
     }
@@ -80,7 +86,7 @@ public class TaskRepositoryImpl implements TaskRepository
     public Task findTaskById(int taskId)
     {
         return (Task) session.createCriteria(Task.class)
-            .add(Restrictions.eq("id", taskId))
+            .add(Restrictions.eq(ID, taskId))
             .uniqueResult();
     }
 
@@ -92,8 +98,8 @@ public class TaskRepositoryImpl implements TaskRepository
     public List<Task> getPendingTasks()
     {
         return session.createCriteria(Task.class)
-            .add(Restrictions.eq("taskState", TaskState.PENDING))
-            .addOrder(Order.asc("creationTime"))
+            .add(Restrictions.eq(TASK_STATE, TaskState.PENDING))
+            .addOrder(Order.asc(CREATION_TIME))
             .list();
     }
 
@@ -105,8 +111,8 @@ public class TaskRepositoryImpl implements TaskRepository
     public List<Task> getScheduledTasks()
     {
         return session.createCriteria(Task.class)
-            .add(Restrictions.eq("taskState", TaskState.SCHEDULED))
-            .addOrder(Order.asc("order"))
+            .add(Restrictions.eq(TASK_STATE, TaskState.SCHEDULED))
+            .addOrder(Order.asc(ORDER))
             .list();
     }
 
@@ -117,7 +123,7 @@ public class TaskRepositoryImpl implements TaskRepository
     public Task getCurrentRunningTask()
     {
         return (Task) session.createCriteria(Task.class)
-            .add(Restrictions.eq("taskState", TaskState.RUNNING))
+            .add(Restrictions.eq(TASK_STATE, TaskState.RUNNING))
             .uniqueResult();
     }
 
@@ -130,7 +136,7 @@ public class TaskRepositoryImpl implements TaskRepository
         @SuppressWarnings("unchecked")
         List<Task> taskList = session.createCriteria(Task.class, "t")
             .createCriteria("t.vehicle", JoinType.LEFT_OUTER_JOIN)
-            .add(Restrictions.eq("id", id))
+            .add(Restrictions.eq(ID, id))
             .list();
 
         for (Task task : taskList)

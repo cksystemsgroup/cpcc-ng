@@ -23,7 +23,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -83,13 +82,13 @@ public class TaskSchedulerServiceTest
     @BeforeMethod
     public void setUp()
     {
-        depotList = Collections.<PolarCoordinate>emptyList();
+        depotList = Collections.<PolarCoordinate> emptyList();
 
         rvPosition = mock(PolarCoordinate.class);
         when(rvPosition.getLatitude()).thenReturn(47.1000);
         when(rvPosition.getLongitude()).thenReturn(13.7897);
         when(rvPosition.getAltitude()).thenReturn(8.0);
-        
+
         posA = mock(PolarCoordinate.class);
         when(posA.getLatitude()).thenReturn(47.1234);
         when(posA.getLongitude()).thenReturn(13.7897);

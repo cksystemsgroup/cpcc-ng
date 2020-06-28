@@ -24,8 +24,6 @@ import java.lang.reflect.Constructor;
 
 import org.testng.annotations.Test;
 
-import cpcc.core.base.CoreConstants;
-
 public class CoreConstantsTest
 {
     @Test

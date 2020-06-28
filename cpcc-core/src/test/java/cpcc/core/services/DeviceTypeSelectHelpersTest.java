@@ -32,8 +32,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.DeviceType;
-import cpcc.core.services.DeviceTypeSelectHelpers;
-import cpcc.core.services.QueryManager;
 
 public class DeviceTypeSelectHelpersTest
 {

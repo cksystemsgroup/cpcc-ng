@@ -18,7 +18,6 @@
 
 package cpcc.ros.sensors;
 
-import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
@@ -62,14 +61,7 @@ public class CameraInfoSensorAdapter extends AbstractSensorAdapter
         Subscriber<sensor_msgs.CameraInfo> cameraInfoSubscriber =
             connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.CameraInfo._TYPE);
 
-        cameraInfoSubscriber.addMessageListener(new MessageListener<sensor_msgs.CameraInfo>()
-        {
-            @Override
-            public void onNewMessage(sensor_msgs.CameraInfo message)
-            {
-                cameraInfo = message;
-            }
-        });
+        cameraInfoSubscriber.addMessageListener(message -> cameraInfo = message);
 
         setStartCompleted();
     }
@@ -80,7 +72,7 @@ public class CameraInfoSensorAdapter extends AbstractSensorAdapter
     @Override
     public sensor_msgs.CameraInfo getValue()
     {
-        return cameraInfo;
+        return getCameraInfo();
     }
 
     /**

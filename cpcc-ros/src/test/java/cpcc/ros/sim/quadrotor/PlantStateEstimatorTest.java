@@ -33,12 +33,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.entities.PolarCoordinate;
-import cpcc.ros.sim.quadrotor.Configuration;
-import cpcc.ros.sim.quadrotor.PlantState;
-import cpcc.ros.sim.quadrotor.PlantStateEstimator;
-import cpcc.ros.sim.quadrotor.State;
 import big_actor_msgs.LatLngAlt;
+import cpcc.core.entities.PolarCoordinate;
 
 /**
  * PlantStateEstimatorTest
@@ -347,8 +343,7 @@ public class PlantStateEstimatorTest
 
         writer.printf("%.8f;%.8f;%.8f;%.3f;%.1f;%.8f;%.8f;%.8f;%.4f;%.4f;%.3f;%.1f\n",
             posLat, posLon, posAlt, flyTime, Math.toDegrees(heading), dstLat, dstLon, dstAlt, v, a,
-            Math.toDegrees(elevation), remCap
-            );
+            Math.toDegrees(elevation), remCap);
     }
 
 }

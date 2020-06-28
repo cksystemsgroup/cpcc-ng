@@ -18,6 +18,7 @@
 
 package cpcc.commons.pages.vv;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
@@ -40,7 +41,7 @@ public class VvMigrationAck
     private VirtualVehicleMigrator migrator;
 
     @CommitAfter
-    Object onActivate() throws Exception
+    Object onActivate() throws IOException
     {
         InputStream inputStream = requestGlobals.getHTTPServletRequest().getInputStream();
         migrator.ackChunk(inputStream);

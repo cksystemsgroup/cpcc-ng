@@ -25,12 +25,12 @@ import cpcc.vvrte.entities.Task;
 /**
  * AbstractTaskAnalyzer
  */
-public abstract class AbstractTaskAnalyzer
+public interface AbstractTaskAnalyzer
 {
     /**
      * @param taskParameters the task parameters.
      * @param sequenceNumber the sequence number of the current task.
      * @return the current task, or null.
      */
-    public abstract Task analyzeTaskParameters(ScriptableObject taskParameters, int sequenceNumber);
+    Task analyzeTaskParameters(ScriptableObject taskParameters, int sequenceNumber);
 }

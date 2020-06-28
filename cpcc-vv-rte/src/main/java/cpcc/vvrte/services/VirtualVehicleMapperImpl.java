@@ -82,8 +82,8 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
     private VirtualVehicleMappingDecision migrateTask(VirtualVehicleMappingDecision decision)
     {
         Task task = decision.getTask();
-        List<RealVehicle> groundStations = new ArrayList<RealVehicle>();
-        List<RealVehicle> destinationRealVehicles = new ArrayList<RealVehicle>();
+        List<RealVehicle> groundStations = new ArrayList<>();
+        List<RealVehicle> destinationRealVehicles = new ArrayList<>();
 
         for (RealVehicle rv : rvRepo.findAllActiveRealVehiclesExceptOwn())
         {
@@ -96,18 +96,18 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
             {
                 if (rv.getSensors().containsAll(task.getSensors()))
                 {
-                    logger.info("Found migration candidate " + rv.getName() + " for task at " + task.getPosition());
+                    logger.info("Found migration candidate {} for task at {}", rv.getName(), task.getPosition());
                     destinationRealVehicles.add(rv);
                 }
                 else
                 {
-                    logger.debug("Migrate not to " + rv.getName() + " because of sensors "
-                        + getSensorString(task.getSensors(), rv.getSensors()));
+                    String sensorString = getSensorString(task.getSensors(), rv.getSensors());
+                    logger.debug("Migrate not to {} because of sensors {}", rv.getName(), sensorString);
                 }
             }
             else
             {
-                logger.debug("Migrate not to " + rv.getName() + " because of position " + task.getPosition());
+                logger.debug("Migrate not to {} because of position {}", rv.getName(), task.getPosition());
             }
         }
 

@@ -176,7 +176,7 @@ public class CommunicationServiceTest
     {
         com.addConnector("connector", "path");
 
-        catchException(com).addConnector("connector", "path");
+        catchException(() -> com.addConnector("connector", "path"));
 
         assertThat((Throwable) caughtException()).isInstanceOf(IllegalStateException.class);
     }

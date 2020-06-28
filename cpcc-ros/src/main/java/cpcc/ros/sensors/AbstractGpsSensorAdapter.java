@@ -68,8 +68,7 @@ public abstract class AbstractGpsSensorAdapter extends AbstractSensorAdapter
             map.put("sensor.gps.position", Arrays.asList(
                 String.format(Locale.US, "%.8f", position.getLatitude()),
                 String.format(Locale.US, "%.8f", position.getLongitude()),
-                String.format(Locale.US, "%.3f", position.getAltitude())
-                ));
+                String.format(Locale.US, "%.3f", position.getAltitude())));
         }
 
         return map;
@@ -81,7 +80,7 @@ public abstract class AbstractGpsSensorAdapter extends AbstractSensorAdapter
     @Override
     public sensor_msgs.NavSatFix getValue()
     {
-        return position;
+        return getPosition();
     }
 
     /**

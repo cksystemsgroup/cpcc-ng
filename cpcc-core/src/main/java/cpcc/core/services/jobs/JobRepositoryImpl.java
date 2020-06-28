@@ -37,6 +37,14 @@ import cpcc.core.entities.JobStatus;
  */
 public class JobRepositoryImpl implements JobRepository
 {
+    private static final String PARAMETERS = "parameters";
+    private static final String START = "start";
+    private static final String END = "end";
+    private static final String STATUS = "status";
+    private static final String QUEUE_NAME = "queueName";
+    private static final String ID = "id";
+    private static final String CREATED = "created";
+
     private static final JobStatus[] ACTIVE_JOB_STATES = {JobStatus.CREATED, JobStatus.QUEUED, JobStatus.RUNNING};
 
     private Logger logger;
@@ -62,8 +70,8 @@ public class JobRepositoryImpl implements JobRepository
     @Override
     public List<Job> findAllJobs()
     {
-        return (List<Job>) session.createCriteria(Job.class)
-            .addOrder(Order.desc("created"))
+        return session.createCriteria(Job.class)
+            .addOrder(Order.desc(CREATED))
             .setMaxResults(100)
             .list();
     }
@@ -75,7 +83,7 @@ public class JobRepositoryImpl implements JobRepository
     public Job findJobById(int id)
     {
         return (Job) session.createCriteria(Job.class)
-            .add(Restrictions.eq("id", id))
+            .add(Restrictions.eq(ID, id))
             .uniqueResult();
     }
 
@@ -91,10 +99,10 @@ public class JobRepositoryImpl implements JobRepository
     @Override
     public List<Job> findOtherRunningJob(String queueName, String parameters)
     {
-        return (List<Job>) session.createCriteria(Job.class)
-            .add(Restrictions.eq("queueName", queueName))
-            .add(Restrictions.eq("parameters", parameters))
-            .add(Restrictions.in("status", ACTIVE_JOB_STATES))
+        return session.createCriteria(Job.class)
+            .add(Restrictions.eq(QUEUE_NAME, queueName))
+            .add(Restrictions.eq(PARAMETERS, parameters))
+            .add(Restrictions.in(STATUS, ACTIVE_JOB_STATES))
             .list();
     }
 
@@ -105,9 +113,9 @@ public class JobRepositoryImpl implements JobRepository
     @Override
     public List<Job> findNextScheduledJobs()
     {
-        return (List<Job>) session.createCriteria(Job.class)
-            .add(Restrictions.eq("status", JobStatus.CREATED))
-            .addOrder(Order.asc("created"))
+        return session.createCriteria(Job.class)
+            .add(Restrictions.eq(STATUS, JobStatus.CREATED))
+            .addOrder(Order.asc(CREATED))
             .list();
     }
 
@@ -118,15 +126,14 @@ public class JobRepositoryImpl implements JobRepository
     @Override
     public void resetJobs()
     {
-        List<Job> activeJobs = (List<Job>) session.createCriteria(Job.class)
-            .add(Restrictions.in("status", Arrays.asList(JobStatus.QUEUED, JobStatus.RUNNING)))
+        List<Job> activeJobs = session.createCriteria(Job.class)
+            .add(Restrictions.in(STATUS, Arrays.asList(JobStatus.QUEUED, JobStatus.RUNNING)))
             .list();
 
         for (Job job : activeJobs)
         {
-            logger.info("Resetting job " + job.getId()
-                + " " + job.getQueued()
-                + " " + job.getQueueName() + " " + job.getParameters());
+            logger.debug("Resetting job {} {} {} {}",
+                job.getId(), job.getQueued(), job.getQueueName(), job.getParameters());
 
             job.setStatus(JobStatus.CREATED);
             job.setStart(null);
@@ -143,23 +150,22 @@ public class JobRepositoryImpl implements JobRepository
     @Override
     public void removeOldJobs()
     {
-        List<Job> oldJobs = (List<Job>) session.createCriteria(Job.class)
+        List<Job> oldJobs = session.createCriteria(Job.class)
             .add(Restrictions.or(
-                Restrictions.le("end", new Date(System.currentTimeMillis() - maxJobAge)),
+                Restrictions.le(END, new Date(System.currentTimeMillis() - maxJobAge)),
                 Restrictions.and(
-                    Restrictions.le("end", new Date(System.currentTimeMillis() - 30000)),
-                    Restrictions.in("status", new JobStatus[]{JobStatus.OK, JobStatus.FAILED, JobStatus.NO_FACTORY})),
+                    Restrictions.le(END, new Date(System.currentTimeMillis() - 30000)),
+                    Restrictions.in(STATUS, new JobStatus[]{JobStatus.OK, JobStatus.FAILED, JobStatus.NO_FACTORY})),
                 Restrictions.and(
-                    Restrictions.le("start", new Date(System.currentTimeMillis() - maxJobAge)),
-                    Restrictions.isNull("end"),
-                    Restrictions.eq("status", JobStatus.NO_FACTORY))))
+                    Restrictions.le(START, new Date(System.currentTimeMillis() - maxJobAge)),
+                    Restrictions.isNull(END),
+                    Restrictions.eq(STATUS, JobStatus.NO_FACTORY))))
             .list();
 
         for (Job job : oldJobs)
         {
-            logger.debug("Removing old job " + job.getId()
-                + " " + job.getQueued()
-                + " " + job.getQueueName() + " " + job.getParameters());
+            logger.debug("Removing old job {} {} {} {}",
+                job.getId(), job.getQueued(), job.getQueueName(), job.getParameters());
 
             session.delete(job);
         }

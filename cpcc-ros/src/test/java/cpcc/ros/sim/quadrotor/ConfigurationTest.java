@@ -30,7 +30,6 @@ import org.ros.node.NodeConfiguration;
 import org.testng.annotations.Test;
 
 import cpcc.core.utils.GeodeticSystem;
-import cpcc.ros.sim.quadrotor.Configuration;
 
 /**
  * ConfigurationTest

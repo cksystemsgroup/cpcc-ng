@@ -19,6 +19,7 @@
 package cpcc.rv.base.services;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -79,12 +80,15 @@ public class SetupServiceTest
         verify(sessionManager).commit();
         verify(session, times(3)).saveOrUpdate(any());
 
-        verify(logger).info(
-            matches("Automatic configuration: " + Parameter.REAL_VEHICLE_NAME + "=RV-\\S+"));
-        verify(logger).info(
-            matches("Automatic configuration: " + Parameter.MASTER_SERVER_URI + "=http://localhost:\\d+"));
-        verify(logger).info(
-            matches("Automatic configuration: " + Parameter.USE_INTERNAL_ROS_CORE + "=true"));
+        verify(logger).info(eq("Automatic configuration: {}={}"),
+            eq(Parameter.REAL_VEHICLE_NAME),
+            matches("RV-\\S+"));
+        verify(logger).info(eq("Automatic configuration: {}={}"),
+            eq(Parameter.MASTER_SERVER_URI),
+            matches("http://localhost:\\d+"));
+        verify(logger).info(eq("Automatic configuration: {}={}"),
+            eq(Parameter.USE_INTERNAL_ROS_CORE),
+            eq("true"));
     }
 
     @Test
@@ -100,10 +104,12 @@ public class SetupServiceTest
         verify(sessionManager).commit();
         verify(session, times(2)).saveOrUpdate(any());
 
-        verify(logger).info(
-            matches("Automatic configuration: " + Parameter.MASTER_SERVER_URI + "=http://localhost:\\d+"));
-        verify(logger).info(
-            matches("Automatic configuration: " + Parameter.USE_INTERNAL_ROS_CORE + "=true"));
+        verify(logger).info(eq("Automatic configuration: {}={}"),
+            eq(Parameter.MASTER_SERVER_URI),
+            matches("http://localhost:\\d+"));
+        verify(logger).info(eq("Automatic configuration: {}={}"),
+            eq(Parameter.USE_INTERNAL_ROS_CORE),
+            eq("true"));
         verifyNoMoreInteractions(logger);
     }
 }

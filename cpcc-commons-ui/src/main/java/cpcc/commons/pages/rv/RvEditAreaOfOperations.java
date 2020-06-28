@@ -19,6 +19,7 @@
 package cpcc.commons.pages.rv;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -102,7 +103,7 @@ public class RvEditAreaOfOperations
      */
     StreamResponse onActivate(String folder, String imageName)
     {
-        String pngResourcePath = "cpcc/commons/" + folder + "/" + imageName;
+        String pngResourcePath = Paths.get("cpcc", "commons", folder, imageName).toString();
         return new ResourceStreamResponse("application/png", pngResourcePath);
     }
 
@@ -119,7 +120,7 @@ public class RvEditAreaOfOperations
      */
     public String getOtherRealVehicleRegions() throws IOException
     {
-        List<RealVehicle> otherRvList = new ArrayList<RealVehicle>();
+        List<RealVehicle> otherRvList = new ArrayList<>();
 
         for (RealVehicle rv : realVehicleRepository.findAllActiveRealVehicles())
         {

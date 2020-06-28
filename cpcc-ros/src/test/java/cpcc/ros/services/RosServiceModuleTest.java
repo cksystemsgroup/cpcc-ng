@@ -29,12 +29,6 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.ServiceBindingOptions;
 import org.testng.annotations.Test;
 
-import cpcc.ros.services.RosImageConverter;
-import cpcc.ros.services.RosImageConverterImpl;
-import cpcc.ros.services.RosNodeService;
-import cpcc.ros.services.RosNodeServiceImpl;
-import cpcc.ros.services.RosServiceModule;
-
 /**
  * RosServiceModuleTest
  */

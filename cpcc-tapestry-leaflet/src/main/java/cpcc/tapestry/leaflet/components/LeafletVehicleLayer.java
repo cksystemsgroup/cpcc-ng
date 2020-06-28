@@ -29,7 +29,6 @@ import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.corelib.components.Zone;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
-import org.apache.tapestry5.services.ajax.JavaScriptCallback;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 
 /**
@@ -39,6 +38,10 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 @Import(stylesheet = {"css/vehicle.css"})
 public class LeafletVehicleLayer extends AbstractLeafletAssetLayer
 {
+    private static final String UPDATE_VEHICLE_DATA = "updateVehicleData";
+    private static final String INITIALIZE = "initialize";
+    private static final String LEAFLET_VEHICLE_LAYER = "leaflet/vehicleLayer";
+
     @Inject
     private AjaxResponseRenderer ajaxResponseRenderer;
 
@@ -66,14 +69,14 @@ public class LeafletVehicleLayer extends AbstractLeafletAssetLayer
         String eventURL = componentResources.createEventLink("vehicleUpdate", context).toAbsoluteURI();
 
         javaScriptSupport
-            .require("leaflet/vehicleLayer")
-            .invoke("initialize")
-            .with(componentResources.getId(), mapId, name, vehicleZone.getClientId(), eventURL, frequencySecs
-                , iconBaseUrl);
+            .require(LEAFLET_VEHICLE_LAYER)
+            .invoke(INITIALIZE)
+            .with(componentResources.getId(), mapId, name, vehicleZone.getClientId(), eventURL, frequencySecs,
+                iconBaseUrl);
 
         javaScriptSupport
-            .require("leaflet/vehicleLayer")
-            .invoke("updateVehicleData")
+            .require(LEAFLET_VEHICLE_LAYER)
+            .invoke(UPDATE_VEHICLE_DATA)
             .with(componentResources.getId(), mapId);
     }
 
@@ -88,16 +91,10 @@ public class LeafletVehicleLayer extends AbstractLeafletAssetLayer
 
     void addVehicleDataUpdateCallback()
     {
-        ajaxResponseRenderer.addCallback(new JavaScriptCallback()
-        {
-            public void run(JavaScriptSupport jsSupport)
-            {
-                jsSupport
-                    .require("leaflet/vehicleLayer")
-                    .invoke("updateVehicleData")
-                    .with(componentResources.getId(), mapId);
-            }
-        });
+        ajaxResponseRenderer.addCallback((JavaScriptSupport jsSupport) -> jsSupport
+            .require(LEAFLET_VEHICLE_LAYER)
+            .invoke(UPDATE_VEHICLE_DATA)
+            .with(componentResources.getId(), mapId));
     }
 
     public String getVehicles()

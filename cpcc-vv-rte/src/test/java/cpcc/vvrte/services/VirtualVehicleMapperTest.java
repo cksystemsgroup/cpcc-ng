@@ -48,7 +48,6 @@ import cpcc.core.services.QueryManager;
 import cpcc.core.services.RealVehicleRepository;
 import cpcc.vvrte.base.VirtualVehicleMappingDecision;
 import cpcc.vvrte.entities.Task;
-import cpcc.vvrte.services.VirtualVehicleMapperImpl;
 
 /**
  * VirtualVehicleMapperTest

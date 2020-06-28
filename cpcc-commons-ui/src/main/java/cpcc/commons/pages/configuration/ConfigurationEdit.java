@@ -18,7 +18,6 @@
 
 package cpcc.commons.pages.configuration;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.Format;
@@ -41,9 +40,6 @@ import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.hibernate.Session;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import cpcc.commons.services.EnumFormatter;
 import cpcc.core.entities.Device;
@@ -150,7 +146,7 @@ public class ConfigurationEdit
      */
     private Collection<MappingAttributes> orderByTopic(Collection<MappingAttributes> attributeList)
     {
-        Map<String, MappingAttributes> tree = new TreeMap<String, MappingAttributes>();
+        Map<String, MappingAttributes> tree = new TreeMap<>();
 
         for (MappingAttributes attribute : attributeList)
         {
@@ -171,7 +167,6 @@ public class ConfigurationEdit
     @CommitAfter
     void onDeleteDevice(String topic)
     {
-        // TODO move to QueryManager?
         Device device = qm.findDeviceByTopicRoot(topic);
         Collection<MappingAttributes> mappingCollection = qm.findMappingAttributesByDevice(device);
 
@@ -188,10 +183,8 @@ public class ConfigurationEdit
     }
 
     @CommitAfter
-    void onSuccessFromRealVehicleNameForm() throws JsonParseException, JsonMappingException, IOException
+    void onSuccessFromRealVehicleNameForm()
     {
-        // TODO check me!
-
         if (realVehicleName.getValue() == null)
         {
             handleXhrRequest(realVehicleNameFormZone);
@@ -275,7 +268,7 @@ public class ConfigurationEdit
      */
     public Boolean getSensorDefinitionsAvailable()
     {
-        return qm.findSensorDefinitionsByMessageType(mappingConfig.getPk().getTopic().getMessageType()).size() > 0;
+        return !qm.findSensorDefinitionsByMessageType(mappingConfig.getPk().getTopic().getMessageType()).isEmpty();
     }
 
     /**

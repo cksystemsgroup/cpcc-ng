@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,7 +70,8 @@ public class RealVehicleBasicWriter extends AbstractRealVehicleWriter
             ? setupGsDevices(rv)
             : setupRvDevices(rv);
 
-        try (OutputStream out = new FileOutputStream(file); Writer writer = new OutputStreamWriter(out, "UTF-8"))
+        try (OutputStream out = new FileOutputStream(file);
+            Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8))
         {
             writeParameters(writer, rv);
             devices.stream().forEach(rethrowConsumer(x -> writeDevice(writer, x)));
@@ -88,9 +90,10 @@ public class RealVehicleBasicWriter extends AbstractRealVehicleWriter
         String configuration = fc.getFeatures().stream()
             .filter(x -> x.getGeometry() instanceof Point)
             .map(x -> (Point) x.getGeometry())
-            .map(x -> x.getCoordinates())
+            .map(Point::getCoordinates)
             .map(x -> String.format(GS_CONFIG_FORMAT, x.getLatitude(), x.getLongitude()))
-            .findFirst().get();
+            .findFirst()
+            .orElse(String.format(GS_CONFIG_FORMAT, 0.0, 0.0));
 
         return Arrays.asList(new DeviceBuilder()
             .setId(1)
@@ -112,9 +115,10 @@ public class RealVehicleBasicWriter extends AbstractRealVehicleWriter
         String configuration = fc.getFeatures().stream()
             .filter(x -> x.getGeometry() instanceof Point)
             .map(x -> (Point) x.getGeometry())
-            .map(x -> x.getCoordinates())
+            .map(Point::getCoordinates)
             .map(x -> String.format(RV_CONFIG_FORMAT, x.getLatitude(), x.getLongitude()))
-            .findFirst().get();
+            .findFirst()
+            .orElse(String.format(RV_CONFIG_FORMAT, 0.0, 0.0));
 
         return Arrays.asList(new DeviceBuilder()
             .setId(1)
@@ -132,8 +136,7 @@ public class RealVehicleBasicWriter extends AbstractRealVehicleWriter
     private void writeParameters(Writer writer, RealVehicle rv) throws IOException
     {
         writer.append(String.format("INSERT INTO PARAMETERS (ID,NAME,SORT,VALUE) VALUES "
-            + "(1,'realVehicleName',0,'%1$s');%n"
-            , rv.getName()));
+            + "(1,'realVehicleName',0,'%1$s');%n", rv.getName()));
 
         writer.append(String.format("INSERT INTO PARAMETERS (ID,NAME,SORT,VALUE) VALUES "
             + "(2,'masterServerURI',0,'http://localhost:%1$d');%n", pm.getRosPort(rv.getId())));

@@ -34,7 +34,7 @@ import cpcc.vvrte.entities.Task;
 /**
  * SimpleTaskAnalyzer
  */
-public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
+public class SimpleTaskAnalyzer implements AbstractTaskAnalyzer
 {
     private QueryManager qm;
     private double minToleranceDistance;
@@ -70,7 +70,7 @@ public class SimpleTaskAnalyzer extends AbstractTaskAnalyzer
         task.setPosition(taskPosition);
 
         NativeArray sensors = (NativeArray) taskParameters.get("sensors");
-        List<SensorDefinition> sensorDefinitions = new ArrayList<SensorDefinition>();
+        List<SensorDefinition> sensorDefinitions = new ArrayList<>();
         for (int k = 0; k < sensors.getLength(); ++k)
         {
             NativeObject s = (NativeObject) sensors.get(k);

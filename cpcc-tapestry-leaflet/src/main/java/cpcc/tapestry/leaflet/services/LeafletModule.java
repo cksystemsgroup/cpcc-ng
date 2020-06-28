@@ -21,14 +21,10 @@ import cpcc.core.utils.VersionUtils;
  */
 public final class LeafletModule
 {
-    //    private static final String MODULE_VERSION = "module.version";
+    private static final String LEAFLET = "leaflet";
+
     private static final String PROPERTY_PATH =
         LeafletModule.class.getPackage().getName().replace('.', '/') + "/module.properties";
-    //    private static final String RESOURCE_NOT_FOUND = "Property file resource not found: " + PROPERTY_PATH;
-    //    private static final String VERSION_NOT_SET = "Property " + MODULE_VERSION
-    //        + " is not set in resource " + PROPERTY_PATH;
-    //    private static final String RESOURCE_FILTERING_FAILED = "Property " + MODULE_VERSION
-    //        + " is not filtered in resource " + PROPERTY_PATH;
 
     private static final String ROOT = "classpath:META-INF/assets/leaflet";
 
@@ -42,7 +38,7 @@ public final class LeafletModule
      */
     public static void contributeComponentClassResolver(Configuration<LibraryMapping> configuration)
     {
-        configuration.add(new LibraryMapping("leaflet", "cpcc.tapestry.leaflet"));
+        configuration.add(new LibraryMapping(LEAFLET, "cpcc.tapestry.leaflet"));
     }
 
     /**
@@ -50,7 +46,7 @@ public final class LeafletModule
      */
     public static void contributeClasspathAssetAliasManager(MappedConfiguration<String, String> configuration)
     {
-        configuration.add(VersionUtils.getModuleVersion("leaflet", PROPERTY_PATH), "cpcc/tapestry/leaflet");
+        configuration.add(VersionUtils.getModuleVersion(LEAFLET, PROPERTY_PATH), "cpcc/tapestry/leaflet");
     }
 
     /**
@@ -61,7 +57,7 @@ public final class LeafletModule
     public static void setupLeaflet(OrderedConfiguration<StackExtension> configuration)
     {
         configuration.add("leaflet-library", StackExtension.library(ROOT + "/leaflet.js"));
-        add(configuration, StackExtensionType.MODULE, "leaflet");
+        add(configuration, StackExtensionType.MODULE, LEAFLET);
     }
 
     /**
@@ -69,11 +65,10 @@ public final class LeafletModule
      * @param leafletShim the shim resource.
      */
     @Contribute(ModuleManager.class)
-    public static void setupBaseModules(MappedConfiguration<String, Object> configuration
-        , @Path(ROOT + "/leaflet-shim.js") Resource leafletShim
-        )
+    public static void setupBaseModules(MappedConfiguration<String, Object> configuration,
+        @Path(ROOT + "/leaflet-shim.js") Resource leafletShim)
     {
-        configuration.add("leaflet", new JavaScriptModuleConfiguration(leafletShim).dependsOn("t5/core/console"));
+        configuration.add(LEAFLET, new JavaScriptModuleConfiguration(leafletShim).dependsOn("t5/core/console"));
     }
 
     /**
@@ -81,8 +76,8 @@ public final class LeafletModule
      * @param type the stack extension type.
      * @param paths the extension paths.
      */
-    private static void add(OrderedConfiguration<StackExtension> configuration, StackExtensionType type
-        , String... paths)
+    private static void add(OrderedConfiguration<StackExtension> configuration, StackExtensionType type,
+        String... paths)
     {
         for (String path : paths)
         {
@@ -92,39 +87,4 @@ public final class LeafletModule
             configuration.add(id, new StackExtension(type, path));
         }
     }
-
-    //    /**
-    //     * @param moduleName the module name
-    //     * @return the module name and module version.
-    //     */
-    //    private static String getModuleVersion(String moduleName)
-    //    {
-    //        try (InputStream stream = LeafletModule.class.getResourceAsStream("module.properties"))
-    //        {
-    //            Properties props = new Properties();
-    //            props.load(stream);
-    //            String version = props.getProperty("module.version");
-    //
-    //            if (StringUtils.isEmpty(version))
-    //            {
-    //                throw new IllegalArgumentException(VERSION_NOT_SET);
-    //            }
-    //
-    //            if (version.startsWith("${"))
-    //            {
-    //                throw new IllegalArgumentException(RESOURCE_FILTERING_FAILED);
-    //            }
-    //
-    //            if (version.endsWith("SNAPSHOT"))
-    //            {
-    //                version += '-' + System.currentTimeMillis();
-    //            }
-    //
-    //            return moduleName + '/' + version;
-    //        }
-    //        catch (IOException e)
-    //        {
-    //            throw new IllegalArgumentException(RESOURCE_NOT_FOUND);
-    //        }
-    //    }
 }

@@ -7,8 +7,6 @@ import java.lang.reflect.Constructor;
 
 import org.testng.annotations.Test;
 
-import cpcc.core.utils.ExceptionFormatter;
-
 public class ExceptionFormatterTest
 {
     @Test

@@ -60,6 +60,7 @@ public class NodeGroup extends AbstractRosNodeGroup
         catch (InterruptedException e)
         {
             LOG.error("node.awaitStartup() interrupted", e);
+            Thread.currentThread().interrupt();
         }
 
         wayPointListenerNode = new WaypointListenerNode(getTopicRoot() + "/waypoint");

@@ -46,12 +46,6 @@
 			<artifactId>powermock-module-testng</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.powermock</groupId> -->
-		<!-- <artifactId>powermock-easymock-release-full</artifactId> -->
-		<!-- <classifier>full</classifier> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-test-easymock-testng</artifactId>

@@ -18,6 +18,8 @@
 
 package cpcc.core.services.jobs;
 
+import java.io.IOException;
+
 /**
  * JobRunnable
  */
@@ -26,7 +28,7 @@ public interface JobRunnable
     /**
      * Run the job.
      * 
-     * @throws Exception in case of errors.
+     * @throws IOException in case of errors.
      */
-    void run() throws Exception;
+    void run() throws IOException;
 }

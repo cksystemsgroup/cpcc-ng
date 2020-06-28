@@ -150,7 +150,7 @@ public class VvList
         if (virtualVehicleList != null)
         {
             long counter = virtualVehicleList.stream()
-                .filter(vv -> vv.isSelected())
+                .filter(VirtualVehicle::isSelected)
                 .map(vv -> {
                     repository.deleteVirtualVehicleById(vv);
                     return 1;
@@ -210,7 +210,7 @@ public class VvList
     @CommitAfter
     void pauseVehicle(Integer id)
     {
-        logger.error("pauseVehicle " + id + " not implemented.");
+        logger.error("pauseVehicle {} not implemented.", id);
         handleXhrRequest(paneZone);
     }
 
@@ -239,7 +239,7 @@ public class VvList
             logger.error("Can not stop virtual vehicle " + vehicle.getId(), e);
         }
     }
-    
+
     private void terminateVirtualVehicle(VirtualVehicle vehicle)
     {
         try
@@ -268,8 +268,7 @@ public class VvList
     {
         if (!VirtualVehicleState.VV_STATES_FOR_RESTART.contains(vehicle.getState()))
         {
-            logger.info("Can not restart virtual vehicle " + vehicle.getId()
-                + " because of state " + vehicle.getState());
+            logger.info("Can not restart virtual vehicle {} because of state {}", vehicle.getId(), vehicle.getState());
             return;
         }
 
@@ -278,11 +277,11 @@ public class VvList
             vehicle.setState(VirtualVehicleState.INIT);
             sessionManager.commit();
             launcher.start(vehicle.getId());
-            logger.info("Virtual vehicle " + vehicle.getId() + " restarted.");
+            logger.info("Virtual vehicle {} restarted.", vehicle.getId());
         }
         catch (VirtualVehicleLaunchException | IOException e)
         {
-            logger.error("Can not restart virtual vehicle " + vehicle.getId(), e);
+            logger.error("Can not restart virtual vehicle {}", vehicle.getId(), e);
         }
     }
 
@@ -300,7 +299,7 @@ public class VvList
     @CommitAfter
     void startAllVehicles()
     {
-        repository.findAllVehicles().stream().forEach(vv -> restartVirtualVehicle(vv));
+        repository.findAllVehicles().stream().forEach(this::restartVirtualVehicle);
         handleXhrRequest(paneZone);
     }
 
@@ -308,7 +307,7 @@ public class VvList
     @CommitAfter
     void terminateAllVehicles()
     {
-        repository.findAllVehicles().stream().forEach(vv -> terminateVirtualVehicle(vv));
+        repository.findAllVehicles().stream().forEach(this::terminateVirtualVehicle);
         handleXhrRequest(paneZone);
     }
 

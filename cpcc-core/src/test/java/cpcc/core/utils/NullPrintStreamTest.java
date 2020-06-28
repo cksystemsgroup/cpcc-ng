@@ -22,8 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 
-import cpcc.core.utils.NullPrintStream;
-
 /**
  * NullPrintStream Test
  */

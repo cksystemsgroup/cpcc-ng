@@ -18,12 +18,13 @@
 
 package cpcc.core.utils;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.geojson.Feature;
 import org.geojson.GeoJsonObject;
 import org.geojson.LngLatAlt;
@@ -139,9 +140,8 @@ public final class GeoJsonUtils
     /**
      * @param rv the real vehicle to be converted.
      * @return the real vehicle as GeoJSON Feature object.
-     * @throws IOException thrown in case of errors.
      */
-    public static Feature toFeature(RealVehicle rv) throws IOException
+    public static Feature toFeature(RealVehicle rv)
     {
         Feature feature = new Feature();
         feature.setId(Integer.toString(rv.getId()));
@@ -165,16 +165,12 @@ public final class GeoJsonUtils
      * @param position the position.
      * @return the position as a Map object.
      */
-    @SuppressWarnings("serial")
     public static Map<String, Double> toPosition(final PolarCoordinate position)
     {
-        return new HashMap<String, Double>()
-        {
-            {
-                put("lat", position.getLatitude());
-                put("lon", position.getLongitude());
-                put("alt", position.getAltitude());
-            }
-        };
+        return Stream
+            .of(Pair.of("lat", position.getLatitude()),
+                Pair.of("lon", position.getLongitude()),
+                Pair.of("alt", position.getAltitude()))
+            .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
     }
 }

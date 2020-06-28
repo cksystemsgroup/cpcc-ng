@@ -76,10 +76,9 @@ public class RealVehicle implements Serializable
     private String areaOfOperation;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "real_vehicles_sensor_definitions"
-        , joinColumns = {@JoinColumn(name = "real_vehicles_id")}
-        , inverseJoinColumns = {@JoinColumn(name = "sensors_id")})
-    private List<SensorDefinition> sensors = new ArrayList<SensorDefinition>();
+    @JoinTable(name = "real_vehicles_sensor_definitions", joinColumns = {@JoinColumn(name = "real_vehicles_id")},
+        inverseJoinColumns = {@JoinColumn(name = "sensors_id")})
+    private List<SensorDefinition> sensors = new ArrayList<>();
 
     @NotNull
     @Type(type = "timestamp")
@@ -334,12 +333,7 @@ public class RealVehicle implements Serializable
             return false;
         }
 
-        if (!getSensors().containsAll(other.getSensors()))
-        {
-            return false;
-        }
-
-        return true;
+        return getSensors().containsAll(other.getSensors());
     }
 
     /**

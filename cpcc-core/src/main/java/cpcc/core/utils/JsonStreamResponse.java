@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.json.JSONObject;
@@ -60,7 +61,7 @@ public class JsonStreamResponse implements StreamResponse
     public InputStream getStream() throws IOException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-        OutputStreamWriter streamWriter = new OutputStreamWriter(out, "UTF-8");
+        OutputStreamWriter streamWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8.name());
         PrintWriter writer = new PrintWriter(streamWriter);
         jsonObject.print(writer);
         writer.close();

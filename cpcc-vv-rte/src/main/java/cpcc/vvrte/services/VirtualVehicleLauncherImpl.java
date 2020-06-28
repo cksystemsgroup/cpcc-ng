@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -68,31 +69,20 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     private JobService jobService;
 
     /**
-     * @param logger the application logger.
-     * @param sessionManager the Hibernate session manager.
-     * @param jss the JavaScript service.
-     * @param migrator the migration service.
-     * @param vvRteRepository the virtual vehicle RTE repository.
-     * @param rvRepository the real vehicle repository.
-     * @param timeService the time service.
-     * @param messages the application message catalog.
-     * @param taskRepository the task repository instance.
-     * @param jobService the job service.
+     * @param serviceResources the service resources.
      */
-    public VirtualVehicleLauncherImpl(Logger logger, HibernateSessionManager sessionManager, JavascriptService jss,
-        VirtualVehicleMigrator migrator, VvRteRepository vvRteRepository, RealVehicleRepository rvRepository,
-        TimeService timeService, Messages messages, TaskRepository taskRepository, JobService jobService)
+    public VirtualVehicleLauncherImpl(ServiceResources serviceResources)
     {
-        this.logger = logger;
-        this.sessionManager = sessionManager;
-        this.jss = jss;
-        this.migrator = migrator;
-        this.vvRteRepository = vvRteRepository;
-        this.rvRepository = rvRepository;
-        this.timeService = timeService;
-        this.messages = messages;
-        this.taskRepository = taskRepository;
-        this.jobService = jobService;
+        this.logger = serviceResources.getService(Logger.class);
+        this.sessionManager = serviceResources.getService(HibernateSessionManager.class);
+        this.jss = serviceResources.getService(JavascriptService.class);
+        this.migrator = serviceResources.getService(VirtualVehicleMigrator.class);
+        this.vvRteRepository = serviceResources.getService(VvRteRepository.class);
+        this.rvRepository = serviceResources.getService(RealVehicleRepository.class);
+        this.timeService = serviceResources.getService(TimeService.class);
+        this.messages = serviceResources.getService(Messages.class);
+        this.taskRepository = serviceResources.getService(TaskRepository.class);
+        this.jobService = serviceResources.getService(JobService.class);
 
         jss.addAllowedClassRegex("\\$BuiltInFunctions_.*");
     }
@@ -218,7 +208,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void stateChange(int vehicleId, VirtualVehicleState newState)
     {
-        logger.debug("New vehicle state for vehicle " + vehicleId + " : " + newState);
+        logger.debug("New vehicle state for vehicle {} : {}", vehicleId, newState);
         if (newState == VirtualVehicleState.MIGRATION_COMPLETED_RCV)
         {
             VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleId);
@@ -232,7 +222,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void notify(Task tsk)
     {
-        logger.debug("notify(): task=" + tsk.getId() + " " + tsk.getTaskState().name());
+        logger.debug("notify(): task={} {}", tsk.getId(), tsk.getTaskState());
 
         Task task = taskRepository.findTaskById(tsk.getId());
         VirtualVehicle vehicle = task.getVehicle();
@@ -249,7 +239,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void notify(JavascriptWorker worker, VirtualVehicleState vehicleState)
     {
-        logger.debug("notify(): worker=" + worker.getName() + ", state=" + vehicleState);
+        logger.debug("notify(): worker={}, state={}", worker.getName(), vehicleState);
         VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleMap.get(worker));
 
         if (vehicle == null || vehicleState == null)
@@ -285,8 +275,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         if (decision != null && vehicle.getMigrationDestination() != null)
         {
-            logger.info("initiate Migration of VV " + vehicle.getName() + " (" + vehicle.getUuid() + ") to "
-                + vehicle.getMigrationDestination().getName());
+            logger.info("initiate Migration of VV {} ({}) to {}",
+                vehicle.getName(), vehicle.getUuid(), vehicle.getMigrationDestination().getName());
             migrator.initiateMigration(vehicle);
         }
 
@@ -303,7 +293,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
      */
     private VirtualVehicleMappingDecision handleDefectiveVehicle(JavascriptWorker worker, VirtualVehicle vehicle)
     {
-        logger.error("Virtual Vehicle crashed! Message is: " + worker.getResult());
+        logger.error("Virtual Vehicle crashed! Message is: {}", worker.getResult());
         vehicle.setStateInfo(worker.getResult());
         return handleFinishedVehicle(vehicle);
     }
@@ -355,7 +345,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         VirtualVehicleMappingDecision decision = state.getDecision();
 
-        if (decision.isMigration() && decision.getRealVehicles().size() > 0)
+        if (decision.isMigration() && !decision.getRealVehicles().isEmpty())
         {
             // TODO select the best suitable RV instead of taking just the first.
             RealVehicle migrationDestination = decision.getRealVehicles().get(0);
@@ -412,7 +402,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         for (VirtualVehicle vehicle : vvRteRepository.findAllStuckVehicles(requiredStates))
         {
-            logger.info("Found stuck VV: " + vehicle.getName() + "  " + vehicle.getState().name());
+            logger.info("Found stuck VV: {} {}", vehicle.getName(), vehicle.getState());
             handleOneStuckMigration(groundStations, requiredStates, vehicle);
             sessionManager.commit();
         }
@@ -446,8 +436,8 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
             String result =
                 new JSONObject("uuid", vehicle.getUuid(), "chunk", vehicle.getChunkNumber()).toCompactString();
 
-            logger.debug("Queuing ACK job for VV: " + vehicle.getName() + "  " + vehicle.getState().name()
-                + " result is " + result);
+            logger.debug("Queuing ACK job for VV: {}  {} result is {}",
+                vehicle.getName(), vehicle.getState(), result);
 
             jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME,
                 String.format(VvRteConstants.MIGRATION_FORMAT_SEND_ACK, vehicle.getId()),

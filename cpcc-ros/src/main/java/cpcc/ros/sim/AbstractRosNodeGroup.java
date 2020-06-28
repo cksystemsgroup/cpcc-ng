@@ -91,7 +91,7 @@ public abstract class AbstractRosNodeGroup implements RosNodeGroup
     @Override
     public Map<String, List<String>> getCurrentState()
     {
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        Map<String, List<String>> map = new HashMap<>();
 
         for (Entry<String, List<String>> entry : getConfig().entrySet())
         {

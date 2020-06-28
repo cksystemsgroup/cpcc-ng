@@ -80,7 +80,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<Device> findAllDevices()
     {
-        return (List<Device>) session
+        return session
             .createCriteria(Device.class)
             .addOrder(Property.forName(TOPIC_ROOT).asc())
             .list();
@@ -105,7 +105,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<DeviceType> findAllDeviceTypes()
     {
-        return (List<DeviceType>) session
+        return session
             .createCriteria(DeviceType.class)
             .addOrder(Property.forName(DEVICE_NAME).asc())
             .list();
@@ -161,7 +161,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<SensorDefinition> findSensorDefinitionsByMessageType(String messagetype)
     {
-        return (List<SensorDefinition>) session
+        return session
             .createCriteria(SensorDefinition.class)
             .add(Restrictions.eq(SENSOR_MESSAGETYPE, messagetype))
             .list();
@@ -219,7 +219,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<SensorDefinition> findAllSensorDefinitions()
     {
-        return (List<SensorDefinition>) session
+        return session
             .createCriteria(SensorDefinition.class)
             .addOrder(Property.forName("id").asc())
             .list();
@@ -232,7 +232,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<SensorDefinition> findAllVisibleSensorDefinitions()
     {
-        return (List<SensorDefinition>) session
+        return session
             .createCriteria(SensorDefinition.class)
             .add(Restrictions.ne("visibility", SensorVisibility.NO_VV))
             .list();
@@ -245,7 +245,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<SensorDefinition> findAllActiveSensorDefinitions()
     {
-        return (List<SensorDefinition>) session
+        return session
             .createQuery("SELECT d "
                 + "FROM SensorDefinition d, MappingAttributes m "
                 + "WHERE m.sensorDefinition = d.id AND m.vvVisible = true AND d.visibility != :visibility")
@@ -273,7 +273,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public Collection<MappingAttributes> findMappingAttributesByDevice(Device device)
     {
-        return (List<MappingAttributes>) session
+        return session
             .createQuery("from MappingAttributes where pk.device.id = :deviceId)")
             .setParameter(DEVICE_ID, device.getId())
             .list();
@@ -286,7 +286,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<MappingAttributes> findAllMappingAttributes()
     {
-        return (List<MappingAttributes>) session
+        return session
             .createCriteria(MappingAttributes.class)
             .list();
     }
@@ -298,7 +298,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public List<MappingAttributes> findAllVvVisibleMappingAttributes()
     {
-        return (List<MappingAttributes>) session
+        return session
             .createCriteria(MappingAttributes.class)
             .add(Restrictions.eq("vvVisible", Boolean.TRUE))
             .list();
@@ -325,7 +325,7 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public Map<String, MappingAttributes> findAllMappingAttributesAsMap()
     {
-        Map<String, MappingAttributes> attributeMap = new HashMap<String, MappingAttributes>();
+        Map<String, MappingAttributes> attributeMap = new HashMap<>();
 
         for (MappingAttributes attribute : findAllMappingAttributes())
         {
@@ -358,7 +358,7 @@ public class QueryManagerImpl implements QueryManager
     {
         Collection<MappingAttributes> attributeList;
 
-        Set<Topic> topicSet = new HashSet<Topic>();
+        Set<Topic> topicSet = new HashSet<>();
         topicSet.add(device.getType().getMainTopic());
         topicSet.addAll(device.getType().getSubTopics());
 
@@ -366,7 +366,7 @@ public class QueryManagerImpl implements QueryManager
 
         if (attributeList == null)
         {
-            attributeList = new ArrayList<MappingAttributes>();
+            attributeList = new ArrayList<>();
         }
 
         for (MappingAttributes attribute : attributeList)

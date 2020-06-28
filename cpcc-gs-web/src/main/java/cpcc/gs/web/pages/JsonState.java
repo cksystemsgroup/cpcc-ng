@@ -30,12 +30,6 @@ import cpcc.core.utils.GeoJsonStreamResponse;
  */
 public class JsonState
 {
-    //    @Inject
-    //    private RealVehicleStateService rvs;
-
-    //    @Inject
-    //    private CoreGeoJsonConverter conf;
-
     /**
      * @return the GeoJSON stream response.
      * @throws IOException thrown in case of errors.

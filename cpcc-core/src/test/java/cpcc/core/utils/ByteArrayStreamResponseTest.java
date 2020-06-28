@@ -28,8 +28,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.services.Response;
 import org.testng.annotations.Test;
 
-import cpcc.core.utils.ByteArrayStreamResponse;
-
 public class ByteArrayStreamResponseTest
 {
     private static final String CONTENT_TYPE_TEXT = "application/text";

@@ -18,17 +18,17 @@
 
 package cpcc.vvrte.services.db;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -48,6 +48,21 @@ import cpcc.vvrte.entities.VirtualVehicleStorage;
  */
 public class VvRteRepositoryImpl implements VvRteRepository
 {
+    private static final String NOW = "now";
+    private static final String OLD_STATE = "oldState";
+    private static final String NEW_STATE = "newState";
+    private static final String MODIFICATION_TIME = "modificationTime";
+    private static final String UUID = "uuid";
+    private static final String NAME = "name";
+    private static final String UPDATE_TIME = "updateTime";
+    private static final String MIGRATION_START_TIME = "migrationStartTime";
+    private static final String TASK = "task";
+    private static final String STATE = "state";
+    private static final String ID = "id";
+
+    private static final String UPDATE_VIRTUAL_VEHICLE_STATE =
+        "UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState";
+
     private Logger logger;
     private Session session;
     private TaskRepository taskRepository;
@@ -74,28 +89,28 @@ public class VvRteRepositoryImpl implements VvRteRepository
     public void resetVirtualVehicleStates()
     {
         session
-            .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
-            .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
-            .setParameter("oldState", VirtualVehicleState.MIGRATING_SND)
+            .createQuery(UPDATE_VIRTUAL_VEHICLE_STATE)
+            .setParameter(NEW_STATE, VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
+            .setParameter(OLD_STATE, VirtualVehicleState.MIGRATING_SND)
             .executeUpdate();
 
         session
-            .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
-            .setParameter("newState", VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
-            .setParameter("oldState", VirtualVehicleState.MIGRATION_AWAITED_SND)
+            .createQuery(UPDATE_VIRTUAL_VEHICLE_STATE)
+            .setParameter(NEW_STATE, VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
+            .setParameter(OLD_STATE, VirtualVehicleState.MIGRATION_AWAITED_SND)
             .executeUpdate();
 
         session
             .createQuery("UPDATE VirtualVehicle SET migrationStartTime = :now "
                 + "WHERE state = :state AND migrationStartTime is NULL")
-            .setParameter("state", VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
-            .setParameter("now", timeService.newDate())
+            .setParameter(STATE, VirtualVehicleState.MIGRATION_INTERRUPTED_SND)
+            .setParameter(NOW, timeService.newDate())
             .executeUpdate();
 
         session
-            .createQuery("UPDATE VirtualVehicle SET state = :newState WHERE state = :oldState")
-            .setParameter("newState", VirtualVehicleState.INTERRUPTED)
-            .setParameter("oldState", VirtualVehicleState.RUNNING)
+            .createQuery(UPDATE_VIRTUAL_VEHICLE_STATE)
+            .setParameter(NEW_STATE, VirtualVehicleState.INTERRUPTED)
+            .setParameter(OLD_STATE, VirtualVehicleState.RUNNING)
             .executeUpdate();
 
         session
@@ -114,9 +129,9 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<VirtualVehicle> findAllVehicles()
     {
-        return (List<VirtualVehicle>) session
+        return session
             .createCriteria(VirtualVehicle.class)
-            .addOrder(Property.forName("id").asc())
+            .addOrder(Property.forName(ID).asc())
             .list();
     }
 
@@ -127,15 +142,15 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @SuppressWarnings("unchecked")
     public Map<VirtualVehicleState, Integer> getVvStatistics()
     {
-        Map<VirtualVehicleState, Integer> statistics = new HashMap<>();
+        Map<VirtualVehicleState, Integer> statistics = new EnumMap<>(VirtualVehicleState.class);
 
         statistics.putAll(Stream.of(VirtualVehicleState.values())
-            .map(x -> new SimpleEntry<>(x, Integer.valueOf(0)))
-            .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
+            .map(x -> Pair.of(x, Integer.valueOf(0)))
+            .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
         List<VirtualVehicleState> stateList = session
             .createCriteria(VirtualVehicle.class)
-            .setProjection(Projections.property("state"))
+            .setProjection(Projections.property(STATE))
             .list();
 
         stateList.stream().forEach(x -> statistics.put(x, statistics.get(x) + 1));
@@ -150,10 +165,10 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<VirtualVehicle> findAllActiveVehicles(int maxResults)
     {
-        return (List<VirtualVehicle>) session
+        return session
             .createCriteria(VirtualVehicle.class)
-            .add(Restrictions.eq("state", VirtualVehicleState.RUNNING))
-            .addOrder(Property.forName("id").asc())
+            .add(Restrictions.eq(STATE, VirtualVehicleState.RUNNING))
+            .addOrder(Property.forName(ID).asc())
             .setMaxResults(maxResults)
             .list();
     }
@@ -165,35 +180,35 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<VirtualVehicle> findAllStuckVehicles(Set<VirtualVehicleState> allowedStates)
     {
-        List<VirtualVehicle> vvs = new ArrayList<VirtualVehicle>();
+        List<VirtualVehicle> vvs = new ArrayList<>();
 
         vvs.addAll((List<VirtualVehicle>) session
             .createCriteria(VirtualVehicle.class, "v")
-            .add(Restrictions.in("state", allowedStates))
+            .add(Restrictions.in(STATE, allowedStates))
             .createCriteria("v.task", "t", JoinType.LEFT_OUTER_JOIN, Restrictions.eq("taskState", TaskState.COMPLETED))
             .list());
 
         vvs.addAll((List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
-            .add(Restrictions.eq("state", VirtualVehicleState.TASK_COMPLETION_AWAITED))
-            .add(Restrictions.isNull("task"))
+            .add(Restrictions.eq(STATE, VirtualVehicleState.TASK_COMPLETION_AWAITED))
+            .add(Restrictions.isNull(TASK))
             .list());
 
         vvs.addAll((List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
-            .add(Restrictions.eq("state", VirtualVehicleState.MIGRATION_AWAITED_SND))
-            .add(Restrictions.le("migrationStartTime", new Date(timeService.currentTimeMillis() - 10000)))
+            .add(Restrictions.eq(STATE, VirtualVehicleState.MIGRATION_AWAITED_SND))
+            .add(Restrictions.le(MIGRATION_START_TIME, new Date(timeService.currentTimeMillis() - 10000)))
             .list());
 
         vvs.addAll((List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
-            .add(Restrictions.in("state", Arrays.asList(
+            .add(Restrictions.in(STATE, Arrays.asList(
                 VirtualVehicleState.MIGRATING_SND,
                 VirtualVehicleState.MIGRATION_INTERRUPTED_SND,
                 VirtualVehicleState.MIGRATION_COMPLETED_SND)))
-            .add(Restrictions.le("updateTime", new Date(timeService.currentTimeMillis() - 55000)))
+            .add(Restrictions.le(UPDATE_TIME, new Date(timeService.currentTimeMillis() - 55000)))
             .list());
 
         vvs.addAll((List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
-            .add(Restrictions.eq("state", VirtualVehicleState.MIGRATING_RCV))
-            .add(Restrictions.le("updateTime", new Date(timeService.currentTimeMillis() - 175000)))
+            .add(Restrictions.eq(STATE, VirtualVehicleState.MIGRATING_RCV))
+            .add(Restrictions.le(UPDATE_TIME, new Date(timeService.currentTimeMillis() - 175000)))
             .list());
 
         return vvs;
@@ -206,7 +221,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
     public VirtualVehicle findVirtualVehicleById(Integer id)
     {
         return (VirtualVehicle) session.createCriteria(VirtualVehicle.class)
-            .add(Restrictions.eq("id", id))
+            .add(Restrictions.eq(ID, id))
             .uniqueResult();
     }
 
@@ -217,7 +232,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
     public VirtualVehicle findVirtualVehicleByName(String name)
     {
         return (VirtualVehicle) session.createCriteria(VirtualVehicle.class)
-            .add(Restrictions.eq("name", name))
+            .add(Restrictions.eq(NAME, name))
             .uniqueResult();
     }
 
@@ -228,13 +243,12 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public VirtualVehicle findVirtualVehicleByUUID(String uuid)
     {
-        List<VirtualVehicle> vvs = (List<VirtualVehicle>) session.createCriteria(VirtualVehicle.class)
-            .add(Restrictions.eq("uuid", uuid))
-            .addOrder(Order.asc("id"))
+        List<VirtualVehicle> vvs = session.createCriteria(VirtualVehicle.class)
+            .add(Restrictions.eq(UUID, uuid))
+            .addOrder(Order.asc(ID))
             .list();
 
-        VirtualVehicle result = vvs.isEmpty() ? null : vvs.remove(0);
-        return result;
+        return vvs.isEmpty() ? null : vvs.remove(0);
     }
 
     /**
@@ -250,17 +264,17 @@ public class VvRteRepositoryImpl implements VvRteRepository
 
         if (!VirtualVehicleState.VV_STATES_FOR_DELETE.contains(vehicle.getState()))
         {
-            logger.warn("Not deleting virtual vehicle " + vehicle.getName()
-                + " (" + vehicle.getUuid() + ") because of state " + vehicle.getState());
+            logger.warn("Not deleting virtual vehicle {} ({}) because of state {}",
+                vehicle.getName(), vehicle.getUuid(), vehicle.getState());
             return;
         }
 
-        logger.info("Deleting virtual vehicle " + vehicle.getName() + " (" + vehicle.getUuid() + ") "
-            + vehicle.getState());
+        logger.info("Deleting virtual vehicle {} ({}) {}",
+            vehicle.getName(), vehicle.getUuid(), vehicle.getState());
 
         session
             .createQuery("DELETE FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id")
-            .setParameter("id", vehicle.getId())
+            .setParameter(ID, vehicle.getId())
             .executeUpdate();
 
         taskRepository.unlinkTasksFromVirtualVehicleById(vehicle.getId());
@@ -277,7 +291,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<String> findAllStorageItemNames()
     {
-        return (List<String>) session
+        return session
             .createQuery("select name from VirtualVehicleStorage")
             .list();
     }
@@ -298,7 +312,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
             .createCriteria(VirtualVehicleStorage.class)
             .add(Restrictions.and(
                 Restrictions.eq("virtualVehicle.id", vehicle.getId()),
-                Restrictions.eq("name", name)))
+                Restrictions.eq(NAME, name)))
             .uniqueResult();
     }
 
@@ -309,7 +323,7 @@ public class VvRteRepositoryImpl implements VvRteRepository
     public VirtualVehicleStorage findStorageItemById(Integer id)
     {
         return (VirtualVehicleStorage) session.createCriteria(VirtualVehicleStorage.class)
-            .add(Restrictions.eq("id", id))
+            .add(Restrictions.eq(ID, id))
             .uniqueResult();
     }
 
@@ -320,11 +334,11 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id)
     {
-        return (List<VirtualVehicleStorage>) session
+        return session
             .createCriteria(VirtualVehicleStorage.class)
-            .addOrder(Order.asc("modificationTime"))
+            .addOrder(Order.asc(MODIFICATION_TIME))
             .createCriteria("virtualVehicle", "vv", JoinType.INNER_JOIN)
-            .add(Restrictions.eq("id", id))
+            .add(Restrictions.eq(ID, id))
             .list();
     }
 
@@ -335,10 +349,10 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<VirtualVehicleStorage> findStorageItemsByVirtualVehicle(Integer id, String startName, int maxEntries)
     {
-        return (List<VirtualVehicleStorage>) session
+        return session
             .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id AND name > :name ORDER BY name")
-            .setInteger("id", id)
-            .setString("name", startName)
+            .setInteger(ID, id)
+            .setString(NAME, startName)
             .setMaxResults(maxEntries > 0 ? maxEntries : 1)
             .list();
     }
@@ -350,9 +364,9 @@ public class VvRteRepositoryImpl implements VvRteRepository
     @Override
     public List<VirtualVehicleStorage> findAllStorageItemsByVirtualVehicle(Integer id)
     {
-        return (List<VirtualVehicleStorage>) session
+        return session
             .createQuery("FROM VirtualVehicleStorage WHERE virtualVehicle.id = :id")
-            .setInteger("id", id)
+            .setInteger(ID, id)
             .list();
     }
 }

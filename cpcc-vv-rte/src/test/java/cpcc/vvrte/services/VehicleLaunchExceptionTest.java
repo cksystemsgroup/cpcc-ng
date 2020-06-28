@@ -23,8 +23,6 @@ import static org.mockito.Mockito.mock;
 
 import org.testng.annotations.Test;
 
-import cpcc.vvrte.services.VirtualVehicleLaunchException;
-
 /**
  * VehicleLauncherExceptionTest
  */

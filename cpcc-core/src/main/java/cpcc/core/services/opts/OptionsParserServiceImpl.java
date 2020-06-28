@@ -40,7 +40,7 @@ public class OptionsParserServiceImpl implements OptionsParserService
     @Override
     public Collection<Option> parse(String options) throws IOException, ParseException
     {
-        List<Option> optionsList = new ArrayList<Option>();
+        List<Option> optionsList = new ArrayList<>();
 
         if (options == null)
         {
@@ -103,7 +103,7 @@ public class OptionsParserServiceImpl implements OptionsParserService
      */
     private Option parseList(OptionsScanner scanner, Token myToken, Token token) throws IOException, ParseException
     {
-        List<Token> tokenList = new ArrayList<Token>();
+        List<Token> tokenList = new ArrayList<>();
 
         while (token.getSymbol() != Symbol.END && token.getSymbol() != Symbol.RIGHT_PAREN)
         {
@@ -159,11 +159,11 @@ public class OptionsParserServiceImpl implements OptionsParserService
     @Override
     public Map<String, List<String>> parseConfig(String config) throws IOException, ParseException
     {
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        Map<String, List<String>> map = new HashMap<>();
         for (Option option : parse(config))
         {
             List<Token> tokenList = option.getValue();
-            List<String> valueList = new ArrayList<String>();
+            List<String> valueList = new ArrayList<>();
             for (Token token : tokenList)
             {
                 valueList.add(token.getItemString());

@@ -43,8 +43,7 @@ public final class JavaScriptUtils
             Context cx = Context.enter();
             cx.setOptimizationLevel(-1);
             ScriptableObject scope = cx.initStandardObjects();
-            String json = (String) NativeJSON.stringify(cx, scope, obj, null, null);
-            return json;
+            return (String) NativeJSON.stringify(cx, scope, obj, null, null);
         }
         finally
         {

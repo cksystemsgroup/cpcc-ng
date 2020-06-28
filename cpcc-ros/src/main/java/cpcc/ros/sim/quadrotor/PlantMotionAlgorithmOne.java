@@ -48,8 +48,8 @@ public class PlantMotionAlgorithmOne implements PlantMotionAlgorithm
         timeOne = 2.0 * maxV / maxA;
         timeTwo = totalTime - timeOne;
 
-        log.info("One: dist=" + dist + ", maxV=" + maxV + ", maxA=" + maxA + ", totalTime=" + totalTime + ", timeOne="
-            + timeOne + ", timeTwo=" + timeTwo);
+        log.info("One: dist={}, maxV={}, maxA={}, totalTime={}, timeOne={}, timeTwo={}",
+            dist, maxV, maxA, totalTime, timeOne, timeTwo);
     }
 
     /**
@@ -62,7 +62,7 @@ public class PlantMotionAlgorithmOne implements PlantMotionAlgorithm
         {
             return 0.0;
         }
-        
+
         if (time >= totalTime)
         {
             return dist;
@@ -79,7 +79,6 @@ public class PlantMotionAlgorithmOne implements PlantMotionAlgorithm
         }
 
         double tt = totalTime - time;
-        // return dist - maxA * maxA * tt * tt * (2.0 * maxV / maxA - tt / 3.0) / (4.0 * maxV);
         return dist - maxV * tt * tt * (3.0 * timeOne - tt) / 3.0 / timeOne / timeOne;
     }
 
@@ -93,7 +92,7 @@ public class PlantMotionAlgorithmOne implements PlantMotionAlgorithm
         {
             return 0.0;
         }
-        
+
         if (time >= totalTime)
         {
             return 0.0;
@@ -123,7 +122,7 @@ public class PlantMotionAlgorithmOne implements PlantMotionAlgorithm
         {
             return 0.0;
         }
-        
+
         if (time >= totalTime)
         {
             return 0.0;

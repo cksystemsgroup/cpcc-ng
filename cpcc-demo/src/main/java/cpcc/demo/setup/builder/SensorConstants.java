@@ -18,14 +18,16 @@
 
 package cpcc.demo.setup.builder;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
@@ -37,6 +39,10 @@ import cpcc.core.entities.TopicCategory;
  */
 public final class SensorConstants
 {
+    private static final String SENSOR_MSGS_NAV_SAT_FIX = "sensor_msgs/NavSatFix";
+    private static final String SENSOR_MSGS_IMAGE = "sensor_msgs/Image";
+    private static final String STD_MSGS_FLOAT32 = "std_msgs/Float32";
+
     private static final Date now = new Date();
 
     private static final SensorDefinition[] SENSOR_DEFINITIONS = {
@@ -44,7 +50,7 @@ public final class SensorConstants
             .setId(1)
             .setDescription("Altimeter")
             .setLastUpdate(now)
-            .setMessageType("std_msgs/Float32")
+            .setMessageType(STD_MSGS_FLOAT32)
             .setParameters(null)
             .setType(SensorType.ALTIMETER)
             .setVisibility(SensorVisibility.ALL_VV)
@@ -53,7 +59,7 @@ public final class SensorConstants
             .setId(2)
             .setDescription("Area of Operations")
             .setLastUpdate(now)
-            .setMessageType("std_msgs/Float32")
+            .setMessageType(STD_MSGS_FLOAT32)
             .setParameters(null)
             .setType(SensorType.AREA_OF_OPERATIONS)
             .setVisibility(SensorVisibility.PRIVILEGED_VV)
@@ -62,7 +68,7 @@ public final class SensorConstants
             .setId(3)
             .setDescription("Barometer")
             .setLastUpdate(now)
-            .setMessageType("std_msgs/Float32")
+            .setMessageType(STD_MSGS_FLOAT32)
             .setParameters(null)
             .setType(SensorType.BAROMETER)
             .setVisibility(SensorVisibility.ALL_VV)
@@ -71,7 +77,7 @@ public final class SensorConstants
             .setId(4)
             .setDescription("Battery")
             .setLastUpdate(now)
-            .setMessageType("std_msgs/Float32")
+            .setMessageType(STD_MSGS_FLOAT32)
             .setParameters(null)
             .setType(SensorType.BATTERY)
             .setVisibility(SensorVisibility.PRIVILEGED_VV)
@@ -80,7 +86,7 @@ public final class SensorConstants
             .setId(5)
             .setDescription("Belly Mounted Camera 640x480")
             .setLastUpdate(now)
-            .setMessageType("sensor_msgs/Image")
+            .setMessageType(SENSOR_MSGS_IMAGE)
             .setParameters("width=640 height=480 yaw=0 down=1.571 alignment=''north''")
             .setType(SensorType.CAMERA)
             .setVisibility(SensorVisibility.ALL_VV)
@@ -98,7 +104,7 @@ public final class SensorConstants
             .setId(7)
             .setDescription("CO2")
             .setLastUpdate(now)
-            .setMessageType("std_msgs/Float32")
+            .setMessageType(STD_MSGS_FLOAT32)
             .setParameters(null)
             .setType(SensorType.CO2)
             .setVisibility(SensorVisibility.ALL_VV)
@@ -107,7 +113,7 @@ public final class SensorConstants
             .setId(9)
             .setDescription("GPS")
             .setLastUpdate(now)
-            .setMessageType("sensor_msgs/NavSatFix")
+            .setMessageType(SENSOR_MSGS_NAV_SAT_FIX)
             .setParameters(null)
             .setType(SensorType.GPS)
             .setVisibility(SensorVisibility.ALL_VV)
@@ -116,7 +122,7 @@ public final class SensorConstants
             .setId(10)
             .setDescription("Hardware")
             .setLastUpdate(now)
-            .setMessageType("std_msgs/Float32")
+            .setMessageType(STD_MSGS_FLOAT32)
             .setParameters(null)
             .setType(SensorType.HARDWARE)
             .setVisibility(SensorVisibility.PRIVILEGED_VV)
@@ -125,7 +131,7 @@ public final class SensorConstants
             .setId(11)
             .setDescription("NOx")
             .setLastUpdate(now)
-            .setMessageType("std_msgs/Float32")
+            .setMessageType(STD_MSGS_FLOAT32)
             .setParameters(null)
             .setType(SensorType.NOX)
             .setVisibility(SensorVisibility.ALL_VV)
@@ -134,19 +140,19 @@ public final class SensorConstants
             .setId(12)
             .setDescription("Thermometer")
             .setLastUpdate(now)
-            .setMessageType("std_msgs/Float32")
+            .setMessageType(STD_MSGS_FLOAT32)
             .setParameters(null)
             .setType(SensorType.THERMOMETER)
             .setVisibility(SensorVisibility.ALL_VV)
             .setDeleted(false).build()
     };
 
-    public static final Map<TopicCategory, SensorType> TOPIC_SENSOR_MAP = Stream.of(
-        new SimpleEntry<>(TopicCategory.ALTITUDE_OVER_GROUND, SensorType.ALTIMETER),
-        new SimpleEntry<>(TopicCategory.CAMERA, SensorType.CAMERA),
-        new SimpleEntry<>(TopicCategory.CAMERA_INFO, SensorType.CAMERA),
-        new SimpleEntry<>(TopicCategory.GPS_POSITION_PROVIDER, SensorType.GPS)
-        ).collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue()));
+    public static final Map<TopicCategory, SensorType> TOPIC_SENSOR_MAP = Collections.unmodifiableMap(Stream
+        .of(Pair.of(TopicCategory.ALTITUDE_OVER_GROUND, SensorType.ALTIMETER),
+            Pair.of(TopicCategory.CAMERA, SensorType.CAMERA),
+            Pair.of(TopicCategory.CAMERA_INFO, SensorType.CAMERA),
+            Pair.of(TopicCategory.GPS_POSITION_PROVIDER, SensorType.GPS))
+        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
     private SensorConstants()
     {

@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -95,16 +96,14 @@ public class DownloadServiceImpl implements DownloadService
                     baos.flush();
                     baos.close();
 
-                    writeFile(zos, vvStorageName + item.getName() + ".png"
-                        , item.getModificationTime().getTime()
-                        , baos.toByteArray());
+                    writeFile(zos, vvStorageName + item.getName() + ".png", item.getModificationTime().getTime(),
+                        baos.toByteArray());
 
                 }
                 else
                 {
-                    writeFile(zos, vvStorageName + item.getName() + ".json"
-                        , item.getModificationTime().getTime()
-                        , JavaScriptUtils.toJsonString(item.getContent()));
+                    writeFile(zos, vvStorageName + item.getName() + ".json", item.getModificationTime().getTime(),
+                        JavaScriptUtils.toJsonString(item.getContent()));
                 }
 
             }
@@ -141,7 +140,7 @@ public class DownloadServiceImpl implements DownloadService
     {
         if (content != null)
         {
-            writeFile(zos, fileName, time, content.getBytes("UTF-8"));
+            writeFile(zos, fileName, time, content.getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -155,7 +154,7 @@ public class DownloadServiceImpl implements DownloadService
         setProperty(props, "state", vv.getState().name());
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        OutputStreamWriter osw = new OutputStreamWriter(bos, "UTF-8");
+        OutputStreamWriter osw = new OutputStreamWriter(bos, StandardCharsets.UTF_8);
         props.store(osw, "VV Properties");
         osw.close();
         bos.close();

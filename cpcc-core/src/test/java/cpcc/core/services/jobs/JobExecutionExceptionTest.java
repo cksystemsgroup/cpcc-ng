@@ -27,8 +27,6 @@ import java.io.IOException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.services.jobs.JobExecutionException;
-
 public class JobExecutionExceptionTest
 {
 
@@ -37,7 +35,7 @@ public class JobExecutionExceptionTest
     {
         ExceptionThrower sut = new ExceptionThrower();
 
-        catchException(sut).throwException();
+        catchException(() -> sut.throwException());
 
         assertThat(caughtException().getMessage()).isNull();
     }
@@ -56,7 +54,7 @@ public class JobExecutionExceptionTest
     {
         ExceptionThrower sut = new ExceptionThrower();
 
-        catchException(sut).throwException(expected);
+        catchException(() -> sut.throwException(expected));
 
         assertThat(caughtException().getMessage()).isEqualTo(expected);
     }
@@ -76,7 +74,7 @@ public class JobExecutionExceptionTest
     {
         ExceptionThrower sut = new ExceptionThrower();
 
-        catchException(sut).throwException(expectedMessage, expectedCause);
+        catchException(() -> sut.throwException(expectedMessage, expectedCause));
 
         assertThat(caughtException().getMessage()).isEqualTo(expectedMessage);
         assertThat(caughtException().getCause()).isEqualTo(expectedCause);

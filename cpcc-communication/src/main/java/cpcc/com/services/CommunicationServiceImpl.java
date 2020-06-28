@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -55,7 +54,7 @@ public class CommunicationServiceImpl implements CommunicationService
      * {@inheritDoc}
      */
     @Override
-    public void addConnector(String connector, String path) throws IllegalStateException
+    public void addConnector(String connector, String path)
     {
         if (connectorMap.containsKey(connector))
         {
@@ -70,7 +69,7 @@ public class CommunicationServiceImpl implements CommunicationService
      */
     @Override
     public CommunicationResponse transfer(RealVehicle realVehicle, String connector, byte[] data)
-        throws ClientProtocolException, IOException
+        throws IOException
     {
         HttpPost request = new HttpPost(realVehicle.getUrl() + connectorMap.get(connector));
 

@@ -30,8 +30,6 @@ import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.testng.annotations.Test;
 
-import cpcc.gs.web.services.GsWebModule;
-
 /**
  * AppModuleTest
  */
@@ -45,7 +43,7 @@ public class GsWebModuleTest
         cnt.setAccessible(true);
         cnt.newInstance();
     }
-    
+
     @Test
     public void shouldContributreFactoryDefaults()
     {

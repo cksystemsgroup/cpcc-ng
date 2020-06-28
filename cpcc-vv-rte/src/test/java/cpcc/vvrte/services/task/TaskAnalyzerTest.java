@@ -34,7 +34,6 @@ import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 import cpcc.core.services.QueryManager;
 import cpcc.vvrte.entities.Task;
-import cpcc.vvrte.services.task.TaskAnalyzerImpl;
 
 /**
  * TaskAnalyzerTest

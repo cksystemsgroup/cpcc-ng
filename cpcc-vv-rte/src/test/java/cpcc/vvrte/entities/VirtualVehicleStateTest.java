@@ -23,8 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.vvrte.entities.VirtualVehicleState;
-
 /**
  * VirtualVehicleStateTest
  */
@@ -248,7 +246,7 @@ public class VirtualVehicleStateTest
     {
         return new Object[][]{
             new Object[]{VirtualVehicleState.MIGRATION_AWAITED_SND},
-        //            new Object[]{VirtualVehicleState.WAITING},
+            //            new Object[]{VirtualVehicleState.WAITING},
         };
     }
 

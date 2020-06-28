@@ -27,13 +27,15 @@ import cpcc.core.utils.GeodeticSystem;
  */
 public class FlatWorld implements GeodeticSystem
 {
+    private static final String NOT_ALLOWED_IN_FLAT_WORLD = "Not allowed in Flat World!";
+
     /**
      * {@inheritDoc}
      */
     @Override
     public PolarCoordinate rectangularToPolarCoordinates(CartesianCoordinate coordinates)
     {
-        throw new IllegalAccessError("Not allowed in Flat World!");
+        throw new IllegalAccessError(NOT_ALLOWED_IN_FLAT_WORLD);
     }
 
     /**
@@ -42,7 +44,7 @@ public class FlatWorld implements GeodeticSystem
     @Override
     public PolarCoordinate rectangularToPolarCoordinates(double x, double y, double z)
     {
-        throw new IllegalAccessError("Not allowed in Flat World!");
+        throw new IllegalAccessError(NOT_ALLOWED_IN_FLAT_WORLD);
     }
 
     /**
@@ -69,7 +71,7 @@ public class FlatWorld implements GeodeticSystem
     @Override
     public PolarCoordinate walk(PolarCoordinate startPosition, double x, double y, double z)
     {
-        throw new IllegalAccessError("Not allowed in Flat World!");
+        throw new IllegalAccessError(NOT_ALLOWED_IN_FLAT_WORLD);
     }
 
     /**
@@ -78,7 +80,7 @@ public class FlatWorld implements GeodeticSystem
     @Override
     public double calculateDistance(PolarCoordinate a, PolarCoordinate b)
     {
-        throw new IllegalAccessError("Not allowed in Flat World!");
+        throw new IllegalAccessError(NOT_ALLOWED_IN_FLAT_WORLD);
     }
 
 }

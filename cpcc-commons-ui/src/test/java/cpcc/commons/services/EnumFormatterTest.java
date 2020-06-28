@@ -29,7 +29,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.commons.services.EnumFormatter;
 import cpcc.core.entities.RealVehicleType;
 
 public class EnumFormatterTest

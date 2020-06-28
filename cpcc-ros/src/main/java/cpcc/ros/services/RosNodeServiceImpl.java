@@ -110,7 +110,7 @@ public class RosNodeServiceImpl implements RosNodeService
             }
             catch (URISyntaxException e)
             {
-                logger.error(String.format("Can not set master server URI to '%s'.", uri.getValue().toString()));
+                logger.error(String.format("Can not set master server URI to '%s'.", uri.getValue()));
                 return;
             }
         }
@@ -145,21 +145,20 @@ public class RosNodeServiceImpl implements RosNodeService
             topicPath.append("/").append(topic.getSubpath());
         }
 
-        logger.info("launchDeviceAdapter launchNode=" + device.getTopicRoot() + ", topicRoot=" + device.getTopicRoot()
-            + ", topic=" + topicPath.toString() + ", adapterClass=" + topic.getAdapterClassName());
+        logger.info("launchDeviceAdapter launchNode={}, topicRoot={}, topic={}, adapterClass={}",
+            device.getTopicRoot(), device.getTopicRoot(), topicPath, topic.getAdapterClassName());
 
         if (topic.getAdapterClassName() != null)
         {
             try
             {
                 Class<?> clazz = Class.forName(topic.getAdapterClassName());
-                logger.info("Adapter class " + clazz.getName() + " loaded.");
+                logger.info("Adapter class {} loaded.", clazz.getName());
 
                 RosTopic rosTopic = new RosTopic();
                 rosTopic.setName(topicPath.toString());
                 rosTopic.setType(topic.getMessageType());
 
-                // AbstractRosAdapter instance = (AbstractRosAdapter) clazz.newInstance();
                 AbstractRosAdapter instance = (AbstractRosAdapter) objectLocator.autobuild(clazz);
                 instance.setTopic(rosTopic);
                 if (device.getConfiguration() != null)
@@ -168,12 +167,12 @@ public class RosNodeServiceImpl implements RosNodeService
                 }
 
                 DefaultNodeMainExecutor.newDefault().execute(instance, nodeConfiguration);
-                logger.info("Adapter class " + clazz.getName() + " started.");
+                logger.info("Adapter class {} started.", clazz.getName());
                 return instance;
             }
             catch (ClassNotFoundException | IOException | ParseException e)
             {
-                logger.error("launchDeviceAdapter can not load class " + topic.getAdapterClassName(), e);
+                logger.error("launchDeviceAdapter can not load class {}", topic.getAdapterClassName(), e);
             }
         }
         return null;
@@ -184,14 +183,14 @@ public class RosNodeServiceImpl implements RosNodeService
      */
     private void launchAllDeviceAdapters(Device device)
     {
-        List<Topic> topicList = new ArrayList<Topic>();
+        List<Topic> topicList = new ArrayList<>();
         topicList.add(device.getType().getMainTopic());
         if (device.getType().getSubTopics() != null)
         {
             topicList.addAll(device.getType().getSubTopics());
         }
 
-        List<AbstractRosAdapter> adapterList = new ArrayList<AbstractRosAdapter>();
+        List<AbstractRosAdapter> adapterList = new ArrayList<>();
         for (Topic topic : topicList)
         {
             AbstractRosAdapter adapter = launchDeviceAdapter(device, topic);
@@ -233,7 +232,7 @@ public class RosNodeServiceImpl implements RosNodeService
         {
             return;
         }
-        logger.info("stopDeviceAdapter topic=" + adapter.getTopic() + ", name=" + adapter.getName());
+        logger.info("stopDeviceAdapter topic={}, name={}", adapter.getTopic(), adapter.getName());
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(adapter);
     }
 
@@ -285,7 +284,7 @@ public class RosNodeServiceImpl implements RosNodeService
     @Override
     public void updateMasterServerURI(URI uri)
     {
-        logger.info("updateMasterServerURI " + uri.toASCIIString());
+        logger.info("updateMasterServerURI {}", uri);
 
         if (masterServerUri != null && masterServerUri.equals(uri))
         {
@@ -315,9 +314,9 @@ public class RosNodeServiceImpl implements RosNodeService
     public void updateRosCore(boolean internal)
     {
         boolean rcore = rosCore != null;
-        logger.info("updateRosCore internal=" + internal + ", core-running=" + rcore);
+        logger.info("updateRosCore internal={}, core-running={}", internal, rcore);
 
-        synchronized (getClass())
+        synchronized (RosNodeServiceImpl.class)
         {
             if (internal && rosCore == null)
             {
@@ -344,7 +343,7 @@ public class RosNodeServiceImpl implements RosNodeService
         String host = masterServerUri.getHost();
         int port = masterServerUri.getPort();
 
-        logger.info(String.format("Starting ROS core host=%s, port=%d", host, port));
+        logger.info("Starting ROS core host={}, port={}", host, port);
 
         rosCore = RosCore.newPublic(host, port);
 
@@ -373,6 +372,7 @@ public class RosNodeServiceImpl implements RosNodeService
         catch (InterruptedException e)
         {
             logger.error("Starting ROS core has been interrupted", e);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -392,8 +392,7 @@ public class RosNodeServiceImpl implements RosNodeService
     @Override
     public void updateDevice(Device device)
     {
-        // TODO Auto-generated method stub
-        logger.info("updateDevice " + device.getTopicRoot());
+        logger.info("updateDevice {}", device.getTopicRoot());
 
         shutdownDevice(device);
         startRosNodeGroup(device);
@@ -405,8 +404,7 @@ public class RosNodeServiceImpl implements RosNodeService
     @Override
     public void shutdownDevice(Device device)
     {
-        // TODO Auto-generated method stub
-        logger.info("shutdownDevice " + device.getTopicRoot());
+        logger.info("shutdownDevice {}", device.getTopicRoot());
         stopRosNodeGroup(device.getTopicRoot());
 
         // TODO delete from RTE
@@ -419,9 +417,7 @@ public class RosNodeServiceImpl implements RosNodeService
     @Override
     public void updateMappingAttributes(Collection<MappingAttributes> mappings)
     {
-        // TODO Auto-generated method stub
         logger.info("updateMappingAttributes");
-
     }
 
     /**
@@ -430,9 +426,7 @@ public class RosNodeServiceImpl implements RosNodeService
     @Override
     public void shutdownMappingAttributes(Collection<MappingAttributes> mappings)
     {
-        // TODO Auto-generated method stub
         logger.info("shutdownMappingAttributes");
-
     }
 
     /**
@@ -448,20 +442,19 @@ public class RosNodeServiceImpl implements RosNodeService
 
         if (topicRoot == null || className == null)
         {
-            logger.error("Can not start ROS node group: " + device.getTopicRoot() + ", id=" + device.getId()
-                + ", className=" + className);
+            logger.error("Can not start ROS node group: {}, id={}, className={}",
+                device.getTopicRoot(), device.getId(), className);
             launchAllDeviceAdapters(device);
             return;
         }
 
-        logger.info("Starting ROS node group, topic=" + topicRoot);
+        logger.info("Starting ROS node group, topic={}", topicRoot);
 
         try
         {
             Class<?> clazz = Class.forName(className);
-            logger.info("startRosNode class " + clazz.getName() + " loaded.");
+            logger.info("startRosNode class {} loaded.", clazz.getName());
 
-            // RosNodeGroup group = (RosNodeGroup) clazz.newInstance();
             RosNodeGroup group = (RosNodeGroup) objectLocator.autobuild(clazz);
             group.setTopicRoot(topicRoot);
             group.setNodeConfiguration(nodeConfiguration);
@@ -470,11 +463,11 @@ public class RosNodeServiceImpl implements RosNodeService
             group.start();
 
             getDeviceNodes().put(topicRoot, group);
-            logger.info(String.format("ROS node group %s started.", topicRoot));
+            logger.info("ROS node group {} started.", topicRoot);
         }
         catch (ClassNotFoundException | IOException | ParseException e)
         {
-            logger.error("Can not instantiate the ROS node group for topic " + topicRoot, e);
+            logger.error("Can not instantiate the ROS node group for topic {}", topicRoot, e);
         }
 
         launchAllDeviceAdapters(device);
@@ -485,7 +478,7 @@ public class RosNodeServiceImpl implements RosNodeService
      */
     private void stopRosNodeGroup(String topicRoot)
     {
-        logger.info("Stopping ROS node group, topic=" + topicRoot);
+        logger.info("Stopping ROS node group, topic={}", topicRoot);
 
         if (deviceNodes.containsKey(topicRoot))
         {

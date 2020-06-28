@@ -23,5 +23,8 @@ package cpcc.commons.pages;
  */
 public class Contact
 {
-
+    Object onActivate()
+    {
+        return null;
+    }
 }

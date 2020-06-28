@@ -71,7 +71,7 @@ public class ConfigImportJobRunnable implements JobRunnable
      * {@inheritDoc}
      */
     @Override
-    public void run() throws Exception
+    public void run()
     {
         queryManager = serviceResources.getService(QueryManager.class);
         sessionManager = serviceResources.getService(HibernateSessionManager.class);
@@ -93,19 +93,28 @@ public class ConfigImportJobRunnable implements JobRunnable
 
         for (RealVehicle rv : realVehicles)
         {
-            boolean saveOnly = false;
             int rdId = rv.getId();
-            RealVehicle dbRv = allRvsMap.get(rdId);
+            boolean saveOnly = !allRvsMap.containsKey(rdId);
 
-            if (dbRv == null)
-            {
-                dbRv = new RealVehicle();
-                dbRv.setId(rdId);
-                dbRv.setLastUpdate(new Date(0));
-                allRvsMap.put(rdId, dbRv);
-                saveOnly = true;
-                logger.info("### new RealVehicle id=" + rdId);
-            }
+            //            RealVehicle dbRv = allRvsMap.get(rdId);
+            //
+            //            if (dbRv == null)
+            //            {
+            //                dbRv = new RealVehicle();
+            //                dbRv.setId(rdId);
+            //                dbRv.setLastUpdate(new Date(0));
+            //                allRvsMap.put(rdId, dbRv);
+            //                saveOnly = true;
+            //                logger.info("### new RealVehicle id=" + rdId);
+            //            }
+
+            RealVehicle dbRv = allRvsMap.computeIfAbsent(rdId, k -> {
+                RealVehicle r = new RealVehicle();
+                r.setId(rdId);
+                r.setLastUpdate(new Date(0));
+                logger.info("### new RealVehicle id={}", rdId);
+                return r;
+            });
 
             int updated = 0;
             try
@@ -114,7 +123,7 @@ public class ConfigImportJobRunnable implements JobRunnable
             }
             catch (RuntimeException e)
             {
-                logger.error("Can not synchronize JSON object " + rv.toString(), e);
+                logger.error("Can not synchronize JSON object {}", rv.toString(), e);
                 continue;
             }
 
@@ -123,12 +132,12 @@ public class ConfigImportJobRunnable implements JobRunnable
                 updateSensorDefinitions(dbRv, rv);
                 if (saveOnly)
                 {
-                    logger.info("### save RealVehicle id=" + rdId);
+                    logger.info("### save RealVehicle id={}", rdId);
                     sessionManager.getSession().save(dbRv);
                 }
                 else
                 {
-                    logger.info("### update RealVehicle id=" + rdId);
+                    logger.info("### update RealVehicle id={}", rdId);
                     sessionManager.getSession().saveOrUpdate(dbRv);
                 }
             }
@@ -140,7 +149,7 @@ public class ConfigImportJobRunnable implements JobRunnable
      */
     private Map<Integer, RealVehicle> getAllRvsFromDataBase()
     {
-        Map<Integer, RealVehicle> rvMap = new HashMap<Integer, RealVehicle>();
+        Map<Integer, RealVehicle> rvMap = new HashMap<>();
 
         for (RealVehicle rv : rvRepo.findAllRealVehicles())
         {
@@ -189,13 +198,13 @@ public class ConfigImportJobRunnable implements JobRunnable
     {
         List<SensorDefinition> sensors = rv.getSensors();
 
-        Set<Integer> assignedSdIds = new HashSet<Integer>();
+        Set<Integer> assignedSdIds = new HashSet<>();
         for (SensorDefinition s : dbRv.getSensors())
         {
             assignedSdIds.add(s.getId());
         }
 
-        Set<Integer> newSdIds = new HashSet<Integer>();
+        Set<Integer> newSdIds = new HashSet<>();
         for (SensorDefinition sdx : sensors)
         {
             int sdId = sdx.getId();
@@ -208,7 +217,7 @@ public class ConfigImportJobRunnable implements JobRunnable
             }
         }
 
-        Set<SensorDefinition> removedSds = new HashSet<SensorDefinition>();
+        Set<SensorDefinition> removedSds = new HashSet<>();
         for (SensorDefinition s : dbRv.getSensors())
         {
             if (!newSdIds.contains(s.getId()))
@@ -228,8 +237,8 @@ public class ConfigImportJobRunnable implements JobRunnable
     {
         Map<Integer, SensorDefinition> allSdsMap = getAllSensorDefinitionsFromDatabase();
 
-        List<SensorDefinition> back = new ArrayList<SensorDefinition>();
-        Map<Integer, SensorDefinition> incoming = new HashMap<Integer, SensorDefinition>();
+        List<SensorDefinition> back = new ArrayList<>();
+        Map<Integer, SensorDefinition> incoming = new HashMap<>();
 
         for (SensorDefinition sd : sensorDefs)
         {
@@ -245,7 +254,7 @@ public class ConfigImportJobRunnable implements JobRunnable
                 dbSd.setLastUpdate(new Date(0));
                 allSdsMap.put(sdId, dbSd);
                 saveOnly = true;
-                logger.info("### new SensorDefinition id=" + sdId);
+                logger.info("### new SensorDefinition id={}", sdId);
             }
 
             int updated = 0;
@@ -255,7 +264,7 @@ public class ConfigImportJobRunnable implements JobRunnable
             }
             catch (RuntimeException e)
             {
-                logger.error("Can not synchronize JSON object " + sd.toString(), e);
+                logger.error("Can not synchronize JSON object {}", sd, e);
                 continue;
             }
 
@@ -265,12 +274,12 @@ public class ConfigImportJobRunnable implements JobRunnable
             {
                 if (saveOnly)
                 {
-                    logger.info("### save SensorDefinition id=" + sdId + " " + dbSd.getLastUpdate().toString());
+                    logger.info("### save SensorDefinition id={} {}", sdId, dbSd.getLastUpdate());
                     sessionManager.getSession().save(dbSd);
                 }
                 else
                 {
-                    logger.info("### update SensorDefinition id=" + sdId + " " + dbSd.getLastUpdate().toString());
+                    logger.info("### update SensorDefinition id={} {}", sdId, dbSd.getLastUpdate());
                     sessionManager.getSession().saveOrUpdate(dbSd);
                 }
             }
@@ -284,7 +293,7 @@ public class ConfigImportJobRunnable implements JobRunnable
      */
     private Map<Integer, SensorDefinition> getAllSensorDefinitionsFromDatabase()
     {
-        Map<Integer, SensorDefinition> sdMap = new HashMap<Integer, SensorDefinition>();
+        Map<Integer, SensorDefinition> sdMap = new HashMap<>();
 
         for (SensorDefinition sd : queryManager.findAllSensorDefinitions())
         {

@@ -110,18 +110,13 @@ public final class CoreModule
      * @param logger the current logger.
      * @param liquibaseService the Liquibase service.
      */
-    public static void contributeHibernateSessionSource(OrderedConfiguration<HibernateConfigurer> config
-        , final Logger logger, final LiquibaseService liquibaseService)
+    public static void contributeHibernateSessionSource(OrderedConfiguration<HibernateConfigurer> config,
+        final Logger logger, final LiquibaseService liquibaseService)
     {
-        config.add("EventListener", new HibernateConfigurer()
-        {
-            @Override
-            public void configure(org.hibernate.cfg.Configuration configuration)
-            {
-                logger.info("Updating database by liquibase service...");
-                liquibaseService.update();
-                logger.info("Updating database done.");
-            }
+        config.add("EventListener", configuration -> {
+            logger.info("Updating database by liquibase service...");
+            liquibaseService.update();
+            logger.info("Updating database done.");
         });
     }
 
@@ -142,17 +137,14 @@ public final class CoreModule
      * @param sessionManager the database session manager.
      */
     @Startup
-    public static void scheduleJobs(PeriodicExecutor executor, final Logger logger, final JobService jobService
-        , HibernateSessionManager sessionManager)
+    public static void scheduleJobs(PeriodicExecutor executor, final Logger logger, final JobService jobService,
+        HibernateSessionManager sessionManager)
     {
         jobService.resetJobs();
         jobService.removeOldJobs();
 
-        executor.addJob(new CronSchedule("* * * * * ?"), "JobService periodical execution", new Runnable()
-        {
-            @Override
-            public void run()
-            {
+        executor.addJob(new CronSchedule("* * * * * ?"), "JobService periodical execution",
+            () -> {
                 try
                 {
                     jobService.executeJobs();
@@ -161,17 +153,9 @@ public final class CoreModule
                 {
                     logger.error("Job execution failed.", e);
                 }
-            }
-        });
+            });
 
-        executor.addJob(new CronSchedule("0 * * * * ?"), "Cleanup job history periodical execution", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                jobService.removeOldJobs();
-            }
-        });
+        executor.addJob(new CronSchedule("0 * * * * ?"), "Cleanup job history periodical execution",
+            jobService::removeOldJobs);
     }
-
 }

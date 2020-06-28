@@ -74,9 +74,9 @@ public class WGS84 implements GeodeticSystem
     }
 
     /**
-     * {@inheritDoc} Converts an ECEF coordinate to a WGS84 coordinate. Algorithm from the book
-     * "Integrierte Navigationssysteme" by Jan Wendel, Listings 3.22 - 3.28. Note: this method uses a simplified formula
-     * which is only valid for the Low Earth Orbit (LEO) which goes up to approximately 2000km above ground.
+     * {@inheritDoc} Converts an ECEF coordinate to a WGS84 coordinate. Algorithm from the book "Integrierte
+     * Navigationssysteme" by Jan Wendel, Listings 3.22 - 3.28. Note: this method uses a simplified formula which is
+     * only valid for the Low Earth Orbit (LEO) which goes up to approximately 2000km above ground.
      * 
      * @param x value in meters
      * @param y value in meters
@@ -121,7 +121,7 @@ public class WGS84 implements GeodeticSystem
 
         double n = EQUATORIAL_AXIS;
 
-        // TODO This is only an approximation using a sphere with radius N
+        //  This is only an approximation using a sphere with radius N
         double dLatitude = x / (n + startPosition.getAltitude());
         double dLongitude = y / ((n + startPosition.getAltitude()) * Math.cos(latitude));
         latitude -= dLatitude;

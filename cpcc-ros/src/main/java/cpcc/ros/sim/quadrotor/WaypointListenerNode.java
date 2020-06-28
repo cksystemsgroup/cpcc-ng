@@ -38,8 +38,7 @@ public class WaypointListenerNode extends AbstractNodeMain
 
     private String topic;
 
-    private List<MessageListener<big_actor_msgs.LatLngAlt>> messageListenerList =
-        new ArrayList<MessageListener<big_actor_msgs.LatLngAlt>>();
+    private List<MessageListener<big_actor_msgs.LatLngAlt>> messageListenerList = new ArrayList<>();
 
     /**
      * @param topic the topic root / prefix

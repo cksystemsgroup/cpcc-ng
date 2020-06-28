@@ -119,17 +119,6 @@ public class PngImageStreamResponse implements StreamResponse
      */
     public static StreamResponse convertImageToStreamResponse(BufferedImage image) throws IOException
     {
-        return convertImageToStreamResponse(image, "");
-    }
-
-    /**
-     * @param image the buffered image object.
-     * @param message an additional text to be used in log messages.
-     * @return the image as a <code>StreamResponse</code> object.
-     * @throws IOException in case of errors.
-     */
-    public static StreamResponse convertImageToStreamResponse(BufferedImage image, String message) throws IOException
-    {
         if (image == null)
         {
             return new PngImageStreamResponse();

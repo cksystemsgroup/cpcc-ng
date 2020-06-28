@@ -137,9 +137,8 @@ public class SquareDemoBuilder
     /**
      * @param outputDirectory the output folder.
      * @throws IOException in case of errors.
-     * @throws JsonProcessingException in case of errors.
      */
-    public void write(File outputDirectory) throws IOException, JsonProcessingException
+    public void write(File outputDirectory) throws IOException
     {
         FileUtils.forceMkdir(outputDirectory);
 
@@ -194,7 +193,7 @@ public class SquareDemoBuilder
         }
         catch (JsonProcessingException e)
         {
-            throw new RuntimeException("getGsAreaOfOperation " + gsid + " failed.", e);
+            throw new IllegalStateException("getGsAreaOfOperation " + gsid + " failed.", e);
         }
     }
 

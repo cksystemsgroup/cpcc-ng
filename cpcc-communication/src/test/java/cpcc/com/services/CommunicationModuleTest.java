@@ -30,10 +30,6 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.ServiceBindingOptions;
 import org.testng.annotations.Test;
 
-import cpcc.com.services.CommunicationModule;
-import cpcc.com.services.CommunicationService;
-import cpcc.com.services.CommunicationServiceImpl;
-
 /**
  * CommunicationModuleTest
  */

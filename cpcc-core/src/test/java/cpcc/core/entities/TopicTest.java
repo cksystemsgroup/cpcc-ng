@@ -26,10 +26,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.entities.RosNodeType;
-import cpcc.core.entities.Topic;
-import cpcc.core.entities.TopicCategory;
-
 /**
  * TopicTest
  */

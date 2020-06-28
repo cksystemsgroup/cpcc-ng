@@ -18,7 +18,6 @@
 
 package cpcc.ros.sensors;
 
-import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
@@ -63,14 +62,7 @@ public class ImageSensorAdapter extends AbstractSensorAdapter implements ImagePr
         Subscriber<sensor_msgs.Image> imageSubscriber =
             connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.Image._TYPE);
 
-        imageSubscriber.addMessageListener(new MessageListener<sensor_msgs.Image>()
-        {
-            @Override
-            public void onNewMessage(sensor_msgs.Image message)
-            {
-                image = message;
-            }
-        });
+        imageSubscriber.addMessageListener(message -> image = message);
 
         setStartCompleted();
     }
@@ -81,7 +73,7 @@ public class ImageSensorAdapter extends AbstractSensorAdapter implements ImagePr
     @Override
     public sensor_msgs.Image getValue()
     {
-        return image;
+        return getImage();
     }
 
     /**

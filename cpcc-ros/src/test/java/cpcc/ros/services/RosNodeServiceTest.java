@@ -205,7 +205,7 @@ public class RosNodeServiceTest
 
         svc.updateRosCore(false);
 
-        catchException(master).getSystemState(GraphName.newAnonymous());
+        catchException(() -> master.getSystemState(GraphName.newAnonymous()));
 
         assertThat((Throwable) caughtException()).isInstanceOf(RuntimeException.class);
         assertThat(caughtException().getCause()).isInstanceOf(SocketException.class);

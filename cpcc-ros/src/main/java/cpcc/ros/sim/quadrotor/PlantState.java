@@ -26,7 +26,6 @@ import java.util.Map;
 
 import cpcc.core.entities.PolarCoordinate;
 
-
 /**
  * PlantState
  */
@@ -40,7 +39,7 @@ public class PlantState
     private double elevation;
     private double flyingTime;
     private double remainingBatteryCapacity;
-    
+
     /**
      * 
      */
@@ -55,7 +54,7 @@ public class PlantState
         flyingTime = 0;
         remainingBatteryCapacity = 0;
     }
-    
+
     /**
      * @param other the <code>PlantState</code> object to copy from.
      */
@@ -78,7 +77,7 @@ public class PlantState
     {
         return position;
     }
-    
+
     /**
      * @param position the current position to set
      */
@@ -86,7 +85,7 @@ public class PlantState
     {
         this.position = position;
     }
-    
+
     /**
      * @return the target position
      */
@@ -94,7 +93,7 @@ public class PlantState
     {
         return target;
     }
-    
+
     /**
      * @param target the target position to set
      */
@@ -102,7 +101,7 @@ public class PlantState
     {
         this.target = target;
     }
-    
+
     /**
      * @return the velocity
      */
@@ -110,7 +109,7 @@ public class PlantState
     {
         return velocity;
     }
-    
+
     /**
      * @param velocity the velocity to set
      */
@@ -118,7 +117,7 @@ public class PlantState
     {
         this.velocity = velocity;
     }
-    
+
     /**
      * @return the heading
      */
@@ -126,7 +125,7 @@ public class PlantState
     {
         return heading;
     }
-    
+
     /**
      * @param heading the heading to set
      */
@@ -134,7 +133,7 @@ public class PlantState
     {
         this.heading = heading;
     }
-    
+
     /**
      * @return the acceleration
      */
@@ -142,7 +141,7 @@ public class PlantState
     {
         return acceleration;
     }
-    
+
     /**
      * @param acceleration the acceleration to set
      */
@@ -150,7 +149,7 @@ public class PlantState
     {
         this.acceleration = acceleration;
     }
-    
+
     /**
      * @return the elevation
      */
@@ -166,7 +165,7 @@ public class PlantState
     {
         this.elevation = elevation;
     }
-    
+
     /**
      * @return the flying time
      */
@@ -182,7 +181,7 @@ public class PlantState
     {
         this.flyingTime = flyingTime;
     }
-    
+
     /**
      * @return the remainingBatteryCapacity
      */
@@ -190,7 +189,7 @@ public class PlantState
     {
         return remainingBatteryCapacity;
     }
-    
+
     /**
      * @param remainingBatteryCapacity the remainingBatteryCapacity to set
      */
@@ -205,7 +204,7 @@ public class PlantState
      */
     public Map<String, List<String>> getStateMap(String prefix)
     {
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        Map<String, List<String>> map = new HashMap<>();
 
         map.put(prefix + ".acceleration", Arrays.asList(String.format(Locale.US, "%.2f", getAcceleration())));
         map.put(prefix + ".elevation", Arrays.asList(String.format(Locale.US, "%.3f", Math.toDegrees(getElevation()))));
@@ -214,18 +213,16 @@ public class PlantState
         map.put(prefix + ".position", Arrays.asList(
             String.format(Locale.US, "%.8f", getPosition().getLatitude()),
             String.format(Locale.US, "%.8f", getPosition().getLongitude()),
-            String.format(Locale.US, "%.3f", getPosition().getAltitude())
-            ));
+            String.format(Locale.US, "%.3f", getPosition().getAltitude())));
         map.put(prefix + ".batteryCapacity", Arrays.asList(
             String.format(Locale.US, "%.1f", getRemainingBatteryCapacity())));
         map.put(prefix + ".target", Arrays.asList(
             String.format(Locale.US, "%.8f", getTarget().getLatitude()),
             String.format(Locale.US, "%.8f", getTarget().getLongitude()),
-            String.format(Locale.US, "%.3f", getTarget().getAltitude())
-            ));
+            String.format(Locale.US, "%.3f", getTarget().getAltitude())));
         map.put(prefix + ".velocity", Arrays.asList(String.format(Locale.US, "%.2f", getVelocity())));
 
         return map;
     }
-    
+
 }

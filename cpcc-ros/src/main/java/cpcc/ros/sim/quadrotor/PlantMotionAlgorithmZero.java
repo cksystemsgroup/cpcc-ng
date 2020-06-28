@@ -43,14 +43,14 @@ public class PlantMotionAlgorithmZero implements PlantMotionAlgorithm
         double ma = 6.0 * dist / (totalTime * totalTime);
         if (ma > maxA)
         {
-            log.warn(String.format("%s: maximum acceleration reduced from %.3f m/s^2 to %.3f m/s^2", state, ma, maxA));
+            log.warn("{}: maximum acceleration reduced from {} m/s^2 to {} m/s^2", state, ma, maxA);
 
             double totalTimeNew = Math.sqrt(6 * dist / maxA);
-            log.warn(String.format("%s: total time prolonged from %.3f s to %.3f s", state, totalTime, totalTimeNew));
+            log.warn("{}: total time prolonged from {} s to {} s", state, totalTime, totalTimeNew);
             totalTime = totalTimeNew;
 
             double maxVnew = 1.5 * dist / totalTime;
-            log.warn(String.format("%s: maximum velocity reduced from %.3f m/s to %.3f m/s", state, maxV, maxVnew));
+            log.warn("{}: maximum velocity reduced from {} m/s to {} m/s", state, maxV, maxVnew);
         }
     }
 

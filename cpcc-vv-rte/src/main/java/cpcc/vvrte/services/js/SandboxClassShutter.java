@@ -43,7 +43,7 @@ public class SandboxClassShutter implements ClassShutter
         java.util.Set.class.getName()
         ).collect(Collectors.toSet());
 
-    private Set<String> allowedClasses = new HashSet<String>();
+    private Set<String> allowedClasses = new HashSet<>();
 
     private Set<String> regexDefinedClasses;
 

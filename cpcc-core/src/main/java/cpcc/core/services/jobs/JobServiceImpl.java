@@ -129,7 +129,7 @@ public class JobServiceImpl implements JobService
             : params + ",len=" + data.length + ",md5=" + DigestUtils.md5Hex(data);
 
         List<Job> jobList = jobRepository.findOtherRunningJob(queueName, parameters);
-        if (jobList.size() > 0)
+        if (!jobList.isEmpty())
         {
             throw new JobCreationException("Job already executing in queue='" + queueName + "', parameters='"
                 + parameters + "'");
@@ -159,8 +159,8 @@ public class JobServiceImpl implements JobService
                 try
                 {
                     queueMap.get(job.getQueueName()).execute(job);
-                    logger.debug("Executed job: " + job.getId() + ", queue: " + job.getQueueName() + ", params: "
-                        + job.getParameters() + ", result: " + job.getResultText());
+                    logger.debug("Executed job: {}, queue: {}, params: {}, result: {}",
+                        job.getId(), job.getQueueName(), job.getParameters(), job.getResultText());
                 }
                 catch (JobExecutionException e)
                 {

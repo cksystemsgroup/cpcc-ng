@@ -83,10 +83,13 @@ public class ApplicationState
     @Override
     public String toString()
     {
-        return decision != null
-            ? "Decision: " + decision.toString()
-            : isTask()
-                ? "Task: " + task
-                : "Application state unknown!";
+        if (decision != null)
+        {
+            return "Decision: " + decision.toString();
+        }
+
+        return isTask()
+            ? "Task: " + task
+            : "Application state unknown!";
     }
 }

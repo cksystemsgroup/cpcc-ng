@@ -32,8 +32,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import cpcc.core.entities.SensorDefinition;
-import cpcc.core.services.QueryManager;
-import cpcc.core.services.SensorDefinitionSelectHelpers;
 
 public class SensorDefinitionSelectHelpersTest
 {

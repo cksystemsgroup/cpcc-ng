@@ -21,7 +21,6 @@ package cpcc.ros.sensors;
 import java.util.List;
 import java.util.Map;
 
-import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
@@ -50,15 +49,8 @@ public class GpsSensorAdapter extends AbstractGpsSensorAdapter
         Subscriber<sensor_msgs.NavSatFix> positionSubscriber =
             connectedNode.newSubscriber(getTopic().getName(), sensor_msgs.NavSatFix._TYPE);
 
-        positionSubscriber.addMessageListener(new MessageListener<sensor_msgs.NavSatFix>()
-        {
-            @Override
-            public void onNewMessage(sensor_msgs.NavSatFix message)
-            {
-                setPosition(message);
-            }
-        });
-        
+        positionSubscriber.addMessageListener(this::setPosition);
+
         setStartCompleted();
     }
 

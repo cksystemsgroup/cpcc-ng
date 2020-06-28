@@ -31,11 +31,14 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.slf4j.Logger;
@@ -50,18 +53,14 @@ public class RosImageConverterImpl implements RosImageConverter
 {
     private static final Logger LOG = LoggerFactory.getLogger(RosImageConverterImpl.class);
 
-    @SuppressWarnings("serial")
-    private static final Map<String, ImageConverter> CONVERTER_MAP = new HashMap<String, ImageConverter>()
-    {
-        {
-            put("rgb8", new Rgb8ImageConverter());
-            put("rgba8", new Rgb8aImageConverter());
-            put("png", new GenericImageConverter());
-            put("gif", new GenericImageConverter());
-            put("jpg", new GenericImageConverter());
-            put("jpeg", new GenericImageConverter());
-        }
-    };
+    private static final Map<String, ImageConverter> CONVERTER_MAP = Collections.unmodifiableMap(Stream
+        .of(Pair.of("rgb8", new Rgb8ImageConverter()),
+            Pair.of("rgba8", new Rgb8aImageConverter()),
+            Pair.of("png", new GenericImageConverter()),
+            Pair.of("gif", new GenericImageConverter()),
+            Pair.of("jpg", new GenericImageConverter()),
+            Pair.of("jpeg", new GenericImageConverter()))
+        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
     /**
      * Conversion of an <code>sensor_msgs.Image</code> message to a <code>BufferedImage</code>.
@@ -121,8 +120,7 @@ public class RosImageConverterImpl implements RosImageConverter
             ColorModel colourModel =
                 new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 
-            BufferedImage im = new BufferedImage(colourModel, raster, false, null);
-            return im;
+            return new BufferedImage(colourModel, raster, false, null);
         }
     }
 
@@ -158,8 +156,7 @@ public class RosImageConverterImpl implements RosImageConverter
             ColorModel colourModel =
                 new ComponentColorModel(cs, true, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 
-            BufferedImage im = new BufferedImage(colourModel, raster, false, null);
-            return im;
+            return new BufferedImage(colourModel, raster, false, null);
         }
     }
 
@@ -183,7 +180,7 @@ public class RosImageConverterImpl implements RosImageConverter
             }
             catch (IOException e)
             {
-                LOG.error("Can not read image data.", e.getMessage());
+                LOG.error("Can not read image data. {}", e.getMessage());
                 return new BufferedImage(message.getWidth(), message.getHeight(), BufferedImage.TYPE_INT_ARGB);
             }
         }

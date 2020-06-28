@@ -47,8 +47,8 @@ public class JobExecutor implements Runnable
      * @param jobNumber the id of the job to be executed.
      * @param callBack the job queue callback.
      */
-    public JobExecutor(Logger logger, ServiceResources serviceResources, List<JobRunnableFactory> factoryList
-        , int jobNumber, JobQueueCallback callBack)
+    public JobExecutor(Logger logger, ServiceResources serviceResources, List<JobRunnableFactory> factoryList,
+        int jobNumber, JobQueueCallback callBack)
     {
         this.logger = logger;
         this.serviceResources = serviceResources;
@@ -74,7 +74,7 @@ public class JobExecutor implements Runnable
         sessionManager.getSession().update(job);
         sessionManager.commit();
 
-        logger.debug("Executing job " + jobNumber + " " + job.getQueueName() + " parameters=" + job.getParameters());
+        logger.debug("Executing job {} {} parameters={}", jobNumber, job.getQueueName(), job.getParameters());
 
         job.setStatus(JobStatus.NO_FACTORY);
 
@@ -88,23 +88,25 @@ public class JobExecutor implements Runnable
                     runnable.run();
                     job.setStatus(JobStatus.OK);
                 }
+                catch (IOException e)
+                {
+                    sessionManager.abort();
+                    job.setResultText(e.getMessage());
+                    job.setStatus(JobStatus.FAILED);
+
+                    logger.error("Job failed: {} {} parameters={}. {}",
+                        jobNumber, job.getQueueName(), job.getParameters(), e.getMessage());
+                }
                 catch (Throwable e)
                 {
                     sessionManager.abort();
                     job.setResultText(e.getMessage());
                     job.setStatus(JobStatus.FAILED);
 
-                    if (e instanceof IOException)
-                    {
-                        logger.error("Job failed: " + jobNumber + " " + job.getQueueName()
-                            + " parameters=" + job.getParameters() + " " + e.getMessage());
-                    }
-                    else
-                    {
-                        logger.error("Job failed: " + jobNumber + " " + job.getQueueName()
-                            + " parameters=" + job.getParameters(), e);
-                    }
+                    logger.error("Job failed: {} {} parameters={}.",
+                        jobNumber, job.getQueueName(), job.getParameters(), e);
                 }
+
                 break;
             }
         }

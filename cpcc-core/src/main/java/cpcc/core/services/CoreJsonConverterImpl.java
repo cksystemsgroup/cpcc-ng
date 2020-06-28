@@ -42,6 +42,28 @@ import cpcc.core.utils.JSONUtils;
  */
 public class CoreJsonConverterImpl implements CoreJsonConverter
 {
+    private static final String POSITON_ALTITUDE = "alt";
+    private static final String POSITON_LONGITUDE = "lon";
+    private static final String POSITON_LATITUDE = "lat";
+
+    private static final String REAL_VEHICLE_ID = "id";
+    private static final String REAL_VEHICLE_SENSORS = "sen";
+    private static final String REAL_VEHICLE_LAST_UPDATE = "upd";
+    private static final String REAL_VEHICLE_AREA_OF_OPERATION = "aoo";
+    private static final String REAL_VEHICLE_URL = "url";
+    private static final String REAL_VEHICLE_NAME = "name";
+    private static final String REAL_VEHICLE_TYPE = "type";
+    private static final String REAL_VEHICLE_DELETED = "deleted";
+
+    private static final String SENSOR_DEFINITION_LAST_UPDATE = "lastUpdate";
+    private static final String SENSOR_DEFINITION_PARAMETERS = "parameters";
+    private static final String SENSOR_DEFINITION_VISIBILITY = "visibility";
+    private static final String SENSOR_DEFINITION_MESSAGE_TYPE = "messageType";
+    private static final String SENSOR_DEFINITION_TYPE = "type";
+    private static final String SENSOR_DEFINITION_DESCRIPTION = "description";
+    private static final String SENSOR_DEFINITION_ID = "id";
+    private static final String SENSOR_DEFINITION_DELETED = "deleted";
+
     /**
      * PersistenceJsonConverterImpl
      */
@@ -300,7 +322,7 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
     @Override
     public String toRealVehicleStateJson(List<RealVehicleState> statesList)
     {
-        Map<String, String> stateMap = new HashMap<String, String>();
+        Map<String, String> stateMap = new HashMap<>();
 
         for (RealVehicleState state : statesList)
         {

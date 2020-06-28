@@ -32,8 +32,6 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import cpcc.core.utils.GeoJsonStreamResponse;
-
 public class GeoJsonStreamResponseTest
 {
 

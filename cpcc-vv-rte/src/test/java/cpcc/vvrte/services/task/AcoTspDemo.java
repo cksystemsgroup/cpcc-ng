@@ -49,7 +49,7 @@ import cpcc.vvrte.entities.Task;
 public class AcoTspDemo extends JPanel implements ActionListener
 {
     private static final Logger LOG = LoggerFactory.getLogger(AcoTspDemo.class);
-    
+
     private static final int PATH_LENGTH = 10;
     private static final String BTN_REFRESH = "Refresh";
     private static final String BTN_AGAIN = "Again";
@@ -98,7 +98,7 @@ public class AcoTspDemo extends JPanel implements ActionListener
         {
             public void run()
             {
-                new AcoTspDemo(false).createAndShowGUI();
+                new AcoTspDemo().createAndShowGUI();
             }
         });
     }
@@ -112,14 +112,16 @@ public class AcoTspDemo extends JPanel implements ActionListener
             Task newTask = new Task();
             newTask.setPosition(new PolarCoordinate(toLat(Math.random()), toLng(Math.random()), 0.0));
             tasks.add(newTask);
-            System.out.println("Generated Task: " + newTask);
+            // System.out.println("Generated Task: " + newTask);
         }
 
         return tasks;
     }
 
-    private MyPanel p;
-    private TspSolver solver;
+    private MyPanel pNew;
+    private MyPanel pOld;
+    private TspSolver solverNew;
+    private TspSolver solverOld;
 
     private List<Task> path = Collections.emptyList();
 
@@ -133,9 +135,10 @@ public class AcoTspDemo extends JPanel implements ActionListener
         f.setVisible(true);
     }
 
-    public AcoTspDemo(boolean useAco)
+    public AcoTspDemo()
     {
-        solver = useAco ? new AcoTspTasks() : new HeldKarpTspSolver(new TimeServiceImpl());
+        solverNew = new AcoTspTasks();
+        solverOld = new HeldKarpTspSolver(new TimeServiceImpl());
 
         JPanel buttonPane = new JPanel();
         Stream.of(BTN_REFRESH, BTN_AGAIN).forEach(
@@ -146,8 +149,15 @@ public class AcoTspDemo extends JPanel implements ActionListener
             });
 
         add(buttonPane);
-        p = new MyPanel();
-        add(p);
+
+        JPanel pathPane = new JPanel();
+
+        pNew = new MyPanel();
+        pOld = new MyPanel();
+        pathPane.add(pNew);
+        pathPane.add(pOld);
+
+        add(pathPane);
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     }
 
@@ -161,22 +171,38 @@ public class AcoTspDemo extends JPanel implements ActionListener
             path = generateTaskList(PATH_LENGTH);
         }
 
-        long start = System.nanoTime();
-        List<Task> tasks;
         try
         {
-            tasks = solver.calculateBestPath(CURRENT, path);
+            long start = System.nanoTime();
+            List<Task> tasksNew = solverNew.calculateBestPath(CURRENT, path);
             long duration = System.nanoTime() - start;
+            System.out.println(
+                "NEW Time = " + duration / 1.0E9 + ", pathLen=" + path.size() + ", taskLen=" + tasksNew.size());
 
-            System.out.println("Time = " + duration / 1.0E9 + ", pathLen=" + path.size() + ", taskLen=" + tasks.size());
-
-            p.setTasks(tasks);
-            p.revalidate();
-            p.repaint();
+            pNew.setTasks(tasksNew);
+            pNew.revalidate();
+            pNew.repaint();
         }
         catch (TimeoutException e1)
         {
-            LOG.error("Can not calculate TSP path.", e1);
+            LOG.error("Can not calculate NEW TSP path.", e1);
+        }
+
+        try
+        {
+            long start = System.nanoTime();
+            List<Task> tasksOld = solverOld.calculateBestPath(CURRENT, path);
+            long duration = System.nanoTime() - start;
+            System.out.println(
+                "OLD Time = " + duration / 1.0E9 + ", pathLen=" + path.size() + ", taskLen=" + tasksOld.size());
+
+            pOld.setTasks(tasksOld);
+            pOld.revalidate();
+            pOld.repaint();
+        }
+        catch (TimeoutException e1)
+        {
+            LOG.error("Can not calculate OLD TSP path.", e1);
         }
     }
 
@@ -220,7 +246,7 @@ public class AcoTspDemo extends JPanel implements ActionListener
 
             for (int k = 0; k < tasks.size(); ++k)
             {
-                System.out.println("Draw Task: " + tasks.get(k));
+                // System.out.println("Draw Task: " + tasks.get(k));
                 pos = tasks.get(k).getPosition();
                 int newX = toXpos(pos.getLongitude());
                 int newY = toYpos(pos.getLatitude());

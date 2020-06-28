@@ -33,28 +33,6 @@ import cpcc.core.entities.SensorDefinition;
  */
 public interface CoreJsonConverter
 {
-    String POSITON_ALTITUDE = "alt";
-    String POSITON_LONGITUDE = "lon";
-    String POSITON_LATITUDE = "lat";
-
-    String REAL_VEHICLE_ID = "id";
-    String REAL_VEHICLE_SENSORS = "sen";
-    String REAL_VEHICLE_LAST_UPDATE = "upd";
-    String REAL_VEHICLE_AREA_OF_OPERATION = "aoo";
-    String REAL_VEHICLE_URL = "url";
-    String REAL_VEHICLE_NAME = "name";
-    String REAL_VEHICLE_TYPE = "type";
-    String REAL_VEHICLE_DELETED = "deleted";
-
-    String SENSOR_DEFINITION_LAST_UPDATE = "lastUpdate";
-    String SENSOR_DEFINITION_PARAMETERS = "parameters";
-    String SENSOR_DEFINITION_VISIBILITY = "visibility";
-    String SENSOR_DEFINITION_MESSAGE_TYPE = "messageType";
-    String SENSOR_DEFINITION_TYPE = "type";
-    String SENSOR_DEFINITION_DESCRIPTION = "description";
-    String SENSOR_DEFINITION_ID = "id";
-    String SENSOR_DEFINITION_DELETED = "deleted";
-
     /**
      * @param sensorIdsOnly if true the JSON objects contains the identifications of the sensors only.
      * @param vehicle a real vehicle object.
@@ -113,7 +91,7 @@ public interface CoreJsonConverter
      *         object is older.
      */
     int fillInNewerSensorDefinitionFromJsonObject(SensorDefinition sd, JSONObject sdObj);
-    
+
     /**
      * @param rvList the list of real vehicles.
      * @return the real vehicle regions as a JSON object.

@@ -19,60 +19,61 @@
 package cpcc.ros.sim.quadrotor;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Automaton
  */
 public class Automaton
 {
-    @SuppressWarnings("serial")
-    private static final Map<State, Map<Event, State>> TRANSITION_MAP = new HashMap<State, Map<Event, State>>()
-    {
-        {
-            Map<Event, State> m = new HashMap<Event, State>();
-            m.put(Event.UNLOCK, State.READY);
-            m.put(Event.BATTERY_LOW, State.DENY);
-            put(State.OFFLINE, m);
+    private static final Map<State, Map<Event, State>> TRANSITION_MAP = Collections.unmodifiableMap(Stream
+        .of(
+            Pair.of(State.OFFLINE, Stream
+                .of(Pair.of(Event.UNLOCK, State.READY),
+                    Pair.of(Event.BATTERY_LOW, State.DENY))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight))),
 
-            m = new HashMap<Event, State>();
-            m.put(Event.LOCK, State.OFFLINE);
-            m.put(Event.BATTERY_LOW, State.DENY);
-            m.put(Event.START, State.TAKE_OFF);
-            put(State.READY, m);
+            Pair.of(State.READY, Stream
+                .of(Pair.of(Event.LOCK, State.OFFLINE),
+                    Pair.of(Event.BATTERY_LOW, State.DENY),
+                    Pair.of(Event.START, State.TAKE_OFF))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight))),
 
-            m = new HashMap<Event, State>();
-            m.put(Event.BATTERY_LOW, State.DEPOT_FLIGHT);
-            m.put(Event.STOP, State.LAND);
-            m.put(Event.REACHED, State.HOVER);
-            put(State.TAKE_OFF, m);
+            Pair.of(State.TAKE_OFF, Stream
+                .of(Pair.of(Event.BATTERY_LOW, State.DEPOT_FLIGHT),
+                    Pair.of(Event.STOP, State.LAND),
+                    Pair.of(Event.REACHED, State.HOVER))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight))),
 
-            m = new HashMap<Event, State>();
-            m.put(Event.LANDED, State.READY);
-            put(State.LAND, m);
+            Pair.of(State.LAND, Stream
+                .of(Pair.of(Event.LANDED, State.READY))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight))),
 
-            m = new HashMap<Event, State>();
-            m.put(Event.BATTERY_LOW, State.DEPOT_FLIGHT);
-            m.put(Event.FLY_TO, State.FLIGHT);
-            put(State.HOVER, m);
+            Pair.of(State.HOVER, Stream
+                .of(Pair.of(Event.BATTERY_LOW, State.DEPOT_FLIGHT),
+                    Pair.of(Event.FLY_TO, State.FLIGHT))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight))),
 
-            m = new HashMap<Event, State>();
-            m.put(Event.BATTERY_LOW, State.DEPOT_FLIGHT);
-            m.put(Event.REACHED, State.HOVER);
-            put(State.FLIGHT, m);
+            Pair.of(State.FLIGHT, Stream
+                .of(Pair.of(Event.BATTERY_LOW, State.DEPOT_FLIGHT),
+                    Pair.of(Event.REACHED, State.HOVER))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight))),
 
-            m = new HashMap<Event, State>();
-            m.put(Event.REACHED, State.DEPOT_LAND);
-            put(State.DEPOT_FLIGHT, m);
+            Pair.of(State.DEPOT_FLIGHT, Stream
+                .of(Pair.of(Event.REACHED, State.DEPOT_LAND))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight))),
 
-            m = new HashMap<Event, State>();
-            m.put(Event.LANDED, State.DENY);
-            put(State.DEPOT_LAND, m);
+            Pair.of(State.DEPOT_LAND, Stream
+                .of(Pair.of(Event.LANDED, State.DENY))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight))),
 
-            put(State.DENY, Collections.<Event, State> emptyMap());
-        }
-    };
+            Pair.of(State.DENY, Collections.<Event, State> emptyMap())
+
+        ).collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
     private State currentState;
 

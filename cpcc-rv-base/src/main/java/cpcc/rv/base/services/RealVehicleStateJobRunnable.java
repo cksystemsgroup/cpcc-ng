@@ -85,13 +85,13 @@ public class RealVehicleStateJobRunnable implements JobRunnable
             rvState.setRealVehicleName(target.getName());
             rvState.setState(stateString);
 
-            logger.info("RealVehicleState: ;" + target.getName() + ";" + stateString + ";");
+            logger.info("RealVehicleState: ;{};{};", target.getName(), stateString);
 
             sessionManager.getSession().saveOrUpdate(rvState);
         }
         catch (IOException e)
         {
-            logger.debug("Real vehicle state query to " + target.getName() + " did not work. " + e.getMessage());
+            logger.debug("Real vehicle state query to {} did not work.", target.getName(), e);
         }
     }
 }

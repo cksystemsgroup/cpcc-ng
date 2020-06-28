@@ -27,8 +27,6 @@ import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.utils.ConvertUtils;
-
 /**
  * ConvertUtilsTest
  */

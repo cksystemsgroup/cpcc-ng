@@ -19,7 +19,8 @@
 package cpcc.rv.base.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.matches;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -121,7 +122,7 @@ public class RealVehicleStateJobRunnableTest
         verifyNoMoreInteractions(rvState);
 
         verify(session).saveOrUpdate(rvState);
-        verify(logger).info(matches("RealVehicleState: ;.*"));
+        verify(logger).info("RealVehicleState: ;{};{};", "RV01", "response string");
     }
 
     @Test
@@ -143,7 +144,7 @@ public class RealVehicleStateJobRunnableTest
         assertThat(rvState.getRealVehicleName()).isEqualTo(rv.getName());
         assertThat(rvState.getState()).isEqualTo(RESPONSE_STRING);
 
-        verify(logger).info(matches("RealVehicleState: ;.*"));
+        verify(logger).info("RealVehicleState: ;{};{};", "RV01", "response string");
     }
 
     @SuppressWarnings("unchecked")
@@ -155,6 +156,6 @@ public class RealVehicleStateJobRunnableTest
 
         sut.run();
 
-        verify(logger).debug(matches("Real vehicle state query to \\S+ did not work\\. .*"));
+        verify(logger).debug(eq("Real vehicle state query to {} did not work."), eq("RV01"), any(IOException.class));
     }
 }

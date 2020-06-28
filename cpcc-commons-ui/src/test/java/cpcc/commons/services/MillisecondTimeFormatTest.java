@@ -25,8 +25,6 @@ import java.text.ParsePosition;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.commons.services.MillisecondTimeFormat;
-
 public class MillisecondTimeFormatTest
 {
     @DataProvider

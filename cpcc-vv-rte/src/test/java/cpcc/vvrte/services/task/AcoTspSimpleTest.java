@@ -33,7 +33,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import cpcc.core.utils.CartesianCoordinate;
-import cpcc.vvrte.services.task.AcoTspSimple;
 
 /**
  * AcoTspSimpleTest implementation.

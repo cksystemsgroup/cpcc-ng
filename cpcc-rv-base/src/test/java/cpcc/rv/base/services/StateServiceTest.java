@@ -32,7 +32,6 @@ import java.util.Map;
 import org.geojson.FeatureCollection;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -117,8 +116,6 @@ public class StateServiceTest
         vvStats.put(VirtualVehicleState.MIGRATION_AWAITED_SND, 10230);
         vvStats.put(VirtualVehicleState.MIGRATION_COMPLETED_RCV, 11230);
         vvStats.put(VirtualVehicleState.MIGRATION_COMPLETED_SND, 12230);
-
-        Logger logger = mock(Logger.class);
 
         SensorDefinition sd1 = mock(SensorDefinition.class);
         when(sd1.getId()).thenReturn(SENSOR_DEFINITION_ONE_ID);
@@ -219,7 +216,7 @@ public class StateServiceTest
 
         timeService = mock(TimeService.class);
 
-        sut = new StateServiceImpl(logger, qm, rns, vvRepo, vjc, rvRepo, taskRepo, timeService);
+        sut = new StateServiceImpl(qm, rns, vvRepo, vjc, rvRepo, taskRepo, timeService);
     }
 
     @DataProvider

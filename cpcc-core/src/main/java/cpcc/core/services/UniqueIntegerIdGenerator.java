@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.Properties;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionImplementor;
@@ -41,7 +40,7 @@ public class UniqueIntegerIdGenerator implements IdentifierGenerator, Configurab
      * {@inheritDoc}
      */
     @Override
-    public void configure(Type type, Properties params, Dialect d) throws MappingException
+    public void configure(Type type, Properties params, Dialect d)
     {
         entityName = params.getProperty(ENTITY_NAME);
         if (entityName == null)
@@ -54,7 +53,7 @@ public class UniqueIntegerIdGenerator implements IdentifierGenerator, Configurab
      * {@inheritDoc}
      */
     @Override
-    public Serializable generate(SessionImplementor session, Object obj) throws HibernateException
+    public Serializable generate(SessionImplementor session, Object obj)
     {
         final Serializable id = session.getEntityPersister(entityName, obj).getIdentifier(obj, session);
         return id != null ? id : RandomUtils.nextInt(0, Integer.MAX_VALUE);

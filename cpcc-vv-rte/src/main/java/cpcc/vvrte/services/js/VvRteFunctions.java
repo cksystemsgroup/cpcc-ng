@@ -33,7 +33,7 @@ public final class VvRteFunctions implements Serializable
     static final String[] FUNCTIONS = {"getVvRte", "getStdOut"};
 
     private static BuiltInFunctions vvRte;
-    private static PrintStream stdOut = new NullPrintStream(); // .newInstance();
+    private static PrintStream stdOut = new NullPrintStream();
 
     /**
      * Private constructor.

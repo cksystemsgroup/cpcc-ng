@@ -34,7 +34,7 @@ public abstract class AbstractTspSolver implements TspSolver
      * @param path the path of coordinates.
      * @return the initialized cost matrix.
      */
-    protected static double[][] setupCostMatrix(PolarCoordinate position, List<Task> path)
+    protected double[][] setupCostMatrix(PolarCoordinate position, List<Task> path)
     {
         int n = 1 + path.size();
 
@@ -45,10 +45,22 @@ public abstract class AbstractTspSolver implements TspSolver
         coords.add(currentTask);
         coords.addAll(path);
 
-        double minX = coords.stream().map(p -> p.getPosition().getLongitude()).min(Double::compare).get().doubleValue();
-        double maxX = coords.stream().map(p -> p.getPosition().getLongitude()).max(Double::compare).get().doubleValue();
-        double minY = coords.stream().map(p -> p.getPosition().getLatitude()).min(Double::compare).get().doubleValue();
-        double maxY = coords.stream().map(p -> p.getPosition().getLatitude()).max(Double::compare).get().doubleValue();
+        double minX = coords.stream()
+            .map(p -> p.getPosition().getLongitude())
+            .min(Double::compare)
+            .orElse(0.0).doubleValue();
+        double maxX = coords.stream()
+            .map(p -> p.getPosition().getLongitude())
+            .max(Double::compare)
+            .orElse(0.0).doubleValue();
+        double minY = coords.stream()
+            .map(p -> p.getPosition().getLatitude())
+            .min(Double::compare)
+            .orElse(0.0).doubleValue();
+        double maxY = coords.stream()
+            .map(p -> p.getPosition().getLatitude())
+            .max(Double::compare)
+            .orElse(0.0).doubleValue();
 
         double[][] costMatrix = new double[n][n];
 
@@ -77,8 +89,23 @@ public abstract class AbstractTspSolver implements TspSolver
      * @param maxValue the maximum value.
      * @return
      */
-    private static double scale(double actualValue, double minValue, double maxValue)
+    private double scale(double actualValue, double minValue, double maxValue)
     {
         return 1000.0 * (actualValue - minValue) / (maxValue - minValue);
+    }
+
+    public double[][] setupPheromoneMatrix(int n)
+    {
+        double[][] pheromoneMatrix = new double[n][n];
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                pheromoneMatrix[i][j] = 10.0;
+            }
+        }
+
+        return pheromoneMatrix;
     }
 }

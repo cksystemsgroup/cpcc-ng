@@ -23,6 +23,8 @@ package cpcc.vvrte.base;
  */
 public final class VvRteConstants
 {
+    private static final String MODE = "mode=";
+
     public static final String MIGRATION_CONNECTOR = "migration";
     public static final String MIGRATION_PATH = "/commons/vv/migration";
 
@@ -30,8 +32,6 @@ public final class VvRteConstants
     public static final String MIGRATION_ACK_PATH = "/commons/vv/migrationAck";
 
     public static final String PROP_SCHEDULER_CLASS_NAME = "vvrte.default.scheduler";
-    // public static final String PROP_DEFAULT_SCHEDULER_CLASS_NAME =
-    //  "cpcc.vvrte.services.task.FirstComeFirstServeAlgorithm";
     public static final String PROP_SCHEDULER_CLASS_NAME_DEFAULT =
         "cpcc.vvrte.services.task.GatedTspSchedulingAlgorithm";
 
@@ -49,18 +49,18 @@ public final class VvRteConstants
     public static final String MIGRATION_CHUNK_SIZE_DEFAULT = "1000";
 
     public static final String MIGRATION_MODE_SEND = "migration-send";
-    public static final String MIGRATION_FORMAT_SEND = "mode=" + MIGRATION_MODE_SEND + ",id=%d";
+    public static final String MIGRATION_FORMAT_SEND = MODE + MIGRATION_MODE_SEND + ",id=%d";
 
     public static final String MIGRATION_MODE_SEND_ACK = "migration-send-ack";
-    public static final String MIGRATION_FORMAT_SEND_ACK = "mode=" + MIGRATION_MODE_SEND_ACK + ",id=%d";
+    public static final String MIGRATION_FORMAT_SEND_ACK = MODE + MIGRATION_MODE_SEND_ACK + ",id=%d";
 
     public static final String MIGRATION_MODE_RECEIVE = "migration-receive";
-    public static final String MIGRATION_RECEIVE = "mode=" + MIGRATION_MODE_RECEIVE;
+    public static final String MIGRATION_RECEIVE = MODE + MIGRATION_MODE_RECEIVE;
 
-    public static final String MIGRATION_CONTINUE = "mode=" + MIGRATION_MODE_SEND + ",id=0";
+    public static final String MIGRATION_CONTINUE = MODE + MIGRATION_MODE_SEND + ",id=0";
 
     public static final String STUCK_MIGRATIONS_MODE = "stuck-migrations";
-    public static final String STUCK_MIGRATIONS = "mode=" + STUCK_MIGRATIONS_MODE;
+    public static final String STUCK_MIGRATIONS = MODE + STUCK_MIGRATIONS_MODE;
 
     private VvRteConstants()
     {

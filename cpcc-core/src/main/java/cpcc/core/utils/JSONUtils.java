@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -46,7 +47,7 @@ public final class JSONUtils
     public static byte[] toByteArray(JSONObject obj) throws IOException
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
-        Writer osw = new OutputStreamWriter(bos, "UTF-8");
+        Writer osw = new OutputStreamWriter(bos, StandardCharsets.UTF_8.name());
         PrintWriter writer = new PrintWriter(osw);
         obj.print(writer, true);
         writer.close();
@@ -62,7 +63,7 @@ public final class JSONUtils
     public static String toJsonString(Map<String, String> map)
     {
         boolean first = true;
-        
+
         StringBuilder sb = new StringBuilder("{");
 
         for (Entry<String, String> e : map.entrySet())
@@ -78,9 +79,9 @@ public final class JSONUtils
 
             sb.append("\"").append(e.getKey()).append("\":").append(e.getValue());
         }
-        
+
         sb.append("}");
-        
+
         return sb.toString();
     }
 }

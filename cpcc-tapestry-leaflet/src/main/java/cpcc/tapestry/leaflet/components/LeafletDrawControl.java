@@ -39,6 +39,12 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 @MixinAfter
 public class LeafletDrawControl
 {
+    private static final String PROPS_AREA =
+        "{ allowIntersection: false, drawError: { color: '#b00b00', timeout: 1000 }, shapeOptions: { color: '#03f' }, showArea: true }";
+
+    private static final String PROPS_NO_AREA =
+        "{ allowIntersection: false, drawError: { color: '#b00b00', timeout: 1000 }, shapeOptions: { color: '#03f' }, showArea: false} ";
+
     @InjectComponent
     private Hidden drawData;
 
@@ -85,26 +91,10 @@ public class LeafletDrawControl
     void afterRender()
     {
         JSONObject draw = new JSONObject();
-
-        draw.put("polygon", polygonEnabled
-            ? new JSONObject("{ allowIntersection: false, drawError: { color: '#b00b00', timeout: 1000 }, "
-                + "shapeOptions: { color: '#03f' }, showArea: true }")
-            : Boolean.FALSE);
-
-        draw.put("rectangle", rectangleEnabled
-            ? new JSONObject("{ allowIntersection: false, drawError: { color: '#b00b00', timeout: 1000 }, "
-                + "shapeOptions: { color: '#03f' }, showArea: true }")
-            : Boolean.FALSE);
-
-        draw.put("polyline", polylineEnabled
-            ? new JSONObject("{ allowIntersection: false, drawError: { color: '#b00b00', timeout: 1000 }, "
-                + "shapeOptions: { color: '#03f' }, showArea: false} ")
-            : Boolean.FALSE);
-
-        draw.put("circle", circleEnabled
-            ? new JSONObject("{ allowIntersection: false, drawError: { color: '#b00b00', timeout: 1000 }, "
-                + "shapeOptions: { color: '#03f' }, showArea: true }")
-            : Boolean.FALSE);
+        draw.put("polygon", polygonEnabled ? new JSONObject(PROPS_AREA) : Boolean.FALSE);
+        draw.put("rectangle", rectangleEnabled ? new JSONObject(PROPS_AREA) : Boolean.FALSE);
+        draw.put("polyline", polylineEnabled ? new JSONObject(PROPS_NO_AREA) : Boolean.FALSE);
+        draw.put("circle", circleEnabled ? new JSONObject(PROPS_AREA) : Boolean.FALSE);
 
         JSONObject params = new JSONObject("position", position, "draw", draw);
         params.put("position", position);

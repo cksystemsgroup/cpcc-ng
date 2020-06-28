@@ -77,7 +77,7 @@ public final class VersionUtils
         {
             Properties props = new Properties();
             props.load(stream);
-            String version = props.getProperty("module.version");
+            String version = props.getProperty(MODULE_VERSION);
 
             if (StringUtils.isEmpty(version))
             {

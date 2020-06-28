@@ -28,11 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.services.opts.OptionsScanner;
-import cpcc.core.services.opts.ParseException;
-import cpcc.core.services.opts.Symbol;
-import cpcc.core.services.opts.Token;
-
 /**
  * OptionsScannerTest
  */

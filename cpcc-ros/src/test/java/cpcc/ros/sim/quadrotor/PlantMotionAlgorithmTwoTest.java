@@ -20,6 +20,7 @@ package cpcc.ros.sim.quadrotor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -88,7 +89,7 @@ public class PlantMotionAlgorithmTwoTest
         assertThat(sut.distance(time)).describedAs("Distance").isEqualTo(expDistance, offset(1E-2));
         assertThat(sut.acceleration(time)).describedAs("Acceleration").isEqualTo(expAcceleration, offset(1E-2));
 
-        verify(logger).info(anyString());
+        verify(logger).info(anyString(), any(), any(), any(), any());
     }
 
     @Test

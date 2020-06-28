@@ -18,6 +18,8 @@
 
 package cpcc.rv.base.services;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -77,7 +79,7 @@ public class StateSynchronizerTest
 
         realVehicleRepository = mock(RealVehicleRepository.class);
         when(realVehicleRepository.findAllActiveRealVehicles()).thenReturn(Arrays.asList(rv01, rv02));
-        
+
         jobService = mock(JobService.class);
 
         sut = new StateSynchronizerImpl(logger, qm, jobService, realVehicleRepository);
@@ -174,7 +176,8 @@ public class StateSynchronizerTest
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
 
-        verify(logger)
-            .debug("Can not create config sync job for real vehicle RV02 (2002), mode=config Thrown on purpose!");
+        verify(logger).debug(eq("Can not create config sync job for real vehicle {} ({}), mode={}"),
+            eq("RV02"), eq(2002), eq("config"), any());
+
     }
 }

@@ -21,6 +21,7 @@ package cpcc.core.services.jobs;
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -28,8 +29,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
@@ -45,12 +48,6 @@ import org.testng.annotations.Test;
 
 import cpcc.core.entities.Job;
 import cpcc.core.entities.JobStatus;
-import cpcc.core.services.jobs.JobExecutionException;
-import cpcc.core.services.jobs.JobQueue;
-import cpcc.core.services.jobs.JobRepository;
-import cpcc.core.services.jobs.JobRunnable;
-import cpcc.core.services.jobs.JobRunnableFactory;
-import cpcc.core.services.jobs.TimeService;
 
 public class JobQueueTest
 {
@@ -132,7 +129,7 @@ public class JobQueueTest
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable
             {
-                Thread.sleep(1000);
+                TimeUnit.SECONDS.sleep(1);
                 return null;
             }
         }).when(slowJobRunnable).run();
@@ -163,7 +160,7 @@ public class JobQueueTest
         int counter = 0;
         while (counter++ < 10 && !jobEnded)
         {
-            Thread.sleep(100);
+            TimeUnit.SECONDS.sleep(1);
         }
 
         assertThat(jobEnded)
@@ -192,7 +189,7 @@ public class JobQueueTest
     {
         sut.execute(slowJob);
 
-        catchException(sut).execute(slowJob);
+        catchException(() -> sut.execute(slowJob));
 
         assertThat((Throwable) caughtException())
             .overridingErrorMessage("Second invocation of execute() does not throw an exception!")
@@ -214,28 +211,15 @@ public class JobQueueTest
 
         sut.execute(reusableJob);
 
-        int counter = 0;
-        while (counter++ < 10 && reusableJob.getEnd() == null)
-        {
-            Thread.sleep(100);
-        }
-
-        assertThat(reusableJob.getEnd())
-            .overridingErrorMessage("Job did not terminate within %.1f seconds!", counter / 10.0)
-            .isNotNull();
+        await()
+            .atMost(Duration.ofSeconds(1))
+            .until(() -> reusableJob.getEnd() != null);
 
         sut.execute(reusableJob);
 
-        counter = 0;
-        while (counter++ < 10 && reusableJob.getEnd() == null)
-        {
-            Thread.sleep(100);
-        }
-        Thread.sleep(100);
-
-        assertThat(reusableJob.getEnd())
-            .overridingErrorMessage("Job did not terminate within %.1f seconds!", counter / 10.0)
-            .isNotNull();
+        await()
+            .atMost(Duration.ofSeconds(2))
+            .until(() -> reusableJob.getEnd() != null);
 
         verify(reusableJobRunnable, times(2)).run();
 

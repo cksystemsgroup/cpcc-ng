@@ -80,7 +80,7 @@ public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
             catch (TimeoutException e)
             {
                 mt /= 2;
-                logger.warn("Reducing GTSP path length from " + maxTasks + " to " + mt);
+                logger.warn("Reducing GTSP path length from {} to {}", maxTasks, mt);
             }
         }
 

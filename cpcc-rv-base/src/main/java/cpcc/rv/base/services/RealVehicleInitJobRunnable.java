@@ -48,7 +48,7 @@ public class RealVehicleInitJobRunnable implements JobRunnable
      * {@inheritDoc}
      */
     @Override
-    public void run() throws Exception
+    public void run()
     {
         RealVehicleRepository rvRepo = serviceResources.getService(RealVehicleRepository.class);
         HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
@@ -60,8 +60,8 @@ public class RealVehicleInitJobRunnable implements JobRunnable
         RealVehicle myself = rvRepo.findOwnRealVehicle();
         if (myself != null)
         {
-            logger.info("Found own vehicle name: " + myself.getName() + ", id=" + myself.getId()
-                + " Initialization already complete.");
+            logger.info("Found own vehicle name: {}, id={}. Initialization already complete.",
+                myself.getName(), myself.getId());
             return;
         }
 

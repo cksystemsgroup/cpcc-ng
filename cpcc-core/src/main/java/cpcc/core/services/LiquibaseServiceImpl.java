@@ -26,6 +26,10 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.apache.tapestry5.ioc.annotations.Symbol;
+import org.slf4j.Logger;
+
+import cpcc.core.base.CoreConstants;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -33,11 +37,6 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.ResourceAccessor;
-
-import org.apache.tapestry5.ioc.annotations.Symbol;
-import org.slf4j.Logger;
-
-import cpcc.core.base.CoreConstants;
 
 /**
  * LiquibaseServiceImpl
@@ -87,11 +86,13 @@ public class LiquibaseServiceImpl implements LiquibaseService
                 Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
                 ResourceAccessor resourceAccessor = new ClassLoaderResourceAccessor();
 
-                Liquibase l = new Liquibase(changeLog, resourceAccessor, database);
-                l.update("");
+                try (Liquibase l = new Liquibase(changeLog, resourceAccessor, database))
+                {
+                    l.update("");
+                }
             }
         }
-        catch (LiquibaseException | NamingException | SQLException e)
+        catch (Exception e)
         {
             logger.error(e.getMessage(), e);
         }

@@ -30,7 +30,7 @@ import org.apache.tapestry5.ioc.Messages;
 @SuppressWarnings("serial")
 public class EnumFormatter extends Format
 {
-    private Messages messages;
+    private transient Messages messages;
 
     /**
      * @param messages the message catalog.

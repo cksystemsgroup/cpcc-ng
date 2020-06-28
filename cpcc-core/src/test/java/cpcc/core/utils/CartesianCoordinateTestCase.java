@@ -23,8 +23,6 @@ import static org.assertj.core.api.Assertions.offset;
 
 import org.testng.annotations.Test;
 
-import cpcc.core.utils.CartesianCoordinate;
-
 /**
  * This class verifies the implementation of the Position class.
  */

@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +52,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class JavascriptWorker extends Thread
 {
+    private static final String DEFECTIVE_VV = "Defective: VV={} ({} / {})";
+
     private static final String VVRTE_API_FORMAT = "vvrte-api-%1$03d.js";
 
     private Logger logger;
@@ -61,7 +64,7 @@ public class JavascriptWorker extends Thread
     private String result = null;
     private byte[] snapshot = null;
     private int scriptStartLine;
-    private Set<JavascriptWorkerStateListener> stateListeners = new HashSet<JavascriptWorkerStateListener>();
+    private Set<JavascriptWorkerStateListener> stateListeners = new HashSet<>();
     private ApplicationState applicationState;
     private VirtualVehicle vehicle;
 
@@ -139,23 +142,23 @@ public class JavascriptWorker extends Thread
             }
             else
             {
-                ByteArrayInputStream bais = new ByteArrayInputStream(snapshot);
-                ScriptableInputStream sis = new ScriptableInputStream(bais, scope);
-                Scriptable globalScope = (Scriptable) sis.readObject();
-                Object c = sis.readObject();
-                sis.close();
-                bais.close();
-                resultObj = cx.resumeContinuation(c, globalScope, Boolean.TRUE);
+                try (ByteArrayInputStream bais = new ByteArrayInputStream(snapshot);
+                    ScriptableInputStream sis = new ScriptableInputStream(bais, scope))
+                {
+                    Scriptable globalScope = (Scriptable) sis.readObject();
+                    Object c = sis.readObject();
+                    resultObj = cx.resumeContinuation(c, globalScope, Boolean.TRUE);
+                }
             }
 
-            logger.info("Result obj: " + Context.toString(resultObj));
             result = Context.toString(resultObj);
+            logger.info("Result obj: {}", result);
 
             changeState(sessionManager, VirtualVehicleState.FINISHED);
         }
         catch (ContinuationPending cp)
         {
-            logger.info("Application State " + cp.getApplicationState());
+            logger.info("Application State {}", cp.getApplicationState());
             applicationState = (ApplicationState) cp.getApplicationState();
             try
             {
@@ -177,12 +180,11 @@ public class JavascriptWorker extends Thread
                     changeState(sessionManager, VirtualVehicleState.INTERRUPTED);
                 }
 
-                logger.info("snapshot is " + snapshot.length + " bytes long.");
+                logger.info("snapshot is {} bytes long.", snapshot.length);
             }
             catch (IOException e)
             {
-                logger.error("Defective: VV=" + vehicle.getName()
-                    + " (" + vehicle.getId() + " / " + vehicle.getUuid() + ")", e);
+                logger.error(DEFECTIVE_VV, vehicle.getName(), vehicle.getId(), vehicle.getUuid(), e);
                 result = ExceptionFormatter.toString(e);
                 snapshot = null;
                 changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
@@ -190,16 +192,15 @@ public class JavascriptWorker extends Thread
         }
         catch (RhinoException e)
         {
-            logger.error("Defective: VV=" + vehicle.getName()
-                + " (" + vehicle.getId() + " / " + vehicle.getUuid() + ")", e);
+            logger.error(DEFECTIVE_VV, vehicle.getName(), vehicle.getId(), vehicle.getUuid(), e);
+
             result = e.getMessage() + ", line=" + (e.lineNumber() - scriptStartLine) + ":" + e.columnNumber()
                 + ", source='" + e.lineSource() + "'";
             changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
         }
         catch (ClassNotFoundException | IOException | NoSuchMethodError e)
         {
-            logger.error("Defective: VV=" + vehicle.getName()
-                + " (" + vehicle.getId() + " / " + vehicle.getUuid() + ")", e);
+            logger.error(DEFECTIVE_VV, vehicle.getName(), vehicle.getId(), vehicle.getUuid(), e);
             result = ExceptionFormatter.toString(e);
             changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
         }
@@ -225,7 +226,7 @@ public class JavascriptWorker extends Thread
             throw new IOException("Can not handle API version " + apiVersion);
         }
 
-        return IOUtils.toString(apiStream, "UTF-8").replace("%vehicleUUID%", vehicle.getUuid());
+        return IOUtils.toString(apiStream, StandardCharsets.UTF_8.name()).replace("%vehicleUUID%", vehicle.getUuid());
     }
 
     /**

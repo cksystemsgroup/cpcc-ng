@@ -237,7 +237,7 @@ public class TileCacheTest extends PowerMockTestCase
         }
         catch (IOException e)
         {
-            assertThat(e).hasMessage(msg);
+            assertThat(e.getCause()).hasMessage(msg);
         }
     }
 

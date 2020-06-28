@@ -283,15 +283,16 @@ public class PolygonZone
      */
     public PolarCoordinate getCenterOfGravity()
     {
-        BigDecimal x = new BigDecimal(0), y = new BigDecimal(0);
-        BigDecimal doubleArea = new BigDecimal(0);
+        BigDecimal x = BigDecimal.valueOf(0);
+        BigDecimal y = BigDecimal.valueOf(0);
+        BigDecimal doubleArea = BigDecimal.valueOf(0);
 
         for (int k = 0, l = vertices.length - 1; k < l; ++k)
         {
-            BigDecimal ax = new BigDecimal(vertices[k].x);
-            BigDecimal ay = new BigDecimal(vertices[k].y);
-            BigDecimal bx = new BigDecimal(vertices[k + 1].x);
-            BigDecimal by = new BigDecimal(vertices[k + 1].y);
+            BigDecimal ax = BigDecimal.valueOf(vertices[k].x);
+            BigDecimal ay = BigDecimal.valueOf(vertices[k].y);
+            BigDecimal bx = BigDecimal.valueOf(vertices[k + 1].x);
+            BigDecimal by = BigDecimal.valueOf(vertices[k + 1].y);
             BigDecimal t = ax.multiply(by).subtract(bx.multiply(ay));
             x = x.add(ax.add(bx).multiply(t));
             y = y.add(ay.add(by).multiply(t));

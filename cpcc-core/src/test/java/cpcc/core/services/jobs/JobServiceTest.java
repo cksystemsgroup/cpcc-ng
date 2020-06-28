@@ -49,13 +49,6 @@ import org.testng.annotations.Test;
 
 import cpcc.core.entities.Job;
 import cpcc.core.entities.JobStatus;
-import cpcc.core.services.jobs.JobCreationException;
-import cpcc.core.services.jobs.JobExecutionException;
-import cpcc.core.services.jobs.JobQueue;
-import cpcc.core.services.jobs.JobRepository;
-import cpcc.core.services.jobs.JobService;
-import cpcc.core.services.jobs.JobServiceImpl;
-import cpcc.core.services.jobs.TimeService;
 
 public class JobServiceTest
 {
@@ -395,7 +388,7 @@ public class JobServiceTest
 
         sut.addJobQueue(QUEUE_NAME_01, jobQueue01);
 
-        catchException(sut).addJob(QUEUE_NAME_01, parameters01);
+        catchException(() -> sut.addJob(QUEUE_NAME_01, parameters01));
 
         assertThat((Throwable) caughtException())
             .describedAs("Thrown exception")
@@ -437,7 +430,7 @@ public class JobServiceTest
     @Test
     public void shouldThrowExceptionIfJobQueueIsNotRegistered() throws JobCreationException
     {
-        catchException(sut).addJob(QUEUE_NAME_01, parameters01);
+        catchException(() -> sut.addJob(QUEUE_NAME_01, parameters01));
 
         assertThat((Throwable) caughtException())
             .describedAs("Thrown exception")

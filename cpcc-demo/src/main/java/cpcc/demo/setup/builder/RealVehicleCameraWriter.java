@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +54,8 @@ public class RealVehicleCameraWriter extends AbstractRealVehicleWriter
             ? Collections.emptyList()
             : setupRvDevices(rv);
 
-        try (OutputStream out = new FileOutputStream(file); Writer writer = new OutputStreamWriter(out, "UTF-8"))
+        try (OutputStream out = new FileOutputStream(file);
+            Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8))
         {
             devices.stream().forEach(rethrowConsumer(x -> writeDevice(writer, x)));
         }
@@ -62,9 +64,8 @@ public class RealVehicleCameraWriter extends AbstractRealVehicleWriter
     /**
      * @param rv the real vehicle.
      * @return the list of devices.
-     * @throws IOException in case of errors.
      */
-    private List<Device> setupRvDevices(RealVehicle rv) throws IOException
+    private List<Device> setupRvDevices(RealVehicle rv)
     {
         String configuration = String.format(RV_CONFIG_FORMAT, rv.getName().toLowerCase());
 

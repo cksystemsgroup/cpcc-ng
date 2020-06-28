@@ -28,12 +28,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.entities.Device;
-import cpcc.core.entities.MappingAttributes;
-import cpcc.core.entities.MappingAttributesPK;
-import cpcc.core.entities.SensorDefinition;
-import cpcc.core.entities.Topic;
-
 /**
  * MappingAttributesTest
  */

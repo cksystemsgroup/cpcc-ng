@@ -26,8 +26,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.entities.RealVehicleState;
-
 public class RealVehicleStateTest
 {
     private RealVehicleState sut;

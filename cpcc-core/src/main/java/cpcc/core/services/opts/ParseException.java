@@ -27,8 +27,8 @@ import java.util.Locale;
 @SuppressWarnings("serial")
 public class ParseException extends Exception
 {
-    private int lineNumber;
-    private int columnNumber;
+    private final int lineNumber;
+    private final int columnNumber;
 
     /**
      * @param expected the expected symbol(s).

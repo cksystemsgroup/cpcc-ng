@@ -26,9 +26,9 @@ import java.util.Map;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.slf4j.Logger;
 
-import sensor_msgs.NavSatFix;
 import cpcc.ros.sim.AbstractRosNodeGroup;
 import cpcc.ros.sim.AnonymousNodeMain;
+import sensor_msgs.NavSatFix;
 
 /**
  * NodeGroup
@@ -38,7 +38,6 @@ public class NodeGroup extends AbstractRosNodeGroup
     private Logger logger;
     private AnonymousNodeMain<sensor_msgs.NavSatFix> imagePublisherNode;
     private AnonymousNodeMain<sensor_msgs.NavSatFix> listenerNode;
-    private Configuration config;
 
     /**
      * @param logger the application logger.
@@ -58,7 +57,7 @@ public class NodeGroup extends AbstractRosNodeGroup
 
         getConfig().put("topicRoot", Arrays.asList(getTopicRoot()));
 
-        config = new Configuration(getNodeConfiguration(), getConfig());
+        Configuration config = new Configuration(getNodeConfiguration(), getConfig());
 
         imagePublisherNode = new ImagePublisherNode(logger, config);
         listenerNode = new GpsListenerNode(logger, config, imagePublisherNode);
@@ -91,8 +90,7 @@ public class NodeGroup extends AbstractRosNodeGroup
             map.put("image.position", Arrays.asList(
                 String.format(Locale.US, "%.8f", pos.getLatitude()),
                 String.format(Locale.US, "%.8f", pos.getLongitude()),
-                String.format(Locale.US, "%.3f", pos.getAltitude())
-                ));
+                String.format(Locale.US, "%.3f", pos.getAltitude())));
         }
 
         pos = listenerNode.getReceivedMessage();
@@ -101,8 +99,7 @@ public class NodeGroup extends AbstractRosNodeGroup
             map.put("gps.position", Arrays.asList(
                 String.format(Locale.US, "%.8f", pos.getLatitude()),
                 String.format(Locale.US, "%.8f", pos.getLongitude()),
-                String.format(Locale.US, "%.3f", pos.getAltitude())
-                ));
+                String.format(Locale.US, "%.3f", pos.getAltitude())));
         }
 
         return map;

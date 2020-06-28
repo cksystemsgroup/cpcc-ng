@@ -25,8 +25,6 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.services.opts.Symbol;
-
 /**
  * SymbolTest
  */

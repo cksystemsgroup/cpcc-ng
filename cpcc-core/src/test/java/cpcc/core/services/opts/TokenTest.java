@@ -25,9 +25,6 @@ import java.math.BigDecimal;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import cpcc.core.services.opts.Symbol;
-import cpcc.core.services.opts.Token;
-
 /**
  * TokenTest
  */
@@ -36,8 +33,7 @@ public class TokenTest
     @DataProvider
     public Object[][] tokenDataProvider()
     {
-        return new Object[][]
-        {
+        return new Object[][]{
             new Object[]{Symbol.EQUALS, Symbol.EQUALS.getSymbolString(), null},
             new Object[]{Symbol.LEFT_PAREN, Symbol.LEFT_PAREN.getSymbolString(), null},
             new Object[]{Symbol.RIGHT_PAREN, Symbol.RIGHT_PAREN.getSymbolString(), null},

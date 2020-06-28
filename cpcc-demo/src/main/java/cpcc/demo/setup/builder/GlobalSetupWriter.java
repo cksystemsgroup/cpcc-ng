@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import cpcc.core.entities.RealVehicle;
@@ -43,10 +44,10 @@ public class GlobalSetupWriter
      * @param rvs the list of real vehicles.
      * @throws IOException in case of errors.
      */
-    public void write(File file, List<RealVehicle> rvs)
-        throws IOException
+    public void write(File file, List<RealVehicle> rvs) throws IOException
     {
-        try (OutputStream out = new FileOutputStream(file); Writer writer = new OutputStreamWriter(out, "UTF-8"))
+        try (OutputStream out = new FileOutputStream(file);
+            Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8))
         {
             SensorConstants.all().stream().forEach(rethrowConsumer(x -> writeSensor(writer, x)));
             writer.append("\n");
@@ -66,16 +67,14 @@ public class GlobalSetupWriter
      */
     private static void writeSensor(Writer writer, SensorDefinition sensor) throws IOException
     {
-        writer.append(String.format("INSERT INTO SENSOR_DEFINITIONS ("
-            + "ID,DESCRIPTION,LAST_UPDATE,MESSAGE_TYPE,PARAMETERS,TYPE,VISIBILITY,DELETED)%n"
-            + "VALUES (%1$d,'%2$s',current_timestamp,'%3$s',%4$s,'%5$s','%6$s',%7$d);%n"
-            , sensor.getId()
-            , sensor.getDescription()
-            , sensor.getMessageType()
-            , sensor.getParameters() != null ? "'" + sensor.getParameters() + "'" : "null"
-            , sensor.getType().name()
-            , sensor.getVisibility().name()
-            , sensor.getDeleted() ? 1 : 0));
+        writer.append(String.format(
+            "INSERT INTO SENSOR_DEFINITIONS ("
+                + "ID,DESCRIPTION,LAST_UPDATE,MESSAGE_TYPE,PARAMETERS,TYPE,VISIBILITY,DELETED)%n"
+                + "VALUES (%1$d,'%2$s',current_timestamp,'%3$s',%4$s,'%5$s','%6$s',%7$d);%n",
+            sensor.getId(), sensor.getDescription(), sensor.getMessageType(),
+            sensor.getParameters() != null ? "'" + sensor.getParameters() + "'" : "null", sensor.getType().name(),
+            sensor.getVisibility().name(),
+            Boolean.TRUE.equals(sensor.getDeleted()) ? 1 : 0));
     }
 
     /**
@@ -87,21 +86,15 @@ public class GlobalSetupWriter
     {
         writer.append(String.format("INSERT INTO REAL_VEHICLES ("
             + "ID,LAST_UPDATE,NAME,URL,TYPE,AREA_OF_OPERATION,DELETED)%n"
-            + "VALUES (%1$2d,current_timestamp,'%2$s','%3$s','%4$s','%5$s',%6$d);%n"
-            , rv.getId()
-            , rv.getName()
-            , rv.getUrl()
-            , rv.getType().name()
-            , rv.getAreaOfOperation()
-            , rv.getDeleted() ? 1 : 0));
+            + "VALUES (%1$2d,current_timestamp,'%2$s','%3$s','%4$s','%5$s',%6$d);%n", rv.getId(), rv.getName(),
+            rv.getUrl(), rv.getType().name(), rv.getAreaOfOperation(), rv.getDeleted() ? 1 : 0));
     }
 
     /**
      * @param writer the writer to use.
      * @param rv the real vehicle.
-     * @throws IOException in case of errors.
      */
-    private void writeRvSensors(Writer writer, RealVehicle rv) throws IOException
+    private void writeRvSensors(Writer writer, RealVehicle rv)
     {
         List<SensorDefinition> sds = rv.getType() == RealVehicleType.GROUND_STATION
             ? SensorConstants.byType(SensorType.GPS)
@@ -119,7 +112,6 @@ public class GlobalSetupWriter
     private void writeSensorConnection(Writer writer, RealVehicle rv, SensorDefinition sensor) throws IOException
     {
         writer.append(String.format("INSERT INTO REAL_VEHICLES_SENSOR_DEFINITIONS "
-            + "(REAL_VEHICLES_ID,SENSORS_ID) VALUES (%1$2d,%2$2d);%n"
-            , rv.getId(), sensor.getId()));
+            + "(REAL_VEHICLES_ID,SENSORS_ID) VALUES (%1$2d,%2$2d);%n", rv.getId(), sensor.getId()));
     }
 }

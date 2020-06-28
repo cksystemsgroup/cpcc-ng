@@ -33,9 +33,8 @@ import org.apache.tapestry5.services.javascript.JavaScriptSupport;
  */
 public class SimpleModal implements ClientElement
 {
-    @Parameter(name = "componentClientId"
-        , value = "prop:componentResources.id"
-        , defaultPrefix = BindingConstants.LITERAL)
+    @Parameter(name = "componentClientId", value = "prop:componentResources.id",
+        defaultPrefix = BindingConstants.LITERAL)
     private String componentClientId;
 
     @Parameter(value = "false", defaultPrefix = BindingConstants.LITERAL)
@@ -55,7 +54,7 @@ public class SimpleModal implements ClientElement
     {
         return componentClientId;
     }
-    
+
     public String getModalClass()
     {
         return large ? "modal-lg" : "";
@@ -76,13 +75,6 @@ public class SimpleModal implements ClientElement
 
     private JavaScriptCallback makeScriptToHideModal()
     {
-        return new JavaScriptCallback()
-        {
-            @Override
-            public void run(JavaScriptSupport javascriptSupport)
-            {
-                javascriptSupport.require("hide-modal").with(componentClientId);
-            }
-        };
+        return javascriptSupport -> javascriptSupport.require("hide-modal").with(componentClientId);
     }
 }

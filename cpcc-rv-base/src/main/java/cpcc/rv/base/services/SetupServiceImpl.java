@@ -74,14 +74,14 @@ public class SetupServiceImpl implements SetupService
         {
             param = new Parameter();
             param.setName(name);
-            param.setSort(0);
+            param.setSort(sort);
         }
 
         if (StringUtils.isBlank(param.getValue()))
         {
             param.setValue(value);
             sessionManager.getSession().saveOrUpdate(param);
-            logger.info("Automatic configuration: " + name + "=" + value);
+            logger.info("Automatic configuration: {}={}", name, value);
         }
     }
 

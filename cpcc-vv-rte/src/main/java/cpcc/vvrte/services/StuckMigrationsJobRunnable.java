@@ -43,7 +43,7 @@ public class StuckMigrationsJobRunnable implements JobRunnable
      * {@inheritDoc}
      */
     @Override
-    public void run() throws Exception
+    public void run()
     {
         PerthreadManager perthreadManager = serviceResources.getService(PerthreadManager.class);
         HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
