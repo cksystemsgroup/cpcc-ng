@@ -26,10 +26,10 @@ import java.io.Serializable;
 import java.util.Properties;
 
 import org.hibernate.MappingException;
-import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.persister.entity.EntityPersister;
+import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.Type;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -40,7 +40,7 @@ public class UniqueLongIdGeneratorTest
     private UniqueLongIdGenerator sut;
     private Type type;
     private Properties params;
-    private Dialect dialect;
+    private ServiceRegistry serviceRegistry;
     private SessionImplementor session;
     private Object object;
     private EntityPersister persister;
@@ -52,7 +52,7 @@ public class UniqueLongIdGeneratorTest
 
         type = mock(Type.class);
         params = mock(Properties.class);
-        dialect = mock(Dialect.class);
+        serviceRegistry = mock(ServiceRegistry.class);
         object = mock(Object.class);
         session = mock(SessionImplementor.class);
 
@@ -65,13 +65,13 @@ public class UniqueLongIdGeneratorTest
     {
         when(params.getProperty(IdentifierGenerator.ENTITY_NAME)).thenReturn("name");
 
-        sut.configure(type, params, dialect);
+        sut.configure(type, params, serviceRegistry);
     }
 
     @Test(expectedExceptions = MappingException.class)
     public void shouldThrowExceptionOnEmptyEntityName()
     {
-        sut.configure(type, params, dialect);
+        sut.configure(type, params, serviceRegistry);
     }
 
     @DataProvider
@@ -90,7 +90,7 @@ public class UniqueLongIdGeneratorTest
         when(persister.getIdentifier(object, session)).thenReturn(expected);
 
         when(params.getProperty(IdentifierGenerator.ENTITY_NAME)).thenReturn("name");
-        sut.configure(type, params, dialect);
+        sut.configure(type, params, serviceRegistry);
 
         Serializable actual = sut.generate(session, object);
 
@@ -102,7 +102,7 @@ public class UniqueLongIdGeneratorTest
     public void shouldGenerateNewRandomId()
     {
         when(params.getProperty(IdentifierGenerator.ENTITY_NAME)).thenReturn("name");
-        sut.configure(type, params, dialect);
+        sut.configure(type, params, serviceRegistry);
 
         Serializable actual1 = sut.generate(session, object);
         Serializable actual2 = sut.generate(session, object);
