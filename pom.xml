@@ -59,7 +59,7 @@
 	<properties>
 		<additionalparam>-Xdoclint:none</additionalparam>
 		<assertj-version>3.20.1</assertj-version>
-		<awaitility-version>4.0.1</awaitility-version>
+		<awaitility-version>4.1.0</awaitility-version>
 		<cobertura.report.format>xml</cobertura.report.format>
 		<com.h2database.version>1.4.200</com.h2database.version>
 		<easymock-version>3.6</easymock-version>
@@ -69,15 +69,15 @@
 		<liquibase-version>3.10.0</liquibase-version>
 		<logback-version>1.2.3</logback-version>
 		<mockito-version>1.10.19</mockito-version>
-		<powermock.version>1.6.6</powermock.version>
+		<powermock.version>1.7.4</powermock.version>
 		<rosjava-version>0.0.6</rosjava-version>
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
 		<slf4j-version>1.7.30</slf4j-version>
-		<snakeyaml-version>1.26</snakeyaml-version>
+		<snakeyaml-version>1.29</snakeyaml-version>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.testng.reportsPath>target/site</sonar.testng.reportsPath>
-		<tapestry-release-version>5.5.0</tapestry-release-version>
-		<testng-release-version>7.0.0</testng-release-version>
+		<tapestry-release-version>5.7.2</tapestry-release-version>
+		<testng-release-version>7.4.0</testng-release-version>
 		<tomcat.version>9.0.35</tomcat.version>
 	</properties>
 
@@ -561,7 +561,7 @@
 				<plugin>
 					<groupId>org.basepom.maven</groupId>
 					<artifactId>duplicate-finder-maven-plugin</artifactId>
-					<version>1.3.0</version>
+					<version>1.5.0</version>
 					<executions>
 						<execution>
 							<id>default</id>
@@ -585,7 +585,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
