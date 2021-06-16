@@ -78,7 +78,7 @@
 		<sonar.testng.reportsPath>target/site</sonar.testng.reportsPath>
 		<tapestry-release-version>5.5.0</tapestry-release-version>
 		<testng-release-version>7.4.0</testng-release-version>
-		<tomcat.version>9.0.35</tomcat.version>
+		<tomcat.version>9.0.48</tomcat.version>
 	</properties>
 
 	<dependencyManagement>
