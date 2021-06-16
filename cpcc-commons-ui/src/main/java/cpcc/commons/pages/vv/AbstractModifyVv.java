@@ -26,10 +26,10 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
-import org.apache.tapestry5.ioc.Messages;
 
 import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.VirtualVehicle;
@@ -61,7 +61,7 @@ public class AbstractModifyVv
 
     @Inject
     protected TimeService timeService;
-    
+
     @Valid
     @Property
     protected VirtualVehicle vehicle;

@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.tapestry5.services.Response;
+import org.apache.tapestry5.http.services.Response;
 import org.testng.annotations.Test;
 
 public class ResourceStreamResponseTest

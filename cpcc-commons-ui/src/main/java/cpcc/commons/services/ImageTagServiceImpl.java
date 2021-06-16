@@ -21,7 +21,7 @@ package cpcc.commons.services;
 import java.awt.Dimension;
 
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 
 import cpcc.ros.base.AbstractRosAdapter;

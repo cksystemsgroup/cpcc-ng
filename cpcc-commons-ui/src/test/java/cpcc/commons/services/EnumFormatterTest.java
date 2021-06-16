@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 import java.text.FieldPosition;
 
-import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.commons.Messages;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;

@@ -35,8 +35,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
-import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
 import org.mockito.invocation.InvocationOnMock;

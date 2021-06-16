@@ -18,7 +18,7 @@
 
 package cpcc.core.utils;
 
-import org.apache.tapestry5.services.Response;
+import org.apache.tapestry5.http.services.Response;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

@@ -19,7 +19,7 @@
 package cpcc.rv.web.services;
 
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.commons.MappedConfiguration;
 
 import cpcc.core.utils.VersionUtils;
 

@@ -30,7 +30,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import org.apache.tapestry5.StreamResponse;
-import org.apache.tapestry5.services.Response;
+import org.apache.tapestry5.http.services.Response;
 
 /**
  * PngImageStreamResponse

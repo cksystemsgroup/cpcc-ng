@@ -102,7 +102,7 @@ public class JobRepositoryImpl implements JobRepository
         return session.createCriteria(Job.class)
             .add(Restrictions.eq(QUEUE_NAME, queueName))
             .add(Restrictions.eq(PARAMETERS, parameters))
-            .add(Restrictions.in(STATUS, ACTIVE_JOB_STATES))
+            .add(Restrictions.in(STATUS, (Object[]) ACTIVE_JOB_STATES))
             .list();
     }
 
@@ -155,7 +155,7 @@ public class JobRepositoryImpl implements JobRepository
                 Restrictions.le(END, new Date(System.currentTimeMillis() - maxJobAge)),
                 Restrictions.and(
                     Restrictions.le(END, new Date(System.currentTimeMillis() - 30000)),
-                    Restrictions.in(STATUS, new JobStatus[]{JobStatus.OK, JobStatus.FAILED, JobStatus.NO_FACTORY})),
+                    Restrictions.in(STATUS, new Object[]{JobStatus.OK, JobStatus.FAILED, JobStatus.NO_FACTORY})),
                 Restrictions.and(
                     Restrictions.le(START, new Date(System.currentTimeMillis() - maxJobAge)),
                     Restrictions.isNull(END),

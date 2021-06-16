@@ -24,7 +24,7 @@ import java.io.InputStream;
 import javax.inject.Inject;
 
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
-import org.apache.tapestry5.services.RequestGlobals;
+import org.apache.tapestry5.http.services.RequestGlobals;
 import org.apache.tapestry5.util.TextStreamResponse;
 
 import cpcc.vvrte.services.VirtualVehicleMigrator;

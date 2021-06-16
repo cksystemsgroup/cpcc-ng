@@ -29,8 +29,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.lang.reflect.Constructor;
 
+import org.apache.tapestry5.commons.Configuration;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
-import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;

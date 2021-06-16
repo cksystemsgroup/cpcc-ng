@@ -27,10 +27,10 @@ import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
-import org.apache.tapestry5.ioc.Messages;
 
 import cpcc.commons.pages.configuration.ConfigurationEdit;
 import cpcc.core.entities.Device;

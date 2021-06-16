@@ -30,7 +30,7 @@ import java.util.TreeMap;
 
 import javax.inject.Singleton;
 
-import org.apache.tapestry5.ioc.ObjectLocator;
+import org.apache.tapestry5.commons.ObjectLocator;
 import org.apache.tapestry5.ioc.annotations.EagerLoad;
 import org.ros.RosCore;
 import org.ros.address.InetAddressFactory;

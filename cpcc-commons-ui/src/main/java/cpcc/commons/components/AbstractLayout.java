@@ -26,7 +26,7 @@ import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 
@@ -39,7 +39,8 @@ import cpcc.core.services.QueryManager;
 public abstract class AbstractLayout
 {
     /**
-     * The page title, for the <title> element and the <h1>element.
+     * The page title, for the <title> element and the
+     * <h1>element.
      */
     @Property
     @Parameter(required = true, defaultPrefix = BindingConstants.LITERAL)

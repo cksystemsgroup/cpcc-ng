@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
-import org.apache.tapestry5.ioc.Messages;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;

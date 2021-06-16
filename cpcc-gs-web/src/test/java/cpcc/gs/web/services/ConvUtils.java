@@ -59,7 +59,7 @@ public class ConvUtils
     public static List<RealVehicle> toRealVehicleList(JSONArray vehicleList)
     {
         List<RealVehicle> sdList = new ArrayList<RealVehicle>();
-        for (int k = 0, l = vehicleList.length(); k < l; ++k)
+        for (int k = 0, l = vehicleList.size(); k < l; ++k)
         {
             JSONObject sd = vehicleList.getJSONObject(k);
             sdList.add(toRealVehicle(sd));
@@ -87,7 +87,7 @@ public class ConvUtils
 
         JSONArray sensors = (JSONArray) vehicle.get(REAL_VEHICLE_SENSORS);
 
-        for (int k = 0, l = sensors.length(); k < l; ++k)
+        for (int k = 0, l = sensors.size(); k < l; ++k)
         {
             SensorDefinition sd = new SensorDefinition();
             sd.setId(sensors.getInt(k));
@@ -153,7 +153,7 @@ public class ConvUtils
     public static List<SensorDefinition> toSensorDefinitionList(JSONArray sensorList)
     {
         List<SensorDefinition> sdList = new ArrayList<SensorDefinition>();
-        for (int k = 0, l = sensorList.length(); k < l; ++k)
+        for (int k = 0, l = sensorList.size(); k < l; ++k)
         {
             JSONObject sd = sensorList.getJSONObject(k);
             sdList.add(toSensorDefinition(sd));

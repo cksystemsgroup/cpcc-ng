@@ -19,7 +19,7 @@
 package cpcc.gs.web.services;
 
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.commons.MappedConfiguration;
 import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;

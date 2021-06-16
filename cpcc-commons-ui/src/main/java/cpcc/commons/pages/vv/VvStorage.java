@@ -23,7 +23,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.tapestry5.annotations.Property;
-import org.apache.tapestry5.ioc.Messages;
+import org.apache.tapestry5.commons.Messages;
 
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleStorage;

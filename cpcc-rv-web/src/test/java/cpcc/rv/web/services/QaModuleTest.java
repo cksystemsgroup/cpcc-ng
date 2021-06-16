@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import java.lang.reflect.Constructor;
 
 import org.apache.tapestry5.SymbolConstants;
-import org.apache.tapestry5.ioc.MappedConfiguration;
+import org.apache.tapestry5.commons.MappedConfiguration;
 import org.testng.annotations.Test;
 
 /**

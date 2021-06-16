@@ -25,8 +25,8 @@ import static org.mockito.Mockito.when;
 
 import java.awt.Dimension;
 
-import org.apache.tapestry5.ioc.Messages;
-import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.commons.Messages;
+import org.apache.tapestry5.http.services.Request;
 import org.ros.internal.message.Message;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;

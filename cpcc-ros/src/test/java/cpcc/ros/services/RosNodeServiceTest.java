@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tapestry5.ioc.ObjectLocator;
+import org.apache.tapestry5.commons.ObjectLocator;
 import org.ros.internal.node.client.MasterClient;
 import org.ros.internal.node.response.Response;
 import org.ros.internal.node.response.StatusCode;

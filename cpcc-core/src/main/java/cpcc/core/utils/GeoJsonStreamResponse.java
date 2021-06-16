@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.tapestry5.StreamResponse;
-import org.apache.tapestry5.services.Response;
+import org.apache.tapestry5.http.services.Response;
 import org.geojson.FeatureCollection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

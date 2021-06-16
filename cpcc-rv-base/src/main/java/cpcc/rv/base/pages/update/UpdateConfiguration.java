@@ -24,8 +24,8 @@ import java.io.InputStream;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.tapestry5.http.services.RequestGlobals;
 import org.apache.tapestry5.json.JSONObject;
-import org.apache.tapestry5.services.RequestGlobals;
 
 import cpcc.core.utils.JsonStreamResponse;
 import cpcc.rv.base.services.StateSynchronizer;

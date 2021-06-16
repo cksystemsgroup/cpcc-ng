@@ -119,7 +119,7 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         JSONArray a = new JSONArray();
         for (RealVehicle vehicle : vehicleList)
         {
-            a.put(toJson(sensorIdsOnly, vehicle));
+            a.add(toJson(sensorIdsOnly, vehicle));
         }
         return a;
     }
@@ -155,7 +155,7 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         JSONArray a = new JSONArray();
         for (SensorDefinition sensor : sensorList)
         {
-            a.put(toJson(sensor));
+            a.add(toJson(sensor));
         }
         return a;
     }
@@ -181,7 +181,7 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         JSONArray a = new JSONArray();
         for (Integer num : numbers)
         {
-            a.put(num);
+            a.add(num);
         }
         return a;
     }
@@ -195,7 +195,7 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
         JSONArray a = new JSONArray();
         for (Double num : numbers)
         {
-            a.put(num);
+            a.add(num);
         }
         return a;
     }

@@ -26,10 +26,10 @@ import javax.validation.Valid;
 import org.apache.tapestry5.alerts.AlertManager;
 import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.Property;
+import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.corelib.components.Form;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.hibernate.annotations.CommitAfter;
-import org.apache.tapestry5.ioc.Messages;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.RealVehicleRepository;
