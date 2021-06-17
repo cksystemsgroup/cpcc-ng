@@ -68,7 +68,7 @@
 		<javax.mail.version>1.4.7</javax.mail.version>
 		<liquibase-version>3.10.3</liquibase-version>
 		<logback-version>1.2.3</logback-version>
-		<mockito-version>1.10.19</mockito-version>
+		<mockito-version>3.11.1</mockito-version>
 		<powermock.version>1.7.4</powermock.version>
 		<powermock-testng.version>1.6.6</powermock-testng.version>
 		<rosjava-version>0.0.6</rosjava-version>
