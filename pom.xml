@@ -62,13 +62,13 @@
 		<awaitility-version>4.1.0</awaitility-version>
 		<cobertura.report.format>xml</cobertura.report.format>
 		<com.h2database.version>1.4.200</com.h2database.version>
-		<easymock-version>3.6</easymock-version>
+		<easymock-version>4.3</easymock-version>
 		<httpclient-version>4.5.13</httpclient-version>
 		<java-version>1.8</java-version>
 		<javax.mail.version>1.4.7</javax.mail.version>
-		<liquibase-version>3.10.3</liquibase-version>
+		<liquibase-version>4.4.0</liquibase-version>
 		<logback-version>1.2.3</logback-version>
-		<mockito-version>1.10.19</mockito-version>
+		<mockito-version>3.11.1</mockito-version>
 		<powermock.version>1.7.4</powermock.version>
 		<powermock-testng.version>2.0.9</powermock-testng.version>
 		<rosjava-version>0.0.6</rosjava-version>
@@ -548,7 +548,7 @@
 				<plugin>
 					<groupId>org.eclipse.jetty</groupId>
 					<artifactId>jetty-maven-plugin</artifactId>
-					<version>9.4.42.v20210604</version>
+					<version>11.0.5</version>
 				</plugin>
 				<plugin>
 					<groupId>org.basepom.maven</groupId>
@@ -572,7 +572,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
-					<version>1.8</version>
+					<version>3.0.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
