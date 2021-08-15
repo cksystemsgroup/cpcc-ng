@@ -19,6 +19,7 @@
 package cpcc.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,14 +27,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
@@ -59,16 +62,12 @@ public class CoreJsonConverterTest
         + "{lat:34.80900,lng:-124.42400},{lat:34.80800,lng:-124.42400}]";
 
     private CoreJsonConverter sut;
-    private SensorDefinition s1 = mock(SensorDefinition.class);
-    private SensorDefinition s2 = mock(SensorDefinition.class);
-    private SensorDefinition s3 = mock(SensorDefinition.class);
-    private SensorDefinition s4 = mock(SensorDefinition.class);
-    private RealVehicle rv1 = mock(RealVehicle.class);
-    private RealVehicle rv2 = mock(RealVehicle.class);
-    private RealVehicle rv3 = mock(RealVehicle.class);
-    private RealVehicle rv4 = mock(RealVehicle.class);
+    private static SensorDefinition s1 = mock(SensorDefinition.class);
+    private static SensorDefinition s2 = mock(SensorDefinition.class);
+    private static SensorDefinition s3 = mock(SensorDefinition.class);
+    private static SensorDefinition s4 = mock(SensorDefinition.class);
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         when(s1.getId()).thenReturn(1);
@@ -102,6 +101,110 @@ public class CoreJsonConverterTest
         when(s4.getVisibility()).thenReturn(SensorVisibility.PRIVILEGED_VV);
         when(s4.getParameters()).thenReturn(null);
 
+        sut = new CoreJsonConverterImpl();
+    }
+
+    static Stream<Arguments> singleVehicleDataProvider()
+    {
+        RealVehicle rv1 = mock(RealVehicle.class);
+        RealVehicle rv2 = mock(RealVehicle.class);
+        RealVehicle rv3 = mock(RealVehicle.class);
+
+        when(rv1.getName()).thenReturn("rv1");
+        when(rv1.getUrl()).thenReturn("http://localhost/rv01");
+        when(rv1.getSensors()).thenReturn(Arrays.asList(s1, s2, s3));
+        when(rv1.getAreaOfOperation()).thenReturn(RV1_AREA_OF_OPERATION);
+        when(rv1.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
+        when(rv1.getId()).thenReturn(1);
+        when(rv1.getLastUpdate()).thenReturn(new Date(1001));
+
+        when(rv2.getName()).thenReturn("rv2");
+        when(rv2.getUrl()).thenReturn("http://localhost/rv02");
+        when(rv2.getSensors()).thenReturn(Arrays.asList(s2, s3, s4));
+        when(rv2.getAreaOfOperation()).thenReturn(RV2_AREA_OF_OPERATION);
+        when(rv2.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
+        when(rv2.getId()).thenReturn(2);
+        when(rv2.getLastUpdate()).thenReturn(new Date(2002));
+
+        when(rv3.getName()).thenReturn("rv3");
+        when(rv3.getUrl()).thenReturn("http://localhost/rv03");
+        when(rv3.getSensors()).thenReturn(Arrays.asList(s3, s4, s1));
+        when(rv3.getAreaOfOperation()).thenReturn(RV3_AREA_OF_OPERATION);
+        when(rv3.getType()).thenReturn(RealVehicleType.GROUND_STATION);
+        when(rv3.getId()).thenReturn(3);
+        when(rv3.getLastUpdate()).thenReturn(new Date(3003));
+
+        return Stream.of(
+            arguments(rv1,
+                "{\"id\":\"1\",\"aoo\":\"["
+                    + "{lat:37.80800,lng:-122.42600},{lat:37.80800,lng:-122.42700},{lat:37.80900,lng:-122.42700},"
+                    + "{lat:37.80900,lng:-122.42600},{lat:37.80800,lng:-122.42600}"
+                    + "]\","
+                    + "\"name\":\"rv1\","
+                    + "\"sen\":["
+                    + "{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":10001,"
+                    + "\"description\":\"Altimeter\",\"parameters\":\"random=10:35\","
+                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\",\"deleted\":false},"
+                    + "{\"id\":\"2\",\"visibility\":\"NO_VV\",\"lastUpdate\":20002,"
+                    + "\"description\":\"Barometer\",\"parameters\":\"random=1050:1080\","
+                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"BAROMETER\",\"deleted\":false},"
+                    + "{\"id\":\"3\",\"visibility\":\"ALL_VV\",\"lastUpdate\":30003,"
+                    + "\"description\":\"Belly Mounted Camera 640x480\","
+                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
+                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\",\"deleted\":false}],"
+                    + "\"upd\":1001,"
+                    + "\"type\":\"QUADROCOPTER\",\"deleted\":false,"
+                    + "\"url\":\"http://localhost/rv01\"}"),
+            arguments(rv2,
+                "{\"id\":\"2\",\"aoo\":\"["
+                    + "{lat:37.80800,lng:-122.42500},{lat:37.80800,lng:-122.42600},{lat:37.80900,lng:-122.42600},"
+                    + "{lat:37.80900,lng:-122.42500},{lat:37.80800,lng:-122.42500}]\","
+                    + "\"name\":\"rv2\",\"sen\":["
+                    + "{\"id\":\"2\",\"visibility\":\"NO_VV\",\"lastUpdate\":20002,"
+                    + "\"description\":\"Barometer\",\"parameters\":\"random=1050:1080\","
+                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"BAROMETER\",\"deleted\":false},"
+                    + "{\"id\":\"3\",\"visibility\":\"ALL_VV\",\"lastUpdate\":30003,"
+                    + "\"description\":\"Belly Mounted Camera 640x480\","
+                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
+                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\",\"deleted\":false},"
+                    + "{\"id\":\"4\",\"visibility\":\"PRIVILEGED_VV\","
+                    + "\"description\":\"GPS\",\"messageType\":\"sensor_msgs/NavSatFix\","
+                    + "\"type\":\"GPS\",\"deleted\":false}],\"upd\":2002,\"type\":\"FIXED_WING_AIRCRAFT\","
+                    + "\"deleted\":false,\"url\":\"http://localhost/rv02\"}"),
+            arguments(rv3,
+                "{\"id\":\"3\",\"aoo\":\"["
+                    + "{lat:37.80800,lng:-122.42400},{lat:37.80800,lng:-122.42500},{lat:37.80900,lng:-122.42500},"
+                    + "{lat:37.80900,lng:-122.42400},{lat:37.80800,lng:-122.42400}]\","
+                    + "\"name\":\"rv3\",\"sen\":["
+                    + "{\"id\":\"3\",\"visibility\":\"ALL_VV\",\"lastUpdate\":30003,"
+                    + "\"description\":\"Belly Mounted Camera 640x480\","
+                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
+                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\",\"deleted\":false},"
+                    + "{\"id\":\"4\",\"visibility\":\"PRIVILEGED_VV\","
+                    + "\"description\":\"GPS\",\"messageType\":\"sensor_msgs/NavSatFix\",\"type\":\"GPS\","
+                    + "\"deleted\":false},"
+                    + "{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":10001,"
+                    + "\"description\":\"Altimeter\",\"parameters\":\"random=10:35\","
+                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\",\"deleted\":false}],\"upd\":3003,"
+                    + "\"type\":\"GROUND_STATION\",\"deleted\":false,\"url\":\"http://localhost/rv03\"}"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("singleVehicleDataProvider")
+    public void shouldConvertRealVehicles(RealVehicle vehicle, String expectedJsonString) throws JSONException
+    {
+        JSONObject result = sut.toJson(false, vehicle);
+        JSONAssert.assertEquals(expectedJsonString, result.toString(true), false);
+        JSONAssert.assertEquals(result.toString(true), expectedJsonString, false);
+    }
+
+    static Stream<Arguments> singleVehicleWithSensorIdsOnlyDataProvider()
+    {
+        RealVehicle rv1 = mock(RealVehicle.class);
+        RealVehicle rv2 = mock(RealVehicle.class);
+        RealVehicle rv3 = mock(RealVehicle.class);
+        RealVehicle rv4 = mock(RealVehicle.class);
+
         when(rv1.getName()).thenReturn("rv1");
         when(rv1.getUrl()).thenReturn("http://localhost/rv01");
         when(rv1.getSensors()).thenReturn(Arrays.asList(s1, s2, s3));
@@ -133,85 +236,8 @@ public class CoreJsonConverterTest
         when(rv4.getType()).thenReturn(RealVehicleType.TABLET);
         when(rv4.getId()).thenReturn(4);
 
-        sut = new CoreJsonConverterImpl();
-    }
-
-    @DataProvider
-    public Object[][] singleVehicleDataProvider()
-    {
-        return new Object[][]{
-            new Object[]{rv1,
-                "{\"id\":\"1\",\"aoo\":\"["
-                    + "{lat:37.80800,lng:-122.42600},{lat:37.80800,lng:-122.42700},{lat:37.80900,lng:-122.42700},"
-                    + "{lat:37.80900,lng:-122.42600},{lat:37.80800,lng:-122.42600}"
-                    + "]\","
-                    + "\"name\":\"rv1\","
-                    + "\"sen\":["
-                    + "{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":10001,"
-                    + "\"description\":\"Altimeter\",\"parameters\":\"random=10:35\","
-                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\",\"deleted\":false},"
-                    + "{\"id\":\"2\",\"visibility\":\"NO_VV\",\"lastUpdate\":20002,"
-                    + "\"description\":\"Barometer\",\"parameters\":\"random=1050:1080\","
-                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"BAROMETER\",\"deleted\":false},"
-                    + "{\"id\":\"3\",\"visibility\":\"ALL_VV\",\"lastUpdate\":30003,"
-                    + "\"description\":\"Belly Mounted Camera 640x480\","
-                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
-                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\",\"deleted\":false}],"
-                    + "\"upd\":1001,"
-                    + "\"type\":\"QUADROCOPTER\",\"deleted\":false,"
-                    + "\"url\":\"http://localhost/rv01\"}"
-            },
-            new Object[]{rv2,
-                "{\"id\":\"2\",\"aoo\":\"["
-                    + "{lat:37.80800,lng:-122.42500},{lat:37.80800,lng:-122.42600},{lat:37.80900,lng:-122.42600},"
-                    + "{lat:37.80900,lng:-122.42500},{lat:37.80800,lng:-122.42500}]\","
-                    + "\"name\":\"rv2\",\"sen\":["
-                    + "{\"id\":\"2\",\"visibility\":\"NO_VV\",\"lastUpdate\":20002,"
-                    + "\"description\":\"Barometer\",\"parameters\":\"random=1050:1080\","
-                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"BAROMETER\",\"deleted\":false},"
-                    + "{\"id\":\"3\",\"visibility\":\"ALL_VV\",\"lastUpdate\":30003,"
-                    + "\"description\":\"Belly Mounted Camera 640x480\","
-                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
-                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\",\"deleted\":false},"
-                    + "{\"id\":\"4\",\"visibility\":\"PRIVILEGED_VV\","
-                    + "\"description\":\"GPS\",\"messageType\":\"sensor_msgs/NavSatFix\","
-                    + "\"type\":\"GPS\",\"deleted\":false}],\"upd\":2002,\"type\":\"FIXED_WING_AIRCRAFT\","
-                    + "\"deleted\":false,\"url\":\"http://localhost/rv02\"}"
-            },
-            new Object[]{rv3,
-                "{\"id\":\"3\",\"aoo\":\"["
-                    + "{lat:37.80800,lng:-122.42400},{lat:37.80800,lng:-122.42500},{lat:37.80900,lng:-122.42500},"
-                    + "{lat:37.80900,lng:-122.42400},{lat:37.80800,lng:-122.42400}]\","
-                    + "\"name\":\"rv3\",\"sen\":["
-                    + "{\"id\":\"3\",\"visibility\":\"ALL_VV\",\"lastUpdate\":30003,"
-                    + "\"description\":\"Belly Mounted Camera 640x480\","
-                    + "\"parameters\":\"width=640 height=480 yaw=0 down=1.571 alignment=north\","
-                    + "\"messageType\":\"sensor_msgs/Image\",\"type\":\"CAMERA\",\"deleted\":false},"
-                    + "{\"id\":\"4\",\"visibility\":\"PRIVILEGED_VV\","
-                    + "\"description\":\"GPS\",\"messageType\":\"sensor_msgs/NavSatFix\",\"type\":\"GPS\","
-                    + "\"deleted\":false},"
-                    + "{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":10001,"
-                    + "\"description\":\"Altimeter\",\"parameters\":\"random=10:35\","
-                    + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\",\"deleted\":false}],\"upd\":3003,"
-                    + "\"type\":\"GROUND_STATION\",\"deleted\":false,\"url\":\"http://localhost/rv03\"}"
-            },
-
-        };
-    }
-
-    @Test(dataProvider = "singleVehicleDataProvider")
-    public void shouldConvertRealVehicles(RealVehicle vehicle, String expectedJsonString) throws JSONException
-    {
-        JSONObject result = sut.toJson(false, vehicle);
-        JSONAssert.assertEquals(expectedJsonString, result.toString(true), false);
-        JSONAssert.assertEquals(result.toString(true), expectedJsonString, false);
-    }
-
-    @DataProvider
-    public Object[][] singleVehicleWithSensorIdsOnlyDataProvider()
-    {
-        return new Object[][]{
-            new Object[]{rv1,
+        return Stream.of(
+            arguments(rv1,
                 "{\"id\":\"1\",\"aoo\":\"["
                     + "{lat:37.80800,lng:-122.42600},{lat:37.80800,lng:-122.42700},{lat:37.80900,lng:-122.42700},"
                     + "{lat:37.80900,lng:-122.42600},{lat:37.80800,lng:-122.42600}"
@@ -220,33 +246,29 @@ public class CoreJsonConverterTest
                     + "\"sen\":[1,2,3],"
                     + "\"upd\":1001,"
                     + "\"type\":\"QUADROCOPTER\",\"deleted\":false,"
-                    + "\"url\":\"http://localhost/rv01\"}"
-            },
-            new Object[]{rv2,
+                    + "\"url\":\"http://localhost/rv01\"}"),
+            arguments(rv2,
                 "{\"id\":\"2\",\"aoo\":\"["
                     + "{lat:37.80800,lng:-122.42500},{lat:37.80800,lng:-122.42600},{lat:37.80900,lng:-122.42600},"
                     + "{lat:37.80900,lng:-122.42500},{lat:37.80800,lng:-122.42500}]\","
                     + "\"name\":\"rv2\",\"sen\":[2,3,4],\"upd\":2002,\"type\":\"FIXED_WING_AIRCRAFT\","
-                    + "\"deleted\":false,\"url\":\"http://localhost/rv02\"}"
-            },
-            new Object[]{rv3,
+                    + "\"deleted\":false,\"url\":\"http://localhost/rv02\"}"),
+            arguments(rv3,
                 "{\"id\":\"3\",\"aoo\":\"["
                     + "{lat:37.80800,lng:-122.42400},{lat:37.80800,lng:-122.42500},{lat:37.80900,lng:-122.42500},"
                     + "{lat:37.80900,lng:-122.42400},{lat:37.80800,lng:-122.42400}]\","
                     + "\"name\":\"rv3\",\"sen\":[3,4,1],\"upd\":3003,"
-                    + "\"type\":\"GROUND_STATION\",\"deleted\":false,\"url\":\"http://localhost/rv03\"}"
-            },
-            new Object[]{rv4,
+                    + "\"type\":\"GROUND_STATION\",\"deleted\":false,\"url\":\"http://localhost/rv03\"}"),
+            arguments(rv4,
                 "{\"id\":\"4\",\"aoo\":\"["
                     + "{lat:34.80800,lng:-124.42400},{lat:34.80800,lng:-124.42500},{lat:34.80900,lng:-124.42500},"
                     + "{lat:34.80900,lng:-124.42400},{lat:34.80800,lng:-124.42400}]\","
                     + "\"name\":\"rv4\",\"sen\":[4],"
-                    + "\"type\":\"TABLET\",\"deleted\":false,\"url\":\"http://localhost/rv04\"}"
-            },
-        };
+                    + "\"type\":\"TABLET\",\"deleted\":false,\"url\":\"http://localhost/rv04\"}"));
     }
 
-    @Test(dataProvider = "singleVehicleWithSensorIdsOnlyDataProvider")
+    @ParameterizedTest
+    @MethodSource("singleVehicleWithSensorIdsOnlyDataProvider")
     public void shouldConvertRealVehiclesWithSensorIdsOnly(RealVehicle vehicle, String expectedJsonString)
         throws JSONException
     {
@@ -255,14 +277,40 @@ public class CoreJsonConverterTest
         JSONAssert.assertEquals(result.toString(true), expectedJsonString, false);
     }
 
-    @DataProvider
-    public Object[][] multiVehicleDataProvider()
+    static Stream<Arguments> multiVehicleDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
-                new RealVehicle[]{}, "[]"
-            },
-            new Object[]{
+        RealVehicle rv1 = mock(RealVehicle.class);
+        RealVehicle rv2 = mock(RealVehicle.class);
+        RealVehicle rv3 = mock(RealVehicle.class);
+
+        when(rv1.getName()).thenReturn("rv1");
+        when(rv1.getUrl()).thenReturn("http://localhost/rv01");
+        when(rv1.getSensors()).thenReturn(Arrays.asList(s1, s2, s3));
+        when(rv1.getAreaOfOperation()).thenReturn(RV1_AREA_OF_OPERATION);
+        when(rv1.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
+        when(rv1.getId()).thenReturn(1);
+        when(rv1.getLastUpdate()).thenReturn(new Date(1001));
+
+        when(rv2.getName()).thenReturn("rv2");
+        when(rv2.getUrl()).thenReturn("http://localhost/rv02");
+        when(rv2.getSensors()).thenReturn(Arrays.asList(s2, s3, s4));
+        when(rv2.getAreaOfOperation()).thenReturn(RV2_AREA_OF_OPERATION);
+        when(rv2.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
+        when(rv2.getId()).thenReturn(2);
+        when(rv2.getLastUpdate()).thenReturn(new Date(2002));
+
+        when(rv3.getName()).thenReturn("rv3");
+        when(rv3.getUrl()).thenReturn("http://localhost/rv03");
+        when(rv3.getSensors()).thenReturn(Arrays.asList(s3, s4, s1));
+        when(rv3.getAreaOfOperation()).thenReturn(RV3_AREA_OF_OPERATION);
+        when(rv3.getType()).thenReturn(RealVehicleType.GROUND_STATION);
+        when(rv3.getId()).thenReturn(3);
+        when(rv3.getLastUpdate()).thenReturn(new Date(3003));
+
+        return Stream.of(
+            arguments(
+                new RealVehicle[]{}, "[]"),
+            arguments(
                 new RealVehicle[]{rv1},
                 "["
                     + "{\"id\":\"1\",\"aoo\":\"["
@@ -284,9 +332,8 @@ public class CoreJsonConverterTest
                     + "\"upd\":1001,"
                     + "\"type\":\"QUADROCOPTER\",\"deleted\":false,"
                     + "\"url\":\"http://localhost/rv01\""
-                    + "}]"
-            },
-            new Object[]{
+                    + "}]"),
+            arguments(
                 new RealVehicle[]{rv1, rv2},
                 "["
                     + "{\"id\":\"1\",\"aoo\":\"["
@@ -321,9 +368,8 @@ public class CoreJsonConverterTest
                     + "{\"id\":\"4\",\"visibility\":\"PRIVILEGED_VV\","
                     + "\"description\":\"GPS\",\"messageType\":\"sensor_msgs/NavSatFix\","
                     + "\"type\":\"GPS\",\"deleted\":false}"
-                    + "],\"upd\":2002,\"type\":\"FIXED_WING_AIRCRAFT\",\"deleted\":false,\"url\":\"http://localhost/rv02\"}]"
-            },
-            new Object[]{
+                    + "],\"upd\":2002,\"type\":\"FIXED_WING_AIRCRAFT\",\"deleted\":false,\"url\":\"http://localhost/rv02\"}]"),
+            arguments(
                 new RealVehicle[]{rv1, rv2, rv3},
                 "["
                     + "{\"id\":\"1\",\"aoo\":\"["
@@ -368,12 +414,11 @@ public class CoreJsonConverterTest
                     + "{\"id\":\"1\",\"visibility\":\"ALL_VV\",\"lastUpdate\":10001,"
                     + "\"description\":\"Altimeter\",\"parameters\":\"random=10:35\","
                     + "\"messageType\":\"std_msgs/Float32\",\"type\":\"ALTIMETER\",\"deleted\":false}],"
-                    + "\"upd\":3003,\"type\":\"GROUND_STATION\",\"deleted\":false,\"url\":\"http://localhost/rv03\"}]"
-            },
-        };
+                    + "\"upd\":3003,\"type\":\"GROUND_STATION\",\"deleted\":false,\"url\":\"http://localhost/rv03\"}]"));
     }
 
-    @Test(dataProvider = "multiVehicleDataProvider")
+    @ParameterizedTest
+    @MethodSource("multiVehicleDataProvider")
     public void shouldConvertRealVehicleArrays(RealVehicle[] vehicles, String expectedJsonString)
         throws JSONException
     {
@@ -384,26 +429,21 @@ public class CoreJsonConverterTest
         JSONAssert.assertEquals(actual, expectedJsonString, false);
     }
 
-    @DataProvider
-    public Object[][] polarCoordinateDataProvicer()
+    static Stream<Arguments> polarCoordinateDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{new PolarCoordinate(1, 2, 3)
-                , "{\"lat\":\"1.00000000\",\"lon\":\"2.00000000\",\"alt\":\"3.000\"}"
-            },
-            new Object[]{new PolarCoordinate(2, 3, 4)
-                , "{\"lat\":\"2.00000000\",\"lon\":\"3.00000000\",\"alt\":\"4.000\"}"
-            },
-            new Object[]{new PolarCoordinate(2.002, 3.002, 4.002)
-                , "{\"lat\":\"2.00200000\",\"lon\":\"3.00200000\",\"alt\":\"4.002\"}"
-            },
-            new Object[]{new PolarCoordinate(2.00200003, 3.00200002, 4.009)
-                , "{\"lat\":\"2.00200003\",\"lon\":\"3.00200002\",\"alt\":\"4.009\"}"
-            },
-        };
+        return Stream.of(
+            arguments(new PolarCoordinate(1, 2, 3),
+                "{\"lat\":\"1.00000000\",\"lon\":\"2.00000000\",\"alt\":\"3.000\"}"),
+            arguments(new PolarCoordinate(2, 3, 4),
+                "{\"lat\":\"2.00000000\",\"lon\":\"3.00000000\",\"alt\":\"4.000\"}"),
+            arguments(new PolarCoordinate(2.002, 3.002, 4.002),
+                "{\"lat\":\"2.00200000\",\"lon\":\"3.00200000\",\"alt\":\"4.002\"}"),
+            arguments(new PolarCoordinate(2.00200003, 3.00200002, 4.009),
+                "{\"lat\":\"2.00200003\",\"lon\":\"3.00200002\",\"alt\":\"4.009\"}"));
     }
 
-    @Test(dataProvider = "polarCoordinateDataProvicer")
+    @ParameterizedTest
+    @MethodSource("polarCoordinateDataProvicer")
     public void shouldConvertPolarCoordinates(PolarCoordinate data, String expected) throws JSONException
     {
         JSONObject actual = sut.toJson(data);
@@ -412,19 +452,18 @@ public class CoreJsonConverterTest
         JSONAssert.assertEquals(actual.toCompactString(), expected, false);
     }
 
-    @DataProvider
-    public Object[][] integerArrayDataProvicer()
+    static Stream<Arguments> integerArrayDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{Arrays.asList(new Integer[]{}), "[]"},
-            new Object[]{Arrays.asList(new Integer[]{1}), "[1]"},
-            new Object[]{Arrays.asList(new Integer[]{1, 2}), "[1,2]"},
-            new Object[]{Arrays.asList(new Integer[]{1, 2, 3}), "[1,2,3]"},
-            new Object[]{Arrays.asList(new Integer[]{1, 2, 3, 4}), "[1,2,3,4]"},
-        };
+        return Stream.of(
+            arguments(Arrays.asList(new Integer[]{}), "[]"),
+            arguments(Arrays.asList(new Integer[]{1}), "[1]"),
+            arguments(Arrays.asList(new Integer[]{1, 2}), "[1,2]"),
+            arguments(Arrays.asList(new Integer[]{1, 2, 3}), "[1,2,3]"),
+            arguments(Arrays.asList(new Integer[]{1, 2, 3, 4}), "[1,2,3,4]"));
     }
 
-    @Test(dataProvider = "integerArrayDataProvicer")
+    @ParameterizedTest
+    @MethodSource("integerArrayDataProvicer")
     public void shouldConvertIntegerArrays(List<Integer> data, String expected) throws JSONException
     {
         JSONArray actual = sut.toJsonArray(data.toArray(new Integer[data.size()]));
@@ -433,19 +472,18 @@ public class CoreJsonConverterTest
         JSONAssert.assertEquals(actual.toCompactString(), expected, false);
     }
 
-    @DataProvider
-    public Object[][] doubleArrayDataProvicer()
+    static Stream<Arguments> doubleArrayDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{Arrays.asList(new Double[]{}), "[]"},
-            new Object[]{Arrays.asList(new Double[]{1.1}), "[1.1]"},
-            new Object[]{Arrays.asList(new Double[]{1.2, 2.3}), "[1.2,2.3]"},
-            new Object[]{Arrays.asList(new Double[]{1.4, 2.5, 3.6}), "[1.4,2.5,3.6]"},
-            new Object[]{Arrays.asList(new Double[]{1.7, 2.8, 3.9, 4.01}), "[1.7,2.8,3.9,4.01]"},
-        };
+        return Stream.of(
+            arguments(Arrays.asList(new Double[]{}), "[]"),
+            arguments(Arrays.asList(new Double[]{1.1}), "[1.1]"),
+            arguments(Arrays.asList(new Double[]{1.2, 2.3}), "[1.2,2.3]"),
+            arguments(Arrays.asList(new Double[]{1.4, 2.5, 3.6}), "[1.4,2.5,3.6]"),
+            arguments(Arrays.asList(new Double[]{1.7, 2.8, 3.9, 4.01}), "[1.7,2.8,3.9,4.01]"));
     }
 
-    @Test(dataProvider = "doubleArrayDataProvicer")
+    @ParameterizedTest
+    @MethodSource("doubleArrayDataProvicer")
     public void shouldConvertDoubleArrays(List<Double> data, String expected) throws JSONException
     {
         JSONArray actual = sut.toJsonArray(data.toArray(new Double[data.size()]));
@@ -455,7 +493,7 @@ public class CoreJsonConverterTest
     }
 
     @SuppressWarnings("unchecked")
-    private RealVehicle setupRealVehicle(Object... data)
+    static RealVehicle setupRealVehicle(Object... data)
     {
         RealVehicle realVehicle = new RealVehicle();
         realVehicle.setAreaOfOperation((String) data[0]);
@@ -469,8 +507,7 @@ public class CoreJsonConverterTest
         return realVehicle;
     }
 
-    @DataProvider
-    public Object[][] newRealVehicleDataProvicer()
+    static Stream<Arguments> newRealVehicleDataProvicer()
     {
         CoreJsonConverter conv = new CoreJsonConverterImpl();
 
@@ -483,35 +520,35 @@ public class CoreJsonConverterTest
         when(sensor1.getParameters()).thenReturn("random=10:35");
         when(sensor1.getLastUpdate()).thenReturn(new Date(10001));
 
-        RealVehicle rvA = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-            , Arrays.asList(sensor1), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvA = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sensor1),
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
         String rvAJsonString = conv.toJson(true, rvA).toCompactString();
 
-        RealVehicle rvB = setupRealVehicle("abc", false, 10, new Date(123456788), "rv01"
-            , Arrays.asList(new SensorDefinition[0]), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle rvB = setupRealVehicle("abc", false, 10, new Date(123456788), "rv01",
+            Arrays.asList(new SensorDefinition[0]), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
         String rvBJsonString = conv.toJson(true, rvB).toCompactString();
 
-        RealVehicle rvC = setupRealVehicle("abcd", true, 10, new Date(123456791), "rv01c"
-            , Arrays.asList(sensor1), RealVehicleType.TABLET, "http://localhost:8081/rv01");
+        RealVehicle rvC = setupRealVehicle("abcd", true, 10, new Date(123456791), "rv01c", Arrays.asList(sensor1),
+            RealVehicleType.TABLET, "http://localhost:8081/rv01");
         String rvCJsonString = conv.toJson(true, rvC).toCompactString();
 
         String rvDJsonString = rvAJsonString.replace(",\"deleted\":false", "").replace("123456789", "123456792");
         String rvEJsonString = rvAJsonString.replace("123456789", "123456792");
 
-        return new Object[][]{
-            new Object[]{sensor1, 0, rvAJsonString, rvAJsonString},
-            new Object[]{sensor1, -1, rvBJsonString, rvAJsonString},
-            new Object[]{sensor1, 1, rvCJsonString, rvCJsonString},
-            new Object[]{sensor1, 1, rvDJsonString, rvEJsonString},
-        };
+        return Stream.of(
+            arguments(sensor1, 0, rvAJsonString, rvAJsonString),
+            arguments(sensor1, -1, rvBJsonString, rvAJsonString),
+            arguments(sensor1, 1, rvCJsonString, rvCJsonString),
+            arguments(sensor1, 1, rvDJsonString, rvEJsonString));
     }
 
-    @Test(dataProvider = "newRealVehicleDataProvicer")
-    public void shouldFillInNewerRealVehicleFromJsonObject(SensorDefinition sensor, int cmp, String data
-        , String expected) throws JSONException
+    @ParameterizedTest
+    @MethodSource("newRealVehicleDataProvicer")
+    public void shouldFillInNewerRealVehicleFromJsonObject(SensorDefinition sensor, int cmp, String data,
+        String expected) throws JSONException
     {
-        RealVehicle vehicle = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01"
-            , Arrays.asList(sensor), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
+        RealVehicle vehicle = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sensor),
+            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
         JSONObject obj = new JSONObject(data);
 
@@ -524,8 +561,8 @@ public class CoreJsonConverterTest
         JSONAssert.assertEquals(actual, expected, false);
     }
 
-    private SensorDefinition setupSensorDefinition(Boolean deleted, String description, Integer id, Date lastUpdate
-        , String messageType, String parameters, SensorType sensorType, SensorVisibility sensorVisibility)
+    static SensorDefinition setupSensorDefinition(Boolean deleted, String description, Integer id, Date lastUpdate,
+        String messageType, String parameters, SensorType sensorType, SensorVisibility sensorVisibility)
     {
         SensorDefinition sd = new SensorDefinition();
         sd.setDeleted(deleted);
@@ -539,21 +576,20 @@ public class CoreJsonConverterTest
         return sd;
     }
 
-    @DataProvider
-    public Object[][] newSensorDefinitionDataProvicer()
+    static Stream<Arguments> newSensorDefinitionDataProvicer()
     {
         CoreJsonConverter conv = new CoreJsonConverterImpl();
 
-        SensorDefinition sdA = setupSensorDefinition(false, "sensor1", 10, new Date(123456789), "msgs_type/t01"
-            , "abc", SensorType.ALTIMETER, SensorVisibility.NO_VV);
+        SensorDefinition sdA = setupSensorDefinition(false, "sensor1", 10, new Date(123456789), "msgs_type/t01", "abc",
+            SensorType.ALTIMETER, SensorVisibility.NO_VV);
         String sdAJsonString = conv.toJson(sdA).toCompactString();
 
-        SensorDefinition sdB = setupSensorDefinition(false, "sensor1", 10, new Date(123456788), "msgs_type/t01"
-            , "abc", SensorType.ALTIMETER, SensorVisibility.NO_VV);
+        SensorDefinition sdB = setupSensorDefinition(false, "sensor1", 10, new Date(123456788), "msgs_type/t01", "abc",
+            SensorType.ALTIMETER, SensorVisibility.NO_VV);
         String sdBJsonString = conv.toJson(sdB).toCompactString();
 
-        SensorDefinition sdC = setupSensorDefinition(false, "sensor1", 10, new Date(123456790), "msgs_type/t01"
-            , "abc", SensorType.ALTIMETER, SensorVisibility.NO_VV);
+        SensorDefinition sdC = setupSensorDefinition(false, "sensor1", 10, new Date(123456790), "msgs_type/t01", "abc",
+            SensorType.ALTIMETER, SensorVisibility.NO_VV);
         String sdCJsonString = conv.toJson(sdC).toCompactString();
 
         String sdDJsonString = sdAJsonString.replace(",\"deleted\":false", "").replace("123456789", "123456792");
@@ -562,21 +598,21 @@ public class CoreJsonConverterTest
         String sdFJsonString = sdAJsonString.replace(",\"parameters\":\"abc\"", "").replace("123456789", "123456792");
         //        String sdGJsonString = sdAJsonString.replace("123456789", "123456792");
 
-        return new Object[][]{
-            new Object[]{0, sdAJsonString, sdAJsonString},
-            new Object[]{-1, sdBJsonString, sdAJsonString},
-            new Object[]{1, sdCJsonString, sdCJsonString},
-            new Object[]{1, sdDJsonString, sdEJsonString},
-            new Object[]{1, sdFJsonString, sdFJsonString},
-        };
+        return Stream.of(
+            arguments(0, sdAJsonString, sdAJsonString),
+            arguments(-1, sdBJsonString, sdAJsonString),
+            arguments(1, sdCJsonString, sdCJsonString),
+            arguments(1, sdDJsonString, sdEJsonString),
+            arguments(1, sdFJsonString, sdFJsonString));
     }
 
-    @Test(dataProvider = "newSensorDefinitionDataProvicer")
+    @ParameterizedTest
+    @MethodSource("newSensorDefinitionDataProvicer")
     public void shouldFillInNewerSensorDefinitionFromJsonObject(int cmp, String data, String expected)
         throws JSONException
     {
-        SensorDefinition sdTest = setupSensorDefinition(false, "sensor1", 10, new Date(123456789), "msgs_type/t01"
-            , "abc", SensorType.ALTIMETER, SensorVisibility.NO_VV);
+        SensorDefinition sdTest = setupSensorDefinition(false, "sensor1", 10, new Date(123456789), "msgs_type/t01",
+            "abc", SensorType.ALTIMETER, SensorVisibility.NO_VV);
 
         JSONObject obj = new JSONObject(data);
 
@@ -589,18 +625,36 @@ public class CoreJsonConverterTest
         JSONAssert.assertEquals(actual, expected, false);
     }
 
-    @DataProvider
-    public Object[][] regionsDataProvicer()
+    static Stream<Arguments> regionsDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{Arrays.asList(rv1), "{\"rv1\":" + RV1_AREA_OF_OPERATION + "}"},
-            new Object[]{Arrays.asList(rv2), "{\"rv2\":" + RV2_AREA_OF_OPERATION + "}"},
-            new Object[]{Arrays.asList(rv1, rv2),
-                "{\"rv1\":" + RV1_AREA_OF_OPERATION + ",\"rv2\":" + RV2_AREA_OF_OPERATION + "}"},
-        };
+        RealVehicle rv1 = mock(RealVehicle.class);
+        RealVehicle rv2 = mock(RealVehicle.class);
+
+        when(rv1.getName()).thenReturn("rv1");
+        when(rv1.getUrl()).thenReturn("http://localhost/rv01");
+        when(rv1.getSensors()).thenReturn(Arrays.asList(s1, s2, s3));
+        when(rv1.getAreaOfOperation()).thenReturn(RV1_AREA_OF_OPERATION);
+        when(rv1.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
+        when(rv1.getId()).thenReturn(1);
+        when(rv1.getLastUpdate()).thenReturn(new Date(1001));
+
+        when(rv2.getName()).thenReturn("rv2");
+        when(rv2.getUrl()).thenReturn("http://localhost/rv02");
+        when(rv2.getSensors()).thenReturn(Arrays.asList(s2, s3, s4));
+        when(rv2.getAreaOfOperation()).thenReturn(RV2_AREA_OF_OPERATION);
+        when(rv2.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
+        when(rv2.getId()).thenReturn(2);
+        when(rv2.getLastUpdate()).thenReturn(new Date(2002));
+
+        return Stream.of(
+            arguments(Arrays.asList(rv1), "{\"rv1\":" + RV1_AREA_OF_OPERATION + "}"),
+            arguments(Arrays.asList(rv2), "{\"rv2\":" + RV2_AREA_OF_OPERATION + "}"),
+            arguments(Arrays.asList(rv1, rv2),
+                "{\"rv1\":" + RV1_AREA_OF_OPERATION + ",\"rv2\":" + RV2_AREA_OF_OPERATION + "}"));
     }
 
-    @Test(dataProvider = "regionsDataProvicer")
+    @ParameterizedTest
+    @MethodSource("regionsDataProvicer")
     public void shouldConvertToRegionJson(List<RealVehicle> rvList, String expected)
     {
         String actual = sut.toRegionJson(rvList);
@@ -608,8 +662,7 @@ public class CoreJsonConverterTest
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DataProvider
-    public Object[][] statesDataProvicer()
+    static Stream<Arguments> statesDataProvicer()
     {
         RealVehicleState rvs1 = mock(RealVehicleState.class);
         when(rvs1.getId()).thenReturn(10101);
@@ -638,10 +691,10 @@ public class CoreJsonConverterTest
         when(rvs2.toString()).thenReturn("RV02");
         when(rvs2.getState()).thenReturn("");
 
-        return new Object[][]{
-            new Object[]{Collections.<RealVehicleState> emptyList(), "{}"},
+        return Stream.of(
+            arguments(Collections.<RealVehicleState> emptyList(), "{}"),
 
-            new Object[]{Arrays.asList(rvs1), "{\"10101\":{\"type\":\"FeatureCollection\",\"features\":["
+            arguments(Arrays.asList(rvs1), "{\"10101\":{\"type\":\"FeatureCollection\",\"features\":["
                 + "{\"type\":\"Feature\",\"properties\":{"
                 + "\"rvPosition\":{\"coordinates\":[-122.42649999999999,37.808499999754275,9.999978839419782]},"
                 + "\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,\"rvId\":1,"
@@ -652,13 +705,13 @@ public class CoreJsonConverterTest
                 + "{\"type\":\"rvPath\"},\"geometry\":{\"type\":\"LineString\","
                 + "\"coordinates\":[[-122.42649999999999,37.808499999754275,9.999978839419782]]}},"
                 + "{\"type\":\"Feature\",\"properties\":{\"type\":\"sensors\"},\"geometry\":"
-                + "{\"type\":\"GeometryCollection\",\"geometries\":[]}}]}}"},
+                + "{\"type\":\"GeometryCollection\",\"geometries\":[]}}]}}"),
 
-            new Object[]{Arrays.asList(rvs2), "{\"20202\":{\"features\":[]}}"},
-        };
+            arguments(Arrays.asList(rvs2), "{\"20202\":{\"features\":[]}}"));
     }
 
-    @Test(dataProvider = "statesDataProvicer")
+    @ParameterizedTest
+    @MethodSource("statesDataProvicer")
     public void shouldConvertoToRvSTateJson(List<RealVehicleState> statesList, String expected)
     {
         String actual = sut.toRealVehicleStateJson(statesList);

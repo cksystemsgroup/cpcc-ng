@@ -19,18 +19,22 @@
 package cpcc.vvrte.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertFalse;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mozilla.javascript.NativeObject;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
@@ -44,67 +48,45 @@ public class JavaScriptUtilsTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<JavaScriptUtils> cnt = JavaScriptUtils.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
 
-    @SuppressWarnings("serial")
-    @DataProvider
-    public Object[][] jsDataProvider()
+    static Stream<Arguments> jsDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
-                new HashMap<String, Object>()
-                {
-                    {
-                        put("one", 1);
-                        put("two", Integer.valueOf(2));
-                        put("thee", 3.1);
-                        put("four", Double.valueOf(4.2));
-                    }
-                },
-                "{\"thee\":3.1,\"four\":4.2,\"one\":1,\"two\":2}"
-            },
-            new Object[]{
-                new HashMap<String, Object>()
-                {
-                    {
-                        put("five", "FIVE");
-                        put("six", Boolean.FALSE);
-                        put("seven", Float.valueOf(7.9f));
-                    }
-                },
-                "{\"six\":false,\"seven\":7.900000095367432,\"five\":\"FIVE\"}"
-            },
-            new Object[]{
-                new HashMap<String, Object>()
-                {
-                    {
-                        put("two", "FIVE");
-                        put("one", Boolean.FALSE);
-                        put("six", Float.valueOf(7.9f));
-                        put("nine", "bugger=lala looney=3.141592 caspar='xxx uu'");
-                    }
-                },
+        return Stream.of(
+            arguments(Stream
+                .of(Pair.of("one", 1),
+                    Pair.of("two", Integer.valueOf(2)),
+                    Pair.of("thee", 3.1),
+                    Pair.of("four", Double.valueOf(4.2)))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)),
+                "{\"thee\":3.1,\"four\":4.2,\"one\":1,\"two\":2}"),
+            arguments(Stream
+                .of(Pair.of("five", "FIVE"),
+                    Pair.of("six", Boolean.FALSE),
+                    Pair.of("seven", Float.valueOf(7.9f)))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)),
+                "{\"six\":false,\"seven\":7.900000095367432,\"five\":\"FIVE\"}"),
+            arguments(Stream
+                .of(Pair.of("two", "FIVE"),
+                    Pair.of("one", Boolean.FALSE),
+                    Pair.of("six", Float.valueOf(7.9f)),
+                    Pair.of("nine", "bugger=lala looney=3.141592 caspar='xxx uu'"))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)),
                 "{\"nine\":\"bugger=lala looney=3.141592 caspar='xxx uu'\""
-                    + ",\"six\":7.900000095367432,\"one\":false,\"two\":\"FIVE\"}"
-            },
-            new Object[]{
-                new HashMap<String, Object>()
-                {
-                    {
-                        put("eleven", "FIVE");
-                        put("sen", SensorType.CAMERA.name());
-                        put("vis", SensorVisibility.PRIVILEGED_VV.name());
-                    }
-                },
-                "{\"vis\":\"PRIVILEGED_VV\",\"eleven\":\"FIVE\",\"sen\":\"CAMERA\"}"
-            },
-        };
+                    + ",\"six\":7.900000095367432,\"one\":false,\"two\":\"FIVE\"}"),
+            arguments(Stream
+                .of(Pair.of("eleven", "FIVE"),
+                    Pair.of("sen", SensorType.CAMERA.name()),
+                    Pair.of("vis", SensorVisibility.PRIVILEGED_VV.name()))
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)),
+                "{\"vis\":\"PRIVILEGED_VV\",\"eleven\":\"FIVE\",\"sen\":\"CAMERA\"}"));
     }
 
-    @Test(dataProvider = "jsDataProvider")
+    @ParameterizedTest
+    @MethodSource("jsDataProvider")
     public void shouldConvertJsObjectsToStrings(Map<String, Object> data, String expected) throws JSONException
     {
         NativeObject obj = new NativeObject();

@@ -20,18 +20,24 @@ package cpcc.ros.sim.quadrotor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.ros.node.NodeConfiguration;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import big_actor_msgs.LatLngAlt;
 import cpcc.core.entities.PolarCoordinate;
@@ -41,27 +47,24 @@ import cpcc.core.entities.PolarCoordinate;
  */
 public class PlantStateEstimatorTest
 {
-    @SuppressWarnings("serial")
-    private static final Map<String, List<String>> configMap = new HashMap<String, List<String>>()
-    {
-        {
-            put("topicRoot", Arrays.asList("/mav01"));
-            put("origin", Arrays.asList("47.82199", "13.04085", "0"));
-            put("maxVelocity", Arrays.asList("20"));
-            put("maxAcceleration", Arrays.asList("3"));
-            put("updateCycle", Arrays.asList("20"));
-            put("idlePower", Arrays.asList("0"));
-            put("hoverPower", Arrays.asList("0"));
-            put("mass", Arrays.asList("2.2"));
-            put("batteryCapacity", Arrays.asList("40"));
-            put("rechargingTime", Arrays.asList("0"));
-            put("takeOffHeight", Arrays.asList("10"));
-            put("takeOffVelocity", Arrays.asList("2"));
-            put("takeOffAcceleration", Arrays.asList("0.5"));
-            put("landingVelocity", Arrays.asList("2"));
-            put("landingAcceleration", Arrays.asList("1"));
-        }
-    };
+    private static final Map<String, List<String>> configMap = Collections.unmodifiableMap(Stream
+        .of(
+            Pair.of("topicRoot", Arrays.asList("/mav01")),
+            Pair.of("origin", Arrays.asList("47.82199", "13.04085", "0")),
+            Pair.of("maxVelocity", Arrays.asList("20")),
+            Pair.of("maxAcceleration", Arrays.asList("3")),
+            Pair.of("updateCycle", Arrays.asList("20")),
+            Pair.of("idlePower", Arrays.asList("0")),
+            Pair.of("hoverPower", Arrays.asList("0")),
+            Pair.of("mass", Arrays.asList("2.2")),
+            Pair.of("batteryCapacity", Arrays.asList("40")),
+            Pair.of("rechargingTime", Arrays.asList("0")),
+            Pair.of("takeOffHeight", Arrays.asList("10")),
+            Pair.of("takeOffVelocity", Arrays.asList("2")),
+            Pair.of("takeOffAcceleration", Arrays.asList("0.5")),
+            Pair.of("landingVelocity", Arrays.asList("2")),
+            Pair.of("landingAcceleration", Arrays.asList("1")))
+        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
     private Configuration config;
     private PlantState initialPlantState;
@@ -69,7 +72,7 @@ public class PlantStateEstimatorTest
     /**
      * Tasks to be done before running tests.
      */
-    @BeforeClass
+    @BeforeEach
     public void beforeClass()
     {
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
@@ -272,18 +275,17 @@ public class PlantStateEstimatorTest
             .isEqualTo(1217);
     }
 
-    @DataProvider
-    public Object[][] numberDataProvider()
+    static Stream<Arguments> numberDataProvider()
     {
-        return new Object[][]{
-            new Object[]{-10D},
-            new Object[]{0D},
-            new Object[]{1D},
-            new Object[]{100D},
-        };
+        return Stream.of(
+            arguments(-10D),
+            arguments(0D),
+            arguments(1D),
+            arguments(100D));
     }
 
-    @Test(dataProvider = "numberDataProvider")
+    @ParameterizedTest
+    @MethodSource("numberDataProvider")
     public void shouldStoreRemainingBatteryCapacity(double capacity)
     {
         PlantState plantState = new PlantState(initialPlantState);

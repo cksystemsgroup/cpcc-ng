@@ -28,10 +28,10 @@ import java.util.Collections;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +50,7 @@ public class SensorsContributorTest
     private Task task;
     private PolarCoordinate position;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         s1 = mock(SensorDefinition.class);

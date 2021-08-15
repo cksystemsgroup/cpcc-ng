@@ -19,20 +19,24 @@
 package cpcc.vvrte.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -58,62 +62,6 @@ public class VirtualVehicleMapperTest
     private static final String REAL_VEHICLE_ONE_NAME = "rv001";
     private static final String REAL_VEHICLE_TWO_NAME = "rv002";
     private static final String REAL_VEHICLE_THREE_NAME = "rv003";
-
-    @SuppressWarnings("serial")
-    private static final SensorDefinition altimeter = new SensorDefinition()
-    {
-        {
-            setId(1);
-            setDescription("Altimeter");
-            setLastUpdate(new Date(1));
-            setParameters(null);
-            setType(SensorType.ALTIMETER);
-            setVisibility(SensorVisibility.ALL_VV);
-            setMessageType("std_msgs/Float32");
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final SensorDefinition barometer = new SensorDefinition()
-    {
-        {
-            setId(1);
-            setDescription("Barometer");
-            setLastUpdate(new Date(2));
-            setParameters(null);
-            setType(SensorType.BAROMETER);
-            setVisibility(SensorVisibility.ALL_VV);
-            setMessageType("std_msgs/Float32");
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final SensorDefinition co2Sensor = new SensorDefinition()
-    {
-        {
-            setId(1);
-            setDescription("CO2");
-            setLastUpdate(new Date(3));
-            setParameters(null);
-            setType(SensorType.CO2);
-            setVisibility(SensorVisibility.ALL_VV);
-            setMessageType("std_msgs/Float32");
-        }
-    };
-
-    @SuppressWarnings("serial")
-    private static final SensorDefinition gpsReceiver = new SensorDefinition()
-    {
-        {
-            setId(1);
-            setDescription("GPS");
-            setLastUpdate(new Date(4));
-            setParameters(null);
-            setType(SensorType.GPS);
-            setVisibility(SensorVisibility.ALL_VV);
-            setMessageType("sensor_msgs/NavSatFix");
-        }
-    };
 
     private static final String AREA_OF_OPERATION_RV1 =
         "{\"type\":\"FeatureCollection\",\"features\":["
@@ -142,10 +90,14 @@ public class VirtualVehicleMapperTest
     private RealVehicleRepository realVehicleRepository;
     private Logger logger;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() throws JsonParseException, JsonMappingException, IOException
     {
         logger = mock(Logger.class);
+
+        SensorDefinition altimeter = buildAltimeter();
+        SensorDefinition barometer = buildBarometer();
+        SensorDefinition co2Sensor = buildCo2Sensor();
 
         gs01 = mock(RealVehicle.class);
         when(gs01.toString()).thenReturn(GS_01);
@@ -198,15 +150,18 @@ public class VirtualVehicleMapperTest
         sut = new VirtualVehicleMapperImpl(logger, realVehicleRepository);
     }
 
-    @DataProvider
-    public Object[][] tasksThatCauseMigrationDataProvider()
+    static Stream<Arguments> tasksThatCauseMigrationDataProvider()
     {
-        return new Object[][]{
-            new Object[]{47.9, -13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)},
-        };
+        SensorDefinition altimeter = buildAltimeter();
+        SensorDefinition barometer = buildBarometer();
+        SensorDefinition co2Sensor = buildCo2Sensor();
+
+        return Stream.of(
+            arguments(47.9, -13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)));
     }
 
-    @Test(dataProvider = "tasksThatCauseMigrationDataProvider")
+    @ParameterizedTest
+    @MethodSource("tasksThatCauseMigrationDataProvider")
     public void shouldDecideForMigratingOfVirtualVehicles(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
@@ -226,15 +181,18 @@ public class VirtualVehicleMapperTest
         assertThat(decision.getRealVehicles()).containsExactly(gs01);
     }
 
-    @DataProvider
-    public Object[][] tasksThatNotCauseMigrationDataProvider()
+    static Stream<Arguments> tasksThatNotCauseMigrationDataProvider()
     {
-        return new Object[][]{
-            new Object[]{47.9, 13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)},
-        };
+        SensorDefinition altimeter = buildAltimeter();
+        SensorDefinition barometer = buildBarometer();
+        SensorDefinition co2Sensor = buildCo2Sensor();
+
+        return Stream.of(
+            arguments(47.9, 13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)));
     }
 
-    @Test(dataProvider = "tasksThatNotCauseMigrationDataProvider")
+    @ParameterizedTest
+    @MethodSource("tasksThatNotCauseMigrationDataProvider")
     public void shouldDecideForNotMigratingOfVirtualVehicles(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
@@ -253,20 +211,23 @@ public class VirtualVehicleMapperTest
         assertThat(decision.isMigration()).isFalse();
     }
 
-    @DataProvider
-    public Object[][] tasksThatCauseNoMigrationBecauseOfSensorsDataProvider()
+    static Stream<Arguments> tasksThatCauseNoMigrationBecauseOfSensorsDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(altimeter, barometer, co2Sensor)},
-            new Object[]{new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(altimeter, co2Sensor, barometer)},
-            new Object[]{new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(barometer, co2Sensor, altimeter)},
-            new Object[]{new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(barometer, altimeter, co2Sensor)},
-            new Object[]{new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(co2Sensor, altimeter, barometer)},
-            new Object[]{new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(co2Sensor, barometer, altimeter)}
-        };
+        SensorDefinition altimeter = buildAltimeter();
+        SensorDefinition barometer = buildBarometer();
+        SensorDefinition co2Sensor = buildCo2Sensor();
+
+        return Stream.of(
+            arguments(new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(altimeter, barometer, co2Sensor)),
+            arguments(new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(altimeter, co2Sensor, barometer)),
+            arguments(new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(barometer, co2Sensor, altimeter)),
+            arguments(new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(barometer, altimeter, co2Sensor)),
+            arguments(new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(co2Sensor, altimeter, barometer)),
+            arguments(new PolarCoordinate(47.9, 13.8, 10.0), Arrays.asList(co2Sensor, barometer, altimeter)));
     }
 
-    @Test(dataProvider = "tasksThatCauseNoMigrationBecauseOfSensorsDataProvider")
+    @ParameterizedTest
+    @MethodSource("tasksThatCauseNoMigrationBecauseOfSensorsDataProvider")
     public void shouldDecideForNoMigrationBecauseOfSensors(PolarCoordinate position, List<SensorDefinition> sensors)
     {
         Task task = mock(Task.class);
@@ -279,15 +240,19 @@ public class VirtualVehicleMapperTest
         assertThat(decision.isMigration()).isFalse();
     }
 
-    @DataProvider
-    public Object[][] tasksThatCauseMigrationBecauseOfSensorsDataProvider()
+    static Stream<Arguments> tasksThatCauseMigrationBecauseOfSensorsDataProvider()
     {
-        return new Object[][]{
-            new Object[]{47.9, 13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor, gpsReceiver)},
-        };
+        SensorDefinition altimeter = buildAltimeter();
+        SensorDefinition barometer = buildBarometer();
+        SensorDefinition co2Sensor = buildCo2Sensor();
+        SensorDefinition gpsReceiver = buildGpsReceiver();
+
+        return Stream.of(
+            arguments(47.9, 13.8, 10.0, Arrays.asList(altimeter, barometer, co2Sensor, gpsReceiver)));
     }
 
-    @Test(dataProvider = "tasksThatCauseMigrationBecauseOfSensorsDataProvider")
+    @ParameterizedTest
+    @MethodSource("tasksThatCauseMigrationBecauseOfSensorsDataProvider")
     public void shouldDecideForMigrationBecauseOfSensors(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
@@ -297,7 +262,6 @@ public class VirtualVehicleMapperTest
         when(pos.getAltitude()).thenReturn(altitude);
 
         Task task = mock(Task.class);
-        // when(task.getPosition()).thenReturn(new PolarCoordinate(latitude, longitude, altitude));
         when(task.getPosition()).thenReturn(pos);
         when(task.getSensors()).thenReturn(sensors);
 
@@ -308,20 +272,22 @@ public class VirtualVehicleMapperTest
         assertThat(decision.getRealVehicles()).containsExactly(gs01);
     }
 
-    @DataProvider
-    public Object[][] tasksThatCauseMigrationBecauseOfPositionDataProvider()
+    static Stream<Arguments> tasksThatCauseMigrationBecauseOfPositionDataProvider()
     {
-        return new Object[][]{
-            new Object[]{47.9, 14.1, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)},
-            new Object[]{47.8, 14.2, 10.0, Arrays.asList(altimeter, co2Sensor, barometer)},
-            new Object[]{47.7, 14.3, 10.0, Arrays.asList(barometer, co2Sensor, altimeter)},
-            new Object[]{47.6, 14.4, 10.0, Arrays.asList(barometer, altimeter, co2Sensor)},
-            new Object[]{47.2, 14.5, 10.0, Arrays.asList(co2Sensor, altimeter, barometer)},
-            new Object[]{47.1, 14.6, 10.0, Arrays.asList(co2Sensor, barometer, altimeter)}
-        };
+        SensorDefinition altimeter = buildAltimeter();
+        SensorDefinition barometer = buildBarometer();
+        SensorDefinition co2Sensor = buildCo2Sensor();
+        return Stream.of(
+            arguments(47.9, 14.1, 10.0, Arrays.asList(altimeter, barometer, co2Sensor)),
+            arguments(47.8, 14.2, 10.0, Arrays.asList(altimeter, co2Sensor, barometer)),
+            arguments(47.7, 14.3, 10.0, Arrays.asList(barometer, co2Sensor, altimeter)),
+            arguments(47.6, 14.4, 10.0, Arrays.asList(barometer, altimeter, co2Sensor)),
+            arguments(47.2, 14.5, 10.0, Arrays.asList(co2Sensor, altimeter, barometer)),
+            arguments(47.1, 14.6, 10.0, Arrays.asList(co2Sensor, barometer, altimeter)));
     }
 
-    @Test(dataProvider = "tasksThatCauseMigrationBecauseOfPositionDataProvider")
+    @ParameterizedTest
+    @MethodSource("tasksThatCauseMigrationBecauseOfPositionDataProvider")
     public void shouldDecideForMigrationBecauseOfPosition(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
@@ -354,7 +320,7 @@ public class VirtualVehicleMapperTest
         VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(logger, realVehicleRepository2);
         localSut.findMappingDecision(task);
 
-        verifyZeroInteractions(task);
+        verifyNoInteractions(task);
     }
 
     @Test
@@ -397,4 +363,56 @@ public class VirtualVehicleMapperTest
 
         verify(realVehicle3).getAreaOfOperation();
     }
+
+    private static SensorDefinition buildAltimeter()
+    {
+        SensorDefinition altimeter = new SensorDefinition();
+        altimeter.setId(1);
+        altimeter.setDescription("Altimeter");
+        altimeter.setLastUpdate(new Date(1));
+        altimeter.setParameters(null);
+        altimeter.setType(SensorType.ALTIMETER);
+        altimeter.setVisibility(SensorVisibility.ALL_VV);
+        altimeter.setMessageType("std_msgs/Float32");
+        return altimeter;
+    }
+
+    private static SensorDefinition buildBarometer()
+    {
+        SensorDefinition barometer = new SensorDefinition();
+        barometer.setId(1);
+        barometer.setDescription("Barometer");
+        barometer.setLastUpdate(new Date(2));
+        barometer.setParameters(null);
+        barometer.setType(SensorType.BAROMETER);
+        barometer.setVisibility(SensorVisibility.ALL_VV);
+        barometer.setMessageType("std_msgs/Float32");
+        return barometer;
+    };
+
+    private static SensorDefinition buildCo2Sensor()
+    {
+        SensorDefinition co2Sensor = new SensorDefinition();
+        co2Sensor.setId(1);
+        co2Sensor.setDescription("CO2");
+        co2Sensor.setLastUpdate(new Date(3));
+        co2Sensor.setParameters(null);
+        co2Sensor.setType(SensorType.CO2);
+        co2Sensor.setVisibility(SensorVisibility.ALL_VV);
+        co2Sensor.setMessageType("std_msgs/Float32");
+        return co2Sensor;
+    };
+
+    private static SensorDefinition buildGpsReceiver()
+    {
+        SensorDefinition gpsReceiver = new SensorDefinition();
+        gpsReceiver.setId(1);
+        gpsReceiver.setDescription("GPS");
+        gpsReceiver.setLastUpdate(new Date(4));
+        gpsReceiver.setParameters(null);
+        gpsReceiver.setType(SensorType.GPS);
+        gpsReceiver.setVisibility(SensorVisibility.ALL_VV);
+        gpsReceiver.setMessageType("sensor_msgs/NavSatFix");
+        return gpsReceiver;
+    };
 }

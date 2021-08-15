@@ -19,163 +19,130 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.mock;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * DeviceTest
  */
-public class DeviceTest
+class DeviceTest
 {
     private Device device;
 
-    @BeforeMethod
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         device = new Device();
     }
 
-    @DataProvider
-    public Object[][] integerDataProvider()
+    static Stream<Arguments> integerDataProvider()
     {
-        return new Object[][]{
-            new Object[]{1},
-            new Object[]{10},
-            new Object[]{1000},
-            new Object[]{100000},
-            new Object[]{1000000},
-            new Object[]{10000000},
-            new Object[]{100000000},
-            new Object[]{1000000000},
-        };
+        return Stream.of(
+            arguments(1),
+            arguments(10),
+            arguments(1000),
+            arguments(100000),
+            arguments(1000000),
+            arguments(10000000),
+            arguments(100000000),
+            arguments(1000000000));
     };
 
-    @Test(dataProvider = "integerDataProvider")
-    public void shouldStoreId(Integer id)
+    @ParameterizedTest
+    @MethodSource("integerDataProvider")
+    void shouldStoreId(Integer id)
     {
         device.setId(id);
         assertThat(device.getId()).isEqualTo(id);
     }
 
-    @DataProvider
-    public Object[][] topicRootDataProvider()
+    static Stream<Arguments> topicRootDataProvider()
     {
-        return new Object[][]{
-            new Object[]{"/"},
-            new Object[]{"/a"},
-            new Object[]{"/abcdefg"},
-        };
+        return Stream.of(
+            arguments("/"),
+            arguments("/a"),
+            arguments("/abcdefg"));
     };
 
-    @Test(dataProvider = "topicRootDataProvider")
-    public void shouldStoreTopicRoot(String topicRoot)
+    @ParameterizedTest
+    @MethodSource("topicRootDataProvider")
+    void shouldStoreTopicRoot(String topicRoot)
     {
         device.setTopicRoot(topicRoot);
         assertThat(device.getTopicRoot()).isEqualTo(topicRoot);
     }
 
-    @DataProvider
-    private final Iterator<Object[]> deviceTypeDataProvider()
+    static final Stream<Arguments> deviceTypeDataProvider()
     {
-        return new Iterator<Object[]>()
-        {
-            private int counter = -1;
-            private List<Topic> topicList = new ArrayList<Topic>();
+        return Stream.of(
+            arguments(mock(DeviceType.class)),
+            arguments(mock(DeviceType.class)),
+            arguments(mock(DeviceType.class))
 
-            @Override
-            public boolean hasNext()
-            {
-                return counter < 10;
-            }
-
-            @Override
-            public Object[] next()
-            {
-                if (counter++ < 0)
-                {
-                    return new Object[]{null};
-                }
-
-                Topic topic = new Topic();
-                topic.setId(counter);
-                topic.setAdapterClassName("testclass" + counter);
-                topic.setSubpath("path" + counter);
-                topicList.add(topic);
-
-                DeviceType deviceType = new DeviceType();
-                deviceType.setId(counter);
-                deviceType.setMainTopic(topicList.get(counter - 1));
-                deviceType.setName("name" + counter);
-                deviceType.setClassName("className" + counter);
-                return new Object[]{deviceType};
-            }
-
-            @Override
-            public void remove()
-            {
-                // Intentionally empty.
-            }
-        };
+        );
     };
 
-    @Test(dataProvider = "deviceTypeDataProvider")
-    public void shouldStoreType(DeviceType deviceType)
+    @ParameterizedTest
+    @MethodSource("deviceTypeDataProvider")
+    void shouldStoreType(DeviceType deviceType)
     {
         device.setType(deviceType);
-        assertThat(device.getType()).isEqualTo(deviceType);
+        assertThat(device.getType()).isSameAs(deviceType);
     }
 
-    @DataProvider
-    public Object[][] configurationDataProvider()
+    static Stream<Arguments> configurationDataProvider()
     {
-        return new Object[][]{
-            new Object[]{""},
-            new Object[]{"a=b"},
-            new Object[]{"a=b c=d"},
-            new Object[]{"a=(1,2,3) b=7 c='lala'"},
-        };
+        return Stream.of(
+            arguments(""),
+            arguments("a=b"),
+            arguments("a=b c=d"),
+            arguments("a=(1,2,3) b=7 c='lala'"));
     };
 
-    @Test(dataProvider = "configurationDataProvider")
-    public void shouldStoreConfiguration(String configuration)
+    @ParameterizedTest
+    @MethodSource("configurationDataProvider")
+    void shouldStoreConfiguration(String configuration)
     {
         device.setConfiguration(configuration);
         assertThat(device.getConfiguration()).isEqualTo(configuration);
     }
 
     @Test
-    public void shouldBeALeaf()
+    void shouldBeALeaf()
     {
         assertThat(device.isLeaf()).isTrue();
     }
 
     @Test
-    public void shouldHaveNoChildren()
+    void shouldHaveNoChildren()
     {
         assertThat(device.hasChildren()).isFalse();
         assertThat(device.getChildren()).isNotNull().hasSize(0);
     }
 
     @Test
-    public void shouldHaveNoLabel()
+    void shouldHaveNoLabel()
     {
         assertThat(device.getLabel()).isNull();
     }
 
     @Test
-    public void shouldHaveNoParentLabel()
+    void shouldHaveNoParentLabel()
     {
         assertThat(device.getParentLabel()).isNull();
     }
 
-    @Test(dataProvider = "integerDataProvider")
-    public void shouldHaveUniqueId(Integer id)
+    @ParameterizedTest
+    @MethodSource("integerDataProvider")
+    void shouldHaveUniqueId(Integer id)
     {
         device.setId(id);
         assertThat(device.getUniqueId()).isEqualTo("device:" + id);

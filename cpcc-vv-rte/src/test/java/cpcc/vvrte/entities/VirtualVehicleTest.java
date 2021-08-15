@@ -1,13 +1,16 @@
 package cpcc.vvrte.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.RealVehicle;
 
@@ -15,17 +18,16 @@ public class VirtualVehicleTest
 {
     private VirtualVehicle sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sut = new VirtualVehicle();
     }
 
-    @DataProvider
-    public Object[][] dataProvider()
+    static Stream<Arguments> dataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 100660,
                 "lLZs7A",
                 "",
@@ -43,9 +45,8 @@ public class VirtualVehicleTest
                 new Date(1291098933084L),
                 "AtaOg2uCI",
                 mock(Task.class),
-                false,
-            },
-            new Object[]{
+                false),
+            arguments(
                 603078,
                 "6I",
                 "BEzvS",
@@ -63,9 +64,8 @@ public class VirtualVehicleTest
                 new Date(1452214008267L),
                 "CBZ6Nvsc",
                 mock(Task.class),
-                true,
-            },
-            new Object[]{
+                true),
+            arguments(
                 299694,
                 "rFTuwnGZe",
                 "VSYuNI",
@@ -83,9 +83,8 @@ public class VirtualVehicleTest
                 new Date(1431115854424L),
                 "0RNPsukEM",
                 mock(Task.class),
-                true,
-            },
-            new Object[]{
+                true),
+            arguments(
                 752125,
                 "BuW",
                 "ZL",
@@ -103,9 +102,8 @@ public class VirtualVehicleTest
                 new Date(1474831422133L),
                 "G9VyLTYx",
                 mock(Task.class),
-                true,
-            },
-            new Object[]{
+                true),
+            arguments(
                 318107,
                 "",
                 "zXu",
@@ -123,9 +121,8 @@ public class VirtualVehicleTest
                 new Date(1474372843867L),
                 "Si7CfytJ",
                 mock(Task.class),
-                true,
-            },
-            new Object[]{
+                true),
+            arguments(
                 13235,
                 "5h",
                 "X3T",
@@ -143,9 +140,8 @@ public class VirtualVehicleTest
                 new Date(1336409666671L),
                 "D",
                 mock(Task.class),
-                true,
-            },
-            new Object[]{
+                true),
+            arguments(
                 902587,
                 "fbehB",
                 "Zyj7fyJIC",
@@ -163,9 +159,8 @@ public class VirtualVehicleTest
                 new Date(1377109698144L),
                 "",
                 mock(Task.class),
-                true,
-            },
-            new Object[]{
+                true),
+            arguments(
                 846657,
                 "UAg2G",
                 "feX67L",
@@ -183,9 +178,8 @@ public class VirtualVehicleTest
                 new Date(1469462427851L),
                 "9fDdKiaJb",
                 mock(Task.class),
-                false,
-            },
-            new Object[]{
+                false),
+            arguments(
                 392718,
                 "",
                 "oCKiYW",
@@ -203,9 +197,8 @@ public class VirtualVehicleTest
                 new Date(1304262481292L),
                 "",
                 mock(Task.class),
-                false,
-            },
-            new Object[]{
+                false),
+            arguments(
                 152599,
                 "iIoghfu",
                 "YC",
@@ -223,12 +216,11 @@ public class VirtualVehicleTest
                 new Date(1363976786170L),
                 "keLLf",
                 mock(Task.class),
-                false,
-            },
-        };
+                false));
     }
 
-    @Test(dataProvider = "dataProvider")
+    @ParameterizedTest
+    @MethodSource("dataProvider")
     public void shouldStoreAndRetrieveValues(Integer id, String uuid, String name, Integer apiVersion, String code,
         cpcc.vvrte.entities.VirtualVehicleState state, cpcc.vvrte.entities.VirtualVehicleState preMigrationState,
         cpcc.core.entities.RealVehicle migrationDestination, cpcc.core.entities.RealVehicle migrationSource,

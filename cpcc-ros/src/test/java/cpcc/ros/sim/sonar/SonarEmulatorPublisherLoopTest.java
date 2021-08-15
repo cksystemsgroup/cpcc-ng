@@ -29,11 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ros.message.MessageFactory;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import sensor_msgs.NavSatFix;
 
@@ -50,7 +50,7 @@ public class SonarEmulatorPublisherLoopTest
     private Publisher<std_msgs.Float32> publisher;
 
     @SuppressWarnings("unchecked")
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         config = new HashMap<String, List<String>>();

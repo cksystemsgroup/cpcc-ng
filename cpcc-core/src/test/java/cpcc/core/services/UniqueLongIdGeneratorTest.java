@@ -19,11 +19,14 @@
 package cpcc.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.Serializable;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import org.hibernate.MappingException;
 import org.hibernate.engine.spi.SessionImplementor;
@@ -31,9 +34,11 @@ import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.Type;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class UniqueLongIdGeneratorTest
 {
@@ -45,7 +50,7 @@ public class UniqueLongIdGeneratorTest
     private Object object;
     private EntityPersister persister;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sut = new UniqueLongIdGenerator();
@@ -68,23 +73,29 @@ public class UniqueLongIdGeneratorTest
         sut.configure(type, params, serviceRegistry);
     }
 
-    @Test(expectedExceptions = MappingException.class)
     public void shouldThrowExceptionOnEmptyEntityName()
     {
-        sut.configure(type, params, serviceRegistry);
+        try
+        {
+            sut.configure(type, params, serviceRegistry);
+            failBecauseExceptionWasNotThrown(MappingException.class);
+        }
+        catch (MappingException e)
+        {
+            assertThat(e).hasMessage("no entity name");
+        }
     }
 
-    @DataProvider
-    public Object[][] numberDataProvider()
+    static Stream<Arguments> numberDataProvider()
     {
-        return new Object[][]{
-            new Object[]{123L},
-            new Object[]{0L},
-            new Object[]{9876565L},
-        };
+        return Stream.of(
+            arguments(123L),
+            arguments(0L),
+            arguments(9876565L));
     }
 
-    @Test(dataProvider = "numberDataProvider")
+    @ParameterizedTest
+    @MethodSource("numberDataProvider")
     public void shouldGenerateRandomId(Long expected)
     {
         when(persister.getIdentifier(object, session)).thenReturn(expected);

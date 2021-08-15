@@ -20,8 +20,8 @@ package cpcc.ros.sim.quadrotor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * AutomatonTest
@@ -30,7 +30,7 @@ public class AutomatonTest
 {
     private Automaton automaton;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         automaton = new Automaton();

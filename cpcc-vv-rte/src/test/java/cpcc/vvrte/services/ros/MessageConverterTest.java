@@ -20,21 +20,25 @@ package cpcc.vvrte.services.ros;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.mozilla.javascript.ScriptableObject;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 /**
  * MessageConverterTest
@@ -43,25 +47,24 @@ public class MessageConverterTest
 {
     private MessageConverter conv;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         conv = new MessageConverterImpl();
     }
 
-    @DataProvider
-    public static Object[][] validFloatDataProvicer()
+    static Stream<Arguments> validFloatDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{1.2f},
-            new Object[]{-1.2f},
-            new Object[]{0.0f},
-            new Object[]{11.9f},
-            new Object[]{-11.9f},
-        };
+        return Stream.of(
+            arguments(1.2f),
+            arguments(-1.2f),
+            arguments(0.0f),
+            arguments(11.9f),
+            arguments(-11.9f));
     }
 
-    @Test(dataProvider = "validFloatDataProvicer")
+    @ParameterizedTest
+    @MethodSource("validFloatDataProvicer")
     public void shouldConvertFloat32(float value)
     {
         std_msgs.Float32 msg = mock(std_msgs.Float32.class);
@@ -74,16 +77,15 @@ public class MessageConverterTest
         assertThat((Float) obj.get("value")).isNotNull().isEqualTo(value);
     }
 
-    @DataProvider
-    public static Object[][] validNavSatFixDataProvicer()
+    static Stream<Arguments> validNavSatFixDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{47.9, 13.2, 12.0, new double[]{1.0, 2.0, 3.0}, (byte) 1, (byte) 2, (short) 1},
-            new Object[]{-47.9, -122.2, 12.0, new double[]{2.0, 3.1, 1.3}, (byte) 2, (byte) 3, (short) 15},
-        };
+        return Stream.of(
+            arguments(47.9, 13.2, 12.0, new double[]{1.0, 2.0, 3.0}, (byte) 1, (byte) 2, (short) 1),
+            arguments(-47.9, -122.2, 12.0, new double[]{2.0, 3.1, 1.3}, (byte) 2, (byte) 3, (short) 15));
     }
 
-    @Test(dataProvider = "validNavSatFixDataProvicer")
+    @ParameterizedTest
+    @MethodSource("validNavSatFixDataProvicer")
     public void shouldConvertNavSatFix(double lat, double lon, double alt, double[] cov, byte covType, byte statusByte,
         short service)
     {
@@ -108,17 +110,16 @@ public class MessageConverterTest
         assertThat((Double) obj.get("alt")).isNotNull().isEqualTo(alt, offset(1E-9));
     }
 
-    @DataProvider
-    public static Object[][] validImageDataProvider()
+    static Stream<Arguments> validImageDataProvider()
     {
-        return new Object[][]{
-            new Object[]{"JPG", 480, 640, 1280, new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 1},
-            new Object[]{"PNG", 481, 641, 1281, new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 3},
-            new Object[]{"PNG", 479, 639, 1279, new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 0},
-        };
+        return Stream.of(
+            arguments("JPG", 480, 640, 1280, new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 1),
+            arguments("PNG", 481, 641, 1281, new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 3),
+            arguments("PNG", 479, 639, 1279, new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 0));
     }
 
-    @Test(dataProvider = "validImageDataProvider")
+    @ParameterizedTest
+    @MethodSource("validImageDataProvider")
     public void shouldConvertImage(String encoding, int height, int width, int step, final byte[] bufArray,
         int bufOffset)
     {

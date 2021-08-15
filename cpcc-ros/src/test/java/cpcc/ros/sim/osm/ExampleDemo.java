@@ -18,7 +18,7 @@
 
 package cpcc.ros.sim.osm;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.GeodeticSystem;

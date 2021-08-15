@@ -19,41 +19,43 @@
 package cpcc.core.services.jobs;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class TimeServiceTest
 {
     private TimeServiceImpl sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sut = new TimeServiceImpl();
     }
 
-    @DataProvider
-    public Object[][] sequenceDataProvider()
+    static Stream<Arguments> sequenceDataProvider()
     {
-        return new Object[][]{
-            new Object[]{0},
-            new Object[]{1},
-            new Object[]{2},
-            new Object[]{3},
-            new Object[]{4},
-            new Object[]{5},
-            new Object[]{6},
-            new Object[]{7},
-            new Object[]{8},
-            new Object[]{9},
-        };
+        return Stream.of(
+            arguments(0),
+            arguments(1),
+            arguments(2),
+            arguments(3),
+            arguments(4),
+            arguments(5),
+            arguments(6),
+            arguments(7),
+            arguments(8),
+            arguments(9));
     }
 
-    @Test(dataProvider = "sequenceDataProvider")
+    @ParameterizedTest
+    @MethodSource("sequenceDataProvider")
     public void shouldCreateDateObjects(int number)
     {
         Date expected = new Date();
@@ -63,7 +65,8 @@ public class TimeServiceTest
         assertThat(actual.getTime() - expected.getTime()).describedAs("time accuracy").isLessThan(10L);
     }
 
-    @Test(dataProvider = "sequenceDataProvider")
+    @ParameterizedTest
+    @MethodSource("sequenceDataProvider")
     public void shouldReturnTheCurrentTime(int number)
     {
         long expected = System.currentTimeMillis();

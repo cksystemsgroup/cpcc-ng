@@ -28,12 +28,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ros.message.MessageFactory;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import sensor_msgs.NavSatFix;
 
@@ -51,7 +51,7 @@ public class SonarEmulatorPublisherNodeTest
     private SonarEmulatorPublisherNode sut;
 
     @SuppressWarnings("unchecked")
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         logger = mock(Logger.class);

@@ -20,18 +20,22 @@ package cpcc.vvrte.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.SensorDefinition;
@@ -46,7 +50,7 @@ public class TaskTest
 
     // private Logger logger;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         vehicle = mock(VirtualVehicle.class);
@@ -54,19 +58,18 @@ public class TaskTest
         sut = new Task();
     }
 
-    @DataProvider
-    public Object[][] idDataProvider()
+    static Stream<Arguments> idDataProvider()
     {
-        return new Object[][]{
-            new Object[]{Integer.valueOf(1)},
-            new Object[]{Integer.valueOf(2)},
-            new Object[]{Integer.valueOf(3)},
-            new Object[]{Integer.valueOf(4)},
-            new Object[]{Integer.valueOf(5)},
-        };
+        return Stream.of(
+            arguments(Integer.valueOf(1)),
+            arguments(Integer.valueOf(2)),
+            arguments(Integer.valueOf(3)),
+            arguments(Integer.valueOf(4)),
+            arguments(Integer.valueOf(5)));
     }
 
-    @Test(dataProvider = "idDataProvider")
+    @ParameterizedTest
+    @MethodSource("idDataProvider")
     public void shouldStoreId(Integer id)
     {
         sut.setId(id);
@@ -74,7 +77,8 @@ public class TaskTest
         assertThat(sut.getId()).isEqualTo(id);
     }
 
-    @Test(dataProvider = "idDataProvider")
+    @ParameterizedTest
+    @MethodSource("idDataProvider")
     public void shouldStoreOrder(Integer id)
     {
         sut.setOrder(id);
@@ -82,18 +86,13 @@ public class TaskTest
         assertThat(sut.getOrder()).isEqualTo(id);
     }
 
-    private int i = 0;
-
-    @DataProvider
-    public Object[][] stateDataProvider()
+    static Stream<Arguments> stateDataProvider()
     {
-        List<TaskState> values = Arrays.asList(TaskState.values());
-        Object[][] data = new Object[values.size()][];
-        values.stream().forEach(x -> data[i++] = new Object[]{x});
-        return data;
+        return Stream.of(TaskState.values()).map(t -> arguments(t));
     }
 
-    @Test(dataProvider = "stateDataProvider")
+    @ParameterizedTest
+    @MethodSource("stateDataProvider")
     public void shouldStoreState(TaskState state)
     {
         sut.setTaskState(state);
@@ -101,18 +100,17 @@ public class TaskTest
         assertThat(sut.getTaskState()).isEqualTo(state);
     }
 
-    @DataProvider
-    public Object[][] positionDataProvider()
+    static Stream<Arguments> positionDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new PolarCoordinate(37.1234, -122.0898, 0.0)},
-            new Object[]{new PolarCoordinate(37.1234, 122.0898, 100.0)},
-            new Object[]{new PolarCoordinate(-37.1234, -122.0898, -100.0)},
-            new Object[]{new PolarCoordinate(-37.1234, 122.0898, 1.0)},
-        };
+        return Stream.of(
+            arguments(new PolarCoordinate(37.1234, -122.0898, 0.0)),
+            arguments(new PolarCoordinate(37.1234, 122.0898, 100.0)),
+            arguments(new PolarCoordinate(-37.1234, -122.0898, -100.0)),
+            arguments(new PolarCoordinate(-37.1234, 122.0898, 1.0)));
     };
 
-    @Test(dataProvider = "positionDataProvider")
+    @ParameterizedTest
+    @MethodSource("positionDataProvider")
     public void shouldStorePosition(PolarCoordinate position)
     {
         sut.setPosition(position);
@@ -120,19 +118,18 @@ public class TaskTest
         assertThat(sut.getPosition()).isSameAs(position);
     }
 
-    @DataProvider
-    public Object[][] distanceDataProvider()
+    static Stream<Arguments> distanceDataProvider()
     {
-        return new Object[][]{
-            new Object[]{3.9},
-            new Object[]{null},
-            new Object[]{3.333},
-            new Object[]{7.1111},
-            new Object[]{8.3},
-        };
+        return Stream.of(
+            arguments(3.9),
+            arguments((Double)null),
+            arguments(3.333),
+            arguments(7.1111),
+            arguments(8.3));
     };
 
-    @Test(dataProvider = "distanceDataProvider")
+    @ParameterizedTest
+    @MethodSource("distanceDataProvider")
     public void shouldStoreDistanceToTarget(Double expected)
     {
         sut.setDistanceToTarget(expected);
@@ -146,69 +143,64 @@ public class TaskTest
         assertThat(now - sut.getCreationTime().getTime()).isGreaterThanOrEqualTo(0).isLessThan(1000);
     }
 
-    @DataProvider
-    public Object[][] timeDataProvider()
+    static Stream<Arguments> timeDataProvider()
     {
-        return new Object[][]{
-            new Object[]{-1L},
-            new Object[]{1381003668231L},
-            new Object[]{1000000000000L},
-            new Object[]{2222222222222L},
-            new Object[]{1213141516171L},
-        };
+        return Stream.of(
+            arguments(-1L),
+            arguments(1381003668231L),
+            arguments(1000000000000L),
+            arguments(2222222222222L),
+            arguments(1213141516171L));
     };
 
-    @Test(dataProvider = "timeDataProvider")
+    @ParameterizedTest
+    @MethodSource("timeDataProvider")
     public void shouldStoreCreationTime(long time)
     {
         sut.setCreationTime(new Date(time));
         assertThat(sut.getCreationTime().getTime()).isEqualTo(time);
     }
 
-    @DataProvider
-    public static Object[][] toleranceDistanceDataProvider()
+    static Stream<Arguments> toleranceDistanceDataProvider()
     {
-        return new Object[][]{
-            new Object[]{-1.0, -1.0},
-            new Object[]{1.0, 1.0},
-            new Object[]{2.0, 2.0},
-            new Object[]{2.9, 2.9},
-            new Object[]{3.0, 3.0},
-            new Object[]{3.1, 3.1},
-            new Object[]{10.0, 10.0},
-        };
+        return Stream.of(
+            arguments(-1.0, -1.0),
+            arguments(1.0, 1.0),
+            arguments(2.0, 2.0),
+            arguments(2.9, 2.9),
+            arguments(3.0, 3.0),
+            arguments(3.1, 3.1),
+            arguments(10.0, 10.0));
     }
 
-    @Test(dataProvider = "toleranceDistanceDataProvider")
+    @ParameterizedTest
+    @MethodSource("toleranceDistanceDataProvider")
     public void shouldStoreTolerance(double tolerance, double expectedTolerance)
     {
         sut.setTolerance(tolerance);
         assertThat(sut.getTolerance()).isEqualTo(expectedTolerance, offset(1E-8));
     }
 
-    @DataProvider
-    public static Object[][] booleanDataProvider()
+    static Stream<Arguments> booleanDataProvider()
     {
-        return new Object[][]{
-            new Object[]{Boolean.FALSE},
-            new Object[]{Boolean.TRUE},
-        };
+        return Stream.of(
+            arguments(Boolean.FALSE),
+            arguments(Boolean.TRUE));
     }
 
-    @DataProvider
-    public Object[][] sensorListDataProvider()
+    static Stream<Arguments> sensorListDataProvider()
     {
-        return new Object[][]{
-            new Object[]{Arrays.asList(mock(SensorDefinition.class))},
-            new Object[]{Arrays.asList(mock(SensorDefinition.class), mock(SensorDefinition.class))},
-            new Object[]{Arrays.asList(mock(SensorDefinition.class), mock(SensorDefinition.class),
-                mock(SensorDefinition.class))},
-            new Object[]{Arrays.asList(mock(SensorDefinition.class), mock(SensorDefinition.class),
-                mock(SensorDefinition.class), mock(SensorDefinition.class))},
-        };
+        return Stream.of(
+            arguments(Arrays.asList(mock(SensorDefinition.class))),
+            arguments(Arrays.asList(mock(SensorDefinition.class), mock(SensorDefinition.class))),
+            arguments(Arrays.asList(mock(SensorDefinition.class), mock(SensorDefinition.class),
+                mock(SensorDefinition.class))),
+            arguments(Arrays.asList(mock(SensorDefinition.class), mock(SensorDefinition.class),
+                mock(SensorDefinition.class), mock(SensorDefinition.class))));
     }
 
-    @Test(dataProvider = "sensorListDataProvider")
+    @ParameterizedTest
+    @MethodSource("sensorListDataProvider")
     public void shouldStoreSensorList(List<SensorDefinition> sensorList)
     {
         sut.getSensors().addAll(sensorList);
@@ -217,19 +209,18 @@ public class TaskTest
         assertThat(sut.getSensors()).containsExactly(sensorList.toArray(new SensorDefinition[0]));
     }
 
-    @DataProvider
-    public Object[][] dateDataProvider()
+    static Stream<Arguments> dateDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new Date(12345678)},
-            new Object[]{new Date(12345679)},
-            new Object[]{new Date(12345680)},
-            new Object[]{new Date(12345681)},
-            new Object[]{new Date(12345682)},
-        };
+        return Stream.of(
+            arguments(new Date(12345678)),
+            arguments(new Date(12345679)),
+            arguments(new Date(12345680)),
+            arguments(new Date(12345681)),
+            arguments(new Date(12345682)));
     }
 
-    @Test(dataProvider = "dateDataProvider")
+    @ParameterizedTest
+    @MethodSource("dateDataProvider")
     public void shouldStoreExecutionStart(Date date)
     {
         sut.setExecutionStart(date);
@@ -237,7 +228,8 @@ public class TaskTest
         assertThat(sut.getExecutionStart()).isSameAs(date);
     }
 
-    @Test(dataProvider = "dateDataProvider")
+    @ParameterizedTest
+    @MethodSource("dateDataProvider")
     public void shouldStoreExecutionEnd(Date date)
     {
         sut.setExecutionEnd(date);
@@ -253,17 +245,16 @@ public class TaskTest
         assertThat(sut.getVehicle()).isSameAs(vehicle);
     }
 
-    @DataProvider
-    public Object[][] keyValuePairsDataProvider()
+    static Stream<Arguments> keyValuePairsDataProvider()
     {
-        return new Object[][]{
-            new Object[]{"a", "123"},
-            new Object[]{"b", 321},
-            new Object[]{"c", new byte[]{1, 2, 3, 4, 5, 6}},
-        };
+        return Stream.of(
+            arguments("a", "123"),
+            arguments("b", 321),
+            arguments("c", new byte[]{1, 2, 3, 4, 5, 6}));
     }
 
-    @Test(dataProvider = "keyValuePairsDataProvider")
+    @ParameterizedTest
+    @MethodSource("keyValuePairsDataProvider")
     public void shouldStoreSensorValues(String name, Object expected)
     {
         NativeObject sensorValues = new NativeObject();
@@ -276,8 +267,7 @@ public class TaskTest
         assertThat(actual.get(name)).isEqualTo(expected);
     }
 
-    @DataProvider
-    public Object[][] valueDataProvider()
+    static Stream<Arguments> valueDataProvider()
     {
         VirtualVehicle v1 = mock(VirtualVehicle.class);
         when(v1.toString()).thenReturn("VV-1");
@@ -289,45 +279,40 @@ public class TaskTest
         when(v2.getName()).thenReturn("VV-2");
         when(v2.getUuid()).thenReturn("32daca92-8681-11e6-826d-2bc72e1cad17");
 
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new Date(12345678), new Date(12345679), new Date(12345680),
                 new PolarCoordinate(37.1234, -122.0898, 0.0), TaskState.EXECUTED, 1, 4.5, v1,
                 "created 1970-01-01 04:25:45, started 1970-01-01 04:25:45, ended 1970-01-01 04:25:45, "
                     + "pos (37.1234°, -122.0898°, 0.0m), state EXECUTED, order 1, tolerance 4.5, "
-                    + "VV VV-1 (2efed8c8-8681-11e6-97ae-8f77cc48f640)"
-            },
-            new Object[]{
+                    + "VV VV-1 (2efed8c8-8681-11e6-97ae-8f77cc48f640)"),
+            arguments(
                 new Date(12345681), new Date(12345682), new Date(12345680),
                 new PolarCoordinate(37.1234, 122.0898, 100.0), TaskState.COMPLETED, 2, 6.3, v2,
                 "created 1970-01-01 04:25:45, started 1970-01-01 04:25:45, ended 1970-01-01 04:25:45, "
                     + "pos (37.1234°, 122.0898°, 100.0m), state COMPLETED, order 2, tolerance 6.3, "
-                    + "VV VV-2 (32daca92-8681-11e6-826d-2bc72e1cad17)"
-            },
-            new Object[]{
+                    + "VV VV-2 (32daca92-8681-11e6-826d-2bc72e1cad17)"),
+            arguments(
                 new Date(12345681), new Date(12345678), new Date(12345679),
                 new PolarCoordinate(-37.1234, -122.0898, -100.0), TaskState.RUNNING, 3, 9.8, null,
                 "created 1970-01-01 04:25:45, started 1970-01-01 04:25:45, ended 1970-01-01 04:25:45, "
-                    + "pos (-37.1234°, -122.0898°, -100.0m), state RUNNING, order 3, tolerance 9.8, "
-            },
-            new Object[]{
+                    + "pos (-37.1234°, -122.0898°, -100.0m), state RUNNING, order 3, tolerance 9.8, "),
+            arguments(
                 new Date(12345678), null, new Date(12345679),
                 new PolarCoordinate(37.1234, -122.0898, 0.0), TaskState.EXECUTED, 1, 4.5, v1,
                 "created 1970-01-01 04:25:45, started -, ended 1970-01-01 04:25:45, "
                     + "pos (37.1234°, -122.0898°, 0.0m), state EXECUTED, order 1, tolerance 4.5, "
-                    + "VV VV-1 (2efed8c8-8681-11e6-97ae-8f77cc48f640)"
-            },
-            new Object[]{
+                    + "VV VV-1 (2efed8c8-8681-11e6-97ae-8f77cc48f640)"),
+            arguments(
                 new Date(12345681), new Date(12345680), null,
                 new PolarCoordinate(37.1234, 122.0898, 100.0), TaskState.COMPLETED, 2, 6.3, v2,
                 "created 1970-01-01 04:25:45, started 1970-01-01 04:25:45, ended -, "
                     + "pos (37.1234°, 122.0898°, 100.0m), state COMPLETED, order 2, tolerance 6.3, "
-                    + "VV VV-2 (32daca92-8681-11e6-826d-2bc72e1cad17)"
-            },
-        };
+                    + "VV VV-2 (32daca92-8681-11e6-826d-2bc72e1cad17)"));
     }
 
-    @Test(dataProvider = "valueDataProvider")
+    @ParameterizedTest
+    @MethodSource("valueDataProvider")
     public void shouldHaveProperStringRepresentation(Date creationTime, Date executionStart, Date executionEnd,
         PolarCoordinate position, TaskState taskState, int order, double tolerance, VirtualVehicle vehicle,
         String expected)

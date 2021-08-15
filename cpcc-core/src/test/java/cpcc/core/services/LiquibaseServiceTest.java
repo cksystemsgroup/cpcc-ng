@@ -2,12 +2,12 @@ package cpcc.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
@@ -20,15 +20,15 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.sql.DataSource;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import liquibase.exception.LiquibaseException;
 
-@Test(singleThreaded = true)
+//@Test(singleThreaded = true)
 public class LiquibaseServiceTest
 {
     private static final String JNDI_COMP_ENV = "java:/comp/env";
@@ -39,7 +39,7 @@ public class LiquibaseServiceTest
 
     private Logger logger;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() throws SQLException, NamingException
     {
         logger = mock(Logger.class);
@@ -55,7 +55,7 @@ public class LiquibaseServiceTest
 
         sut.update();
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class LiquibaseServiceTest
                     return connection;
                 }
             });
-            
+
             when(dataSource.getConnection(anyString(), anyString())).thenAnswer(new Answer<Connection>()
             {
                 @Override
@@ -154,7 +154,7 @@ public class LiquibaseServiceTest
                 @Override
                 public Object answer(InvocationOnMock invocation) throws Throwable
                 {
-                    String queryString = invocation.getArgumentAt(0, String.class);
+                    String queryString = invocation.getArgument(0);
                     System.out.println("String lookup " + queryString);
                     String fail = System.getProperty("liquibaseServiceTestShouldFail", "false");
 

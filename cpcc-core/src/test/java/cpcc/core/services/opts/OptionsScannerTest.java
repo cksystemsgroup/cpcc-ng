@@ -19,14 +19,18 @@
 package cpcc.core.services.opts;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.stream.Stream;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * OptionsScannerTest
@@ -44,25 +48,25 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "bugger");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("bugger");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "LA_LA");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("LA_LA");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
     }
 
     /**
@@ -76,25 +80,25 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "bugger");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("bugger");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.LITERAL);
-        Assert.assertEquals(token.getItemString(), "LA_LA");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.LITERAL);
+        assertThat(token.getItemString()).isEqualTo("LA_LA");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
     }
 
     /**
@@ -108,37 +112,37 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "bugger");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("bugger");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "lala");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("lala");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "bugger2");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("bugger2");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "lala2");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("lala2");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
     }
 
     /**
@@ -152,77 +156,77 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "bugger");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("bugger");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.LEFT_PAREN);
-        Assert.assertEquals(token.getItemString(), "(");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.LEFT_PAREN);
+        assertThat(token.getItemString()).isEqualTo("(");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "lala");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("lala");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.COMMA);
-        Assert.assertEquals(token.getItemString(), ",");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.COMMA);
+        assertThat(token.getItemString()).isEqualTo(",");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "blbla");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("blbla");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.COMMA);
-        Assert.assertEquals(token.getItemString(), ",");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.COMMA);
+        assertThat(token.getItemString()).isEqualTo(",");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.LITERAL);
-        Assert.assertEquals(token.getItemString(), "nix xx");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.LITERAL);
+        assertThat(token.getItemString()).isEqualTo("nix xx");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.RIGHT_PAREN);
-        Assert.assertEquals(token.getItemString(), ")");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.RIGHT_PAREN);
+        assertThat(token.getItemString()).isEqualTo(")");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "bugger2");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("bugger2");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.LEFT_PAREN);
-        Assert.assertEquals(token.getItemString(), "(");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.LEFT_PAREN);
+        assertThat(token.getItemString()).isEqualTo("(");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.LITERAL);
-        Assert.assertEquals(token.getItemString(), "lala2");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.LITERAL);
+        assertThat(token.getItemString()).isEqualTo("lala2");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.SEMICOLON);
-        Assert.assertEquals(token.getItemString(), ";");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.SEMICOLON);
+        assertThat(token.getItemString()).isEqualTo(";");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.LITERAL);
-        Assert.assertEquals(token.getItemString(), "xxx");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.LITERAL);
+        assertThat(token.getItemString()).isEqualTo("xxx");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.RIGHT_PAREN);
-        Assert.assertEquals(token.getItemString(), ")");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.RIGHT_PAREN);
+        assertThat(token.getItemString()).isEqualTo(")");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
     }
 
     /**
@@ -236,30 +240,30 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "bugger");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("bugger");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(token.getItemString(), "+3.14");
-        Assert.assertEquals(token.getNumber().doubleValue(), 3.14, 1E-5);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.NUMBER);
+        assertThat(token.getItemString()).isEqualTo("+3.14");
+        assertThat(token.getNumber().doubleValue()).isEqualTo(3.14, offset(1E-5));
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "bugger2");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("bugger2");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(token.getItemString(), "99999");
-        Assert.assertEquals(token.getNumber().intValueExact(), 99999);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.NUMBER);
+        assertThat(token.getItemString()).isEqualTo("99999");
+        assertThat(token.getNumber().intValueExact()).isEqualTo(99999);
     }
 
     /**
@@ -273,41 +277,41 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "bugger");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("bugger");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "lala");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("lala");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "looney");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("looney");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(token.getItemString(), "3.141592");
-        Assert.assertEquals(token.getNumber().doubleValue(), 3.141592, 1E-8);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.NUMBER);
+        assertThat(token.getItemString()).isEqualTo("3.141592");
+        assertThat(token.getNumber().doubleValue()).isEqualTo(3.141592, offset(1E-8));
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "caspar");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("caspar");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.LITERAL);
-        Assert.assertEquals(token.getItemString(), "xxx uu");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.LITERAL);
+        assertThat(token.getItemString()).isEqualTo("xxx uu");
     }
 
     /**
@@ -321,49 +325,49 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "origin");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("origin");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.LEFT_PAREN);
-        Assert.assertEquals(token.getItemString(), "(");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.LEFT_PAREN);
+        assertThat(token.getItemString()).isEqualTo("(");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(token.getItemString(), "37.86644");
-        Assert.assertEquals(token.getNumber().doubleValue(), 37.86644, 1E-8);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.NUMBER);
+        assertThat(token.getItemString()).isEqualTo("37.86644");
+        assertThat(token.getNumber().doubleValue()).isEqualTo(37.86644, offset(1E-8));
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.SEMICOLON);
-        Assert.assertEquals(token.getItemString(), ";");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.SEMICOLON);
+        assertThat(token.getItemString()).isEqualTo(";");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(token.getItemString(), "-122.30954");
-        Assert.assertEquals(token.getNumber().doubleValue(), -122.30954, 1E-8);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.NUMBER);
+        assertThat(token.getItemString()).isEqualTo("-122.30954");
+        assertThat(token.getNumber().doubleValue()).isEqualTo(-122.30954, offset(1E-8));
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.SEMICOLON);
-        Assert.assertEquals(token.getItemString(), ";");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.SEMICOLON);
+        assertThat(token.getItemString()).isEqualTo(";");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(token.getItemString(), "0");
-        Assert.assertEquals(token.getNumber().doubleValue(), 0, 1E-8);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.NUMBER);
+        assertThat(token.getItemString()).isEqualTo("0");
+        assertThat(token.getNumber().doubleValue()).isEqualTo(0, offset(1E-8));
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.RIGHT_PAREN);
-        Assert.assertEquals(token.getItemString(), ")");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.RIGHT_PAREN);
+        assertThat(token.getItemString()).isEqualTo(")");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
     }
 
     @Test
@@ -373,31 +377,31 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "orig");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("orig");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.OTHER);
-        Assert.assertEquals(token.getItemString(), "#");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.OTHER);
+        assertThat(token.getItemString()).isEqualTo("#");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "in");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("in");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.EQUALS);
-        Assert.assertEquals(token.getItemString(), "=");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.EQUALS);
+        assertThat(token.getItemString()).isEqualTo("=");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.NUMBER);
-        Assert.assertEquals(token.getItemString(), "3");
-        Assert.assertEquals(token.getNumber().doubleValue(), 3, 1E-8);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.NUMBER);
+        assertThat(token.getItemString()).isEqualTo("3");
+        assertThat(token.getNumber().doubleValue()).isEqualTo(3, offset(1E-8));
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
     }
 
     @Test
@@ -407,27 +411,26 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.IDENT);
-        Assert.assertEquals(token.getItemString(), "orig");
+        assertThat(token.getSymbol()).isEqualTo(Symbol.IDENT);
+        assertThat(token.getItemString()).isEqualTo("orig");
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
     }
 
-    @DataProvider
-    public Object[][] literalDataProvider()
+    static Stream<Arguments> literalDataProvider()
     {
-        return new Object[][]{
-            new Object[]{"'orig'", Symbol.LITERAL, "orig", null},
-            new Object[]{"'orig", Symbol.LITERAL, "orig", null},
-            new Object[]{"\"orig", Symbol.LITERAL, "orig", null},
-        };
+        return Stream.of(
+            arguments("'orig'", Symbol.LITERAL, "orig", null),
+            arguments("'orig", Symbol.LITERAL, "orig", null),
+            arguments("\"orig", Symbol.LITERAL, "orig", null));
     };
 
-    @Test(dataProvider = "literalDataProvider")
+    @ParameterizedTest
+    @MethodSource("literalDataProvider")
     public void shouldScanLiteral(String string, Symbol sym, String scannedResult, Double number)
         throws IOException
     {
@@ -435,27 +438,26 @@ public class OptionsScannerTest
         OptionsScanner scanner = new OptionsScanner(reader);
 
         Token token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), sym);
-        Assert.assertEquals(token.getItemString(), scannedResult);
+        assertThat(token.getSymbol()).isEqualTo(sym);
+        assertThat(token.getItemString()).isEqualTo(scannedResult);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
 
         token = scanner.next();
-        Assert.assertEquals(token.getSymbol(), Symbol.END);
+        assertThat(token.getSymbol()).isEqualTo(Symbol.END);
     }
 
-    @DataProvider
-    public Object[][] wreckedItemsProvider()
+    static Stream<Arguments> wreckedItemsProvider()
     {
-        return new Object[][]{
-            new Object[]{"lala\u00fc\u00fc\u00fc", Symbol.IDENT, "lala", null, 5, 1},
-            new Object[]{"\nblabla\u00fc\u00fc\u00fc", Symbol.IDENT, "blabla", null, 7, 2},
-            new Object[]{"\t\rnix\u00fc", Symbol.IDENT, "nix", null, 6, 1},
-        };
+        return Stream.of(
+            arguments("lala\u00fc\u00fc\u00fc", Symbol.IDENT, "lala", null, 5, 1),
+            arguments("\nblabla\u00fc\u00fc\u00fc", Symbol.IDENT, "blabla", null, 7, 2),
+            arguments("\t\rnix\u00fc", Symbol.IDENT, "nix", null, 6, 1));
     };
 
-    @Test(dataProvider = "wreckedItemsProvider")
+    @ParameterizedTest
+    @MethodSource("wreckedItemsProvider")
     public void shouldNotScanUmlautAsItems(String string, Symbol sym, String scannedResult, Double number, int column,
         int line)
         throws IOException

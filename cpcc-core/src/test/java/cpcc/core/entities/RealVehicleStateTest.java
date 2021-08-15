@@ -19,35 +19,37 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class RealVehicleStateTest
 {
     private RealVehicleState sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sut = new RealVehicleState();
     }
 
-    @DataProvider
-    public Object[][] rvDataProvider()
+    static Stream<Arguments> rvDataProvider()
     {
-        return new Object[][]{
-            new Object[]{1, new Date(1439669289111L), "RV01", "state01"},
-            new Object[]{2, new Date(1439669289222L), "RV02", "state02"},
-            new Object[]{3, new Date(1439669289333L), "RV03", "state03"},
-            new Object[]{4, new Date(1439669289444L), "RV04", "state04"},
-        };
+        return Stream.of(
+            arguments(1, new Date(1439669289111L), "RV01", "state01"),
+            arguments(2, new Date(1439669289222L), "RV02", "state02"),
+            arguments(3, new Date(1439669289333L), "RV03", "state03"),
+            arguments(4, new Date(1439669289444L), "RV04", "state04"));
     }
 
-    @Test(dataProvider = "rvDataProvider")
+    @ParameterizedTest
+    @MethodSource("rvDataProvider")
     void shouldHandleSettersAndGetters(Integer id, Date lastUpdate, String realVehicleName, String state)
     {
         sut.setId(id);

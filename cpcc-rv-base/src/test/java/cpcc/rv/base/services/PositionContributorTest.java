@@ -18,24 +18,28 @@
 
 package cpcc.rv.base.services;
 
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,7 +63,7 @@ public class PositionContributorTest
     private RealVehicleRepository rvRepo;
     private PositionContributor sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         timeService = mock(TimeService.class);
@@ -77,11 +81,10 @@ public class PositionContributorTest
 
         sut.contribute(featureCollection, null, null);
 
-        verifyZeroInteractions(featureCollection);
+        verifyNoInteractions(featureCollection);
     }
 
-    @DataProvider
-    public Object[][] realVehicleDataProvider()
+    static Stream<Arguments> realVehicleDataProvider()
     {
         RealVehicle rv01 = mock(RealVehicle.class);
         when(rv01.getType()).thenReturn(RealVehicleType.BOAT);
@@ -92,16 +95,16 @@ public class PositionContributorTest
         RealVehicleState rvs01 = mock(RealVehicleState.class);
         when(rvs01.getLastUpdate()).thenReturn(new Date(NEW_TIME));
         when(rvs01.toString()).thenReturn("State One");
-        
+
         RealVehicleState rvs02 = mock(RealVehicleState.class);
         when(rvs02.getLastUpdate()).thenReturn(new Date(TIMEOUT_TIME));
         when(rvs02.toString()).thenReturn("State Two");
-        
+
         Task task1 = mock(Task.class);
         when(task1.toString()).thenReturn("Task One");
-        
-        return new Object[][]{
-            new Object[]{null, null, Collections.<Task> emptyList(), "{"
+
+        return Stream.of(
+            arguments(null, null, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
                 + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"properties\":{"
@@ -109,9 +112,9 @@ public class PositionContributorTest
                 + "\"rvType\":\"UNKNOWN\",\"rvName\":\"unknown\",\"rvState\":\"none\",\"rvHeading\":0,"
                 + "\"rvId\":-1,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
-            },
+            ),
 
-            new Object[]{rv01, rvs01, Collections.<Task> emptyList(), "{"
+            arguments(rv01, rvs01, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
                 + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"properties\":{"
@@ -119,9 +122,9 @@ public class PositionContributorTest
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
-            },
+            ),
 
-            new Object[]{rv01, rvs02, Collections.<Task> emptyList(), "{"
+            arguments(rv01, rvs02, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
                 + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"properties\":{"
@@ -129,9 +132,9 @@ public class PositionContributorTest
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
-            },
+            ),
 
-            new Object[]{rv01, null, Collections.<Task> emptyList(), "{"
+            arguments(rv01, null, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
                 + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"properties\":{"
@@ -139,9 +142,9 @@ public class PositionContributorTest
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
-            },
+            ),
 
-            new Object[]{rv01, rvs01, Arrays.asList(task1), "{"
+            arguments(rv01, rvs01, Arrays.asList(task1), "{"
                 + "\"type\":\"Feature\","
                 + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"properties\":{"
@@ -149,11 +152,11 @@ public class PositionContributorTest
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"busy\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
                 + "}"
-            },
-        };
+            ));
     }
 
-    @Test(dataProvider = "realVehicleDataProvider")
+    @ParameterizedTest
+    @MethodSource("realVehicleDataProvider")
     public void shouldContribute(RealVehicle realVehicle, RealVehicleState state, List<Task> taskList, String expected)
         throws JsonProcessingException, JSONException
     {

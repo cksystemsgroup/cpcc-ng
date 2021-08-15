@@ -37,10 +37,10 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.services.jobs.TimeService;
 import cpcc.ros.services.RosImageConverter;
@@ -110,7 +110,7 @@ public class DownloadServiceTest
     private ScriptableObject contentOne1;
     private ScriptableObject contentOne2;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() throws IOException
     {
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

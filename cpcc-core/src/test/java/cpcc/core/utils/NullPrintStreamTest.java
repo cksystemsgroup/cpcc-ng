@@ -20,7 +20,7 @@ package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * NullPrintStream Test

@@ -18,8 +18,8 @@
 
 package cpcc.rv.base.services;
 
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,10 +32,10 @@ import java.util.Map;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.com.services.CommunicationService;
 import cpcc.core.entities.RealVehicle;
@@ -88,7 +88,7 @@ public class ConfigSyncJobRunnableTest
     private RealVehicleRepository realVehicleRepository;
 
     @SuppressWarnings("unchecked")
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sd01 = mock(SensorDefinition.class);
@@ -175,14 +175,14 @@ public class ConfigSyncJobRunnableTest
     {
         sut.run();
 
-        verify(com).transfer(eq(target), eq(RealVehicleBaseConstants.CONFIGURATION_UPDATE_CONNECTOR)
-            , argThat(new DataArgumentMatcher()));
+        verify(com).transfer(eq(target), eq(RealVehicleBaseConstants.CONFIGURATION_UPDATE_CONNECTOR),
+            argThat(new DataArgumentMatcher()));
     }
 
-    private class DataArgumentMatcher extends ArgumentMatcher<byte[]>
+    private class DataArgumentMatcher implements ArgumentMatcher<byte[]>
     {
         @Override
-        public boolean matches(Object argument)
+        public boolean matches(byte[] argument)
         {
             byte[] data = (byte[]) argument;
 

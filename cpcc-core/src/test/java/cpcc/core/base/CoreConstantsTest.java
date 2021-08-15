@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Constructor;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class CoreConstantsTest
 {

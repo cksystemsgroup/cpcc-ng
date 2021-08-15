@@ -21,14 +21,15 @@ package cpcc.core.services.jobs;
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.matches;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
@@ -38,14 +39,14 @@ import java.util.Date;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.Job;
 import cpcc.core.entities.JobStatus;
@@ -71,7 +72,7 @@ public class JobServiceTest
     private ServiceResources serviceResources;
     private Logger logger;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() throws JobExecutionException, NoSuchAlgorithmException
     {
         parameters01 = "parameters01";
@@ -269,7 +270,7 @@ public class JobServiceTest
             .describedAs("Job queue name")
             .isEqualTo(QUEUE_NAME_01);
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -317,7 +318,7 @@ public class JobServiceTest
             .describedAs("Job queue name")
             .isEqualTo(QUEUE_NAME_01);
 
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -402,7 +403,7 @@ public class JobServiceTest
     @Test
     public void shouldDoNothingIfThereAreNoQueuedJobs() throws JobExecutionException
     {
-        verifyZeroInteractions(session, sessionManager, timeService);
+        verifyNoInteractions(session, sessionManager, timeService);
 
         sut.executeJobs();
 
@@ -424,7 +425,8 @@ public class JobServiceTest
 
         verify(existingJob, times(2)).getQueueName();
         verify(jobQueue01).execute(existingJob);
-        verifyZeroInteractions(jobQueue02);
+
+        verifyNoMoreInteractions(jobQueue01, jobQueue02);
     }
 
     @Test

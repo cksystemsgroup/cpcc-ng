@@ -19,6 +19,7 @@
 package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,10 +27,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.vvrte.entities.Task;
@@ -41,14 +45,13 @@ public class AcoTspTasksTest
 {
     private AcoTspTasks sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sut = new AcoTspTasks();
     }
 
-    @DataProvider
-    public Object[][] pathDataProvider()
+    static Stream<Arguments> pathDataProvider()
     {
         Task taskA = mock(Task.class);
         when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1, 13.2, 5.0));
@@ -74,21 +77,19 @@ public class AcoTspTasksTest
         when(taskF.getPosition()).thenReturn(new PolarCoordinate(47.9, 13.7, 5.0));
         when(taskF.toString()).thenReturn("taskF");
 
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 Arrays.asList(taskA, taskB, taskC, taskD, taskE, taskF),
-                Arrays.asList(taskA, taskD, taskE, taskF, taskB, taskC)
-            },
-            new Object[]{
+                Arrays.asList(taskA, taskD, taskE, taskF, taskB, taskC)),
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 Arrays.asList(taskA, taskC, taskB, taskD),
-                Arrays.asList(taskA, taskD, taskB, taskC)
-            },
-        };
+                Arrays.asList(taskA, taskD, taskB, taskC)));
     }
 
-    @Test(dataProvider = "pathDataProvider")
+    @ParameterizedTest
+    @MethodSource("pathDataProvider")
     public void shouldCalculateBestPathWithoutDepot(PolarCoordinate position, List<Task> path, List<Task> expected)
     {
         List<Task> actual = sut.calculateBestPath(position, path);
@@ -96,8 +97,7 @@ public class AcoTspTasksTest
         assertThat(actual).has(new TspListCondition<Task>(expected));
     }
 
-    @DataProvider
-    public Object[][] pathWithDepotDataProvider()
+    static Stream<Arguments> pathWithDepotDataProvider()
     {
         Task taskA = mock(Task.class);
         when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1, 13.2, 5.0));
@@ -123,23 +123,21 @@ public class AcoTspTasksTest
         when(taskF.getPosition()).thenReturn(new PolarCoordinate(47.9, 13.7, 5.0));
         when(taskF.toString()).thenReturn("taskF");
 
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 // new PolarCoordinate(47.75, 13.1, 5.0),
                 Arrays.asList(taskA, taskB, taskC, taskD, taskE, taskF),
-                Arrays.asList(taskA, taskD, taskE, taskF, taskB, taskC)
-            },
-            new Object[]{
+                Arrays.asList(taskA, taskD, taskE, taskF, taskB, taskC)),
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 // new PolarCoordinate(47.75, 13.1, 5.0),
                 Arrays.asList(taskA, taskC, taskB, taskD),
-                Arrays.asList(taskA, taskD, taskB, taskC)
-            },
-        };
+                Arrays.asList(taskA, taskD, taskB, taskC)));
     }
 
-    @Test(dataProvider = "pathWithDepotDataProvider")
+    @ParameterizedTest
+    @MethodSource("pathWithDepotDataProvider")
     public void shouldCalculateBestPathWithDepot(PolarCoordinate position, List<Task> path, List<Task> expected)
     {
         List<Task> actual = sut.calculateBestPath(position, path);
@@ -157,24 +155,19 @@ public class AcoTspTasksTest
         assertThat(actual).isSameAs(path);
     }
 
-    @DataProvider
-    public Object[][] shortPathDataProvider()
+    static Stream<Arguments> shortPathDataProvider()
     {
         Task taskA = mock(Task.class);
         when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1, 13.2, 5.0));
         when(taskA.toString()).thenReturn("taskA");
 
-        return new Object[][]{
-            new Object[]{
-                Collections.<Task> emptyList()
-            },
-            new Object[]{
-                Arrays.asList(taskA)
-            },
-        };
+        return Stream.of(
+            arguments(Collections.<Task> emptyList()),
+            arguments(Arrays.asList(taskA)));
     }
 
-    @Test(dataProvider = "shortPathDataProvider")
+    @ParameterizedTest
+    @MethodSource("shortPathDataProvider")
     public void shouldReturnUnchangedPathIfPathHasLessThanTwoTasks(List<Task> path)
     {
         List<Task> actual = sut.calculateBestPath(null, path);

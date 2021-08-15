@@ -19,6 +19,7 @@
 package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -28,11 +29,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.services.jobs.TimeService;
@@ -51,7 +55,7 @@ public class GatedTspSchedulingAlgorithmTest
     /**
      * Test setup.
      */
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         logger = mock(Logger.class);
@@ -61,8 +65,7 @@ public class GatedTspSchedulingAlgorithmTest
         sut = new GatedTspSchedulingAlgorithm(logger, timeService, 30);
     }
 
-    @DataProvider
-    public Object[][] pendingTasksDataProvider()
+    static Stream<Arguments> pendingTasksDataProvider()
     {
         Task taskA = mock(Task.class);
         when(taskA.getId()).thenReturn(65);
@@ -94,27 +97,25 @@ public class GatedTspSchedulingAlgorithmTest
         when(taskF.getPosition()).thenReturn(new PolarCoordinate(47.9, 13.7, 5.0));
         when(taskF.toString()).thenReturn("taskF");
 
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 Collections.<Task> emptyList(),
                 Arrays.asList(taskA, taskB, taskC, taskD, taskE, taskF),
                 Arrays.asList(taskC, taskB, taskF, taskE, taskD, taskA),
                 Collections.<Task> emptyList(),
-                true
-            },
-            new Object[]{
+                true),
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 Collections.<Task> emptyList(),
                 Arrays.asList(taskA, taskC, taskB, taskD),
                 Arrays.asList(taskA, taskD, taskB, taskC),
                 Collections.<Task> emptyList(),
-                true
-            },
-        };
+                true));
     }
 
-    @Test(dataProvider = "pendingTasksDataProvider")
+    @ParameterizedTest
+    @MethodSource("pendingTasksDataProvider")
     public void shouldSchedulePendingTasksIfNoTasksAreScheduled(PolarCoordinate rvPosition, List<Task> scheduled,
         List<Task> pending, List<Task> expectedScheduled, List<Task> expectedPending, boolean expectedChange)
     {
@@ -129,8 +130,7 @@ public class GatedTspSchedulingAlgorithmTest
         // verify(depots).isEmpty();
     }
 
-    @DataProvider
-    public Object[][] pendingTasksDataProviderWithDepot()
+    static Stream<Arguments> pendingTasksDataProviderWithDepot()
     {
         Task taskA = mock(Task.class);
         when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1, 13.2, 5.0));
@@ -156,29 +156,27 @@ public class GatedTspSchedulingAlgorithmTest
         when(taskF.getPosition()).thenReturn(new PolarCoordinate(47.9, 13.7, 5.0));
         when(taskF.toString()).thenReturn("taskF");
 
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 Collections.<Task> emptyList(),
                 Arrays.asList(taskA, taskB, taskC, taskD, taskE, taskF),
                 Arrays.asList(taskC, taskB, taskF, taskE, taskD, taskA),
                 Collections.<Task> emptyList(),
-                true
-            },
-            new Object[]{
+                true),
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 new PolarCoordinate(47.8, 13.0, 5.0),
                 Collections.<Task> emptyList(),
                 Arrays.asList(taskA, taskC, taskB, taskD),
                 Arrays.asList(taskA, taskD, taskB, taskC),
                 Collections.<Task> emptyList(),
-                true
-            },
-        };
+                true));
     }
 
-    @Test(dataProvider = "pendingTasksDataProviderWithDepot")
+    @ParameterizedTest
+    @MethodSource("pendingTasksDataProviderWithDepot")
     public void shouldSchedulePendingTasksIfNoTasksAreScheduledAndConsiderDepotPositions(PolarCoordinate rvPosition,
         PolarCoordinate depotPosition, List<Task> scheduled, List<Task> pending, List<Task> expectedScheduled,
         List<Task> expectedPending, boolean expectedChange)

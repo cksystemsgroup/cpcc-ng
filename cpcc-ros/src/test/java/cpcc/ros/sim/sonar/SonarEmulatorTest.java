@@ -29,6 +29,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ros.RosCore;
 import org.ros.address.InetAddressFactory;
 import org.ros.concurrent.CancellableLoop;
@@ -38,9 +41,6 @@ import org.ros.node.Node;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.ros.sim.AnonymousNodeMain;
 import sensor_msgs.NavSatFix;
@@ -57,7 +57,7 @@ public class SonarEmulatorTest
     private RosCore rosCore;
     private AnonymousNodeMain<NavSatFix> senderNode;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() throws URISyntaxException, InterruptedException
     {
         int port = RandomUtils.nextInt(20000, 40000);
@@ -84,7 +84,7 @@ public class SonarEmulatorTest
         TimeUnit.SECONDS.sleep(1);
     }
 
-    @AfterMethod
+    @AfterEach
     public void tearDown() throws InterruptedException
     {
         if (senderNode != null)

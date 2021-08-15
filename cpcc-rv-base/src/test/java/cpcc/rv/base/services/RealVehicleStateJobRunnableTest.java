@@ -19,8 +19,8 @@
 package cpcc.rv.base.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -35,10 +35,10 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationService;
@@ -67,7 +67,7 @@ public class RealVehicleStateJobRunnableTest
     private Logger logger;
 
     @SuppressWarnings("unchecked")
-    @BeforeMethod
+    @BeforeEach
     public void setUp() throws Exception
     {
         logger = mock(Logger.class);
@@ -147,7 +147,6 @@ public class RealVehicleStateJobRunnableTest
         verify(logger).info("RealVehicleState: ;{};{};", "RV01", "response string");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldLogFailingConnections() throws ClientProtocolException, IOException
     {

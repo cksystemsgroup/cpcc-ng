@@ -19,13 +19,16 @@
 package cpcc.vvrte.services.js;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * SandboxClassShutterTest
@@ -45,65 +48,62 @@ public class SandboxClassShutterTest
 
     private static final Set<String> EXTRA_ALLOWED_CLASSES = new HashSet<String>();
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         shutter = new SandboxClassShutter(EXTRA_ALLOWED_CLASSES, EXTRA_REGEX_DEFINED_CLASSES);
     }
 
-    @DataProvider
-    public Object[][] basicallyAllowedClasses()
+    static Stream<Arguments> basicallyAllowedClasses()
     {
-        return new Object[][]{
-            new Object[]{java.lang.Math.class.getName()},
-            new Object[]{java.io.PrintStream.class.getName()},
-            new Object[]{cpcc.vvrte.services.js.BuiltInFunctions.class.getName()},
-            new Object[]{java.util.ArrayList.class.getName()},
-            new Object[]{java.util.List.class.getName()},
-            new Object[]{java.util.Map.class.getName()},
-            new Object[]{java.util.HashMap.class.getName()},
-            new Object[]{java.util.Set.class.getName()},
-            new Object[]{java.util.HashSet.class.getName()},
-        };
+        return Stream.of(
+            arguments(java.lang.Math.class.getName()),
+            arguments(java.io.PrintStream.class.getName()),
+            arguments(cpcc.vvrte.services.js.BuiltInFunctions.class.getName()),
+            arguments(java.util.ArrayList.class.getName()),
+            arguments(java.util.List.class.getName()),
+            arguments(java.util.Map.class.getName()),
+            arguments(java.util.HashMap.class.getName()),
+            arguments(java.util.Set.class.getName()),
+            arguments(java.util.HashSet.class.getName()));
     }
 
-    @Test(dataProvider = "basicallyAllowedClasses")
+    @ParameterizedTest
+    @MethodSource("basicallyAllowedClasses")
     public void shouldAcceptAllowedClasses(String fullClassName)
     {
         boolean result = shutter.visibleToScripts(fullClassName);
         assertThat(result).isTrue();
     }
 
-    @DataProvider
-    public Object[][] someForbiddenClasses()
+    static Stream<Arguments> someForbiddenClasses()
     {
-        return new Object[][]{
-            new Object[]{java.lang.Thread.class.getName()},
-            new Object[]{java.lang.System.class.getName()},
-            new Object[]{java.io.File.class.getName()},
-            new Object[]{java.io.FileOutputStream.class.getName()},
-            new Object[]{java.io.FileInputStream.class.getName()},
-        };
+        return Stream.of(
+            arguments(java.lang.Thread.class.getName()),
+            arguments(java.lang.System.class.getName()),
+            arguments(java.io.File.class.getName()),
+            arguments(java.io.FileOutputStream.class.getName()),
+            arguments(java.io.FileInputStream.class.getName()));
 
     }
 
-    @Test(dataProvider = "someForbiddenClasses")
+    @ParameterizedTest
+    @MethodSource("someForbiddenClasses")
     public void shouldNotAcceptOtherClasses(String fullClassName)
     {
         boolean result = shutter.visibleToScripts(fullClassName);
         assertThat(result).isFalse();
     }
 
-    @DataProvider
-    public Object[][] extraRegexDefinedClassesDataProvider()
+    static Stream<Arguments> extraRegexDefinedClassesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{"cpcc.vvrte.services.js.$BuiltInFunctions_proxy12312412"},
-            new Object[]{"cpcc.vvrte.services.js.BuiltInFunctions_buggerit!"},
-        };
+        return Stream.of(
+            arguments("cpcc.vvrte.services.js.$BuiltInFunctions_proxy12312412"),
+            arguments("cpcc.vvrte.services.js.BuiltInFunctions_buggerit!"));
     }
 
-    @Test(dataProvider = "extraRegexDefinedClassesDataProvider")
+    @ParameterizedTest
+    @MethodSource("extraRegexDefinedClassesDataProvider")
     public void shouldAcceptAdditionalRegisteredRegexClasses(String fullClassName)
     {
         boolean result = shutter.visibleToScripts(fullClassName);

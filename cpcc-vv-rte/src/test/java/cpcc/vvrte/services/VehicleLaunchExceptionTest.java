@@ -21,7 +21,7 @@ package cpcc.vvrte.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * VehicleLauncherExceptionTest

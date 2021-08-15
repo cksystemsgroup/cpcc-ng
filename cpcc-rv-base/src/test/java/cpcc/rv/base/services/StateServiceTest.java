@@ -18,7 +18,8 @@
 
 package cpcc.rv.base.services;
 
-import static org.mockito.Matchers.anyInt;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,13 +29,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.geojson.FeatureCollection;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -99,7 +102,7 @@ public class StateServiceTest
     private TaskRepository taskRepo;
     private TimeService timeService;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         Map<VirtualVehicleState, Integer> vvStats = new HashMap<>();
@@ -219,11 +222,10 @@ public class StateServiceTest
         sut = new StateServiceImpl(qm, rns, vvRepo, vjc, rvRepo, taskRepo, timeService);
     }
 
-    @DataProvider
-    public Object[][] stateDataProvider()
+    static Stream<Arguments> stateDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 null,
                 NOW_NO_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
@@ -256,10 +258,9 @@ public class StateServiceTest
                     + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"ALTIMETER\",\"BAROMETER\"]"
                     + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[7.4,9.5,5.3]}}"
                     + "]}}"
-                    + "]}"
-            },
+                    + "]}"),
 
-            new Object[]{
+            arguments(
                 "pos-vvs",
                 NOW_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
@@ -278,11 +279,9 @@ public class StateServiceTest
                     + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\""
                     + ",\"type\":\"vv\"},\"id\":\"1d50b3...\"}"
                     + "]}}"
-                    + "]}"
+                    + "]}"),
 
-            },
-
-            new Object[]{
+            arguments(
                 "pos",
                 NOW_NO_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
@@ -291,10 +290,9 @@ public class StateServiceTest
                     + "\"rvType\":\"QUADROCOPTER\",\"rvName\":\"RV01\",\"rvState\":\"busy\",\"rvHeading\":0,"
                     + "\"rvId\":1001,\"type\":\"rvPosition\",\"rvTime\":123456790},"
                     + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[6.7,8.9,4.5]}}"
-                    + "]}"
-            },
+                    + "]}"),
 
-            new Object[]{
+            arguments(
                 "vvs",
                 NOW_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
@@ -307,19 +305,17 @@ public class StateServiceTest
                     + "{\"type\":\"Feature\",\"properties\":{\"name\":\"vv2\",\"state\":\"defective\""
                     + ",\"type\":\"vv\"},\"id\":\"1d50b3...\"}"
                     + "]}}"
-                    + "]}"
-            },
+                    + "]}"),
 
-            new Object[]{
+            arguments(
                 "tsk",
                 NOW_NO_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\",\"properties\":{\"type\":\"rvPath\"},\"geometry\":{\"type\":\"LineString\""
                     + ",\"coordinates\":[[6.7,8.9,4.5],[6.7,8.9,4.5],[7.4,9.5,5.3]]}}"
-                    + "]}"
-            },
+                    + "]}"),
 
-            new Object[]{
+            arguments(
                 "sen",
                 NOW_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
@@ -331,10 +327,9 @@ public class StateServiceTest
                     + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"ALTIMETER\",\"BAROMETER\"]"
                     + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[7.4,9.5,5.3]}}"
                     + "]}}"
-                    + "]}"
-            },
+                    + "]}"),
 
-            new Object[]{
+            arguments(
                 "tsk-sen",
                 NOW_NO_TIMEOUT_CURRENT_MILLIS,
                 "{\"type\":\"FeatureCollection\",\"features\":["
@@ -352,12 +347,11 @@ public class StateServiceTest
                     + "{\"type\":\"Feature\",\"properties\":{\"sensorList\":[\"ALTIMETER\",\"BAROMETER\"]"
                     + ",\"type\":\"rvSensor\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[7.4,9.5,5.3]}}"
                     + "]}}"
-                    + "]}"
-            },
-        };
+                    + "]}"));
     }
 
-    @Test(dataProvider = "stateDataProvider")
+    @ParameterizedTest
+    @MethodSource("stateDataProvider")
     public void shouldGetStateAsFeatureCollection(String what, long now, String expected)
         throws IOException, JSONException
     {

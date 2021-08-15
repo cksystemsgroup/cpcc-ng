@@ -21,7 +21,8 @@ package cpcc.com.services;
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -45,12 +47,14 @@ import org.apache.http.localserver.LocalServerTestBase;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.com.services.CommunicationResponse.Status;
 import cpcc.core.entities.RealVehicle;
@@ -69,7 +73,7 @@ public class CommunicationServiceTest
     private boolean throwHttpException;
     private CommunicationServiceImpl com;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() throws Exception
     {
         content = null;
@@ -126,24 +130,23 @@ public class CommunicationServiceTest
         com = new CommunicationServiceImpl();
     }
 
-    @AfterMethod
+    @AfterEach
     public void tearDown() throws Exception
     {
         server.stop();
         server.awaitTermination(30, TimeUnit.SECONDS);
     }
 
-    @DataProvider
-    public Object[][] byteArrayDataProvider()
+    static Stream<Arguments> byteArrayDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}},
-            new Object[]{new byte[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 8, 7, 6, 5, 4, 3}},
-            new Object[]{new byte[]{}},
-        };
+        return Stream.of(
+            arguments(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}),
+            arguments(new byte[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 8, 7, 6, 5, 4, 3}),
+            arguments(new byte[]{}));
     }
 
-    @Test(dataProvider = "byteArrayDataProvider")
+    @ParameterizedTest
+    @MethodSource("byteArrayDataProvider")
     public void shouldTransferDataChunk(byte[] data) throws ClientProtocolException, IOException
     {
         CommunicationResponse response = com.transfer(realVehicle, MIGRATE, data);
@@ -159,7 +162,8 @@ public class CommunicationServiceTest
         assertThat(content).isEqualTo(data);
     }
 
-    @Test(dataProvider = "byteArrayDataProvider")
+    @ParameterizedTest
+    @MethodSource("byteArrayDataProvider")
     public void shouldDetectTransferProblems(byte[] data) throws ClientProtocolException, IOException
     {
         throwHttpException = true;

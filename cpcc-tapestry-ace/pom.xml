@@ -113,9 +113,9 @@
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<tasks>
+							<target>
 								<delete dir="target/generated-resources/cpcc/tapestry/ace" />
-							</tasks>
+							</target>
 						</configuration>
 					</execution>
 					<execution>
@@ -125,12 +125,12 @@
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<tasks>
+							<target>
 								<unzip src="src/main/zipped-resources/ace-builds-1.1.8.zip" dest="target/ace" overwrite="true" />
 								<copy todir="target/generated-resources/META-INF/assets/ace">
 									<fileset dir="target/ace/ace-builds-1.1.8/src-min-noconflict" includes="**/*" />
 								</copy>
-							</tasks>
+							</target>
 						</configuration>
 					</execution>
 				</executions>

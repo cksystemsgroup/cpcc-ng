@@ -19,6 +19,7 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,10 +27,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * TreeNodeAdapterTest
@@ -39,7 +43,7 @@ public class TreeNodeAdapterTest
     private TreeNodeAdapter treeNodeAdapter;
     private ITreeNode treeNode;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         treeNodeAdapter = new TreeNodeAdapter();
@@ -84,18 +88,17 @@ public class TreeNodeAdapterTest
         assertThat(treeNodeAdapter.getChildren(treeNode)).isNotNull().hasSize(1).containsExactly(treeNode);
     }
 
-    @DataProvider
-    public Object[][] labelDataProvider()
+    static Stream<Arguments> labelDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"label1"},
-            new Object[]{"label1 und label2"},
-        };
+        return Stream.of(
+            arguments((String) null),
+            arguments(""),
+            arguments("label1"),
+            arguments("label1 und label2"));
     };
 
-    @Test(dataProvider = "labelDataProvider")
+    @ParameterizedTest
+    @MethodSource("labelDataProvider")
     public void shouldHandleGetLabelCorrectly(String label)
     {
         when(treeNode.getLabel()).thenReturn(label);

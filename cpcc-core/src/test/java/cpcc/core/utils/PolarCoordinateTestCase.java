@@ -18,11 +18,12 @@
 
 package cpcc.core.utils;
 
-import org.testng.annotations.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
+
+import org.junit.jupiter.api.Test;
 
 import cpcc.core.entities.PolarCoordinate;
-
-import org.testng.AssertJUnit;
 
 public class PolarCoordinateTestCase
 {
@@ -34,9 +35,9 @@ public class PolarCoordinateTestCase
     public void testCase01()
     {
         PolarCoordinate p = new PolarCoordinate();
-        AssertJUnit.assertEquals(0.0, p.getLatitude(), 1E-10);
-        AssertJUnit.assertEquals(0.0, p.getLongitude(), 1E-10);
-        AssertJUnit.assertEquals(0.0, p.getAltitude(), 1E-10);
+        assertThat(0.0).isEqualTo(p.getLatitude(), offset(1E-10));
+        assertThat(0.0).isEqualTo(p.getLongitude(), offset(1E-10));
+        assertThat(0.0).isEqualTo(p.getAltitude(), offset(1E-10));
     }
 
     /**
@@ -46,9 +47,9 @@ public class PolarCoordinateTestCase
     public void testCase02()
     {
         PolarCoordinate u = new PolarCoordinate(1, 2, 3);
-        AssertJUnit.assertEquals(1.0, u.getLatitude(), 1E-10);
-        AssertJUnit.assertEquals(2.0, u.getLongitude(), 1E-10);
-        AssertJUnit.assertEquals(3.0, u.getAltitude(), 1E-10);
+        assertThat(1.0).isEqualTo(u.getLatitude(), offset(1E-10));
+        assertThat(2.0).isEqualTo(u.getLongitude(), offset(1E-10));
+        assertThat(3.0).isEqualTo(u.getAltitude(), offset(1E-10));
     }
 
     /**
@@ -60,9 +61,9 @@ public class PolarCoordinateTestCase
     {
         PolarCoordinate v = new PolarCoordinate(1, 2, 3);
         PolarCoordinate u = new PolarCoordinate(v);
-        AssertJUnit.assertEquals(1.0, u.getLatitude(), 1E-10);
-        AssertJUnit.assertEquals(2.0, u.getLongitude(), 1E-10);
-        AssertJUnit.assertEquals(3.0, u.getAltitude(), 1E-10);
+        assertThat(1.0).isEqualTo(u.getLatitude(), offset(1E-10));
+        assertThat(2.0).isEqualTo(u.getLongitude(), offset(1E-10));
+        assertThat(3.0).isEqualTo(u.getAltitude(), offset(1E-10));
     }
 
     /**
@@ -75,9 +76,9 @@ public class PolarCoordinateTestCase
         u.setLatitude(1);
         u.setLongitude(2);
         u.setAltitude(3);
-        AssertJUnit.assertEquals(1.0, u.getLatitude(), 1E-10);
-        AssertJUnit.assertEquals(2.0, u.getLongitude(), 1E-10);
-        AssertJUnit.assertEquals(3.0, u.getAltitude(), 1E-10);
+        assertThat(1.0).isEqualTo(u.getLatitude(), offset(1E-10));
+        assertThat(2.0).isEqualTo(u.getLongitude(), offset(1E-10));
+        assertThat(3.0).isEqualTo(u.getAltitude(), offset(1E-10));
     }
 
     /**
@@ -89,9 +90,9 @@ public class PolarCoordinateTestCase
         PolarCoordinate v = new PolarCoordinate(1, 2, 3);
         PolarCoordinate u = new PolarCoordinate();
         u.set(v);
-        AssertJUnit.assertEquals(1.0, u.getLatitude(), 1E-10);
-        AssertJUnit.assertEquals(2.0, u.getLongitude(), 1E-10);
-        AssertJUnit.assertEquals(3.0, u.getAltitude(), 1E-10);
+        assertThat(1.0).isEqualTo(u.getLatitude(), offset(1E-10));
+        assertThat(2.0).isEqualTo(u.getLongitude(), offset(1E-10));
+        assertThat(3.0).isEqualTo(u.getAltitude(), offset(1E-10));
     }
 
     /**
@@ -102,6 +103,6 @@ public class PolarCoordinateTestCase
     {
         PolarCoordinate v = new PolarCoordinate(1, 2, 3);
         String cooardinateString = v.toString();
-        AssertJUnit.assertEquals("(1.0\u00B0, 2.0\u00B0, 3.0m)", cooardinateString);
+        assertThat("(1.0\u00B0, 2.0\u00B0, 3.0m)").isEqualTo(cooardinateString);
     }
 }

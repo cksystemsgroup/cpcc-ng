@@ -19,12 +19,14 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import java.util.Iterator;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * TopicTest
@@ -33,160 +35,106 @@ public class TopicTest
 {
     private Topic topic;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         topic = new Topic();
     }
 
-    @DataProvider
-    public Object[][] integerDataProvider()
+    static Stream<Arguments> integerDataProvider()
     {
-        return new Object[][]{
-            new Object[]{1},
-            new Object[]{10},
-            new Object[]{1000},
-            new Object[]{100000},
-            new Object[]{1000000},
-            new Object[]{10000000},
-            new Object[]{100000000},
-            new Object[]{1000000000},
-        };
+        return Stream.of(
+            arguments(1),
+            arguments(10),
+            arguments(1000),
+            arguments(100000),
+            arguments(1000000),
+            arguments(10000000),
+            arguments(100000000),
+            arguments(1000000000));
     };
 
-    @Test(dataProvider = "integerDataProvider")
+    @ParameterizedTest
+    @MethodSource("integerDataProvider")
     public void shouldStoreId(Integer id)
     {
         topic.setId(id);
         assertThat(topic.getId()).isEqualTo(id);
     }
 
-    @DataProvider
-    private final Iterator<Object[]> nodeTypeDataProvider()
+    static Stream<Arguments> nodeTypeDataProvider()
     {
-        return new Iterator<Object[]>()
-        {
-            private int counter = -1;
+        return Stream.of(RosNodeType.values()).map(t -> arguments(t));
+    }
 
-            @Override
-            public boolean hasNext()
-            {
-                return counter < RosNodeType.values().length;
-            }
-
-            @Override
-            public Object[] next()
-            {
-                if (counter++ < 0)
-                {
-                    return new Object[]{null};
-                }
-                return new Object[]{RosNodeType.values()[counter - 1]};
-            }
-
-            @Override
-            public void remove()
-            {
-                // Intentionally empty.
-            }
-        };
-    };
-
-    @Test(dataProvider = "nodeTypeDataProvider")
+    @ParameterizedTest
+    @MethodSource("nodeTypeDataProvider")
     public void shouldStoreNodeType(RosNodeType nodeType)
     {
         topic.setNodeType(nodeType);
         assertThat(topic.getNodeType()).isEqualTo(nodeType);
     }
 
-    @DataProvider
-    public Object[][] pathDataProvider()
+    static Stream<Arguments> pathDataProvider()
     {
-        return new Object[][]{
-            new Object[]{""},
-            new Object[]{"/"},
-            new Object[]{"/a"},
-            new Object[]{"/abcdefg"},
-        };
+        return Stream.of(
+            arguments(""),
+            arguments("/"),
+            arguments("/a"),
+            arguments("/abcdefg"));
     };
 
-    @Test(dataProvider = "pathDataProvider")
+    @ParameterizedTest
+    @MethodSource("pathDataProvider")
     public void shouldStoreSubPath(String path)
     {
         topic.setSubpath(path);
         assertThat(topic.getSubpath()).isEqualTo(path);
     }
 
-    @DataProvider
-    public Object[][] messageTypeDataProvider()
+    static Stream<Arguments> messageTypeDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"std_msgs/String"},
-            new Object[]{"sensor_msgs/Image"},
-            new Object[]{"sensor_msgs/Camera_Info"},
-            new Object[]{"std_msgs/Float32"},
-        };
+        return Stream.of(
+            arguments((String) null),
+            arguments(""),
+            arguments("std_msgs/String"),
+            arguments("sensor_msgs/Image"),
+            arguments("sensor_msgs/Camera_Info"),
+            arguments("std_msgs/Float32"));
     };
 
-    @Test(dataProvider = "messageTypeDataProvider")
+    @ParameterizedTest
+    @MethodSource("messageTypeDataProvider")
     public void shouldStoreMessagetype(String messageType)
     {
         topic.setMessageType(messageType);
         assertThat(topic.getMessageType()).isEqualTo(messageType);
     }
 
-    @DataProvider
-    public Object[][] classNameDataProvider()
+    static Stream<Arguments> classNameDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"cpcc.ros.actuators.MorseWayPointControllerAdapter"},
-            new Object[]{"cpcc.ros.sensors.CameraSensorAdapter"},
-        };
+        return Stream.of(
+            arguments((String) null),
+            arguments(""),
+            arguments("cpcc.ros.actuators.MorseWayPointControllerAdapter"),
+            arguments("cpcc.ros.sensors.CameraSensorAdapter"));
     };
 
-    @Test(dataProvider = "classNameDataProvider")
+    @ParameterizedTest
+    @MethodSource("classNameDataProvider")
     public void shouldStoreAdapterClassName(String className)
     {
         topic.setAdapterClassName(className);
         assertThat(topic.getAdapterClassName()).isEqualTo(className);
     }
 
-    @DataProvider
-    private final Iterator<Object[]> topicCategoryDataProvider()
+    static Stream<Arguments> topicCategoryDataProvider()
     {
-        return new Iterator<Object[]>()
-        {
-            private int counter = -1;
-
-            @Override
-            public boolean hasNext()
-            {
-                return counter < TopicCategory.values().length;
-            }
-
-            @Override
-            public Object[] next()
-            {
-                if (counter++ < 0)
-                {
-                    return new Object[]{null};
-                }
-                return new Object[]{TopicCategory.values()[counter - 1]};
-            }
-
-            @Override
-            public void remove()
-            {
-                // Intentionally empty.
-            }
-        };
+        return Stream.of(TopicCategory.values()).map(t -> arguments(t));
     };
 
-    @Test(dataProvider = "topicCategoryDataProvider")
+    @ParameterizedTest
+    @MethodSource("topicCategoryDataProvider")
     public void shouldStoreCategory(TopicCategory category)
     {
         topic.setCategory(category);

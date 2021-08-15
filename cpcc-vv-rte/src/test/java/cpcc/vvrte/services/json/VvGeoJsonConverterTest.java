@@ -18,19 +18,23 @@
 
 package cpcc.vvrte.services.json;
 
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
 import org.geojson.GeometryCollection;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,14 +48,13 @@ public class VvGeoJsonConverterTest
 {
     private VvGeoJsonConverter sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sut = new VvGeoJsonConverterImpl();
     }
 
-    @DataProvider
-    public Object[][] vvDataProvider()
+    static Stream<Arguments> vvDataProvider()
     {
         RealVehicle rv01 = new RealVehicle();
 
@@ -68,15 +71,15 @@ public class VvGeoJsonConverterTest
         vv01.setState(VirtualVehicleState.INIT);
         vv01.setUuid("0123456-789-123");
 
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 vv01,
                 "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"init\",\"type\":\"vv\"},"
-                    + "\"id\":\"012345...\"}"},
-        };
+                    + "\"id\":\"012345...\"}"));
     }
 
-    @Test(dataProvider = "vvDataProvider")
+    @ParameterizedTest
+    @MethodSource("vvDataProvider")
     public void shouldConvertToJson(VirtualVehicle virtualVehicle, String expected)
         throws JsonProcessingException, JSONException
     {
@@ -90,8 +93,7 @@ public class VvGeoJsonConverterTest
         JSONAssert.assertEquals(actual, expected, false);
     }
 
-    @DataProvider
-    public Object[][] vvListDataProvider()
+    static Stream<Arguments> vvListDataProvider()
     {
         RealVehicle rv01 = new RealVehicle();
 
@@ -121,16 +123,16 @@ public class VvGeoJsonConverterTest
         vv02.setState(VirtualVehicleState.RUNNING);
         vv02.setUuid("0123456-789-321");
 
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 Arrays.asList(vv01),
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\""
                     + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                     + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV01\",\"state\":\"init\",\"type\":\"vv\"}"
                     + ",\"id\":\"012345...\"}"
-                    + "]}}]}"},
-            new Object[]{
+                    + "]}}]}"),
+            arguments(
                 Arrays.asList(vv01, vv02),
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
@@ -138,11 +140,11 @@ public class VvGeoJsonConverterTest
                     + ",\"id\":\"012345...\"},"
                     + "{\"type\":\"Feature\",\"properties\":{\"name\":\"RV02\",\"state\":\"running\",\"type\":\"vv\"}"
                     + ",\"id\":\"012345...\"}"
-                    + "]}}]}"},
-        };
+                    + "]}}]}"));
     }
 
-    @Test(dataProvider = "vvListDataProvider")
+    @ParameterizedTest
+    @MethodSource("vvListDataProvider")
     public void shouldConvertListToJsonArray(List<VirtualVehicle> virtualVehicleList, String expected)
         throws JsonProcessingException, JSONException
     {

@@ -20,11 +20,15 @@ package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.reflect.Constructor;
+import java.util.stream.Stream;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * ConvertUtilsTest
@@ -40,16 +44,15 @@ public class MathUtilsTest
         cnt.newInstance();
     }
 
-    @DataProvider
-    public Object[][] doubleValuesDataProvider()
+    static Stream<Arguments> doubleValuesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{1, 3, 2},
-            new Object[]{1.03, 1.01, 1.02},
-        };
+        return Stream.of(
+            arguments(1, 3, 2),
+            arguments(1.03, 1.01, 1.02));
     }
 
-    @Test(dataProvider = "doubleValuesDataProvider")
+    @ParameterizedTest
+    @MethodSource("doubleValuesDataProvider")
     public void shouldConvertDoubleListToString(double a, double b, double expected)
     {
         double actual = MathUtils.avg(a, b);
@@ -57,19 +60,18 @@ public class MathUtilsTest
         assertThat(actual).isEqualTo(expected, offset(1E-8));
     }
 
-    @DataProvider
-    public Object[][] doubleNaNValuesDataProvider()
+    static Stream<Arguments> doubleNaNValuesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new double[]{1, 3, 2}, true},
-            new Object[]{new double[]{1.03, 1.01, 1.02}, true},
-            new Object[]{new double[]{Double.NaN, 1.01, 1.02}, false},
-            new Object[]{new double[]{1.03, Double.NaN, 1.02}, false},
-            new Object[]{new double[]{1.03, 1.01, Double.NaN, 1.02}, false},
-        };
+        return Stream.of(
+            arguments(new double[]{1, 3, 2}, true),
+            arguments(new double[]{1.03, 1.01, 1.02}, true),
+            arguments(new double[]{Double.NaN, 1.01, 1.02}, false),
+            arguments(new double[]{1.03, Double.NaN, 1.02}, false),
+            arguments(new double[]{1.03, 1.01, Double.NaN, 1.02}, false));
     }
 
-    @Test(dataProvider = "doubleNaNValuesDataProvider")
+    @ParameterizedTest
+    @MethodSource("doubleNaNValuesDataProvider")
     public void shouldRecognizeNaNs(double[] values, boolean expected)
     {
         boolean actual = MathUtils.containsNoNaN(values);

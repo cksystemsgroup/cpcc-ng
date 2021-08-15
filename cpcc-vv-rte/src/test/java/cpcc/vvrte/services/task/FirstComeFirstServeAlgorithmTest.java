@@ -19,19 +19,22 @@
 package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.vvrte.entities.Task;
@@ -47,15 +50,14 @@ public class FirstComeFirstServeAlgorithmTest
     /**
      * Test setup.
      */
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         depots = spy(new ArrayList<>());
         sut = new FirstComeFirstServeAlgorithm();
     }
 
-    @DataProvider
-    public Object[][] pendingTasksDataProvider()
+    static Stream<Arguments> pendingTasksDataProvider()
     {
         Task taskA = mock(Task.class);
         when(taskA.getPosition()).thenReturn(new PolarCoordinate(47.1, 13.2, 5.0));
@@ -81,38 +83,34 @@ public class FirstComeFirstServeAlgorithmTest
         when(taskF.getPosition()).thenReturn(new PolarCoordinate(47.9, 13.7, 5.0));
         when(taskF.toString()).thenReturn("taskF");
 
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 Collections.<Task> emptyList(),
                 Collections.<Task> emptyList(),
                 Collections.<Task> emptyList(),
                 Collections.<Task> emptyList(),
-                false
-            },
-            new Object[]{
+                false),
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 Collections.<Task> emptyList(),
                 Arrays.asList(taskA, taskB, taskC, taskD, taskE, taskF),
                 Arrays.asList(taskA, taskB, taskC, taskD, taskE, taskF),
                 Collections.<Task> emptyList(),
-                true
-            },
-            new Object[]{
+                true),
+            arguments(
                 new PolarCoordinate(47.4, 13.2, 5.0),
                 Collections.<Task> emptyList(),
                 Arrays.asList(taskA, taskC, taskB, taskD),
                 Arrays.asList(taskA, taskC, taskB, taskD),
                 Collections.<Task> emptyList(),
-                true
-            },
-        };
+                true));
     }
 
-    @Test(dataProvider = "pendingTasksDataProvider")
-    public void shouldSchedulePendingTasksIfNoTasksAreScheduled(PolarCoordinate rvPosition
-        , List<Task> scheduled, List<Task> pending
-        , List<Task> expectedScheduled, List<Task> expectedPending, boolean expectedChange)
+    @ParameterizedTest
+    @MethodSource("pendingTasksDataProvider")
+    public void shouldSchedulePendingTasksIfNoTasksAreScheduled(PolarCoordinate rvPosition, List<Task> scheduled,
+        List<Task> pending, List<Task> expectedScheduled, List<Task> expectedPending, boolean expectedChange)
     {
         List<Task> scheduledTasks = new ArrayList<>(scheduled);
         List<Task> pendingTasks = new ArrayList<>(pending);
@@ -123,6 +121,6 @@ public class FirstComeFirstServeAlgorithmTest
         assertThat(scheduledTasks).has(new TspListCondition<Task>(expectedScheduled));
         assertThat(pendingTasks).has(new TspListCondition<Task>(expectedPending));
 
-        verifyZeroInteractions(depots);
+        verifyNoInteractions(depots);
     }
 }

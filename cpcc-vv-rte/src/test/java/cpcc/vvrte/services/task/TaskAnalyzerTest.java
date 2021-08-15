@@ -20,14 +20,14 @@ package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
@@ -54,7 +54,7 @@ public class TaskAnalyzerTest
     private NativeObject sensor;
     private NativeArray sensors;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         SensorDefinition sensorDefinition = mock(SensorDefinition.class);

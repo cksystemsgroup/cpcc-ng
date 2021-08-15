@@ -20,10 +20,15 @@ package cpcc.core.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.base.PolygonZone.TwoTuple;
 import cpcc.core.entities.PolarCoordinate;
@@ -31,7 +36,7 @@ import cpcc.core.entities.PolarCoordinate;
 /**
  * PolygonZoneTest
  */
-public class PolygonZoneTest
+class PolygonZoneTest
 {
     private static final String ZONE_ONE_AS_STRING =
         "vertices: (0.00000000, 0.00000000), (10.00000000, 0.00000000), (10.00000000, 10.00000000), "
@@ -58,8 +63,8 @@ public class PolygonZoneTest
     private PolygonZone zoneSeven;
     private PolarCoordinate[] verticesZoneSeven;
 
-    @BeforeMethod
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         verticesSimpleZoneOne = new PolygonZone.TwoTuple[5];
         verticesSimpleZoneOne[0] = new PolygonZone.TwoTuple(0.0, 0.0);
@@ -237,19 +242,18 @@ public class PolygonZoneTest
         assertThat(cog.getLongitude()).isEqualTo(13.041786263143168, offset(1E-9));
     }
 
-    @DataProvider
-    public Object[][] pointsInsideOfSimpleZoneOneAndTwo()
+    static Stream<Arguments> pointsInsideOfSimpleZoneOneAndTwo()
     {
-        return new Object[][]{
-            new Object[]{5.0, 5.0},
-            new Object[]{2.5, 2.5},
-            new Object[]{2.5, 7.5},
-            new Object[]{7.5, 2.5},
-            new Object[]{7.5, 7.5},
-        };
+        return Stream.of(
+            arguments(5.0, 5.0),
+            arguments(2.5, 2.5),
+            arguments(2.5, 7.5),
+            arguments(7.5, 2.5),
+            arguments(7.5, 7.5));
     }
 
-    @Test(dataProvider = "pointsInsideOfSimpleZoneOneAndTwo")
+    @ParameterizedTest
+    @MethodSource("pointsInsideOfSimpleZoneOneAndTwo")
     public void shouldFindPointsInsideOfSimpleZoneOne(double lat, double lon)
     {
         assertThat(simpleZoneOne.isInside(lat, lon)).isTrue();
@@ -267,156 +271,155 @@ public class PolygonZoneTest
         assertThat(simpleZoneOne.toString()).isEqualTo(ZONE_ONE_AS_STRING);
     }
 
-    @Test(dataProvider = "pointsInsideOfSimpleZoneOneAndTwo")
+    @ParameterizedTest
+    @MethodSource("pointsInsideOfSimpleZoneOneAndTwo")
     public void shouldFindPointsInsideOfSimpleZoneTwo(double lat, double lon)
     {
         assertThat(simpleZoneTwo.isInside(lat, lon)).isTrue();
     }
 
-    @DataProvider
-    public Object[][] pointsOutsideOfSimpleZoneOneAndTwo()
+    static Stream<Arguments> pointsOutsideOfSimpleZoneOneAndTwo()
     {
-        return new Object[][]{
-            new Object[]{-1.0, 5.0},
-            new Object[]{11.0, 5.0},
-            new Object[]{5.0, -1.0},
-            new Object[]{5.0, 110},
-        };
+        return Stream.of(
+            arguments(-1.0, 5.0),
+            arguments(11.0, 5.0),
+            arguments(5.0, -1.0),
+            arguments(5.0, 110));
     }
 
-    @Test(dataProvider = "pointsOutsideOfSimpleZoneOneAndTwo")
+    @ParameterizedTest
+    @MethodSource("pointsOutsideOfSimpleZoneOneAndTwo")
     public void shouldFindPointsOutsideOfSimpleZoneOne(double lat, double lon)
     {
         assertThat(simpleZoneOne.isInside(lat, lon)).isFalse();
     }
 
-    @Test(dataProvider = "pointsOutsideOfSimpleZoneOneAndTwo")
+    @ParameterizedTest
+    @MethodSource("pointsOutsideOfSimpleZoneOneAndTwo")
     public void shouldFindPointsOutsideOfSimpleZoneTwo(double lat, double lon)
     {
         assertThat(simpleZoneTwo.isInside(lat, lon)).isFalse();
     }
 
-    @DataProvider
-    public Object[][] pointsInsideOfZoneThreeAndFour()
+    static Stream<Arguments> pointsInsideOfZoneThreeAndFour()
     {
-        return new Object[][]{
-            new Object[]{5.0, 5.0},
-        };
+        return Stream.of(
+            arguments(5.0, 5.0));
     }
 
-    @Test(dataProvider = "pointsInsideOfZoneThreeAndFour")
+    @ParameterizedTest
+    @MethodSource("pointsInsideOfZoneThreeAndFour")
     public void shouldFindPointsInsideOfZoneThree(double lat, double lon)
     {
         assertThat(zoneThree.isInside(lat, lon)).isTrue();
     }
 
-    @Test(dataProvider = "pointsInsideOfZoneThreeAndFour")
+    @ParameterizedTest
+    @MethodSource("pointsInsideOfZoneThreeAndFour")
     public void shouldFindPointsInsideOfZoneFour(double lat, double lon)
     {
         assertThat(zoneFour.isInside(lat, lon)).isTrue();
     }
 
-    @DataProvider
-    public Object[][] pointsOutsideOfZoneThreeAndFour()
+    static Stream<Arguments> pointsOutsideOfZoneThreeAndFour()
     {
-        return new Object[][]{
-            new Object[]{-1.0, 5.0},
-            new Object[]{11.0, 5.0},
-            new Object[]{5.0, -1.0},
-            new Object[]{5.0, 110},
-        };
+        return Stream.of(
+            arguments(-1.0, 5.0),
+            arguments(11.0, 5.0),
+            arguments(5.0, -1.0),
+            arguments(5.0, 110));
     }
 
-    @Test(dataProvider = "pointsOutsideOfZoneThreeAndFour")
+    @ParameterizedTest
+    @MethodSource("pointsOutsideOfZoneThreeAndFour")
     public void shouldFindPointsOutsideOfZoneThree(double lat, double lon)
     {
         assertThat(zoneThree.isInside(lat, lon)).isFalse();
     }
 
-    @Test(dataProvider = "pointsOutsideOfZoneThreeAndFour")
+    @ParameterizedTest
+    @MethodSource("pointsOutsideOfZoneThreeAndFour")
     public void shouldFindPointsOutsideOfZoneFour(double lat, double lon)
     {
         assertThat(zoneFour.isInside(lat, lon)).isFalse();
     }
 
-    @DataProvider
-    public Object[][] pointsInsideOfZoneFiveAndSix()
+    static Stream<Arguments> pointsInsideOfZoneFiveAndSix()
     {
-        return new Object[][]{
-            new Object[]{new PolarCoordinate(48.5, 12.5, 0)},
-        };
+        return Stream.of(
+            arguments(new PolarCoordinate(48.5, 12.5, 0)));
     }
 
-    @Test(dataProvider = "pointsInsideOfZoneFiveAndSix")
+    @ParameterizedTest
+    @MethodSource("pointsInsideOfZoneFiveAndSix")
     public void shouldFindPointsInsideOfZoneFive(PolarCoordinate coordinate)
     {
         assertThat(zoneFive.isInside(coordinate)).isTrue();
     }
 
-    @Test(dataProvider = "pointsInsideOfZoneFiveAndSix")
+    @ParameterizedTest
+    @MethodSource("pointsInsideOfZoneFiveAndSix")
     public void shouldFindPointsInsideOfZoneSix(PolarCoordinate coordinate)
     {
         assertThat(zoneSix.isInside(coordinate)).isTrue();
     }
 
-    @DataProvider
-    public Object[][] pointsOutsideOfZoneFiveAndSix()
+    static Stream<Arguments> pointsOutsideOfZoneFiveAndSix()
     {
-        return new Object[][]{
-            new Object[]{new PolarCoordinate(47.5, 12.5, 0)},
-            new Object[]{new PolarCoordinate(50.5, 12.5, 0)},
-            new Object[]{new PolarCoordinate(48.5, 11.5, 0)},
-            new Object[]{new PolarCoordinate(48.5, 13.5, 0)},
-        };
+        return Stream.of(
+            arguments(new PolarCoordinate(47.5, 12.5, 0)),
+            arguments(new PolarCoordinate(50.5, 12.5, 0)),
+            arguments(new PolarCoordinate(48.5, 11.5, 0)),
+            arguments(new PolarCoordinate(48.5, 13.5, 0)));
     }
 
-    @Test(dataProvider = "pointsOutsideOfZoneFiveAndSix")
+    @ParameterizedTest
+    @MethodSource("pointsOutsideOfZoneFiveAndSix")
     public void shouldFindPointsOutsideOfZoneFive(PolarCoordinate coordinate)
     {
         assertThat(zoneFive.isInside(coordinate)).isFalse();
     }
 
-    @Test(dataProvider = "pointsOutsideOfZoneFiveAndSix")
+    @ParameterizedTest
+    @MethodSource("pointsOutsideOfZoneFiveAndSix")
     public void shouldFindPointsOutsideOfZoneSix(PolarCoordinate coordinate)
     {
         assertThat(zoneSix.isInside(coordinate)).isFalse();
     }
 
-    @DataProvider
-    public Object[][] pointsInsideOfZoneSeven()
+    static Stream<Arguments> pointsInsideOfZoneSeven()
     {
-        return new Object[][]{
-            new Object[]{new PolarCoordinate(47.82174572, 13.04135522, 0.00)},
-            new Object[]{new PolarCoordinate(47.82161965, 13.04205796, 0.00)},
-            new Object[]{new PolarCoordinate(47.82180335, 13.04218134, 0.00)},
-            new Object[]{new PolarCoordinate(47.82205548, 13.04229400, 0.00)},
-            new Object[]{new PolarCoordinate(47.82223917, 13.04199895, 0.00)},
-            new Object[]{new PolarCoordinate(47.82209510, 13.04137766, 0.00)},
-        };
+        return Stream.of(
+            arguments(new PolarCoordinate(47.82174572, 13.04135522, 0.00)),
+            arguments(new PolarCoordinate(47.82161965, 13.04205796, 0.00)),
+            arguments(new PolarCoordinate(47.82180335, 13.04218134, 0.00)),
+            arguments(new PolarCoordinate(47.82205548, 13.04229400, 0.00)),
+            arguments(new PolarCoordinate(47.82223917, 13.04199895, 0.00)),
+            arguments(new PolarCoordinate(47.82209510, 13.04137766, 0.00)));
     }
 
-    @Test(dataProvider = "pointsInsideOfZoneSeven")
+    @ParameterizedTest
+    @MethodSource("pointsInsideOfZoneSeven")
     public void shouldFindPointsInsideOfZoneSeven(PolarCoordinate coordinate)
     {
         assertThat(zoneSeven.isInside(coordinate)).isTrue();
     }
 
-    @DataProvider
-    public Object[][] pointsOutsideOfZoneSeven()
+    static Stream<Arguments> pointsOutsideOfZoneSeven()
     {
-        return new Object[][]{
-            new Object[]{new PolarCoordinate(47.82201586, 13.04122648, 0.00)},
-            new Object[]{new PolarCoordinate(47.82159804, 13.04160199, 0.00)},
-            new Object[]{new PolarCoordinate(47.82154401, 13.04198286, 0.00)},
-            new Object[]{new PolarCoordinate(47.82162685, 13.04216525, 0.00)},
-            new Object[]{new PolarCoordinate(47.82198704, 13.04237983, 0.00)},
-            new Object[]{new PolarCoordinate(47.82211671, 13.04232082, 0.00)},
-            new Object[]{new PolarCoordinate(47.82235443, 13.04195067, 0.00)},
-            new Object[]{new PolarCoordinate(47.82229320, 13.04157516, 0.00)},
-        };
+        return Stream.of(
+            arguments(new PolarCoordinate(47.82201586, 13.04122648, 0.00)),
+            arguments(new PolarCoordinate(47.82159804, 13.04160199, 0.00)),
+            arguments(new PolarCoordinate(47.82154401, 13.04198286, 0.00)),
+            arguments(new PolarCoordinate(47.82162685, 13.04216525, 0.00)),
+            arguments(new PolarCoordinate(47.82198704, 13.04237983, 0.00)),
+            arguments(new PolarCoordinate(47.82211671, 13.04232082, 0.00)),
+            arguments(new PolarCoordinate(47.82235443, 13.04195067, 0.00)),
+            arguments(new PolarCoordinate(47.82229320, 13.04157516, 0.00)));
     }
 
-    @Test(dataProvider = "pointsOutsideOfZoneSeven")
+    @ParameterizedTest
+    @MethodSource("pointsOutsideOfZoneSeven")
     public void shouldFindPointsOutsideOfZoneSeven(PolarCoordinate coordinate)
     {
         assertThat(zoneSeven.isInside(coordinate)).isFalse();

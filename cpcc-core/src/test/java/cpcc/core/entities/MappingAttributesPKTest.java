@@ -19,67 +19,51 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import java.util.Iterator;
+import java.util.stream.Stream;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * MappingAttributesPKTest
  */
-public class MappingAttributesPKTest
+class MappingAttributesPKTest
 {
     @Test
-    public void shouldHaveNothingInitializedWithDefaultConstructor()
+    void shouldHaveNothingInitializedWithDefaultConstructor()
     {
         MappingAttributesPK pk = new MappingAttributesPK();
         assertThat(pk.getDevice()).isNull();
         assertThat(pk.getTopic()).isNull();
     }
 
-    @DataProvider
-    private final Iterator<Object[]> primaryKeyDataProvider()
+    static Stream<Arguments> primaryKeyDataProvider()
     {
-        return new Iterator<Object[]>()
-        {
-            private int counter = -1;
-
-            @Override
-            public boolean hasNext()
-            {
-                return counter < 5;
-            }
-
-            @Override
-            public Object[] next()
-            {
-                if (counter++ < 0)
-                {
-                    return new Object[]{null, null};
-                }
-
-                return new Object[]{new Device(), new Topic()};
-            }
-
-            @Override
-            public void remove()
-            {
-                // Intentionally empty.
-            }
-        };
+        return Stream.of(
+            arguments(null, null),
+            arguments(new Device(), new Topic()),
+            arguments(new Device(), new Topic()),
+            arguments(new Device(), new Topic()),
+            arguments(new Device(), new Topic())
+        );
     };
 
-    @Test(dataProvider = "primaryKeyDataProvider")
-    public void shouldInitializeDeviceAndTopicCorrectlyByConstructor(Device device, Topic topic)
+    @ParameterizedTest
+    @MethodSource("primaryKeyDataProvider")
+    void shouldInitializeDeviceAndTopicCorrectlyByConstructor(Device device, Topic topic)
     {
         MappingAttributesPK pk = new MappingAttributesPK(device, topic);
         assertThat(pk.getDevice()).isEqualTo(device);
         assertThat(pk.getTopic()).isEqualTo(topic);
     }
 
-    @Test(dataProvider = "primaryKeyDataProvider")
-    public void shouldStoreDeviceAndTopicCorrectlyByConstructor(Device device, Topic topic)
+    @ParameterizedTest
+    @MethodSource("primaryKeyDataProvider")
+    void shouldStoreDeviceAndTopicCorrectlyByConstructor(Device device, Topic topic)
     {
         MappingAttributesPK pk = new MappingAttributesPK();
         pk.setDevice(device);

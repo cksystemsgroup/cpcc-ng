@@ -20,17 +20,20 @@ package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.testng.Assert.assertFalse;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.utils.CartesianCoordinate;
 
@@ -43,31 +46,28 @@ public class AcoTspSimpleTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<AcoTspSimple> cnt = AcoTspSimple.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
 
-    @DataProvider
-    public Object[][] pathDataProvider()
+    static Stream<Arguments> pathDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 Arrays.asList(new CartesianCoordinate(1.0, 1.0, 1.0)),
-                Collections.<Integer> emptyList()
-            },
-            new Object[]{
+                Collections.<Integer> emptyList()),
+            arguments(
                 Arrays.asList(
                     new CartesianCoordinate(1.0, 1.0, 1.0),
                     new CartesianCoordinate(5.0, 3.0, 1.0),
                     new CartesianCoordinate(8.0, 3.0, 1.0),
                     new CartesianCoordinate(2.0, 8.0, 1.0)),
-                Arrays.asList(1, 2, 3)
-            },
-        };
+                Arrays.asList(1, 2, 3)));
     }
 
-    @Test(dataProvider = "pathDataProvider")
+    @ParameterizedTest
+    @MethodSource("pathDataProvider")
     public void shouldCalculateTspPath(List<CartesianCoordinate> path, List<Integer> expected)
     {
         int n = path.size();
@@ -89,18 +89,17 @@ public class AcoTspSimpleTest
         assertThat(bestPath).has(new TspListCondition<Integer>(expected));
     }
 
-    @DataProvider
-    public Object[][] wreckedCostMatrixDataprovider()
+    static Stream<Arguments> wreckedCostMatrixDataprovider()
     {
-        return new Object[][]{
-            new Object[]{3, 4},
-            new Object[]{0, 4},
-            new Object[]{4, 3},
-            new Object[]{4, 0},
-        };
+        return Stream.of(
+            arguments(3, 4),
+            arguments(0, 4),
+            arguments(4, 3),
+            arguments(4, 0));
     }
 
-    @Test(dataProvider = "wreckedCostMatrixDataprovider")
+    @ParameterizedTest
+    @MethodSource("wreckedCostMatrixDataprovider")
     public void shouldThrowExceptionOnInvalidMatrixDimenstions(int w, int h)
     {
         double[][] costMatrix = new double[w][h];
@@ -125,20 +124,19 @@ public class AcoTspSimpleTest
         }
     }
 
-    @DataProvider
-    public Object[][] fixPathDataProvider()
+    static Stream<Arguments> fixPathDataProvider()
     {
-        return new Object[][]{
-            new Object[]{0, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(0, 1, 2, 3, 4, 5)},
-            new Object[]{1, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(1, 2, 3, 4, 5, 0)},
-            new Object[]{2, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(2, 3, 4, 5, 0, 1)},
-            new Object[]{3, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(3, 4, 5, 0, 1, 2)},
-            new Object[]{4, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(4, 5, 0, 1, 2, 3)},
-            new Object[]{5, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(5, 0, 1, 2, 3, 4)},
-        };
+        return Stream.of(
+            arguments(0, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(0, 1, 2, 3, 4, 5)),
+            arguments(1, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(1, 2, 3, 4, 5, 0)),
+            arguments(2, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(2, 3, 4, 5, 0, 1)),
+            arguments(3, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(3, 4, 5, 0, 1, 2)),
+            arguments(4, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(4, 5, 0, 1, 2, 3)),
+            arguments(5, Arrays.asList(0, 1, 2, 3, 4, 5), Arrays.asList(5, 0, 1, 2, 3, 4)));
     }
 
-    @Test(dataProvider = "fixPathDataProvider")
+    @ParameterizedTest
+    @MethodSource("fixPathDataProvider")
     public void shouldFixPath(int index, List<Integer> data, List<Integer> expected)
     {
         List<Integer> actual = new ArrayList<>(data);

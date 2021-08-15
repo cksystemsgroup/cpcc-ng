@@ -19,12 +19,12 @@
 package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -35,10 +35,10 @@ import java.util.List;
 
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.services.jobs.TimeService;
@@ -79,7 +79,7 @@ public class TaskSchedulerServiceTest
 
     private GatedTspSchedulingAlgorithm algorithm;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         depotList = Collections.<PolarCoordinate> emptyList();
@@ -193,7 +193,7 @@ public class TaskSchedulerServiceTest
         verify(taskRepository).getCurrentRunningTask();
         verify(taskRepository).getScheduledTasks();
         verify(taskRepository).getPendingTasks();
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
 
     }
 
@@ -245,12 +245,12 @@ public class TaskSchedulerServiceTest
         assertThat(actual).isSameAs(taskA);
 
         verify(taskRepository).getCurrentRunningTask();
-        verifyZeroInteractions(taskA);
-        verifyZeroInteractions(taskB);
-        verifyZeroInteractions(taskC);
-        verifyZeroInteractions(taskD);
-        verifyZeroInteractions(session);
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(taskA);
+        verifyNoInteractions(taskB);
+        verifyNoInteractions(taskC);
+        verifyNoInteractions(taskD);
+        verifyNoInteractions(session);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -263,8 +263,8 @@ public class TaskSchedulerServiceTest
         verify(taskRepository).getCurrentRunningTask();
         verify(taskRepository).getScheduledTasks();
         verify(taskRepository).getPendingTasks();
-        verifyZeroInteractions(session);
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(session);
+        verifyNoInteractions(logger);
     }
 
     @Test
@@ -285,12 +285,12 @@ public class TaskSchedulerServiceTest
         assertThat(actual).isNull();
 
         verify(logger).error(anyString());
-        verifyZeroInteractions(taskA);
-        verifyZeroInteractions(taskB);
-        verifyZeroInteractions(taskC);
-        verifyZeroInteractions(taskD);
-        verifyZeroInteractions(session);
-        verifyZeroInteractions(taskRepository);
+        verifyNoInteractions(taskA);
+        verifyNoInteractions(taskB);
+        verifyNoInteractions(taskC);
+        verifyNoInteractions(taskD);
+        verifyNoInteractions(session);
+        verifyNoInteractions(taskRepository);
     }
 
     /**

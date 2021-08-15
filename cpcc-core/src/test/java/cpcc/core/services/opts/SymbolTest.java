@@ -18,74 +18,74 @@
 
 package cpcc.core.services.opts;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * SymbolTest
  */
 public class SymbolTest
 {
-    @DataProvider
-    public Object[][] symbolDataProvicer()
+    static Stream<Arguments>  symbolDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{Symbol.LEFT_PAREN, "("},
-            new Object[]{Symbol.RIGHT_PAREN, ")"},
-            new Object[]{Symbol.SEMICOLON, ";"},
-            new Object[]{Symbol.COLON, ":"},
-            new Object[]{Symbol.COMMA, ","},
-            new Object[]{Symbol.EQUALS, "="},
-        };
+        return Stream.of(
+            arguments(Symbol.LEFT_PAREN, "("),
+            arguments(Symbol.RIGHT_PAREN, ")"),
+            arguments(Symbol.SEMICOLON, ";"),
+            arguments(Symbol.COLON, ":"),
+            arguments(Symbol.COMMA, ","),
+            arguments(Symbol.EQUALS, "="));
     };
 
-    @Test(dataProvider = "symbolDataProvicer")
+    @ParameterizedTest
+    @MethodSource("symbolDataProvicer")
     public void shouldHaveANotNullSymbolString(Symbol symbol, String string)
     {
-        assertEquals(string, symbol.getSymbolString());
+        assertThat(string).isEqualTo(symbol.getSymbolString());
     }
 
-    @Test(dataProvider = "symbolDataProvicer")
+    @ParameterizedTest
+    @MethodSource("symbolDataProvicer")
     public void shouldConvertStringToSymbol(Symbol symbol, String string)
     {
-        assertTrue(Symbol.getSymbol(string) == symbol);
+        assertThat(Symbol.getSymbol(string)).isEqualTo(symbol);
     }
 
-    @DataProvider
-    public Object[][] nullStringSymbolDataProvicer()
+    static Stream<Arguments> nullStringSymbolDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{Symbol.NUMBER},
-            new Object[]{Symbol.IDENT},
-            new Object[]{Symbol.LITERAL},
-            new Object[]{Symbol.END},
-            new Object[]{Symbol.OTHER},
-        };
+        return Stream.of(
+            arguments(Symbol.NUMBER),
+            arguments(Symbol.IDENT),
+            arguments(Symbol.LITERAL),
+            arguments(Symbol.END),
+            arguments(Symbol.OTHER));
     };
 
-    @Test(dataProvider = "nullStringSymbolDataProvicer")
+    @ParameterizedTest
+    @MethodSource("nullStringSymbolDataProvicer")
     public void shouldHaveANullSymbolString(Symbol symbol)
     {
-        assertNull(symbol.getSymbolString());
+        assertThat(symbol.getSymbolString()).isNull();
     }
 
-    @DataProvider
-    public Object[][] nonSymbolDataProvicer()
+    static Stream<Arguments> nonSymbolDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"NOSYMBOL"},
-        };
+        return Stream.of(
+            arguments((String) null),
+            arguments(""),
+            arguments("NOSYMBOL"));
     };
 
-    @Test(dataProvider = "nonSymbolDataProvicer")
+    @ParameterizedTest
+    @MethodSource("nonSymbolDataProvicer")
     public void shouldReturnNullForNonSymbolStrings(String symbol)
     {
-        assertNull(Symbol.getSymbol(symbol));
+        assertThat(Symbol.getSymbol(symbol)).isNull();
     }
 }

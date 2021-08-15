@@ -32,7 +32,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.StreamResponse;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * PngImageStreamResponseTest

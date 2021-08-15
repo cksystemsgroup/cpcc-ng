@@ -19,10 +19,10 @@
 package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertFalse;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -30,11 +30,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.geojson.LngLatAlt;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.base.PolygonZone;
 import cpcc.core.entities.PolarCoordinate;
@@ -138,59 +140,26 @@ public class RealVehicleUtilsTest
             new LngLatAlt(-122.42314875125885, 37.807766561156924),
             new LngLatAlt(-122.42366373538971, 37.80775384632759)));
 
-    private RealVehicle rv1 = mock(RealVehicle.class);
-    private RealVehicle rv2 = mock(RealVehicle.class);
-    private RealVehicle rv3 = mock(RealVehicle.class);
-
-    @BeforeMethod
-    public void setUp()
-    {
-        when(rv1.getName()).thenReturn("rv1");
-        when(rv1.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
-        when(rv1.getId()).thenReturn(1);
-
-        when(rv2.getName()).thenReturn("rv2");
-        when(rv2.getAreaOfOperation()).thenReturn("{"
-            + "\"type\":\"FeatureCollection\","
-            + "\"features\":["
-            + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},\"geometry\":"
-            + "{\"type\":\"Point\",\"coordinates\":[-122.4255,37.8085]}},"
-            + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},\"geometry\":"
-            + "{\"type\":\"Polygon\",\"coordinates\":[[[-122.425,37.808],[-122.426,37.808],[-122.426,37.809],"
-            + "[-122.425,37.809],[-122.425,37.808]]]}}]}"
-            );
-        when(rv2.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
-        when(rv2.getId()).thenReturn(2);
-
-        when(rv3.getName()).thenReturn("rv3");
-        when(rv3.getAreaOfOperation()).thenReturn("["
-            + "{lat:37.80800,lng:-122.42400},{lat:37.80800,lng:-122.42500},{lat:37.80900,lng:-122.42500},"
-            + "{lat:37.80900,lng:-122.42400},{lat:37.80800,lng:-122.42400}]");
-        when(rv3.getType()).thenReturn(RealVehicleType.GROUND_STATION);
-        when(rv3.getId()).thenReturn(3);
-    }
-
     @Test
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<RealVehicleUtils> cnt = RealVehicleUtils.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
 
-    @DataProvider
-    public Object[][] depotDataProvider()
+    static Stream<Arguments> depotDataProvider()
     {
-        return new Object[][]{
-            new Object[]{AOO_001, AOO_001_DEPOT},
-            new Object[]{AOO_002, AOO_002_DEPOT},
-            new Object[]{AOO_003, AOO_003_DEPOT},
-            new Object[]{AOO_004, AOO_004_DEPOT},
-        };
+        return Stream.of(
+            arguments(AOO_001, AOO_001_DEPOT),
+            arguments(AOO_002, AOO_002_DEPOT),
+            arguments(AOO_003, AOO_003_DEPOT),
+            arguments(AOO_004, AOO_004_DEPOT));
     }
 
-    @Test(dataProvider = "depotDataProvider")
+    @ParameterizedTest
+    @MethodSource("depotDataProvider")
     public void shouldGetDepotPosition(String areaOfOperation, List<LngLatAlt> depotPosition) throws IOException
     {
         List<PolarCoordinate> expected = depotPosition.stream()
@@ -202,18 +171,17 @@ public class RealVehicleUtilsTest
         assertThat(actual).has(new PolarCoordinateListCondition(expected, 1E-8));
     }
 
-    @DataProvider
-    public Object[][] polygonDataProvider()
+    static Stream<Arguments> polygonDataProvider()
     {
-        return new Object[][]{
-            new Object[]{AOO_001, AOO_001_POLYGONS},
-            new Object[]{AOO_002, AOO_002_POLYGONS},
-            new Object[]{AOO_003, AOO_003_POLYGONS},
-            new Object[]{AOO_004, AOO_004_POLYGONS},
-        };
+        return Stream.of(
+            arguments(AOO_001, AOO_001_POLYGONS),
+            arguments(AOO_002, AOO_002_POLYGONS),
+            arguments(AOO_003, AOO_003_POLYGONS),
+            arguments(AOO_004, AOO_004_POLYGONS));
     }
 
-    @Test(dataProvider = "polygonDataProvider")
+    @ParameterizedTest
+    @MethodSource("polygonDataProvider")
     public void shouldGetPolygons(String areaOfOperation, List<List<LngLatAlt>> polygons) throws IOException
     {
         List<PolygonZone> expected = polygons.stream().map(x -> new PolygonZone(x)).collect(Collectors.toList());
@@ -223,24 +191,23 @@ public class RealVehicleUtilsTest
         assertThat(actual).has(new PolygonListCondition(expected, 1E-8));
     }
 
-    @DataProvider
-    public Object[][] positionDataProvider()
+    static Stream<Arguments> positionDataProvider()
     {
-        return new Object[][]{
-            new Object[]{AOO_001, new PolarCoordinate(37.8085, -122.4245, 0.0), true},
-            new Object[]{AOO_002, new PolarCoordinate(37.8085, -122.4245, 0.0), false},
-            new Object[]{AOO_003, new PolarCoordinate(37.8085, -122.4245, 0.0), false},
-            new Object[]{AOO_004, new PolarCoordinate(37.8085, -122.4245, 0.0), false},
-            new Object[]{AOO_002, new PolarCoordinate(37.8095, -122.4265, 0.0), true},
-            new Object[]{AOO_003, new PolarCoordinate(37.8095, -122.4255, 0.0), true},
-            new Object[]{AOO_004, new PolarCoordinate(37.8075, -122.4245, 0.0), true},
-            new Object[]{AOO_004, new PolarCoordinate(37.8074, -122.4236, 0.0), true},
-        };
+        return Stream.of(
+            arguments(AOO_001, new PolarCoordinate(37.8085, -122.4245, 0.0), true),
+            arguments(AOO_002, new PolarCoordinate(37.8085, -122.4245, 0.0), false),
+            arguments(AOO_003, new PolarCoordinate(37.8085, -122.4245, 0.0), false),
+            arguments(AOO_004, new PolarCoordinate(37.8085, -122.4245, 0.0), false),
+            arguments(AOO_002, new PolarCoordinate(37.8095, -122.4265, 0.0), true),
+            arguments(AOO_003, new PolarCoordinate(37.8095, -122.4255, 0.0), true),
+            arguments(AOO_004, new PolarCoordinate(37.8075, -122.4245, 0.0), true),
+            arguments(AOO_004, new PolarCoordinate(37.8074, -122.4236, 0.0), true));
     }
 
-    @Test(dataProvider = "positionDataProvider")
-    public void shouldCheckIfPositionsAreInsideTheAreaOfOperation(String areaOfOperation
-        , PolarCoordinate position, boolean expectedResult) throws IOException
+    @ParameterizedTest
+    @MethodSource("positionDataProvider")
+    public void shouldCheckIfPositionsAreInsideTheAreaOfOperation(String areaOfOperation, PolarCoordinate position,
+        boolean expectedResult) throws IOException
     {
         boolean actual = RealVehicleUtils.isInsideAreaOfOperation(areaOfOperation, position);
 
@@ -256,7 +223,7 @@ public class RealVehicleUtilsTest
 
         assertThat(actual).isFalse();
 
-        verifyZeroInteractions(pos);
+        verifyNoInteractions(pos);
     }
 
     @Test
@@ -268,7 +235,7 @@ public class RealVehicleUtilsTest
 
         assertThat(actual).isFalse();
 
-        verifyZeroInteractions(pos);
+        verifyNoInteractions(pos);
     }
 
     @Test
@@ -280,7 +247,7 @@ public class RealVehicleUtilsTest
 
         assertThat(actual).isFalse();
 
-        verifyZeroInteractions(pos);
+        verifyNoInteractions(pos);
     }
 
     @Test
@@ -299,20 +266,52 @@ public class RealVehicleUtilsTest
         assertThat(actual).isEmpty();
     }
 
-    @DataProvider
-    public Object[][] bboxPositionDataProvider()
+    static Stream<Arguments> bboxPositionDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
-                new BBTestParameters(Arrays.asList(rv1), new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN})},
-            new Object[]{
-                new BBTestParameters(Arrays.asList(rv2), new double[]{-122.426, 37.808, -122.425, 37.809})},
-            new Object[]{
-                new BBTestParameters(Arrays.asList(rv3), new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN})},
-        };
+        RealVehicle rv1 = mock(RealVehicle.class);
+        RealVehicle rv2 = mock(RealVehicle.class);
+        RealVehicle rv3 = mock(RealVehicle.class);
+
+        when(rv1.getName()).thenReturn("rv1");
+        when(rv1.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
+        when(rv1.getId()).thenReturn(1);
+
+        when(rv2.getName()).thenReturn("rv2");
+        when(rv2.getAreaOfOperation()).thenReturn("{"
+            + "\"type\":\"FeatureCollection\","
+            + "\"features\":["
+            + "{\"type\":\"Feature\",\"properties\":{\"type\":\"depot\"},\"geometry\":"
+            + "{\"type\":\"Point\",\"coordinates\":[-122.4255,37.8085]}},"
+            + "{\"type\":\"Feature\",\"properties\":{\"minAlt\":20,\"maxAlt\":50},\"geometry\":"
+            + "{\"type\":\"Polygon\",\"coordinates\":[[[-122.425,37.808],[-122.426,37.808],[-122.426,37.809],"
+            + "[-122.425,37.809],[-122.425,37.808]]]}}]}");
+        when(rv2.getType()).thenReturn(RealVehicleType.FIXED_WING_AIRCRAFT);
+        when(rv2.getId()).thenReturn(2);
+
+        when(rv3.getName()).thenReturn("rv3");
+        when(rv3.getAreaOfOperation()).thenReturn("["
+            + "{lat:37.80800,lng:-122.42400},{lat:37.80800,lng:-122.42500},{lat:37.80900,lng:-122.42500},"
+            + "{lat:37.80900,lng:-122.42400},{lat:37.80800,lng:-122.42400}]");
+        when(rv3.getType()).thenReturn(RealVehicleType.GROUND_STATION);
+        when(rv3.getId()).thenReturn(3);
+
+        return Stream.of(
+            arguments(
+                new BBTestParameters(
+                    Arrays.asList(rv1),
+                    new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN})),
+            arguments(
+                new BBTestParameters(
+                    Arrays.asList(rv2),
+                    new double[]{-122.426, 37.808, -122.425, 37.809})),
+            arguments(
+                new BBTestParameters(
+                    Arrays.asList(rv3),
+                    new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN})));
     }
 
-    @Test(dataProvider = "bboxPositionDataProvider")
+    @ParameterizedTest
+    @MethodSource("bboxPositionDataProvider")
     public void shouldFindBoundingBox(BBTestParameters params)
     {
         double[] actual = RealVehicleUtils.findBoundingBox(params.getRealVehicle());
@@ -320,7 +319,7 @@ public class RealVehicleUtilsTest
         assertThat(actual).isEqualTo(params.getExpected());
     }
 
-    class BBTestParameters
+    static class BBTestParameters
     {
         private List<RealVehicle> realVehicleList;
         private double[] expected;

@@ -21,16 +21,16 @@ package cpcc.ros.sim.osm;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ros.node.NodeConfiguration;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.utils.GeodeticSystem;
 
@@ -42,7 +42,7 @@ public class ConfigurationTest
     NodeConfiguration nodeConfiguration;
     Map<String, List<String>> config;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         nodeConfiguration = mock(NodeConfiguration.class);
@@ -70,7 +70,7 @@ public class ConfigurationTest
         Configuration cfg = new Configuration(nodeConfiguration, config);
         assertThat(cfg.getOriginPosition()).isNull();
         checkParsedValues(cfg);
-        verifyZeroInteractions(nodeConfiguration);
+        verifyNoInteractions(nodeConfiguration);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class ConfigurationTest
         assertThat(cfg.getOriginPosition().getLongitude()).isEqualTo(-122.42661, offset(1E-6));
         assertThat(cfg.getOriginPosition().getAltitude()).isEqualTo(2.1, offset(1E-6));
         checkParsedValues(cfg);
-        verifyZeroInteractions(nodeConfiguration);
+        verifyNoInteractions(nodeConfiguration);
     }
 
     private void checkParsedValues(Configuration cfg)

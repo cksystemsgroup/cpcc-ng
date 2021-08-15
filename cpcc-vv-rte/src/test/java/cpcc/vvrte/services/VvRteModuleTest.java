@@ -18,16 +18,18 @@
 
 package cpcc.vvrte.services;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
+import java.util.stream.Stream;
 
 import org.apache.tapestry5.commons.Configuration;
 import org.apache.tapestry5.commons.MappedConfiguration;
@@ -37,10 +39,12 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.ServiceBindingOptions;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.com.services.CommunicationService;
 import cpcc.core.services.jobs.JobQueue;
@@ -73,7 +77,7 @@ public class VvRteModuleTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VvRteModule> cnt = VvRteModule.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
@@ -123,17 +127,16 @@ public class VvRteModuleTest
         verify(configuration).add("cpcc.vvrte.entities");
     }
 
-    @DataProvider
-    public Object[][] applicationDefaultsDataProvider()
+    static Stream<Arguments> applicationDefaultsDataProvider()
     {
-        return new Object[][]{
-            new Object[]{VvRteConstants.PROP_SCHEDULER_CLASS_NAME_DEFAULT},
-            new Object[]{"Iingoo8m voh2EiCh eefahNg4 Ov6ahqua"},
-        };
+        return Stream.of(
+            arguments(VvRteConstants.PROP_SCHEDULER_CLASS_NAME_DEFAULT),
+            arguments("Iingoo8m voh2EiCh eefahNg4 Ov6ahqua"));
     }
 
     @SuppressWarnings("unchecked")
-    @Test(dataProvider = "applicationDefaultsDataProvider")
+    @ParameterizedTest
+    @MethodSource("applicationDefaultsDataProvider")
     public void shouldContributeApplicationDefaults(String className)
     {
         MappedConfiguration<String, String> configuration = mock(MappedConfiguration.class);

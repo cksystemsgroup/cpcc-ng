@@ -18,8 +18,8 @@
 
 package cpcc.com.services;
 
-import org.apache.tapestry5.commons.Configuration;
 import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.commons.Configuration;
 
 /**
  * CommunicationModule

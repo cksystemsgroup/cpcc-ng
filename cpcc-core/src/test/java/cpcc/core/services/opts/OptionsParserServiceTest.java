@@ -20,17 +20,21 @@ package cpcc.core.services.opts;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.Fail;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * OptionsParserServiceTest
@@ -39,7 +43,7 @@ public class OptionsParserServiceTest
 {
     private OptionsParserService svc;
 
-    @BeforeClass
+    @BeforeEach
     public void setUp()
     {
         svc = new OptionsParserServiceImpl();
@@ -243,26 +247,23 @@ public class OptionsParserServiceTest
         }
     }
 
-    @DataProvider
-    public Object[][] errorMessageDataProvider()
+    static Stream<Arguments> errorMessageDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 "bugger=(nix",
                 "%s",
                 "bugger=(nix<*>\n",
-                new ParseException(Arrays.asList(Symbol.COMMA, Symbol.RIGHT_PAREN), Symbol.END, 1, 11)
-            },
-            new Object[]{
+                new ParseException(Arrays.asList(Symbol.COMMA, Symbol.RIGHT_PAREN), Symbol.END, 1, 11)),
+            arguments(
                 "bugger\n=\n(nix",
                 "%s",
                 "bugger\n=\n(nix<*>\n",
-                new ParseException(Arrays.asList(Symbol.RIGHT_PAREN), Symbol.END, 3, 4)
-            },
-        };
+                new ParseException(Arrays.asList(Symbol.RIGHT_PAREN), Symbol.END, 3, 4)));
     };
 
-    @Test(dataProvider = "errorMessageDataProvider")
+    @ParameterizedTest
+    @MethodSource("errorMessageDataProvider")
     public void shouldFormatParserErrorMessageCorrectly(String source, String format, String expected, ParseException e)
     {
         String result = svc.formatParserErrorMessage(source, format, e);

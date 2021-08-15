@@ -18,9 +18,9 @@
 
 package cpcc.rv.base.services;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.matches;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -29,12 +29,12 @@ import static org.mockito.Mockito.times;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 /**
  * SystemMonitorTest implementation.
@@ -45,7 +45,7 @@ public class SystemMonitorTest
     private SystemMonitor sut;
     private Map<String, Object> config = new HashMap<>();
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         logger = mock(Logger.class);
@@ -55,7 +55,7 @@ public class SystemMonitorTest
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable
             {
-                System.out.println(invocation.getArgumentAt(0, String.class));
+                System.out.println(invocation.getArgument(0, String.class));
                 return null;
             }
         }).when(logger).info(anyString());

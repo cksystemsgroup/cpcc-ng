@@ -1,8 +1,9 @@
 package cpcc.vvrte.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,16 +14,19 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.ScriptableObject;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
@@ -63,7 +67,7 @@ public class BuiltInFunctionsTest
     private std_msgs.Float32 message2;
     private std_msgs.Float32 message3;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sensor1 = mock(SensorDefinition.class);
@@ -226,7 +230,6 @@ public class BuiltInFunctionsTest
         assertThat(actual).hasSize(0);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldLogParseExceptionOnParsingErrors() throws IOException, ParseException
     {
@@ -239,7 +242,6 @@ public class BuiltInFunctionsTest
         verify(logger).error(anyString(), any(IOException.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldLogIOExceptionOnParsingErrors() throws IOException, ParseException
     {
@@ -252,8 +254,7 @@ public class BuiltInFunctionsTest
         verify(logger).error(anyString(), any(ParseException.class));
     }
 
-    @DataProvider
-    public Object[][] sensorsDataProvider() throws IOException, ParseException
+    static Stream<Arguments> sensorsDataProvider() throws IOException, ParseException
     {
         OptionsParserServiceImpl parser = new OptionsParserServiceImpl();
 
@@ -286,15 +287,14 @@ public class BuiltInFunctionsTest
         Collection<Option> opts2 = parser.parse(s2.getParameters());
         Collection<Option> opts3 = parser.parse(s3.getParameters());
 
-        return new Object[][]{
-            new Object[]{"d1", s1, opts1, "{\"id\":101,\"description\":\"d1\",\"messageType\":\"mt1\""
-                + ",\"type\":\"ALTIMETER\",\"visibility\":\"ALL_VV\"}"},
-            new Object[]{"d2", s2, opts2, "{\"id\":202,\"description\":\"d2\",\"messageType\":\"mt2\""
-                + ",\"type\":\"AREA_OF_OPERATIONS\",\"visibility\":\"ALL_VV\"}"},
-            new Object[]{"d3", s3, opts3, "{\"id\":303,\"description\":\"d3\",\"messageType\":\"mt3\""
+        return Stream.of(
+            arguments("d1", s1, opts1, "{\"id\":101,\"description\":\"d1\",\"messageType\":\"mt1\""
+                + ",\"type\":\"ALTIMETER\",\"visibility\":\"ALL_VV\"}"),
+            arguments("d2", s2, opts2, "{\"id\":202,\"description\":\"d2\",\"messageType\":\"mt2\""
+                + ",\"type\":\"AREA_OF_OPERATIONS\",\"visibility\":\"ALL_VV\"}"),
+            arguments("d3", s3, opts3, "{\"id\":303,\"description\":\"d3\",\"messageType\":\"mt3\""
                 + ",\"type\":\"CAMERA\",\"visibility\":\"PRIVILEGED_VV\""
-                + ",\"params\":{\"bugger\":\"lala\",\"looney\":3.141592,\"caspar\":\"xxx uu\"}}"},
-        };
+                + ",\"params\":{\"bugger\":\"lala\",\"looney\":3.141592,\"caspar\":\"xxx uu\"}}"));
     }
 
     //    @Test(dataProvider = "sensorsDataProvider")
@@ -318,8 +318,7 @@ public class BuiltInFunctionsTest
     //        JSONAssert.assertEquals(actualJson, expectedJson, false);
     //    }
 
-    @DataProvider
-    public Object[][] invisibleSensorsDataProvider() throws IOException, ParseException
+    static Stream<Arguments> invisibleSensorsDataProvider() throws IOException, ParseException
     {
         SensorDefinition s1 = mock(SensorDefinition.class);
         when(s1.toString()).thenReturn("sensor1");
@@ -354,13 +353,12 @@ public class BuiltInFunctionsTest
         when(s4.getType()).thenReturn(SensorType.THERMOMETER);
         when(s4.getVisibility()).thenReturn(SensorVisibility.NO_VV);
 
-        return new Object[][]{
-            new Object[]{"d1", s1},
-            new Object[]{"d2", s2},
-            new Object[]{"d3", s3},
-            new Object[]{"d4", s4},
-            new Object[]{"d5", null},
-        };
+        return Stream.of(
+            arguments("d1", s1),
+            arguments("d2", s2),
+            arguments("d3", s3),
+            arguments("d4", s4),
+            arguments("d5", null));
     }
 
     //    @Test(dataProvider = "invisibleSensorsDataProvider")
@@ -382,8 +380,7 @@ public class BuiltInFunctionsTest
         assertThat(actual).isNull();
     }
 
-    @DataProvider
-    public Object[][] tokenDataProvider()
+    static Stream<Arguments> tokenDataProvider()
     {
         Token t1 = mock(Token.class);
         when(t1.toString()).thenReturn("tokenOne");
@@ -393,13 +390,13 @@ public class BuiltInFunctionsTest
         when(t2.toString()).thenReturn("tokenTwo");
         when(t2.getValue()).thenReturn(new BigDecimal(20202L));
 
-        return new Object[][]{
-            new Object[]{t1},
-            new Object[]{t2},
-        };
+        return Stream.of(
+            arguments(t1),
+            arguments(t2));
     }
 
-    @Test(dataProvider = "tokenDataProvider")
+    @ParameterizedTest
+    @MethodSource("tokenDataProvider")
     public void shouldReturnTokenOnSingleListItem(Token token)
     {
         Object actual = BuiltInFunctionsImpl.convertTokenList(Arrays.asList(token));
@@ -407,8 +404,7 @@ public class BuiltInFunctionsTest
         assertThat(actual).isSameAs(token.getValue());
     }
 
-    @DataProvider
-    public Object[][] tokenListDataProvider()
+    static Stream<Arguments> tokenListDataProvider()
     {
         Token t1 = mock(Token.class);
         when(t1.toString()).thenReturn("tokenOne");
@@ -418,13 +414,13 @@ public class BuiltInFunctionsTest
         when(t2.toString()).thenReturn("tokenTwo");
         when(t2.getValue()).thenReturn(new BigDecimal(20202L));
 
-        return new Object[][]{
-            new Object[]{Arrays.asList(t2, t1), "[20202,\"stringOne\"]"},
-            new Object[]{Arrays.asList(t1, t2), "[\"stringOne\",20202]"},
-        };
+        return Stream.of(
+            arguments(Arrays.asList(t2, t1), "[20202,\"stringOne\"]"),
+            arguments(Arrays.asList(t1, t2), "[\"stringOne\",20202]"));
     }
 
-    @Test(dataProvider = "tokenListDataProvider")
+    @ParameterizedTest
+    @MethodSource("tokenListDataProvider")
     public void shouldReturnTokenArrayOnMultipleListItems(List<Token> tokenList, String expectedJson)
         throws JSONException
     {
