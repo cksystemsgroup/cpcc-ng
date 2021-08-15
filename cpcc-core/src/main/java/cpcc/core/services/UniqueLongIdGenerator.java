@@ -22,8 +22,9 @@ import java.io.Serializable;
 import java.util.Properties;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.service.ServiceRegistry;
@@ -54,7 +55,7 @@ public class UniqueLongIdGenerator implements IdentifierGenerator, Configurable
      * {@inheritDoc}
      */
     @Override
-    public Serializable generate(SessionImplementor session, Object obj)
+    public Serializable generate(SharedSessionContractImplementor session, Object obj) throws HibernateException
     {
         final Serializable id = session.getEntityPersister(entityName, obj).getIdentifier(obj, session);
         return id != null ? id : RandomUtils.nextLong(0, Long.MAX_VALUE);
