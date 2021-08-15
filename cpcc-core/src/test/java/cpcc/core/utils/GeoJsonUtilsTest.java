@@ -20,6 +20,7 @@ package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +29,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.geojson.Feature;
 import org.geojson.GeoJsonObject;
@@ -35,10 +37,12 @@ import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -49,11 +53,11 @@ import cpcc.core.entities.RealVehicleType;
 
 public class GeoJsonUtilsTest
 {
-    private RealVehicle rv1 = mock(RealVehicle.class);
-    private RealVehicle rv2 = mock(RealVehicle.class);
-    private RealVehicle rv3 = mock(RealVehicle.class);
+    private static RealVehicle rv1 = mock(RealVehicle.class);
+    private static RealVehicle rv2 = mock(RealVehicle.class);
+    private static RealVehicle rv3 = mock(RealVehicle.class);
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         when(rv1.getName()).thenReturn("rv1");
@@ -89,33 +93,29 @@ public class GeoJsonUtilsTest
         cnt.newInstance();
     }
 
-    @DataProvider
-    public Object[][] geoJsonObjectsDataProvider()
+    static Stream<Arguments> geoJsonObjectsDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new Feature()
                 {
                 },
-                new double[]{}
-            },
-            new Object[]{
+                new double[]{}),
+            arguments(
                 new Point(-122.8, 37.2),
-                new double[]{-122.8, 37.2, -122.8, 37.2}
-            },
-            new Object[]{
+                new double[]{-122.8, 37.2, -122.8, 37.2}),
+            arguments(
                 new Polygon(
                     new LngLatAlt(-122.426, 37.808),
                     new LngLatAlt(-122.427, 37.808),
                     new LngLatAlt(-122.427, 37.809),
                     new LngLatAlt(-122.426, 37.809),
                     new LngLatAlt(-122.426, 37.808)),
-                new double[]{-122.427, 37.808, -122.426, 37.809}
-            },
-        };
+                new double[]{-122.427, 37.808, -122.426, 37.809}));
     }
 
-    @Test(dataProvider = "geoJsonObjectsDataProvider")
+    @ParameterizedTest
+    @MethodSource("geoJsonObjectsDataProvider")
     public void shouldFindBoundingBox(GeoJsonObject obj, double[] expected)
     {
         double[] actual = GeoJsonUtils.findBoundingBox(obj);
@@ -123,34 +123,29 @@ public class GeoJsonUtilsTest
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DataProvider
-    public Object[][] bboxPositionDataProvider()
+    static Stream<Arguments> bboxPositionDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN},
                 new LngLatAlt(-122.8, 37.2),
-                new double[]{-122.8, 37.2, -122.8, 37.2}
-            },
-            new Object[]{
+                new double[]{-122.8, 37.2, -122.8, 37.2}),
+            arguments(
                 new double[]{-122.8, 37.2, -122.8, 37.2},
                 new LngLatAlt(-122.8, 37.2),
-                new double[]{-122.8, 37.2, -122.8, 37.2}
-            },
-            new Object[]{
+                new double[]{-122.8, 37.2, -122.8, 37.2}),
+            arguments(
                 new double[]{-122.8, 37.2, -122.8, 37.2},
                 new LngLatAlt(-122.9, 37.3),
-                new double[]{-122.9, 37.2, -122.8, 37.3}
-            },
-            new Object[]{
+                new double[]{-122.9, 37.2, -122.8, 37.3}),
+            arguments(
                 new double[]{-122.8, 37.2, -122.8, 37.2},
                 new LngLatAlt(-122.7, 37.1),
-                new double[]{-122.8, 37.1, -122.7, 37.2}
-            },
-        };
+                new double[]{-122.8, 37.1, -122.7, 37.2}));
     }
 
-    @Test(dataProvider = "bboxPositionDataProvider")
+    @ParameterizedTest
+    @MethodSource("bboxPositionDataProvider")
     public void shouldMergeBoundingBoxWithPosition(double[] actual, LngLatAlt position, double[] expected)
     {
         GeoJsonUtils.mergeBoundingBox(actual, position);
@@ -158,34 +153,29 @@ public class GeoJsonUtilsTest
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DataProvider
-    public Object[][] bboxesDataProvider()
+    static Stream<Arguments> bboxesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN},
                 new double[]{-122.8, 37.2, -122.8, 37.2},
-                new double[]{-122.8, 37.2, -122.8, 37.2}
-            },
-            new Object[]{
+                new double[]{-122.8, 37.2, -122.8, 37.2}),
+            arguments(
                 new double[]{-122.8, 37.2, -122.8, 37.2},
                 new double[]{-122.8, 37.2, -122.8, 37.2},
-                new double[]{-122.8, 37.2, -122.8, 37.2}
-            },
-            new Object[]{
+                new double[]{-122.8, 37.2, -122.8, 37.2}),
+            arguments(
                 new double[]{-122.8, 37.2, -122.8, 37.2},
                 new double[]{-122.9, 37.3, -122.8, 37.3},
-                new double[]{-122.9, 37.2, -122.8, 37.3}
-            },
-            new Object[]{
+                new double[]{-122.9, 37.2, -122.8, 37.3}),
+            arguments(
                 new double[]{-122.8, 37.2, -122.8, 37.2},
                 new double[]{-122.7, 37.1, -122.7, 37.1},
-                new double[]{-122.8, 37.1, -122.7, 37.2}
-            },
-        };
+                new double[]{-122.8, 37.1, -122.7, 37.2}));
     }
 
-    @Test(dataProvider = "bboxesDataProvider")
+    @ParameterizedTest
+    @MethodSource("bboxesDataProvider")
     public void shouldMergeBoundingBoxes(double[] actual, double[] other, double[] expected)
     {
         GeoJsonUtils.mergeBoundingBoxes(actual, other);
@@ -193,26 +183,22 @@ public class GeoJsonUtilsTest
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DataProvider
-    public Object[][] polarCoordinatesDataProvider()
+    static Stream<Arguments> polarCoordinatesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new PolarCoordinate(0, 0, 0),
-                new LngLatAlt(0, 0, 0)
-            },
-            new Object[]{
+                new LngLatAlt(0, 0, 0)),
+            arguments(
                 new PolarCoordinate(47.12345678, 13.12345678, 50.1),
-                new LngLatAlt(13.12345678, 47.12345678, 50.1)
-            },
-            new Object[]{
+                new LngLatAlt(13.12345678, 47.12345678, 50.1)),
+            arguments(
                 new PolarCoordinate(-47.12345678, -13.12345678, -50.1),
-                new LngLatAlt(-13.12345678, -47.12345678, -50.1)
-            },
-        };
+                new LngLatAlt(-13.12345678, -47.12345678, -50.1)));
     }
 
-    @Test(dataProvider = "polarCoordinatesDataProvider")
+    @ParameterizedTest
+    @MethodSource("polarCoordinatesDataProvider")
     public void shouldConvertPolarCoordinateToPoint(PolarCoordinate position, LngLatAlt expected)
     {
         Point point = GeoJsonUtils.toPoint(position);
@@ -231,23 +217,19 @@ public class GeoJsonUtilsTest
             .isEqualTo(expected.getAltitude(), offset(1E-3));
     }
 
-    @DataProvider
-    public Object[][] positionDataProvider()
+    static Stream<Arguments> positionDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
-                new PolarCoordinate(0, 0, 0),
-            },
-            new Object[]{
-                new PolarCoordinate(47.12345678, 13.12345678, 50.1),
-            },
-            new Object[]{
-                new PolarCoordinate(-47.12345678, -13.12345678, -50.1),
-            },
-        };
+        return Stream.of(
+            arguments(
+                new PolarCoordinate(0, 0, 0)),
+            arguments(
+                new PolarCoordinate(47.12345678, 13.12345678, 50.1)),
+            arguments(
+                new PolarCoordinate(-47.12345678, -13.12345678, -50.1)));
     }
 
-    @Test(dataProvider = "positionDataProvider")
+    @ParameterizedTest
+    @MethodSource("positionDataProvider")
     public void shouldConvertPolarCoordinateToPositionMap(PolarCoordinate position)
     {
         Map<String, Double> actual = GeoJsonUtils.toPosition(position);
@@ -257,25 +239,22 @@ public class GeoJsonUtilsTest
         assertThat(actual.get("alt")).isEqualTo(position.getAltitude(), offset(1E-9));
     }
 
-    @DataProvider
-    public Object[][] realVehicleDataProvider()
+    static Stream<Arguments> realVehicleDataProvider()
     {
-        return new Object[][]{
-            new Object[]{rv1, "{"
+        return Stream.of(
+            arguments(rv1, "{"
                 + "\"type\":\"Feature\","
                 + "\"properties\":{\"name\":\"rv1\",\"rvtype\":\"QUADROCOPTER\",\"type\":\"rv\"},"
                 + "\"id\":\"1\""
-                + "}"
-            },
-            new Object[]{rv2, "{"
+                + "}"),
+            arguments(rv2, "{"
                 + "\"type\":\"Feature\","
                 + "\"properties\":{\"name\":\"rv2\",\"rvtype\":\"FIXED_WING_AIRCRAFT\",\"type\":\"rv\"},"
-                + "\"id\":\"2\"}"
-            },
-        };
+                + "\"id\":\"2\"}"));
     }
 
-    @Test(dataProvider = "realVehicleDataProvider")
+    @ParameterizedTest
+    @MethodSource("realVehicleDataProvider")
     public void shouldConvertRealVehicleToFeature(RealVehicle rv, String expected) throws IOException, JSONException
     {
         Feature feature = GeoJsonUtils.toFeature(rv);
@@ -286,16 +265,14 @@ public class GeoJsonUtilsTest
         JSONAssert.assertEquals(expected, actual, false);
     }
 
-    @DataProvider
-    public Object[][] realVehicleListDataProvider()
+    static Stream<Arguments> realVehicleListDataProvider()
     {
-        return new Object[][]{
-            new Object[]{Arrays.asList(rv1),
+        return Stream.of(
+            arguments(Arrays.asList(rv1),
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\","
-                    + "\"properties\":{\"name\":\"rv1\",\"rvtype\":\"QUADROCOPTER\",\"type\":\"rv\"},\"id\":\"1\"}]}"
-            },
-            new Object[]{Arrays.asList(rv1, rv2),
+                    + "\"properties\":{\"name\":\"rv1\",\"rvtype\":\"QUADROCOPTER\",\"type\":\"rv\"},\"id\":\"1\"}]}"),
+            arguments(Arrays.asList(rv1, rv2),
                 "{\"type\":\"FeatureCollection\",\"features\":["
                     + "{\"type\":\"Feature\","
                     + "\"properties\":{\"name\":\"rv1\",\"rvtype\":\"QUADROCOPTER\",\"type\":\"rv\"},\"id\":\"1\"},"
@@ -308,9 +285,7 @@ public class GeoJsonUtilsTest
                     + "{\"type\":\"Feature\","
                     + "\"properties\":{\"minAlt\":20,\"maxAlt\":50},"
                     + "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-122.425,37.808],[-122.426,37.808],"
-                    + "[-122.426,37.809],[-122.425,37.809],[-122.425,37.808]]]}}]},\"id\":\"2\"}]}"
-            },
-        };
+                    + "[-122.426,37.809],[-122.425,37.809],[-122.425,37.808]]]}}]},\"id\":\"2\"}]}"));
     }
 
     class DPTestParameters

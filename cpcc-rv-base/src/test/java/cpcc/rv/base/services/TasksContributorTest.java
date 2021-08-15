@@ -21,7 +21,7 @@ package cpcc.rv.base.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -30,10 +30,10 @@ import java.util.Collections;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,7 +53,7 @@ public class TasksContributorTest
     private PolarCoordinate taskPosition;
     private PolarCoordinate position;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         s1 = mock(SensorDefinition.class);
@@ -89,7 +89,7 @@ public class TasksContributorTest
     {
         FeatureCollection featureCollection = mock(FeatureCollection.class);
 
-        sut.contribute(featureCollection, position, Collections.<Task>emptyList());
+        sut.contribute(featureCollection, position, Collections.<Task> emptyList());
 
         ArgumentCaptor<Feature> captor = ArgumentCaptor.forClass(Feature.class);
 
@@ -136,6 +136,6 @@ public class TasksContributorTest
 
         sut.contribute(featureCollection, null, Arrays.asList(task));
 
-        verifyZeroInteractions(featureCollection);
+        verifyNoInteractions(featureCollection);
     }
 }

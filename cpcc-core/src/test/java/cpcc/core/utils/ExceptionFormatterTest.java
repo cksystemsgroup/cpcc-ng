@@ -1,11 +1,10 @@
 package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class ExceptionFormatterTest
 {
@@ -13,7 +12,7 @@ public class ExceptionFormatterTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<ExceptionFormatter> cnt = ExceptionFormatter.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

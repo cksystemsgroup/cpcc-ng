@@ -19,10 +19,11 @@
 package cpcc.vvrte.services.js;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
@@ -40,15 +42,17 @@ import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.assertj.core.api.Fail;
 import org.hibernate.internal.util.SerializationHelper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.vvrte.base.VirtualVehicleMappingDecision;
 import cpcc.vvrte.entities.VirtualVehicle;
@@ -57,7 +61,7 @@ import cpcc.vvrte.entities.VirtualVehicleState;
 /**
  * JavascriptServiceTest
  */
-@Test(singleThreaded = true)
+// @Test(singleThreaded = true)
 public class JavascriptServiceTest
 {
     private PerthreadManager perthreadManager;
@@ -65,7 +69,7 @@ public class JavascriptServiceTest
     private ServiceResources serviceResources;
     private Logger logger;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         perthreadManager = mock(PerthreadManager.class);
@@ -143,8 +147,8 @@ public class JavascriptServiceTest
             assertThat(e.getMessage()).isEqualTo("Can not handle API version 1000");
         }
 
-        verifyZeroInteractions(sessionManager);
-        verifyZeroInteractions(perthreadManager);
+        verifyNoInteractions(sessionManager);
+        verifyNoInteractions(perthreadManager);
     }
 
     @Test
@@ -236,18 +240,17 @@ public class JavascriptServiceTest
         verify(perthreadManager).cleanup();
     }
 
-    @DataProvider
-    public static Object[][] emptyScriptDataProvider()
+    static Stream<Arguments> emptyScriptDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"\n"},
-            new Object[]{"\n\n\n\n\r\n"},
-        };
+        return Stream.of(
+            arguments((String) null),
+            arguments(""),
+            arguments("\n"),
+            arguments("\n\n\n\n\r\n"));
     }
 
-    @Test(dataProvider = "emptyScriptDataProvider")
+    @ParameterizedTest
+    @MethodSource("emptyScriptDataProvider")
     public void shouldHandleEmptyScript(String script) throws IOException, InterruptedException
     {
         VirtualVehicle vv = new VirtualVehicle();
@@ -265,7 +268,8 @@ public class JavascriptServiceTest
         verify(perthreadManager).cleanup();
     }
 
-    @Test(dataProvider = "emptyScriptDataProvider")
+    @ParameterizedTest
+    @MethodSource("emptyScriptDataProvider")
     public void shouldCompileEmptyScript(String script) throws IOException
     {
         JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
@@ -307,8 +311,8 @@ public class JavascriptServiceTest
         JavascriptWorker sut = jss.createWorker(vv, false);
         assertThat(sut.getScript()).isNotNull().endsWith(script + "\n})();");
 
-        verifyZeroInteractions(sessionManager);
-        verifyZeroInteractions(perthreadManager);
+        verifyNoInteractions(sessionManager);
+        verifyNoInteractions(perthreadManager);
     }
 
     @Test
@@ -329,8 +333,8 @@ public class JavascriptServiceTest
         assertThat(errorMessage).isNotNull().isEqualTo("missing ; before statement");
         assertThat(sourceLine).isNotNull().isEqualTo("x x x");
 
-        verifyZeroInteractions(sessionManager);
-        verifyZeroInteractions(perthreadManager);
+        verifyNoInteractions(sessionManager);
+        verifyNoInteractions(perthreadManager);
     }
 
     @Test
@@ -341,7 +345,7 @@ public class JavascriptServiceTest
         Object[] result = jss.codeVerification(script, 1);
         assertThat(result).isNotNull().hasSize(0);
 
-        verifyZeroInteractions(perthreadManager);
+        verifyNoInteractions(perthreadManager);
     }
 
     /**
@@ -415,7 +419,7 @@ public class JavascriptServiceTest
         /**
          * {@inheritDoc}
          */
-//        @Override
+        //        @Override
         private ScriptableObject getSensorValue(ScriptableObject sensor)
         {
             NativeObject sensorValue = new NativeObject();

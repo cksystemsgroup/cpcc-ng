@@ -23,15 +23,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-import sensor_msgs.NavSatFix;
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.WGS84;
+import sensor_msgs.NavSatFix;
 
 public class ImagePublisherNodeTest
 {
@@ -48,7 +48,7 @@ public class ImagePublisherNodeTest
     private Logger logger;
 
     @SuppressWarnings("unchecked")
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         logger = mock(Logger.class);

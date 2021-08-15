@@ -19,58 +19,59 @@
 package cpcc.vvrte.services.js;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertFalse;
 
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
+import java.util.stream.Stream;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * VvRteFunctionsTest
  */
-@Test(singleThreaded = true)
+// @Test(singleThreaded = true)
 public class VvRteFunctionsTest
 {
     @Test
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VvRteFunctions> cnt = VvRteFunctions.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
 
-    @DataProvider
-    public Object[][] vvRteDataProvider()
+    static Stream<Arguments> vvRteDataProvider()
     {
-        return new Object[][]{
-            new Object[]{mock(BuiltInFunctions.class)},
-            new Object[]{mock(BuiltInFunctions.class)},
-            new Object[]{mock(BuiltInFunctions.class)},
-        };
+        return Stream.of(
+            arguments(mock(BuiltInFunctions.class)),
+            arguments(mock(BuiltInFunctions.class)),
+            arguments(mock(BuiltInFunctions.class)));
     }
 
-    @Test(dataProvider = "vvRteDataProvider")
+    @ParameterizedTest
+    @MethodSource("vvRteDataProvider")
     public void shouldStoreVvRte(BuiltInFunctions vvRte)
     {
         VvRteFunctions.setVvRte(vvRte);
         assertThat(VvRteFunctions.getVvRte()).isNotNull().isEqualTo(vvRte);
     }
 
-    @DataProvider
-    public Object[][] stdOutDataProvider()
+    static Stream<Arguments> stdOutDataProvider()
     {
-        return new Object[][]{
-            new Object[]{mock(PrintStream.class)},
-            new Object[]{mock(PrintStream.class)},
-            new Object[]{mock(PrintStream.class)},
-        };
+        return Stream.of(
+            arguments(mock(PrintStream.class)),
+            arguments(mock(PrintStream.class)),
+            arguments(mock(PrintStream.class)));
     }
 
-    @Test(dataProvider = "stdOutDataProvider")
+    @ParameterizedTest
+    @MethodSource("stdOutDataProvider")
     public void shouldStoreVvRte(PrintStream stdOut)
     {
         VvRteFunctions.setStdOut(stdOut);

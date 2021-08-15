@@ -23,11 +23,11 @@ import static org.assertj.core.api.Assertions.offset;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ros.message.MessageFactory;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import big_actor_msgs.LatLngAlt;
 import cpcc.core.utils.WGS84;
@@ -58,7 +58,7 @@ public class PlantTest
     private LatLngAlt targetTwo;
 
     @SuppressWarnings("unchecked")
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         targetOne = mock(LatLngAlt.class);
@@ -120,8 +120,8 @@ public class PlantTest
         int count = loopUntilStateChanges(sut, State.TAKE_OFF);
 
         assertThat(count)
-            .overridingErrorMessage("Number of loops to take off schould be less than %d, but were %d."
-                , MAX_LOOP_CYCLES, count)
+            .overridingErrorMessage("Number of loops to take off schould be less than %d, but were %d.",
+                MAX_LOOP_CYCLES, count)
             .isLessThanOrEqualTo(MAX_LOOP_CYCLES);
 
         assertThat(sut.getCurrentState())

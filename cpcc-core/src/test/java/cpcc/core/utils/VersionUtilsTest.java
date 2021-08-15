@@ -19,12 +19,15 @@
 package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertFalse;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.reflect.Constructor;
+import java.util.stream.Stream;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class VersionUtilsTest
 {
@@ -32,24 +35,23 @@ public class VersionUtilsTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VersionUtils> cnt = VersionUtils.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
 
-    @DataProvider
-    public Object[][] versionResourcesDataProvicer()
+    static Stream<Arguments> versionResourcesDataProvicer()
     {
-        return new Object[][]{
-            new Object[]{"cpcc/core/utils/versionUtilsTest/version-01.properties", "1.0-SNAPSHOT"},
-            new Object[]{"cpcc/core/utils/versionUtilsTest/version-02.properties", "2.3.4"},
-            new Object[]{"cpcc/core/utils/versionUtilsTest/version-03.properties", "1.0-RC97"},
-            new Object[]{"cpcc/core/utils/versionUtilsTest/version-04.properties", "10.3"},
-            new Object[]{"cpcc/core/utils/versionUtilsTest/not-existing.properties", "0.0.0-UNKNOWN"},
-        };
+        return Stream.of(
+            arguments("cpcc/core/utils/versionUtilsTest/version-01.properties", "1.0-SNAPSHOT"),
+            arguments("cpcc/core/utils/versionUtilsTest/version-02.properties", "2.3.4"),
+            arguments("cpcc/core/utils/versionUtilsTest/version-03.properties", "1.0-RC97"),
+            arguments("cpcc/core/utils/versionUtilsTest/version-04.properties", "10.3"),
+            arguments("cpcc/core/utils/versionUtilsTest/not-existing.properties", "0.0.0-UNKNOWN"));
     }
 
-    @Test(dataProvider = "versionResourcesDataProvicer")
+    @ParameterizedTest
+    @MethodSource("versionResourcesDataProvicer")
     public void shouldReadCorrectVersionInfo(String propResource, String expectedVersion)
     {
         String actual = VersionUtils.getVersion(propResource);

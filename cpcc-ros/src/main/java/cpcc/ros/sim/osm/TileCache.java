@@ -21,15 +21,13 @@ package cpcc.ros.sim.osm;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Locale;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,34 +97,15 @@ public class TileCache
      * @param file the path where to store the retrieved data.
      * @throws IOException thrown in case of errors.
      */
-    public static void downloadFile(String url, File file) throws IOException
+    public void downloadFile(String url, File file) throws IOException
     {
-        HttpResponse response = null;
-        try
-        {
-            response = HttpClientBuilder.create()
-                .setUserAgent("TileCache/1.0")
-                .build().execute(new HttpGet(url));
-        }
-        catch (IOException e)
-        {
-            throw new IOException("Can not load URL '" + url + "'", e);
-        }
+        URLConnection connection = new URL(url).openConnection();
+        connection.addRequestProperty("User-Agent", "TileCache/1.0");
 
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+        try (InputStream inStream = connection.getInputStream();
+            FileOutputStream outStream = new FileOutputStream(file))
         {
-            String msg = String.format("Can not load URL '%s' code=%d (%s)",
-                url, response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
-            throw new IOException(msg);
-        }
-
-        HttpEntity entity = response.getEntity();
-        if (entity != null)
-        {
-            try (FileOutputStream outStream = new FileOutputStream(file))
-            {
-                IOUtils.copy(entity.getContent(), outStream);
-            }
+            IOUtils.copy(inStream, outStream);
         }
     }
 

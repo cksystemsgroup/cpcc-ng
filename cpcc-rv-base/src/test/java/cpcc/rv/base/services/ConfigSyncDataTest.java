@@ -19,40 +19,39 @@
 package cpcc.rv.base.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.SensorDefinition;
 
 public class ConfigSyncDataTest
 {
-    @DataProvider
-    public Object[][] syncDataProvider()
+    static Stream<Arguments> syncDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 Collections.<SensorDefinition> emptyList(),
-                Collections.<RealVehicle> emptyList()
-            },
-            new Object[]{
+                Collections.<RealVehicle> emptyList()),
+            arguments(
                 Arrays.asList(mock(SensorDefinition.class)),
-                Arrays.asList(mock(RealVehicle.class))
-            },
-            new Object[]{
+                Arrays.asList(mock(RealVehicle.class))),
+            arguments(
                 Arrays.asList(mock(SensorDefinition.class), mock(SensorDefinition.class)),
-                Arrays.asList(mock(RealVehicle.class), mock(RealVehicle.class))
-            },
-        };
+                Arrays.asList(mock(RealVehicle.class), mock(RealVehicle.class))));
     }
 
-    @Test(dataProvider = "syncDataProvider")
+    @ParameterizedTest
+    @MethodSource("syncDataProvider")
     public void shouldHandleDefaultConstructor(List<SensorDefinition> sensors, List<RealVehicle> realVehicles)
     {
         ConfigSyncData sut = new ConfigSyncData(null, null);
@@ -63,7 +62,8 @@ public class ConfigSyncDataTest
         assertThat(sut.getRvs()).containsAll(realVehicles);
     }
 
-    @Test(dataProvider = "syncDataProvider")
+    @ParameterizedTest
+    @MethodSource("syncDataProvider")
     public void shouldHandleAlternativeConstructor(List<SensorDefinition> sensors, List<RealVehicle> realVehicles)
     {
         ConfigSyncData sut = new ConfigSyncData(sensors, realVehicles);

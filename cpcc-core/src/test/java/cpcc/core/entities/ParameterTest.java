@@ -19,84 +19,86 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * ParameterTest
  */
-public class ParameterTest
+class ParameterTest
 {
     Parameter parameter;
 
-    @BeforeMethod
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         parameter = new Parameter();
     }
 
-    @DataProvider
-    public Object[][] integerDataProvider()
+    static Stream<Arguments> integerDataProvider()
     {
-        return new Object[][]{
-            new Object[]{1},
-            new Object[]{10},
-            new Object[]{1000},
-            new Object[]{100000},
-            new Object[]{1000000},
-            new Object[]{10000000},
-            new Object[]{100000000},
-            new Object[]{1000000000},
-        };
+        return Stream.of(
+            arguments(1),
+            arguments(10),
+            arguments(1000),
+            arguments(100000),
+            arguments(1000000),
+            arguments(10000000),
+            arguments(100000000),
+            arguments(1000000000));
     };
 
-    @Test(dataProvider = "integerDataProvider")
-    public void shouldStoreId(Integer id)
+    @ParameterizedTest
+    @MethodSource("integerDataProvider")
+    void shouldStoreId(Integer id)
     {
         parameter.setId(id);
         assertThat(parameter.getId()).isEqualTo(id);
     }
 
-    @DataProvider
-    public Object[][] nameDataProvider()
+    static Stream<Arguments> nameDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"parameter1"},
-            new Object[]{"parameter2"},
-        };
+        return Stream.of(
+            arguments((String) null),
+            arguments(""),
+            arguments("parameter1"),
+            arguments("parameter2"));
     };
 
-    @Test(dataProvider = "nameDataProvider")
-    public void shouldStoreName(String name)
+    @ParameterizedTest
+    @MethodSource("nameDataProvider")
+    void shouldStoreName(String name)
     {
         parameter.setName(name);
         assertThat(parameter.getName()).isEqualTo(name);
     }
 
-    @DataProvider
-    public Object[][] valueDataProvider()
+    static Stream<Arguments> valueDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"value1"},
-            new Object[]{"value2"},
-        };
+        return Stream.of(
+            arguments((String) null),
+            arguments(""),
+            arguments("value1"),
+            arguments("value2"));
     };
 
-    @Test(dataProvider = "valueDataProvider")
-    public void shouldStoreValue(String value)
+    @ParameterizedTest
+    @MethodSource("valueDataProvider")
+    void shouldStoreValue(String value)
     {
         parameter.setValue(value);
         assertThat(parameter.getValue()).isEqualTo(value);
     }
 
-    @Test(dataProvider = "integerDataProvider")
-    public void shouldStoreSort(Integer sort)
+    @ParameterizedTest
+    @MethodSource("integerDataProvider")
+    void shouldStoreSort(Integer sort)
     {
         parameter.setSort(sort);
         assertThat(parameter.getSort()).isEqualTo(sort);

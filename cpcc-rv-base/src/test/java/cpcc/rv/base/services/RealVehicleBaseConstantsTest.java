@@ -18,11 +18,11 @@
 
 package cpcc.rv.base.services;
 
-import static org.testng.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Constructor;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * RealVehicleBaseConstantsTest implementation.
@@ -33,7 +33,7 @@ public class RealVehicleBaseConstantsTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<RealVehicleBaseConstants> cnt = RealVehicleBaseConstants.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

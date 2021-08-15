@@ -19,13 +19,16 @@
 package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertFalse;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.stream.Stream;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * ConvertUtilsTest
@@ -36,94 +39,90 @@ public class ConvertUtilsTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<ConvertUtils> cnt = ConvertUtils.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
 
-    @DataProvider
-    public Object[][] doubleValuesDataProvider()
+    static Stream<Arguments> doubleValuesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new double[0], new String[]{"[]"}},
-            new Object[]{new double[]{1}, new String[]{"[1.0]"}},
-            new Object[]{new double[]{1, 2}, new String[]{"[1.0, 2.0]"}},
-            new Object[]{new double[]{1, 2, 3}, new String[]{"[1.0, 2.0, 3.0]"}},
-        };
+        return Stream.of(
+            arguments(new double[0], new String[]{"[]"}),
+            arguments(new double[]{1}, new String[]{"[1.0]"}),
+            arguments(new double[]{1, 2}, new String[]{"[1.0, 2.0]"}),
+            arguments(new double[]{1, 2, 3}, new String[]{"[1.0, 2.0, 3.0]"}));
     }
 
-    @Test(dataProvider = "doubleValuesDataProvider")
+    @ParameterizedTest
+    @MethodSource("doubleValuesDataProvider")
     public void shouldConvertDoubleListToString(double[] values, String[] expectedResult)
     {
         List<String> result = ConvertUtils.doubleListAsString(values);
         assertThat(result).isNotNull().containsExactly(expectedResult);
     }
 
-    @DataProvider
-    public Object[][] byteValuesDataProvider()
+    static Stream<Arguments> byteValuesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{(byte) 0, "0"},
-            new Object[]{(byte) 1, "1"},
-            new Object[]{(byte) 2, "2"},
-            new Object[]{(byte) 3, "3"},
-            new Object[]{(byte) 127, "127"},
-            new Object[]{(byte) 128, "128"},
-            new Object[]{(byte) 255, "255"},
-        };
+        return Stream.of(
+            arguments((byte) 0, "0"),
+            arguments((byte) 1, "1"),
+            arguments((byte) 2, "2"),
+            arguments((byte) 3, "3"),
+            arguments((byte) 127, "127"),
+            arguments((byte) 128, "128"),
+            arguments((byte) 255, "255"));
     }
 
-    @Test(dataProvider = "byteValuesDataProvider")
+    @ParameterizedTest
+    @MethodSource("byteValuesDataProvider")
     public void shouldConvertByteToString(byte value, String expectedResult)
     {
         List<String> result = ConvertUtils.byteAsString(value);
         assertThat(result).isNotNull().containsExactly(expectedResult);
     }
 
-    @DataProvider
-    public Object[][] shortValuesDataProvider()
+    static Stream<Arguments> shortValuesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{(short) 0, "0"},
-            new Object[]{(short) 1, "1"},
-            new Object[]{(short) 2, "2"},
-            new Object[]{(short) 3, "3"},
-            new Object[]{(short) 127, "127"},
-            new Object[]{(short) 128, "128"},
-            new Object[]{(short) 255, "255"},
-            new Object[]{(short) 256, "256"},
-            new Object[]{(short) -1, "-1"},
-            new Object[]{(short) -128, "-128"},
-            new Object[]{(short) -256, "-256"},
-        };
+        return Stream.of(
+            arguments((short) 0, "0"),
+            arguments((short) 1, "1"),
+            arguments((short) 2, "2"),
+            arguments((short) 3, "3"),
+            arguments((short) 127, "127"),
+            arguments((short) 128, "128"),
+            arguments((short) 255, "255"),
+            arguments((short) 256, "256"),
+            arguments((short) -1, "-1"),
+            arguments((short) -128, "-128"),
+            arguments((short) -256, "-256"));
     }
 
-    @Test(dataProvider = "shortValuesDataProvider")
+    @ParameterizedTest
+    @MethodSource("shortValuesDataProvider")
     public void shouldConvertShortToString(short value, String expectedResult)
     {
         List<String> result = ConvertUtils.shortAsString(value);
         assertThat(result).isNotNull().containsExactly(expectedResult);
     }
 
-    @DataProvider
-    public Object[][] floatValuesDataProvider()
+    static Stream<Arguments> floatValuesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{(float) 0, "0.0"},
-            new Object[]{(float) 1.1, "1.1"},
-            new Object[]{(float) 2.2, "2.2"},
-            new Object[]{(float) 3.3, "3.3"},
-            new Object[]{(float) 127.1, "127.1"},
-            new Object[]{(float) 128.2, "128.2"},
-            new Object[]{(float) 255.3, "255.3"},
-            new Object[]{(float) 256.1, "256.1"},
-            new Object[]{(float) -1.2, "-1.2"},
-            new Object[]{(float) -128.3, "-128.3"},
-            new Object[]{(float) -256.4, "-256.4"},
-        };
+        return Stream.of(
+            arguments((float) 0, "0.0"),
+            arguments((float) 1.1, "1.1"),
+            arguments((float) 2.2, "2.2"),
+            arguments((float) 3.3, "3.3"),
+            arguments((float) 127.1, "127.1"),
+            arguments((float) 128.2, "128.2"),
+            arguments((float) 255.3, "255.3"),
+            arguments((float) 256.1, "256.1"),
+            arguments((float) -1.2, "-1.2"),
+            arguments((float) -128.3, "-128.3"),
+            arguments((float) -256.4, "-256.4"));
     }
 
-    @Test(dataProvider = "floatValuesDataProvider")
+    @ParameterizedTest
+    @MethodSource("floatValuesDataProvider")
     public void shouldConvertFloatToString(float value, String expectedResult)
     {
         List<String> result = ConvertUtils.floatAsString(value);

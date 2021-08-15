@@ -18,7 +18,8 @@
 
 package cpcc.rv.base.services;
 
-import static org.mockito.Matchers.anyListOf;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,16 +30,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +58,7 @@ public class VirtualVehicleContributorTest
     private VvRteRepository vvRepo;
     private VirtualVehicleContributor sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         Map<VirtualVehicleState, Integer> vvStats = new HashMap<>();
@@ -86,16 +89,15 @@ public class VirtualVehicleContributorTest
         + ",\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":26690}"
         + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[]}}";
 
-    @DataProvider
-    public Object[][] noVehiclesDataProvider()
+    static Stream<Arguments> noVehiclesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{Collections.<VirtualVehicle> emptyList()},
-        };
+        return Stream.of(
+            arguments((List<VirtualVehicle>) null),
+            arguments(Collections.<VirtualVehicle> emptyList()));
     }
 
-    @Test(dataProvider = "noVehiclesDataProvider")
+    @ParameterizedTest
+    @MethodSource("noVehiclesDataProvider")
     public void shouldAddEmptyFeatureOnEmptyVirtualVehicleList(List<VirtualVehicle> emptyList)
         throws JsonProcessingException, JSONException
     {
@@ -118,8 +120,7 @@ public class VirtualVehicleContributorTest
         JSONAssert.assertEquals(actual, EMPTY_VV_FEATURE, false);
     }
 
-    @DataProvider
-    public Object[][] dataProvider()
+    static Stream<Arguments> dataProvider()
     {
         VirtualVehicle vv1 = mock(VirtualVehicle.class);
         VirtualVehicle vv2 = mock(VirtualVehicle.class);
@@ -146,24 +147,24 @@ public class VirtualVehicleContributorTest
         go3.add(fe1);
         go3.add(fe2);
 
-        return new Object[][]{
-            new Object[]{Arrays.asList(vv1), go1, "{\"type\":\"Feature\""
+        return Stream.of(
+            arguments(Arrays.asList(vv1), go1, "{\"type\":\"Feature\""
                 + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
                 + ",\"vvsTotal\":93990,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":26690}"
                 + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                 + "{\"type\":\"Feature\""
                 + ",\"properties\":{\"name\":\"vv0001\",\"state\":\"RUNNING\",\"type\":\"vv\"},\"id\":\"erwtw\"}"
-                + "]}}"},
+                + "]}}"),
 
-            new Object[]{Arrays.asList(vv2), go2, "{\"type\":\"Feature\""
+            arguments(Arrays.asList(vv2), go2, "{\"type\":\"Feature\""
                 + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
                 + ",\"vvsTotal\":93990,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":26690}"
                 + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
                 + "{\"type\":\"Feature\""
                 + ",\"properties\":{\"name\":\"vv0002\",\"state\":\"INIT\",\"type\":\"vv\"},\"id\":\"xcvbav\"}"
-                + "]}}"},
+                + "]}}"),
 
-            new Object[]{Arrays.asList(vv1, vv2), go3, "{\"type\":\"Feature\""
+            arguments(Arrays.asList(vv1, vv2), go3, "{\"type\":\"Feature\""
                 + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460"
                 + ",\"vvsTotal\":93990,\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":26690}"
                 + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":["
@@ -171,16 +172,16 @@ public class VirtualVehicleContributorTest
                 + ",\"properties\":{\"name\":\"vv0001\",\"state\":\"RUNNING\",\"type\":\"vv\"},\"id\":\"erwtw\"},"
                 + "{\"type\":\"Feature\""
                 + ",\"properties\":{\"name\":\"vv0002\",\"state\":\"INIT\",\"type\":\"vv\"},\"id\":\"xcvbav\"}"
-                + "]}}"},
-        };
+                + "]}}"));
     }
 
-    @Test(dataProvider = "dataProvider")
+    @ParameterizedTest
+    @MethodSource("dataProvider")
     public void shouldContribute(List<VirtualVehicle> vvList, List<GeoJsonObject> featureList, String expected)
         throws JsonProcessingException, JSONException
     {
         when(vvRepo.findAllVehicles()).thenReturn(vvList);
-        when(vjc.toGeometryObjectsList(anyListOf(VirtualVehicle.class))).thenReturn(featureList);
+        when(vjc.toGeometryObjectsList(anyList())).thenReturn(featureList);
 
         FeatureCollection featureCollection = mock(FeatureCollection.class);
 

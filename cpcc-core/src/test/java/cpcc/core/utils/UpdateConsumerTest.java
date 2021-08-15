@@ -18,18 +18,21 @@
 
 package cpcc.core.utils;
 
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.h2.util.Task;
 import org.hibernate.Session;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Update Consumer Test implementation.
@@ -39,7 +42,7 @@ public class UpdateConsumerTest
     private Session session;
     private UpdateConsumer<Task> sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         session = mock(Session.class);
@@ -47,23 +50,22 @@ public class UpdateConsumerTest
         sut = new UpdateConsumer<Task>(session);
     }
 
-    @DataProvider
-    public Object[][] taskDataProvider()
+    static Stream<Arguments> taskDataProvider()
     {
         Task t1 = mock(Task.class);
         Task t2 = mock(Task.class);
         Task t3 = mock(Task.class);
         Task t4 = mock(Task.class);
 
-        return new Object[][]{
-            new Object[]{Arrays.asList(t1)},
-            new Object[]{Arrays.asList(t1, t2)},
-            new Object[]{Arrays.asList(t1, t2, t3)},
-            new Object[]{Arrays.asList(t1, t2, t3, t4)},
-        };
+        return Stream.of(
+            arguments(Arrays.asList(t1)),
+            arguments(Arrays.asList(t1, t2)),
+            arguments(Arrays.asList(t1, t2, t3)),
+            arguments(Arrays.asList(t1, t2, t3, t4)));
     }
 
-    @Test(dataProvider = "taskDataProvider")
+    @ParameterizedTest
+    @MethodSource("taskDataProvider")
     public void shouldUpdateTasksInDatabase(List<Task> data)
     {
         List<Task> taskList = new ArrayList<>();

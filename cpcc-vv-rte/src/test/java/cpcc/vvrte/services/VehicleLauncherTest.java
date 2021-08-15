@@ -20,7 +20,7 @@ package cpcc.vvrte.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -39,11 +39,11 @@ import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.hibernate.Session;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.RealVehicleRepository;
@@ -76,7 +76,7 @@ public class VehicleLauncherTest
     private RealVehicle groundStation;
     private JobService jobService;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() throws IOException
     {
         currentDate = new Date();
@@ -222,18 +222,30 @@ public class VehicleLauncherTest
         }
     }
 
-    @Test(expectedExceptions = {VirtualVehicleLaunchException.class},
-        expectedExceptionsMessageRegExp = "Invalid virtual vehicle 'null'")
-    public void shouldThrowVLEIfVirtualVehicleIsNull() throws VirtualVehicleLaunchException, IOException
+    public void shouldThrowVLEIfVirtualVehicleIsNull() throws IOException
     {
-        launcher.start(-1);
+        try
+        {
+            launcher.start(-1);
+            failBecauseExceptionWasNotThrown(VirtualVehicleLaunchException.class);
+        }
+        catch (VirtualVehicleLaunchException e)
+        {
+            assertThat(e).hasMessage("Invalid virtual vehicle 'null'");
+        }
     }
 
-    @Test(expectedExceptions = {VirtualVehicleLaunchException.class},
-        expectedExceptionsMessageRegExp = "Expected vehicle in state INIT, but got RUNNING")
-    public void shouldThrowVLEIfVirtualVehicleHasWrongState() throws VirtualVehicleLaunchException, IOException
+    public void shouldThrowVLEIfVirtualVehicleHasWrongState() throws IOException
     {
-        vehicle.setState(VirtualVehicleState.RUNNING);
-        launcher.start(vehicle.getId());
+        try
+        {
+            vehicle.setState(VirtualVehicleState.RUNNING);
+            launcher.start(vehicle.getId());
+            failBecauseExceptionWasNotThrown(VirtualVehicleLaunchException.class);
+        }
+        catch (VirtualVehicleLaunchException e)
+        {
+            assertThat(e).hasMessage("Expected vehicle in state INIT, but got RUNNING");
+        }
     }
 }

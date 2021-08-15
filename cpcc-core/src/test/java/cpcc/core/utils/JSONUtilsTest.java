@@ -19,15 +19,19 @@
 package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 import org.apache.tapestry5.json.JSONObject;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * JSONUtilsTest
@@ -43,20 +47,19 @@ public class JSONUtilsTest
         cnt.newInstance();
     }
 
-    @DataProvider
-    public Object[][] jsonDataProvider()
+    static Stream<Arguments> jsonDataProvider()
     {
-        return new Object[][]{
-            new Object[]{"{\"a\":1}"},
-            new Object[]{"{\"b\":1,\"a\":2}"},
-            new Object[]{"{\"features\":[{\"properties\":{\"type\":\"depot\"},\"type\":\"Feature\",\"geometry\":"
+        return Stream.of(
+            arguments("{\"a\":1}"),
+            arguments("{\"b\":1,\"a\":2}"),
+            arguments("{\"features\":[{\"properties\":{\"type\":\"depot\"},\"type\":\"Feature\",\"geometry\":"
                 + "{\"type\":\"Point\",\"coordinates\":[-122.42642641067503,37.807478357821374]}}],\"properties\":"
                 + "{\"center\":{\"lng\":-122.4251925945282,\"lat\":37.80787675625266},\"zoom\":17,\"layer\":null},"
-                + "\"type\":\"FeatureCollection\"}"},
-        };
+                + "\"type\":\"FeatureCollection\"}"));
     }
 
-    @Test(dataProvider = "jsonDataProvider")
+    @ParameterizedTest
+    @MethodSource("jsonDataProvider")
     public void shouldConvertJsonObjectsToByteArrays(String jsonString) throws IOException
     {
         JSONObject obj = new JSONObject(jsonString);
@@ -65,17 +68,15 @@ public class JSONUtilsTest
         assertThat(ba).isNotNull().isEqualTo(jsonString.getBytes());
     }
 
-    @DataProvider
-    public Object[][] mapDataProvider()
+    static Stream<Arguments> mapDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
-                new String[][]{{"a", "1"}, {"b", "2"}, {"c", "\"3\""}}, "{\"a\":1,\"b\":2,\"c\":\"3\"}"
-            }
-        };
+        return Stream.of(
+            arguments(
+                new String[][]{{"a", "1"}, {"b", "2"}, {"c", "\"3\""}}, "{\"a\":1,\"b\":2,\"c\":\"3\"}"));
     }
 
-    @Test(dataProvider = "mapDataProvider")
+    @ParameterizedTest
+    @MethodSource("mapDataProvider")
     public void shouldConvertMapToJsonObject(String[][] data, String expected)
     {
         Map<String, String> actual = new TreeMap<String, String>();

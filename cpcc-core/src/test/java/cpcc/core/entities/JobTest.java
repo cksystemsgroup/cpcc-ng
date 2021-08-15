@@ -19,31 +19,33 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class JobTest
+class JobTest
 {
     private String resultText;
 
-    @DataProvider
-    public Object[][] jobDataProvider()
+    static Stream<Arguments> jobDataProvider()
     {
-        return new Object[][]{
-            new Object[]{1, new Date(10000001L), new Date(10000002L), new Date(10000003L), new Date(10000004L),
-                JobStatus.CREATED, "parm1", new byte[]{1, 2, 3, 4}, "queue1"},
-            new Object[]{1, new Date(20000001L), new Date(20000002L), new Date(20000003L), new Date(20000004L),
-                JobStatus.FAILED, "parm2", new byte[]{5, 6, 7, 8}, "queue2"},
-            new Object[]{1, new Date(30000001L), new Date(30000002L), new Date(30000003L), new Date(30000004L),
-                JobStatus.QUEUED, "parm3", new byte[]{2, 4, 6, 8}, "queue3"},
-        };
+        return Stream.of(
+            arguments(1, new Date(10000001L), new Date(10000002L), new Date(10000003L), new Date(10000004L),
+                JobStatus.CREATED, "parm1", new byte[]{1, 2, 3, 4}, "queue1"),
+            arguments(1, new Date(20000001L), new Date(20000002L), new Date(20000003L), new Date(20000004L),
+                JobStatus.FAILED, "parm2", new byte[]{5, 6, 7, 8}, "queue2"),
+            arguments(1, new Date(30000001L), new Date(30000002L), new Date(30000003L), new Date(30000004L),
+                JobStatus.QUEUED, "parm3", new byte[]{2, 4, 6, 8}, "queue3"));
     }
 
-    @Test(dataProvider = "jobDataProvider")
-    public void should(Integer id, Date created, Date queued, Date start, Date end, JobStatus status,
+    @ParameterizedTest
+    @MethodSource("jobDataProvider")
+    void should(Integer id, Date created, Date queued, Date start, Date end, JobStatus status,
         String parameters, byte[] data, String queueName)
     {
         Job sut = new Job();

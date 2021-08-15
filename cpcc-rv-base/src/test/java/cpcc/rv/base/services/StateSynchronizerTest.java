@@ -18,20 +18,24 @@
 
 package cpcc.rv.base.services;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
@@ -55,7 +59,7 @@ public class StateSynchronizerTest
     private RealVehicle rv02;
     private RealVehicleRepository realVehicleRepository;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         String rv01Name = "RV01";
@@ -97,19 +101,18 @@ public class StateSynchronizerTest
 
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_1);
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_2);
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
-    @DataProvider
-    public Object[][] importConfigDataProvider()
+    static Stream<Arguments> importConfigDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new byte[]{11, 12, 13, 14}},
-            new Object[]{new byte[]{21, 22, 23, 24}},
-        };
+        return Stream.of(
+            arguments(new byte[]{11, 12, 13, 14}),
+            arguments(new byte[]{21, 22, 23, 24}));
     }
 
-    @Test(dataProvider = "importConfigDataProvider")
+    @ParameterizedTest
+    @MethodSource("importConfigDataProvider")
     public void shouldImportConfiguratin(byte[] data) throws JobCreationException
     {
         sut.importConfiguration(data);
@@ -129,7 +132,7 @@ public class StateSynchronizerTest
         verify(realVehicleRepository).findAllActiveRealVehicles();
 
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_RV_PARAMETERS);
-        verifyZeroInteractions(logger);
+        verifyNoInteractions(logger);
     }
 
     @Test

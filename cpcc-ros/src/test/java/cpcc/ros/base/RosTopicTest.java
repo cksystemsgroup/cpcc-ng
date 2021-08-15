@@ -19,27 +19,30 @@
 package cpcc.ros.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * RosTopicTest
  */
 public class RosTopicTest
 {
-    @DataProvider
-    public static Object[][] topicDataProvider()
+    static Stream<Arguments> topicDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null, null},
-            new Object[]{"name1", null},
-            new Object[]{null, "topic1"},
-            new Object[]{"name1", "topic1"},
-        };
+        return Stream.of(
+            arguments(null, null),
+            arguments("name1", null),
+            arguments(null, "topic1"),
+            arguments("name1", "topic1"));
     }
 
-    @Test(dataProvider = "topicDataProvider")
+    @ParameterizedTest
+    @MethodSource("topicDataProvider")
     public void shouldStoreNameAndType(String name, String type)
     {
         RosTopic topic = new RosTopic();

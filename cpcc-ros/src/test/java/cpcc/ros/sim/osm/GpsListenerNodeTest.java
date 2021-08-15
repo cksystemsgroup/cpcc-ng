@@ -23,11 +23,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.ros.sim.AnonymousNodeMain;
 import sensor_msgs.NavSatFix;
@@ -44,7 +44,7 @@ public class GpsListenerNodeTest
     private Subscriber<sensor_msgs.NavSatFix> subscriber;
 
     @SuppressWarnings("unchecked")
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         logger = mock(Logger.class);

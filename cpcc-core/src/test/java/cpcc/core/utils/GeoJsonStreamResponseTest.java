@@ -20,14 +20,14 @@ package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.http.services.Response;
 import org.geojson.FeatureCollection;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -63,7 +63,7 @@ public class GeoJsonStreamResponseTest
         Response response = mock(Response.class);
         sut.prepareResponse(response);
 
-        verifyZeroInteractions(response);
+        verifyNoInteractions(response);
 
         byte[] actual = IOUtils.toByteArray(sut.getStream());
 

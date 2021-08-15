@@ -27,9 +27,9 @@ import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.ValueEncoder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.SensorDefinition;
 
@@ -40,7 +40,7 @@ public class SensorDefinitionSelectHelpersTest
     private ValueEncoder<SensorDefinition> encoder;
     private SensorDefinition sensorDefinition;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sensorDefinition = mock(SensorDefinition.class);

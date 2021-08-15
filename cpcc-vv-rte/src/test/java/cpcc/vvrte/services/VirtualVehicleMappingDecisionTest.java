@@ -19,13 +19,16 @@
 package cpcc.vvrte.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.vvrte.base.VirtualVehicleMappingDecision;
@@ -38,24 +41,23 @@ public class VirtualVehicleMappingDecisionTest
 {
     private VirtualVehicleMappingDecision decision;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         decision = new VirtualVehicleMappingDecision();
     }
 
-    @DataProvider
-    public Object[][] mappingDataProvider()
+    static Stream<Arguments> mappingDataProvider()
     {
-        return new Object[][]{
-            new Object[]{false, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}},
-            new Object[]{false, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}},
-            new Object[]{true, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}},
-            new Object[]{true, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}},
-        };
+        return Stream.of(
+            arguments(false, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}),
+            arguments(false, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}),
+            arguments(true, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}),
+            arguments(true, mock(Task.class), new RealVehicle[]{mock(RealVehicle.class)}));
     }
 
-    @Test(dataProvider = "mappingDataProvider")
+    @ParameterizedTest
+    @MethodSource("mappingDataProvider")
     public void shouldStoreData(boolean migration, Task task, RealVehicle[] realVehicle)
     {
         decision.setMigration(migration);

@@ -19,17 +19,20 @@
 package cpcc.vvrte.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertFalse;
 
 import java.lang.reflect.Constructor;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mozilla.javascript.ScriptableObject;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import cpcc.vvrte.entities.VirtualVehicleStorage;
 import sensor_msgs.Image;
@@ -43,7 +46,7 @@ public class VirtualVehicleStorageUtilsTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VirtualVehicleStorageUtils> cnt = VirtualVehicleStorageUtils.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
@@ -72,8 +75,7 @@ public class VirtualVehicleStorageUtilsTest
         assertThat(actual.getData().array()).isEqualTo(data);
     }
 
-    @DataProvider
-    public Object[][] fakeImageDataProvider()
+    static Stream<Arguments> fakeImageDataProvider()
     {
         ScriptableObject content1 = mock(ScriptableObject.class);
         when(content1.get(eq("messageType"), any())).thenReturn(sensor_msgs.Image._TYPE);
@@ -89,15 +91,15 @@ public class VirtualVehicleStorageUtilsTest
 
         VirtualVehicleStorage item3 = mock(VirtualVehicleStorage.class);
 
-        return new Object[][]{
-            new Object[]{null, false},
-            new Object[]{item1, true},
-            new Object[]{item2, false},
-            new Object[]{item3, false},
-        };
+        return Stream.of(
+            arguments(null, false),
+            arguments(item1, true),
+            arguments(item2, false),
+            arguments(item3, false));
     }
 
-    @Test(dataProvider = "fakeImageDataProvider")
+    @ParameterizedTest
+    @MethodSource("fakeImageDataProvider")
     public void shouldFindOutIfItemIsAnImage(VirtualVehicleStorage item, boolean expected)
     {
         boolean actual = VirtualVehicleStorageUtils.isItemAnImage(item);

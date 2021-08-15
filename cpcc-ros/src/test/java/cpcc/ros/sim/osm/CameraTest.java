@@ -19,6 +19,7 @@
 package cpcc.ros.sim.osm;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
@@ -53,10 +55,12 @@ import org.apache.http.protocol.ResponseContent;
 import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
 import org.apache.http.protocol.UriHttpRequestHandlerMapper;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.GeodeticSystem;
@@ -110,7 +114,7 @@ public class CameraTest
     private MyHttpFileHandler testFileHandler;
     private File tempDir;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp() throws Exception
     {
         int port = ProcessUtils.getRandomPortNumber(30000, 60000);
@@ -199,7 +203,7 @@ public class CameraTest
      * 
      * @throws IOException
      */
-    @AfterMethod
+    @AfterEach
     public void teadDown() throws IOException
     {
         requestListenerThread.interrupt();
@@ -258,24 +262,23 @@ public class CameraTest
         }
     }
 
-    @DataProvider
-    public static Object[][] imageDataProvider()
+    static Stream<Arguments> imageDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 0.0), 320, 240, "PNG", height0},
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 10.0), 320, 240, "PNG", height10},
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 20.0), 320, 240, "PNG", height20},
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 40.0), 320, 240, "PNG", height40},
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 90.0), 320, 240, "PNG", height90},
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 120.0), 320, 240, "PNG", height120},
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 150.0), 320, 240, "PNG", height150},
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 200.0), 320, 240, "PNG", height200},
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 200.1), 320, 240, "PNG", height200},
-            new Object[]{new PolarCoordinate(37.80881, -122.42669, 250.0), 320, 240, "PNG", height200},
-        };
+        return Stream.of(
+            arguments(new PolarCoordinate(37.80881, -122.42669, 0.0), 320, 240, "PNG", height0),
+            arguments(new PolarCoordinate(37.80881, -122.42669, 10.0), 320, 240, "PNG", height10),
+            arguments(new PolarCoordinate(37.80881, -122.42669, 20.0), 320, 240, "PNG", height20),
+            arguments(new PolarCoordinate(37.80881, -122.42669, 40.0), 320, 240, "PNG", height40),
+            arguments(new PolarCoordinate(37.80881, -122.42669, 90.0), 320, 240, "PNG", height90),
+            arguments(new PolarCoordinate(37.80881, -122.42669, 120.0), 320, 240, "PNG", height120),
+            arguments(new PolarCoordinate(37.80881, -122.42669, 150.0), 320, 240, "PNG", height150),
+            arguments(new PolarCoordinate(37.80881, -122.42669, 200.0), 320, 240, "PNG", height200),
+            arguments(new PolarCoordinate(37.80881, -122.42669, 200.1), 320, 240, "PNG", height200),
+            arguments(new PolarCoordinate(37.80881, -122.42669, 250.0), 320, 240, "PNG", height200));
     }
 
-    @Test(dataProvider = "imageDataProvider")
+    @ParameterizedTest
+    @MethodSource("imageDataProvider")
     public void shouldGetImageForGivenPositionAndHeight(PolarCoordinate position, int width, int height,
         String imageFormat, String imageName) throws IOException
     {

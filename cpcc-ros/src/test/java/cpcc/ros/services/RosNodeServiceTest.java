@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.tapestry5.commons.ObjectLocator;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.ros.internal.node.client.MasterClient;
 import org.ros.internal.node.response.Response;
 import org.ros.internal.node.response.StatusCode;
@@ -45,8 +47,6 @@ import org.ros.master.client.TopicSystemState;
 import org.ros.namespace.GraphName;
 import org.ros.node.NodeConfiguration;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.Device;
 import cpcc.core.entities.DeviceType;
@@ -82,7 +82,7 @@ public class RosNodeServiceTest
     private NodeConfiguration sonarEmulatorNodeConfiguration;
 
     @SuppressWarnings("serial")
-    @BeforeMethod
+    @BeforeEach
     public void setupTest() throws URISyntaxException, IOException, ParseException
     {
         final int port = 40000 + (int) (Math.random() * 10000.0);
@@ -260,15 +260,20 @@ public class RosNodeServiceTest
         svc.shutdownDevice(device21);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
     public void shouldThrowIAEOnWreckedMasterURI()
     {
         QueryManager qmi = mock(QueryManager.class);
         when(qmi.findParameterByName(Parameter.MASTER_SERVER_URI)).thenReturn(wrongMasterServerURI);
         when(qmi.findParameterByName(Parameter.USE_INTERNAL_ROS_CORE)).thenReturn(useInternalRosCore);
 
-        new RosNodeServiceImpl(logger, qmi, optionsParser, objectLocator);
-
-        failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
+        try
+        {
+            new RosNodeServiceImpl(logger, qmi, optionsParser, objectLocator);
+            failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
+        }
+        catch (IllegalArgumentException e)
+        {
+            assertThat(e).hasMessage("");
+        }
     }
 }

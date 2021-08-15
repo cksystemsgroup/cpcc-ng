@@ -21,7 +21,7 @@ package cpcc.commons.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -61,7 +61,7 @@ public class UriTranslatorTest
     public void shouldStoreNameCorrectly(String name)
     {
         translator = spy(new UriTranslator(name));
-        verifyZeroInteractions(translator);
+        verifyNoInteractions(translator);
         assertThat(translator.getName()).isEqualTo(name);
         verify(translator).getName();
     }

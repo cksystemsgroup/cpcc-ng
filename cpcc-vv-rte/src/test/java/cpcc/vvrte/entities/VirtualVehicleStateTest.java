@@ -19,9 +19,13 @@
 package cpcc.vvrte.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * VirtualVehicleStateTest
@@ -31,39 +35,37 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.INIT
      */
-    @DataProvider
-    public Object[][] validTransitionsFromInitDataprovider()
+    static Stream<Arguments> validTransitionsFromInitDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.RUNNING},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.RUNNING));
     }
 
-    @Test(dataProvider = "validTransitionsFromInitDataprovider")
+    @ParameterizedTest
+    @MethodSource("validTransitionsFromInitDataprovider")
     public void shouldDetectValidTransitionsFromInit(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.INIT.canTraverseTo(state);
         assertThat(result).isTrue();
     }
 
-    @DataProvider
-    public Object[][] invalidTransitionsFromInitDataprovider()
+    static Stream<Arguments> invalidTransitionsFromInitDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.INIT},
-            //            new Object[]{VirtualVehicleState.WAITING},
-            new Object[]{VirtualVehicleState.MIGRATION_AWAITED_SND},
-            new Object[]{VirtualVehicleState.MIGRATING_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED_SND},
-            new Object[]{VirtualVehicleState.FINISHED},
-            new Object[]{VirtualVehicleState.INTERRUPTED},
-            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
-            new Object[]{VirtualVehicleState.DEFECTIVE},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.INIT),
+            //            arguments(VirtualVehicleState.WAITING),
+            arguments(VirtualVehicleState.MIGRATION_AWAITED_SND),
+            arguments(VirtualVehicleState.MIGRATING_SND),
+            arguments(VirtualVehicleState.MIGRATION_INTERRUPTED_SND),
+            arguments(VirtualVehicleState.MIGRATION_COMPLETED_SND),
+            arguments(VirtualVehicleState.FINISHED),
+            arguments(VirtualVehicleState.INTERRUPTED),
+            arguments(VirtualVehicleState.TASK_COMPLETION_AWAITED),
+            arguments(VirtualVehicleState.DEFECTIVE));
     }
 
-    @Test(dataProvider = "invalidTransitionsFromInitDataprovider")
+    @ParameterizedTest
+    @MethodSource("invalidTransitionsFromInitDataprovider")
     public void shouldDetectInvalidTransitionsFromInit(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.INIT.canTraverseTo(state);
@@ -73,39 +75,37 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.RUNNING
      */
-    @DataProvider
-    public Object[][] validTransitionsFromRunningDataprovider()
+    static Stream<Arguments> validTransitionsFromRunningDataprovider()
     {
-        return new Object[][]{
-            //            new Object[]{VirtualVehicleState.WAITING},
-            new Object[]{VirtualVehicleState.FINISHED},
-        };
+        return Stream.of(
+            //            arguments(VirtualVehicleState.WAITING),
+            arguments(VirtualVehicleState.FINISHED));
     }
 
-    @Test(dataProvider = "validTransitionsFromRunningDataprovider")
+    @ParameterizedTest
+    @MethodSource("validTransitionsFromRunningDataprovider")
     public void shouldDetectValidTransitionsFromRunning(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.RUNNING.canTraverseTo(state);
         assertThat(result).isTrue();
     }
 
-    @DataProvider
-    public Object[][] invalidTransitionsFromRunningDataprovider()
+    static Stream<Arguments> invalidTransitionsFromRunningDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.INIT},
-            new Object[]{VirtualVehicleState.RUNNING},
-            new Object[]{VirtualVehicleState.MIGRATION_AWAITED_SND},
-            new Object[]{VirtualVehicleState.MIGRATING_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED_SND},
-            new Object[]{VirtualVehicleState.INTERRUPTED},
-            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
-            new Object[]{VirtualVehicleState.DEFECTIVE},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.INIT),
+            arguments(VirtualVehicleState.RUNNING),
+            arguments(VirtualVehicleState.MIGRATION_AWAITED_SND),
+            arguments(VirtualVehicleState.MIGRATING_SND),
+            arguments(VirtualVehicleState.MIGRATION_INTERRUPTED_SND),
+            arguments(VirtualVehicleState.MIGRATION_COMPLETED_SND),
+            arguments(VirtualVehicleState.INTERRUPTED),
+            arguments(VirtualVehicleState.TASK_COMPLETION_AWAITED),
+            arguments(VirtualVehicleState.DEFECTIVE));
     }
 
-    @Test(dataProvider = "invalidTransitionsFromRunningDataprovider")
+    @ParameterizedTest
+    @MethodSource("invalidTransitionsFromRunningDataprovider")
     public void shouldDetectInvalidTransitionsFromRunning(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.RUNNING.canTraverseTo(state);
@@ -115,39 +115,37 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.WAITING
      */
-    @DataProvider
-    public Object[][] validTransitionsFromWaitingDataprovider()
+    static Stream<Arguments> validTransitionsFromWaitingDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.RUNNING},
-            new Object[]{VirtualVehicleState.MIGRATING_SND},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.RUNNING),
+            arguments(VirtualVehicleState.MIGRATING_SND));
     }
 
-    //    @Test(dataProvider = "validTransitionsFromWaitingDataprovider")
+    //    @ParameterizedTest
+    //    @MethodSource("validTransitionsFromWaitingDataprovider")
     //    public void shouldDetectValidTransitionsFromWaiting(VirtualVehicleState state)
     //    {
     //        boolean result = VirtualVehicleState.WAITING.canTraverseTo(state);
     //        assertThat(result).isTrue();
     //    }
 
-    //    @DataProvider
-    //    public Object[][] invalidTransitionsFromWaitingDataprovider()
+    //    static Stream<Arguments> invalidTransitionsFromWaitingDataprovider()
     //    {
-    //        return new Object[][]{
-    //            new Object[]{VirtualVehicleState.INIT},
-    //            //            new Object[]{VirtualVehicleState.WAITING},
-    //            new Object[]{VirtualVehicleState.MIGRATION_AWAITED_SND},
-    //            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED_SND},
-    //            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED_SND},
-    //            new Object[]{VirtualVehicleState.FINISHED},
-    //            new Object[]{VirtualVehicleState.INTERRUPTED},
-    //            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
-    //            new Object[]{VirtualVehicleState.DEFECTIVE},
-    //        };
+    //        return Stream.of(
+    //            arguments(VirtualVehicleState.INIT),
+    //            //            arguments(VirtualVehicleState.WAITING),
+    //            arguments(VirtualVehicleState.MIGRATION_AWAITED_SND),
+    //            arguments(VirtualVehicleState.MIGRATION_INTERRUPTED_SND),
+    //            arguments(VirtualVehicleState.MIGRATION_COMPLETED_SND),
+    //            arguments(VirtualVehicleState.FINISHED),
+    //            arguments(VirtualVehicleState.INTERRUPTED),
+    //            arguments(VirtualVehicleState.TASK_COMPLETION_AWAITED),
+    //            arguments(VirtualVehicleState.DEFECTIVE));
     //    }
 
-    //    @Test(dataProvider = "invalidTransitionsFromWaitingDataprovider")
+    //    @ParameterizedTest
+    //    @MethodSource("invalidTransitionsFromWaitingDataprovider")
     //    public void shouldDetectInvalidTransitionsFromWaiting(VirtualVehicleState state)
     //    {
     //        boolean result = VirtualVehicleState.WAITING.canTraverseTo(state);
@@ -157,39 +155,37 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.MIGRATION_AWAITED
      */
-    @DataProvider
-    public Object[][] validTransitionsFromMigrationAwaitedDataprovider()
+    static Stream<Arguments> validTransitionsFromMigrationAwaitedDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.MIGRATING_SND},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.MIGRATING_SND));
     }
 
-    @Test(dataProvider = "validTransitionsFromMigrationAwaitedDataprovider")
+    @ParameterizedTest
+    @MethodSource("validTransitionsFromMigrationAwaitedDataprovider")
     public void shouldDetectValidTransitionsFromMigrationAwaited(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_AWAITED_SND.canTraverseTo(state);
         assertThat(result).isTrue();
     }
 
-    @DataProvider
-    public Object[][] invalidTransitionsFromMigrationAwaitedDataprovider()
+    static Stream<Arguments> invalidTransitionsFromMigrationAwaitedDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.INIT},
-            new Object[]{VirtualVehicleState.RUNNING},
-            //            new Object[]{VirtualVehicleState.WAITING},
-            new Object[]{VirtualVehicleState.MIGRATION_AWAITED_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED_SND},
-            new Object[]{VirtualVehicleState.FINISHED},
-            new Object[]{VirtualVehicleState.INTERRUPTED},
-            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
-            new Object[]{VirtualVehicleState.DEFECTIVE},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.INIT),
+            arguments(VirtualVehicleState.RUNNING),
+            //            arguments(VirtualVehicleState.WAITING),
+            arguments(VirtualVehicleState.MIGRATION_AWAITED_SND),
+            arguments(VirtualVehicleState.MIGRATION_INTERRUPTED_SND),
+            arguments(VirtualVehicleState.MIGRATION_COMPLETED_SND),
+            arguments(VirtualVehicleState.FINISHED),
+            arguments(VirtualVehicleState.INTERRUPTED),
+            arguments(VirtualVehicleState.TASK_COMPLETION_AWAITED),
+            arguments(VirtualVehicleState.DEFECTIVE));
     }
 
-    @Test(dataProvider = "invalidTransitionsFromMigrationAwaitedDataprovider")
+    @ParameterizedTest
+    @MethodSource("invalidTransitionsFromMigrationAwaitedDataprovider")
     public void shouldDetectInvalidTransitionsFromMigrationAwaited(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_AWAITED_SND.canTraverseTo(state);
@@ -199,39 +195,37 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.MIGRATING
      */
-    @DataProvider
-    public Object[][] validTransitionsFromMigratingDataprovider()
+    static Stream<Arguments> validTransitionsFromMigratingDataprovider()
     {
-        return new Object[][]{
-            //            new Object[]{VirtualVehicleState.WAITING},
-            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED_SND},
-        };
+        return Stream.of(
+            //            arguments(VirtualVehicleState.WAITING),
+            arguments(VirtualVehicleState.MIGRATION_INTERRUPTED_SND));
     }
 
-    @Test(dataProvider = "validTransitionsFromMigratingDataprovider")
+    @ParameterizedTest
+    @MethodSource("validTransitionsFromMigratingDataprovider")
     public void shouldDetectValidTransitionsFromMigrating(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATING_SND.canTraverseTo(state);
         assertThat(result).isTrue();
     }
 
-    @DataProvider
-    public Object[][] invalidTransitionsFromMigratingDataprovider()
+    static Stream<Arguments> invalidTransitionsFromMigratingDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.INIT},
-            new Object[]{VirtualVehicleState.RUNNING},
-            new Object[]{VirtualVehicleState.MIGRATION_AWAITED_SND},
-            new Object[]{VirtualVehicleState.MIGRATING_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED_SND},
-            new Object[]{VirtualVehicleState.FINISHED},
-            new Object[]{VirtualVehicleState.INTERRUPTED},
-            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
-            new Object[]{VirtualVehicleState.DEFECTIVE},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.INIT),
+            arguments(VirtualVehicleState.RUNNING),
+            arguments(VirtualVehicleState.MIGRATION_AWAITED_SND),
+            arguments(VirtualVehicleState.MIGRATING_SND),
+            arguments(VirtualVehicleState.MIGRATION_COMPLETED_SND),
+            arguments(VirtualVehicleState.FINISHED),
+            arguments(VirtualVehicleState.INTERRUPTED),
+            arguments(VirtualVehicleState.TASK_COMPLETION_AWAITED),
+            arguments(VirtualVehicleState.DEFECTIVE));
     }
 
-    @Test(dataProvider = "invalidTransitionsFromMigratingDataprovider")
+    @ParameterizedTest
+    @MethodSource("invalidTransitionsFromMigratingDataprovider")
     public void shouldDetectInvalidTransitionsFromMigrating(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATING_SND.canTraverseTo(state);
@@ -241,69 +235,67 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.MIGRATION_INTERRUPTED
      */
-    @DataProvider
-    public Object[][] validTransitionsFromMigrationInterruptedDataprovider()
+    static Stream<Arguments> validTransitionsFromMigrationInterruptedDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.MIGRATION_AWAITED_SND},
-            //            new Object[]{VirtualVehicleState.WAITING},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.MIGRATION_AWAITED_SND)
+        //            arguments(VirtualVehicleState.WAITING),
+        );
     }
 
-    @Test(dataProvider = "validTransitionsFromMigrationInterruptedDataprovider")
+    @ParameterizedTest
+    @MethodSource("validTransitionsFromMigrationInterruptedDataprovider")
     public void shouldDetectValidTransitionsFromMigrationInterrupted(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_INTERRUPTED_SND.canTraverseTo(state);
         assertThat(result).isTrue();
     }
 
-    @DataProvider
-    public Object[][] invalidTransitionsFromMigrationInterruptedDataprovider()
+    static Stream<Arguments> invalidTransitionsFromMigrationInterruptedDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.INIT},
-            new Object[]{VirtualVehicleState.RUNNING},
-            new Object[]{VirtualVehicleState.MIGRATING_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED_SND},
-            new Object[]{VirtualVehicleState.FINISHED},
-            new Object[]{VirtualVehicleState.INTERRUPTED},
-            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
-            new Object[]{VirtualVehicleState.DEFECTIVE},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.INIT),
+            arguments(VirtualVehicleState.RUNNING),
+            arguments(VirtualVehicleState.MIGRATING_SND),
+            arguments(VirtualVehicleState.MIGRATION_INTERRUPTED_SND),
+            arguments(VirtualVehicleState.MIGRATION_COMPLETED_SND),
+            arguments(VirtualVehicleState.FINISHED),
+            arguments(VirtualVehicleState.INTERRUPTED),
+            arguments(VirtualVehicleState.TASK_COMPLETION_AWAITED),
+            arguments(VirtualVehicleState.DEFECTIVE));
     }
 
-    @Test(dataProvider = "invalidTransitionsFromMigrationInterruptedDataprovider")
+    @ParameterizedTest
+    @MethodSource("invalidTransitionsFromMigrationInterruptedDataprovider")
     public void shouldDetectInvalidTransitionsFromMigrationInterrupted(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_INTERRUPTED_SND.canTraverseTo(state);
         assertThat(result).isFalse();
     }
 
-    @DataProvider
-    public Object[][] allStatesDataprovider()
+    static Stream<Arguments> allStatesDataprovider()
     {
-        return new Object[][]{
-            new Object[]{VirtualVehicleState.INIT},
-            new Object[]{VirtualVehicleState.RUNNING},
-            //            new Object[]{VirtualVehicleState.WAITING},
-            new Object[]{VirtualVehicleState.MIGRATION_AWAITED_SND},
-            new Object[]{VirtualVehicleState.MIGRATING_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_INTERRUPTED_SND},
-            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED_SND},
-            new Object[]{VirtualVehicleState.MIGRATING_RCV},
-            new Object[]{VirtualVehicleState.MIGRATION_COMPLETED_RCV},
-            new Object[]{VirtualVehicleState.FINISHED},
-            new Object[]{VirtualVehicleState.INTERRUPTED},
-            new Object[]{VirtualVehicleState.TASK_COMPLETION_AWAITED},
-            new Object[]{VirtualVehicleState.DEFECTIVE},
-        };
+        return Stream.of(
+            arguments(VirtualVehicleState.INIT),
+            arguments(VirtualVehicleState.RUNNING),
+            //            arguments(VirtualVehicleState.WAITING),
+            arguments(VirtualVehicleState.MIGRATION_AWAITED_SND),
+            arguments(VirtualVehicleState.MIGRATING_SND),
+            arguments(VirtualVehicleState.MIGRATION_INTERRUPTED_SND),
+            arguments(VirtualVehicleState.MIGRATION_COMPLETED_SND),
+            arguments(VirtualVehicleState.MIGRATING_RCV),
+            arguments(VirtualVehicleState.MIGRATION_COMPLETED_RCV),
+            arguments(VirtualVehicleState.FINISHED),
+            arguments(VirtualVehicleState.INTERRUPTED),
+            arguments(VirtualVehicleState.TASK_COMPLETION_AWAITED),
+            arguments(VirtualVehicleState.DEFECTIVE));
     }
 
     /*
      * VirtualVehicleState.MIGRATION_COMPLETED
      */
-    @Test(dataProvider = "allStatesDataprovider")
+    @ParameterizedTest
+    @MethodSource("allStatesDataprovider")
     public void shouldDetectInvalidTransitionsFromMigrationCompleted(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_COMPLETED_SND.canTraverseTo(state);
@@ -313,7 +305,8 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.FINISHED
      */
-    @Test(dataProvider = "allStatesDataprovider")
+    @ParameterizedTest
+    @MethodSource("allStatesDataprovider")
     public void shouldDetectInvalidTransitionsFromFinished(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.FINISHED.canTraverseTo(state);
@@ -323,7 +316,8 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.INTERRUPTED
      */
-    @Test(dataProvider = "allStatesDataprovider")
+    @ParameterizedTest
+    @MethodSource("allStatesDataprovider")
     public void shouldDetectValidTransitionsFromInterrupted(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.INTERRUPTED.canTraverseTo(state);
@@ -333,7 +327,8 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.TASK_COMPLETION_AWAITED
      */
-    @Test(dataProvider = "allStatesDataprovider")
+    @ParameterizedTest
+    @MethodSource("allStatesDataprovider")
     public void shouldDetectValidTransitionsFromTaskCompletionAwaited(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.TASK_COMPLETION_AWAITED.canTraverseTo(state);
@@ -343,7 +338,8 @@ public class VirtualVehicleStateTest
     /*
      * VirtualVehicleState.DEFECTIVE
      */
-    @Test(dataProvider = "allStatesDataprovider")
+    @ParameterizedTest
+    @MethodSource("allStatesDataprovider")
     public void shouldDetectInvalidTransitionsFromDefective(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.DEFECTIVE.canTraverseTo(state);

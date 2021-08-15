@@ -19,34 +19,36 @@
 package cpcc.core.services.opts;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.math.BigDecimal;
+import java.util.stream.Stream;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * TokenTest
  */
 public class TokenTest
 {
-    @DataProvider
-    public Object[][] tokenDataProvider()
+    static Stream<Arguments> tokenDataProvider()
     {
-        return new Object[][]{
-            new Object[]{Symbol.EQUALS, Symbol.EQUALS.getSymbolString(), null},
-            new Object[]{Symbol.LEFT_PAREN, Symbol.LEFT_PAREN.getSymbolString(), null},
-            new Object[]{Symbol.RIGHT_PAREN, Symbol.RIGHT_PAREN.getSymbolString(), null},
-            new Object[]{Symbol.SEMICOLON, Symbol.SEMICOLON.getSymbolString(), null},
-            new Object[]{Symbol.COLON, Symbol.COLON.getSymbolString(), null},
-            new Object[]{Symbol.COMMA, Symbol.COMMA.getSymbolString(), null},
-            new Object[]{Symbol.NUMBER, "3.14", new BigDecimal(3.14)},
-            new Object[]{Symbol.IDENT, "anIdentifier", null},
-            new Object[]{Symbol.LITERAL, "aLiteral", null},
-        };
+        return Stream.of(
+            arguments(Symbol.EQUALS, Symbol.EQUALS.getSymbolString(), null),
+            arguments(Symbol.LEFT_PAREN, Symbol.LEFT_PAREN.getSymbolString(), null),
+            arguments(Symbol.RIGHT_PAREN, Symbol.RIGHT_PAREN.getSymbolString(), null),
+            arguments(Symbol.SEMICOLON, Symbol.SEMICOLON.getSymbolString(), null),
+            arguments(Symbol.COLON, Symbol.COLON.getSymbolString(), null),
+            arguments(Symbol.COMMA, Symbol.COMMA.getSymbolString(), null),
+            arguments(Symbol.NUMBER, "3.14", new BigDecimal(3.14)),
+            arguments(Symbol.IDENT, "anIdentifier", null),
+            arguments(Symbol.LITERAL, "aLiteral", null));
     }
 
-    @Test(dataProvider = "tokenDataProvider")
+    @ParameterizedTest
+    @MethodSource("tokenDataProvider")
     public void shouldStoreData(Symbol symbol, String itemString, BigDecimal number)
     {
         Token token = new Token(symbol, itemString, number);
@@ -65,7 +67,8 @@ public class TokenTest
         }
     }
 
-    @Test(dataProvider = "tokenDataProvider")
+    @ParameterizedTest
+    @MethodSource("tokenDataProvider")
     public void shouldCopyDataViaConstructor(Symbol symbol, String itemString, BigDecimal number)
     {
         Token helperToken = new Token(symbol, itemString, number);
@@ -85,7 +88,8 @@ public class TokenTest
         }
     }
 
-    @Test(dataProvider = "tokenDataProvider")
+    @ParameterizedTest
+    @MethodSource("tokenDataProvider")
     public void shouldCopyData(Symbol symbol, String itemString, BigDecimal number)
     {
         Token helperToken = new Token(symbol, itemString, number);

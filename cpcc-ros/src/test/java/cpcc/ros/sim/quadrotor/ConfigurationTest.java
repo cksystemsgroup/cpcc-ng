@@ -4,7 +4,7 @@
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
+// the Free Software Foundation; either version 2 of the License, offset(or
 // (at your option) any later version.
 //
 // This program is distributed in the hope that it will be useful,
@@ -18,16 +18,16 @@
 
 package cpcc.ros.sim.quadrotor;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
 import org.ros.node.NodeConfiguration;
-import org.testng.annotations.Test;
 
 import cpcc.core.utils.GeodeticSystem;
 
@@ -65,24 +65,24 @@ public class ConfigurationTest
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
         Configuration cfg = new Configuration(nodeConfiguration, CONFIG);
 
-        assertEquals(cfg.getBatteryCapacity(), 41.3, 1E-4);
-        assertTrue(cfg.getGeodeticSystem() instanceof GeodeticSystem);
-        assertEquals(cfg.getHoverPower(), 179.0, 1E-3);
-        assertEquals(cfg.getIdlePower(), 17.0, 1E-3);
-        assertEquals(cfg.getLandingAcceleration(), 0.5, 1E-3);
-        assertEquals(cfg.getLandingVelocity(), 1.0, 1E-3);
-        assertEquals(cfg.getMass(), 2.2, 1E-3);
-        assertEquals(cfg.getMaxAcceleration(), 2.0, 1E-3);
-        assertEquals(cfg.getMaxVelocity(), 10.0, 1E-3);
-        assertEquals(cfg.getOrigin().getLatitude(), 37.80806, 1E-8);
-        assertEquals(cfg.getOrigin().getLongitude(), -122.42661, 1E-8);
-        assertEquals(cfg.getOrigin().getAltitude(), 0.3, 1E-8);
-        assertEquals(cfg.getPrecision(), 3.0, 1E-3);
-        assertEquals(cfg.getRechargingTime(), 40.0, 1E-3);
-        assertEquals(cfg.getTakeOffAcceleration(), 1.3, 1E-3);
-        assertEquals(cfg.getTakeOffHeight(), 10.0, 1E-3);
-        assertEquals(cfg.getTakeOffVelocity(), 2.7, 1E-3);
-        assertEquals(cfg.getTopicRoot(), "/mav93");
-        assertEquals(cfg.getUpdateCycle(), 100);
+        assertThat(cfg.getBatteryCapacity()).isEqualTo(41.3, offset(1E-4));
+        assertThat(cfg.getGeodeticSystem() instanceof GeodeticSystem);
+        assertThat(cfg.getHoverPower()).isEqualTo(179.0, offset(1E-3));
+        assertThat(cfg.getIdlePower()).isEqualTo(17.0, offset(1E-3));
+        assertThat(cfg.getLandingAcceleration()).isEqualTo(0.5, offset(1E-3));
+        assertThat(cfg.getLandingVelocity()).isEqualTo(1.0, offset(1E-3));
+        assertThat(cfg.getMass()).isEqualTo(2.2, offset(1E-3));
+        assertThat(cfg.getMaxAcceleration()).isEqualTo(2.0, offset(1E-3));
+        assertThat(cfg.getMaxVelocity()).isEqualTo(10.0, offset(1E-3));
+        assertThat(cfg.getOrigin().getLatitude()).isEqualTo(37.80806, offset(1E-8));
+        assertThat(cfg.getOrigin().getLongitude()).isEqualTo(-122.42661, offset(1E-8));
+        assertThat(cfg.getOrigin().getAltitude()).isEqualTo(0.3, offset(1E-8));
+        assertThat(cfg.getPrecision()).isEqualTo(3.0, offset(1E-3));
+        assertThat(cfg.getRechargingTime()).isEqualTo(40.0, offset(1E-3));
+        assertThat(cfg.getTakeOffAcceleration()).isEqualTo(1.3, offset(1E-3));
+        assertThat(cfg.getTakeOffHeight()).isEqualTo(10.0, offset(1E-3));
+        assertThat(cfg.getTakeOffVelocity()).isEqualTo(2.7, offset(1E-3));
+        assertThat(cfg.getTopicRoot()).isEqualTo("/mav93");
+        assertThat(cfg.getUpdateCycle()).isEqualTo(100);
     }
 }

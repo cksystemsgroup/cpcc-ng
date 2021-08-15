@@ -32,7 +32,7 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class TarArchiveDemo
 {

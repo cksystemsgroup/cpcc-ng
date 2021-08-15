@@ -66,19 +66,17 @@
 		<httpclient-version>4.5.13</httpclient-version>
 		<java-version>1.8</java-version>
 		<javax.mail.version>1.4.7</javax.mail.version>
+		<junit.jupiter.version>5.7.2</junit.jupiter.version>
 		<liquibase-version>4.4.0</liquibase-version>
 		<logback-version>1.2.3</logback-version>
 		<mockito-version>3.11.2</mockito-version>
-		<powermock.version>2.0.9</powermock.version>
-		<powermock-testng.version>2.0.9</powermock-testng.version>
+		<mockserver-version>5.11.1</mockserver-version>
 		<rosjava-version>0.0.6</rosjava-version>
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
 		<slf4j-version>1.7.31</slf4j-version>
 		<snakeyaml-version>1.29</snakeyaml-version>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-		<sonar.testng.reportsPath>target/site</sonar.testng.reportsPath>
 		<tapestry-release-version>5.7.2</tapestry-release-version>
-		<testng-release-version>7.4.0</testng-release-version>
 		<tomcat.version>9.0.50</tomcat.version>
 	</properties>
 
@@ -149,8 +147,35 @@
 				<version>1.7.13</version>
 			</dependency>
 			<dependency>
+				<groupId>org.mock-server</groupId>
+				<artifactId>mockserver-netty</artifactId>
+				<version>${mockserver-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mock-server</groupId>
+				<artifactId>mockserver-client-java</artifactId>
+				<version>${mockserver-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mock-server</groupId>
+				<artifactId>mockserver-junit-jupiter</artifactId>
+				<version>${mockserver-version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
+				<version>${mockito-version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-inline</artifactId>
+				<version>${mockito-version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-junit-jupiter</artifactId>
 				<version>${mockito-version}</version>
 				<scope>test</scope>
 			</dependency>
@@ -179,63 +204,33 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.testng</groupId>
-				<artifactId>testng</artifactId>
-				<version>${testng-release-version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-core</artifactId>
-				<version>${powermock.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-testng</artifactId>
-				<version>${powermock.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-api-mockito</artifactId>
-				<version>${powermock.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-mockito-release-full</artifactId>
-				<version>${powermock.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-test-easymock-testng</artifactId>
-				<version>${powermock-testng.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-testng-agent</artifactId>
-				<version>${powermock-testng.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.powermock</groupId>
-				<artifactId>powermock-module-javaagent</artifactId>
-				<version>${powermock.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.easymock</groupId>
-				<artifactId>easymock</artifactId>
-				<version>${easymock-version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.tapestry</groupId>
 				<artifactId>tapestry-test</artifactId>
 				<version>${tapestry-release-version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>${junit.jupiter.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-params</artifactId>
+				<version>${junit.jupiter.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-api</artifactId>
+				<version>${junit.jupiter.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.jupiter</groupId>
+				<artifactId>junit-jupiter-engine</artifactId>
+				<version>${junit.jupiter.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -313,9 +308,6 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<!-- <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-core</artifactId> <version>4.3.11.Final</version> 
-				</dependency> <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-validator</artifactId> <version>4.3.2.Final</version> 
-				</dependency> -->
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
@@ -450,12 +442,6 @@
 				<version>1.7</version>
 			</dependency>
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.13.2</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
 				<groupId>org.awaitility</groupId>
 				<artifactId>awaitility</artifactId>
 				<version>${awaitility-version}</version>
@@ -472,8 +458,23 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

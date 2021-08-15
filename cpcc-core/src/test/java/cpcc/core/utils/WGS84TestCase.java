@@ -20,19 +20,23 @@ package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,28 +51,26 @@ public class WGS84TestCase
 {
     GeodeticSystem gs;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         gs = new WGS84();
     }
 
-    @DataProvider
-    public Object[][] polarAndRectangularDataProvider()
+    static Stream<Arguments> polarAndRectangularDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new PolarCoordinate(47.99043439493213, 12.93670580800686, 435.94417220),
-                new CartesianCoordinate(4168246.0564496145, 957466.6063627704, 4716488.496489645)
-            },
-        };
+                new CartesianCoordinate(4168246.0564496145, 957466.6063627704, 4716488.496489645)));
     };
 
     /**
      * This test case verifies the implementation of the rectangularToPolarCoordinates() and
      * polarToRectangularCoordinates() methods of class WGS84.
      */
-    @Test(dataProvider = "polarAndRectangularDataProvider")
+    @ParameterizedTest
+    @MethodSource("polarAndRectangularDataProvider")
     public void shouldConvertCoodinates(PolarCoordinate wgs, CartesianCoordinate rect)
     {
         PolarCoordinate pos = gs.rectangularToPolarCoordinates(rect);
@@ -106,31 +108,28 @@ public class WGS84TestCase
         assertThat(elevation).isEqualTo(-3.1902590577710233, offset(1E-9));
     }
 
-    @DataProvider
-    public Object[][] walkAroundDataProvider()
+    static Stream<Arguments> walkAroundDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new PolarCoordinate(48, 13, 1010),
                 new CartesianCoordinate(100, 0, 0),
-                new PolarCoordinate(47.99910182694469, 13, 1010)
-            },
-            new Object[]{
+                new PolarCoordinate(47.99910182694469, 13, 1010)),
+            arguments(
                 new PolarCoordinate(48, 13, 1010),
                 new CartesianCoordinate(0, 100, 0),
-                new PolarCoordinate(48, 13.001342298568892, 1010)},
-            new Object[]{
+                new PolarCoordinate(48, 13.001342298568892, 1010)),
+            arguments(
                 new PolarCoordinate(48, 13, 1010),
                 new CartesianCoordinate(0, 0, 100),
-                new PolarCoordinate(48, 13, 1110)
-            },
-        };
+                new PolarCoordinate(48, 13, 1110)));
     };
 
     /**
      * This test verifies the walk() method.
      */
-    @Test(dataProvider = "walkAroundDataProvider")
+    @ParameterizedTest
+    @MethodSource("walkAroundDataProvider")
     public void shouldWalkAround(PolarCoordinate startPos, CartesianCoordinate way, PolarCoordinate destPos)
     {
         PolarCoordinate b = gs.walk(startPos, way.getX(), way.getY(), way.getZ());
@@ -139,25 +138,24 @@ public class WGS84TestCase
         assertThat(b.getAltitude()).isEqualTo(destPos.getAltitude(), offset(1E-8));
     }
 
-    @DataProvider
-    public Object[][] polarCoordinatesDataProvider()
+    static Stream<Arguments> polarCoordinatesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new PolarCoordinate(48.001, 13.002, 10)},
-            new Object[]{new PolarCoordinate(48.001, -12.002, 10)},
-            new Object[]{new PolarCoordinate(48.001, -80.002, 10)},
-            new Object[]{new PolarCoordinate(48.001, -122.002, 10)},
-            new Object[]{new PolarCoordinate(-89.001, 80.002, 10)},
-            new Object[]{new PolarCoordinate(89.001, 80.002, 10)},
-            new Object[]{new PolarCoordinate(-89.001, 179.992, 10)},
-            new Object[]{new PolarCoordinate(-89.001, -179.992, 10)},
-            new Object[]{new PolarCoordinate(89.001, -179.992, 10)},
-            new Object[]{new PolarCoordinate(-89.001, 44.992, 10)},
-            new Object[]{new PolarCoordinate(-89.001, -44.992, 10)},
-        };
+        return Stream.of(
+            arguments(new PolarCoordinate(48.001, 13.002, 10)),
+            arguments(new PolarCoordinate(48.001, -12.002, 10)),
+            arguments(new PolarCoordinate(48.001, -80.002, 10)),
+            arguments(new PolarCoordinate(48.001, -122.002, 10)),
+            arguments(new PolarCoordinate(-89.001, 80.002, 10)),
+            arguments(new PolarCoordinate(89.001, 80.002, 10)),
+            arguments(new PolarCoordinate(-89.001, 179.992, 10)),
+            arguments(new PolarCoordinate(-89.001, -179.992, 10)),
+            arguments(new PolarCoordinate(89.001, -179.992, 10)),
+            arguments(new PolarCoordinate(-89.001, 44.992, 10)),
+            arguments(new PolarCoordinate(-89.001, -44.992, 10)));
     };
 
-    @Test(dataProvider = "polarCoordinatesDataProvider")
+    @ParameterizedTest
+    @MethodSource("polarCoordinatesDataProvider")
     public void shouldConvertCoordinatesToAndFro(PolarCoordinate pos)
     {
         CartesianCoordinate cartA = gs.polarToRectangularCoordinates(pos);
@@ -174,30 +172,25 @@ public class WGS84TestCase
             .isEqualTo(pos.getAltitude(), offset(1E-4));
     }
 
-    @DataProvider
-    public Object[][] specialCasesDataProvider()
+    static Stream<Arguments> specialCasesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new CartesianCoordinate(0, 0, 1),
-                new PolarCoordinate(90.0, 0.0, 1.0 - 6356752.3142)
-            },
-            new Object[]{
+                new PolarCoordinate(90.0, 0.0, 1.0 - 6356752.3142)),
+            arguments(
                 new CartesianCoordinate(0, 0, -1),
-                new PolarCoordinate(-90.0, 0.0, -1.0 + 6356752.3142)
-            },
-            new Object[]{
+                new PolarCoordinate(-90.0, 0.0, -1.0 + 6356752.3142)),
+            arguments(
                 new CartesianCoordinate(0, 1, 1),
-                new PolarCoordinate(-45.38862666932452, 90.0, -6388982.402021714)
-            },
-            new Object[]{
+                new PolarCoordinate(-45.38862666932452, 90.0, -6388982.402021714)),
+            arguments(
                 new CartesianCoordinate(1, 0, 1),
-                new PolarCoordinate(-45.38862666932452, 0.0, -6388982.402021714)
-            },
-        };
+                new PolarCoordinate(-45.38862666932452, 0.0, -6388982.402021714)));
     };
 
-    @Test(dataProvider = "specialCasesDataProvider")
+    @ParameterizedTest
+    @MethodSource("specialCasesDataProvider")
     public void shouldConsiderConvertingOfSpecialCases(CartesianCoordinate cartA, PolarCoordinate posA)
     {
         PolarCoordinate result = gs.rectangularToPolarCoordinates(cartA);
@@ -212,29 +205,25 @@ public class WGS84TestCase
             .isEqualTo(posA.getAltitude(), offset(1E-3));
     }
 
-    @DataProvider
-    public Object[][] distancesDataProvider()
+    static Stream<Arguments> distancesDataProvider()
     {
-        return new Object[][]{
-            new Object[]{
+        return Stream.of(
+            arguments(
                 new PolarCoordinate(48.0, 13.0, 1010.0),
                 new PolarCoordinate(47.99910182694469, 13.0, 1010.0),
-                100.0D, 2E-1
-            },
-            new Object[]{
+                100.0D, 2E-1),
+            arguments(
                 new PolarCoordinate(48.0, 13.0, 1010.0),
                 new PolarCoordinate(48.0, 13.001342298568892, 1010.0),
-                100.0D, 2E-1
-            },
-            new Object[]{
+                100.0D, 2E-1),
+            arguments(
                 new PolarCoordinate(48.0, 13.0, 1010.0),
                 new PolarCoordinate(48.0, 13.0, 1110.0),
-                100.0D, 1E-4
-            },
-        };
+                100.0D, 1E-4));
     };
 
-    @Test(dataProvider = "distancesDataProvider")
+    @ParameterizedTest
+    @MethodSource("distancesDataProvider")
     public void shouldCalculateDistances(PolarCoordinate a, PolarCoordinate b, double distance, double delta)
     {
         assertThat(gs.calculateDistance(a, b)).isEqualTo(distance, offset(delta));
@@ -244,8 +233,7 @@ public class WGS84TestCase
     private static final double SIN_60 = 0.8660;
     private static final double DIAMETER = 100.0;
 
-    @DataProvider
-    public Object[][] startPositionDataProvider()
+    static Stream<Arguments> startPositionDataProvider()
     {
         WGS84 mygs = new WGS84();
         PolarCoordinate origin = new PolarCoordinate(47.8220, 13.0408, 50);
@@ -257,18 +245,18 @@ public class WGS84TestCase
         PolarCoordinate rv06 = mygs.walk(rv01, 2.0 * DIAMETER * SIN_60, 0.0, 0.0);
         PolarCoordinate rv07 = mygs.walk(rv01, DIAMETER * SIN_60, DIAMETER * (1.0 + COS_60), 0.0);
 
-        return new Object[][]{
-            new Object[]{"RV01", rv01},
-            new Object[]{"RV02", rv02},
-            new Object[]{"RV03", rv03},
-            new Object[]{"RV04", rv04},
-            new Object[]{"RV05", rv05},
-            new Object[]{"RV06", rv06},
-            new Object[]{"RV07", rv07},
-        };
+        return Stream.of(
+            arguments("RV01", rv01),
+            arguments("RV02", rv02),
+            arguments("RV03", rv03),
+            arguments("RV04", rv04),
+            arguments("RV05", rv05),
+            arguments("RV06", rv06),
+            arguments("RV07", rv07));
     }
 
-    @Test(dataProvider = "startPositionDataProvider")
+    @ParameterizedTest
+    @MethodSource("startPositionDataProvider")
     public void shouldRunAroundALittleBit(String name, PolarCoordinate startPosition)
         throws JsonProcessingException
     {

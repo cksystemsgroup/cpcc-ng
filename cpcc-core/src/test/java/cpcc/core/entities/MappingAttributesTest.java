@@ -19,100 +19,94 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Iterator;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * MappingAttributesTest
  */
-public class MappingAttributesTest
+class MappingAttributesTest
 {
     MappingAttributes attributes;
 
-    @BeforeMethod
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         attributes = new MappingAttributes();
     }
 
-    @DataProvider
-    private final Iterator<Object[]> primaryKeyDataProvider()
+    static Stream<Arguments> primaryKeyDataProvider()
     {
-        return new Iterator<Object[]>()
-        {
-            private int counter = -1;
+        MappingAttributesPK pk1 = mock(MappingAttributesPK.class);
+        when(pk1.getDevice()).thenReturn(new Device());
+        when(pk1.getTopic()).thenReturn(new Topic());
 
-            @Override
-            public boolean hasNext()
-            {
-                return counter < 5;
-            }
+        MappingAttributesPK pk2 = mock(MappingAttributesPK.class);
+        when(pk2.getDevice()).thenReturn(new Device());
+        when(pk2.getTopic()).thenReturn(new Topic());
 
-            @Override
-            public Object[] next()
-            {
-                if (counter++ < 0)
-                {
-                    return new Object[]{null};
-                }
+        MappingAttributesPK pk3 = mock(MappingAttributesPK.class);
+        when(pk3.getDevice()).thenReturn(new Device());
+        when(pk3.getTopic()).thenReturn(new Topic());
 
-                MappingAttributesPK pk = mock(MappingAttributesPK.class);
-                when(pk.getDevice()).thenReturn(new Device());
-                when(pk.getTopic()).thenReturn(new Topic());
-                return new Object[]{pk};
-            }
+        MappingAttributesPK pk4 = mock(MappingAttributesPK.class);
+        when(pk4.getDevice()).thenReturn(new Device());
+        when(pk4.getTopic()).thenReturn(new Topic());
 
-            @Override
-            public void remove()
-            {
-                // Intentionally empty.
-            }
-        };
+        return Stream.of(
+            arguments((MappingAttributesPK) null),
+            arguments(pk1),
+            arguments(pk2),
+            arguments(pk3),
+            arguments(pk4));
     };
 
-    @Test(dataProvider = "primaryKeyDataProvider")
-    public void shouldStorePrimaryKey(MappingAttributesPK pk)
+    @ParameterizedTest
+    @MethodSource("primaryKeyDataProvider")
+    void shouldStorePrimaryKey(MappingAttributesPK pk)
     {
         attributes.setPk(pk);
         assertThat(attributes.getPk()).isEqualTo(pk);
     }
 
-    @DataProvider
-    public Object[][] booleanDataProvider()
+    static Stream<Arguments> booleanDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{Boolean.FALSE},
-            new Object[]{Boolean.TRUE},
-        };
+        return Stream.of(
+            arguments((Boolean) null),
+            arguments(Boolean.FALSE),
+            arguments(Boolean.TRUE));
     };
 
-    @Test(dataProvider = "booleanDataProvider")
-    public void shouldStoreVvVisible(Boolean value)
+    @ParameterizedTest
+    @MethodSource("booleanDataProvider")
+    void shouldStoreVvVisible(Boolean value)
     {
         attributes.setVvVisible(value);
         assertThat(attributes.getVvVisible()).isEqualTo(value);
     }
 
-    @Test(dataProvider = "booleanDataProvider")
-    public void shouldConnectedToAutopilot(Boolean value)
+    @ParameterizedTest
+    @MethodSource("booleanDataProvider")
+    void shouldConnectedToAutopilot(Boolean value)
     {
         attributes.setConnectedToAutopilot(value);
         assertThat(attributes.getConnectedToAutopilot()).isEqualTo(value);
     }
 
     @Test
-    public void shouldStoreSensorDefinition()
+    void shouldStoreSensorDefinition()
     {
         SensorDefinition def = mock(SensorDefinition.class);
         attributes.setSensorDefinition(def);
         assertThat(attributes.getSensorDefinition()).isNotNull().isEqualTo(def);
     }
-
 }

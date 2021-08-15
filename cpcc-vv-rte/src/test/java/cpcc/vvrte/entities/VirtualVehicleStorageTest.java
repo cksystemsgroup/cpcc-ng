@@ -19,32 +19,38 @@
 package cpcc.vvrte.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
 import org.hibernate.internal.util.SerializationHelper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 public class VirtualVehicleStorageTest
 {
-    private VirtualVehicleStorage storage;
+    private VirtualVehicleStorage sut;
 
-    ScriptableObject object0 = new NativeObject();
-    ScriptableObject object1 = new NativeObject();
-    ScriptableObject object2 = new NativeObject();
-    ScriptableObject object3 = new NativeObject();
-    ScriptableObject object4 = new NativeObject();
-    ScriptableObject object5 = new NativeObject();
-
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
-        storage = new VirtualVehicleStorage();
+        sut = new VirtualVehicleStorage();
+    }
+
+    static Stream<Arguments> valuesDataProvider()
+    {
+        ScriptableObject object0 = new NativeObject();
+        ScriptableObject object1 = new NativeObject();
+        ScriptableObject object2 = new NativeObject();
+        ScriptableObject object3 = new NativeObject();
+        ScriptableObject object4 = new NativeObject();
+        ScriptableObject object5 = new NativeObject();
 
         object0.put("id", object0, 0);
         object0.put("value", object0, null);
@@ -63,37 +69,33 @@ public class VirtualVehicleStorageTest
 
         object5.put("id", object5, 5);
         object5.put("value", object5, object4);
+
+        return Stream.of(
+            arguments(0, mock(VirtualVehicle.class), "file#0", object0),
+            arguments(1, mock(VirtualVehicle.class), "file/1", object1),
+            arguments(2, mock(VirtualVehicle.class), "file-2", object2),
+            arguments(3, mock(VirtualVehicle.class), "file'3", object3),
+            arguments(4, mock(VirtualVehicle.class), "file~4", object4),
+            arguments(5, mock(VirtualVehicle.class), "file|5", object5));
     }
 
-    @DataProvider
-    public Object[][] valuesDataProvider()
-    {
-        return new Object[][]{
-            new Object[]{0, mock(VirtualVehicle.class), "file#0", object0},
-            new Object[]{1, mock(VirtualVehicle.class), "file/1", object1},
-            new Object[]{2, mock(VirtualVehicle.class), "file-2", object2},
-            new Object[]{3, mock(VirtualVehicle.class), "file'3", object3},
-            new Object[]{4, mock(VirtualVehicle.class), "file~4", object4},
-            new Object[]{5, mock(VirtualVehicle.class), "file|5", object5},
-        };
-    }
-
-    @Test(dataProvider = "valuesDataProvider")
+    @ParameterizedTest
+    @MethodSource("valuesDataProvider")
     public void shouldSetAndGetValues(Integer id, VirtualVehicle virtualVehicle, String name, ScriptableObject content)
     {
         Date modificationTime = new Date();
 
-        storage.setId(id);
-        storage.setVirtualVehicle(virtualVehicle);
-        storage.setName(name);
-        storage.setContent(content);
-        storage.setModificationTime(modificationTime);
+        sut.setId(id);
+        sut.setVirtualVehicle(virtualVehicle);
+        sut.setName(name);
+        sut.setContent(content);
+        sut.setModificationTime(modificationTime);
 
-        assertThat(storage.getId()).isNotNull().isEqualTo(id);
-        assertThat(storage.getVirtualVehicle()).isNotNull().isEqualTo(virtualVehicle);
-        assertThat(storage.getName()).isNotNull().isEqualTo(name);
+        assertThat(sut.getId()).isNotNull().isEqualTo(id);
+        assertThat(sut.getVirtualVehicle()).isNotNull().isEqualTo(virtualVehicle);
+        assertThat(sut.getName()).isNotNull().isEqualTo(name);
 
-        ScriptableObject actual = storage.getContent();
+        ScriptableObject actual = sut.getContent();
         ScriptableObject actualSub = (ScriptableObject) actual.get("value");
         ScriptableObject contentSub = (ScriptableObject) content.get("value");
 
@@ -106,19 +108,20 @@ public class VirtualVehicleStorageTest
             assertThat((Integer) actualSub.get("id")).isNotNull().isEqualTo((Integer) contentSub.get("id"));
         }
 
-        assertThat(storage.getModificationTime()).isNotNull();
-        assertThat(storage.getModificationTime().getTime()).isNotNull().isEqualTo(modificationTime.getTime());
+        assertThat(sut.getModificationTime()).isNotNull();
+        assertThat(sut.getModificationTime().getTime()).isNotNull().isEqualTo(modificationTime.getTime());
     }
 
-    @Test(dataProvider = "valuesDataProvider")
+    @ParameterizedTest
+    @MethodSource("valuesDataProvider")
     public void shouldReturnContentAsByteArray(Integer id, VirtualVehicle virtualVehicle, String name,
         ScriptableObject content)
     {
         byte[] required = SerializationHelper.serialize(content);
 
-        storage.setContent(content);
+        sut.setContent(content);
 
-        byte[] actual = storage.getContentAsByteArray();
+        byte[] actual = sut.getContentAsByteArray();
 
         assertThat(actual).isNotNull().isEqualTo(required);
     }

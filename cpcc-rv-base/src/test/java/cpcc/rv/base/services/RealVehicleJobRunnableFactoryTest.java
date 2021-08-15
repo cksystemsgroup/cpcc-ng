@@ -23,9 +23,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.apache.tapestry5.ioc.ServiceResources;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import cpcc.core.entities.Job;
 import cpcc.core.services.jobs.JobRunnable;
@@ -36,7 +36,7 @@ public class RealVehicleJobRunnableFactoryTest
     private ServiceResources serviceResources;
     private Logger logger;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         logger = mock(Logger.class);

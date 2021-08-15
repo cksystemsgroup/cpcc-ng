@@ -19,6 +19,7 @@
 package cpcc.ros.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,15 +29,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import sensor_msgs.Image;
 
@@ -49,7 +53,7 @@ public class RosImageConverterTest
     private ChannelBuffer buffer;
     private Image message;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         conv = new RosImageConverterImpl();
@@ -59,18 +63,17 @@ public class RosImageConverterTest
 
     }
 
-    @DataProvider
-    public Object[][] emptyImageDataprovider()
+    static Stream<Arguments> emptyImageDataprovider()
     {
-        return new Object[][]{
-            new Object[]{40, 30, "gif"},
-            new Object[]{40, 30, "jpeg"},
-            new Object[]{40, 30, "jpg"},
-            new Object[]{40, 30, "png"},
-        };
+        return Stream.of(
+            arguments(40, 30, "gif"),
+            arguments(40, 30, "jpeg"),
+            arguments(40, 30, "jpg"),
+            arguments(40, 30, "png"));
     }
 
-    @Test(dataProvider = "emptyImageDataprovider")
+    @ParameterizedTest
+    @MethodSource("emptyImageDataprovider")
     public void shouldReturnNullOnEmptyImage(int height, int width, String encoding)
     {
         when(buffer.array()).thenReturn(new byte[0]);
@@ -84,15 +87,14 @@ public class RosImageConverterTest
         assertThat(result).isNull();
     }
 
-    @DataProvider
-    public Object[][] emptyImageDataprovider2()
+    static Stream<Arguments> emptyImageDataprovider2()
     {
-        return new Object[][]{
-            new Object[]{40, 30, "rgba8"},
-        };
+        return Stream.of(
+            arguments(40, 30, "rgba8"));
     }
 
-    @Test(dataProvider = "emptyImageDataprovider2")
+    @ParameterizedTest
+    @MethodSource("emptyImageDataprovider2")
     public void shouldReturnEmptyImageOnNullImage(int height, int width, String encoding)
     {
         when(buffer.array()).thenReturn(new byte[0]);
@@ -106,18 +108,17 @@ public class RosImageConverterTest
         assertThat(result).isNotNull();
     }
 
-    @DataProvider
-    public Object[][] imageDataprovider()
+    static Stream<Arguments> imageDataprovider()
     {
-        return new Object[][]{
-            new Object[]{90, 120, "GIF", "data/test-image.gif"},
-            new Object[]{90, 120, "JPEG", "data/test-image.jpeg"},
-            new Object[]{90, 120, "JPG", "data/test-image.jpg"},
-            new Object[]{90, 120, "PNG", "data/test-image.png"},
-        };
+        return Stream.of(
+            arguments(90, 120, "GIF", "data/test-image.gif"),
+            arguments(90, 120, "JPEG", "data/test-image.jpeg"),
+            arguments(90, 120, "JPG", "data/test-image.jpg"),
+            arguments(90, 120, "PNG", "data/test-image.png"));
     }
 
-    @Test(dataProvider = "imageDataprovider")
+    @ParameterizedTest
+    @MethodSource("imageDataprovider")
     public void shouldConvertGenericImages(int height, int width, String encoding, String imageName) throws IOException
     {
         InputStream stream = RosImageConverterTest.class.getResourceAsStream(imageName);

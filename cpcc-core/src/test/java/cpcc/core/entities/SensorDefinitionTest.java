@@ -19,140 +19,129 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * SensorDefinitionTest
  */
 public class SensorDefinitionTest
 {
-
     private SensorDefinition sd;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sd = new SensorDefinition();
     }
 
-    @DataProvider
-    public Object[][] integerDataProvider()
+    static Stream<Arguments> integerDataProvider()
     {
-        return new Object[][]{
-            new Object[]{0},
-            new Object[]{1},
-            new Object[]{2},
-            new Object[]{3},
-            new Object[]{5},
-            new Object[]{7},
-            new Object[]{11},
-            new Object[]{1009},
-        };
+        return Stream.of(
+            arguments(0),
+            arguments(1),
+            arguments(2),
+            arguments(3),
+            arguments(5),
+            arguments(7),
+            arguments(11),
+            arguments(1009));
     }
 
-    @Test(dataProvider = "integerDataProvider")
+    @ParameterizedTest
+    @MethodSource("integerDataProvider")
     public void shouldStoreId(int id)
     {
         sd.setId(id);
         assertThat(sd.getId()).isNotNull().isEqualTo(id);
     }
 
-    @DataProvider
-    public Object[][] stringDataProvider()
+    static Stream<Arguments> stringDataProvider()
     {
-        return new Object[][]{
-            new Object[]{""},
-            new Object[]{"a"},
-            new Object[]{"a,b"},
-            new Object[]{"a, b,c"},
-            new Object[]{"a,b , c"},
-        };
+        return Stream.of(
+            arguments(""),
+            arguments("a"),
+            arguments("a,b"),
+            arguments("a, b,c"),
+            arguments("a,b , c"));
     }
 
-    @DataProvider
-    public Object[][] booleanDataProvider()
+    static Stream<Arguments> booleanDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{Boolean.TRUE},
-            new Object[]{Boolean.FALSE},
-        };
+        return Stream.of(
+            arguments((Boolean) null),
+            arguments(Boolean.TRUE),
+            arguments(Boolean.FALSE));
     }
 
-    @Test(dataProvider = "stringDataProvider")
+    @ParameterizedTest
+    @MethodSource("stringDataProvider")
     public void shouldStoreDescription(String description)
     {
         sd.setDescription(description);
         assertThat(sd.getDescription()).isNotNull().isEqualTo(description);
     }
 
-    @Test(dataProvider = "integerDataProvider")
+    @ParameterizedTest
+    @MethodSource("integerDataProvider")
     public void shouldStoreLastUpdate(int lastUpdate)
     {
         sd.setLastUpdate(new Date(lastUpdate));
         assertThat(sd.getLastUpdate()).isNotNull().isEqualTo(new Date(lastUpdate));
     }
 
-    @Test(dataProvider = "stringDataProvider")
+    @ParameterizedTest
+    @MethodSource("stringDataProvider")
     public void shouldStoreMessageType(String messageType)
     {
         sd.setMessageType(messageType);
         assertThat(sd.getMessageType()).isNotNull().isEqualTo(messageType);
     }
 
-    @Test(dataProvider = "booleanDataProvider")
+    @ParameterizedTest
+    @MethodSource("booleanDataProvider")
     public void shouldStoreMessageType(Boolean deleted)
     {
         sd.setDeleted(deleted);
         assertThat(sd.getDeleted()).isEqualTo(deleted);
     }
 
-    @Test(dataProvider = "stringDataProvider")
+    @ParameterizedTest
+    @MethodSource("stringDataProvider")
     public void shouldStoreParameters(String parameters)
     {
         sd.setParameters(parameters);
         assertThat(sd.getParameters()).isNotNull().isEqualTo(parameters);
     }
 
-    @DataProvider
-    public Object[][] sensorTypeDataProvider()
+    static Stream<Arguments> sensorTypeDataProvider()
     {
-        Object[][] data = new Object[SensorType.values().length][];
-
-        for (int k = 0, l = SensorType.values().length; k < l; ++k)
-        {
-            data[k] = new Object[]{SensorType.values()[k]};
-        }
-
-        return data;
+        return Stream.of(SensorType.values()).map(sType -> arguments(sType));
     }
 
-    @Test(dataProvider = "sensorTypeDataProvider")
+    @ParameterizedTest
+    @MethodSource("sensorTypeDataProvider")
     public void shouldStoreType(SensorType type)
     {
         sd.setType(type);
         assertThat(sd.getType()).isNotNull().isEqualTo(type);
     }
 
-    @DataProvider
-    public Object[][] visibilityDataProvider()
+    static Stream<Arguments> visibilityDataProvider()
     {
-        Object[][] data = new Object[SensorVisibility.values().length][];
-
-        for (int k = 0, l = SensorVisibility.values().length; k < l; ++k)
-        {
-            data[k] = new Object[]{SensorVisibility.values()[k]};
-        }
-
-        return data;
+        return Stream.of(SensorVisibility.values()).map(sVis -> arguments(sVis));
     }
 
-    @Test(dataProvider = "visibilityDataProvider")
+    @ParameterizedTest
+    @MethodSource("visibilityDataProvider")
     public void shouldStroreVisibility(SensorVisibility visibility)
     {
         sd.setVisibility(visibility);

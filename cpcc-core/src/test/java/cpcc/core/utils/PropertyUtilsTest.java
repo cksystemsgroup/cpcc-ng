@@ -19,20 +19,23 @@
 package cpcc.core.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertFalse;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.reflect.Constructor;
 import java.util.Properties;
+import java.util.stream.Stream;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class PropertyUtilsTest
 {
     private Properties props;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         props = new Properties();
@@ -42,23 +45,22 @@ public class PropertyUtilsTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<PropertyUtils> cnt = PropertyUtils.class.getDeclaredConstructor();
-        assertFalse(cnt.isAccessible());
+        assertThat(cnt.isAccessible()).isFalse();
         cnt.setAccessible(true);
         cnt.newInstance();
     }
 
-    @DataProvider
-    public Object[][] booleanDataProvider()
+    static Stream<Arguments> booleanDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null, null, null},
-            new Object[]{"abcd", null, null},
-            new Object[]{"efgh", Boolean.FALSE, Boolean.FALSE.toString()},
-            new Object[]{"xygt", Boolean.TRUE, Boolean.TRUE.toString()},
-        };
+        return Stream.of(
+            arguments(null, null, null),
+            arguments("abcd", null, null),
+            arguments("efgh", Boolean.FALSE, Boolean.FALSE.toString()),
+            arguments("xygt", Boolean.TRUE, Boolean.TRUE.toString()));
     }
 
-    @Test(dataProvider = "booleanDataProvider")
+    @ParameterizedTest
+    @MethodSource("booleanDataProvider")
     public void shouldSetBooleanProperty(String key, Boolean data, String expected)
     {
         PropertyUtils.setProperty(props, key, data);
@@ -73,18 +75,17 @@ public class PropertyUtilsTest
         }
     }
 
-    @DataProvider
-    public Object[][] longDataProvider()
+    static Stream<Arguments> longDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null, null, null},
-            new Object[]{"abcd", null, null},
-            new Object[]{"efgh", 1234L, Long.valueOf(1234L).toString()},
-            new Object[]{"xygt", 9876L, Long.valueOf(9876L).toString()},
-        };
+        return Stream.of(
+            arguments(null, null, null),
+            arguments("abcd", null, null),
+            arguments("efgh", 1234L, Long.valueOf(1234L).toString()),
+            arguments("xygt", 9876L, Long.valueOf(9876L).toString()));
     }
 
-    @Test(dataProvider = "longDataProvider")
+    @ParameterizedTest
+    @MethodSource("longDataProvider")
     public void shouldSetLongProperty(String key, Long data, String expected)
     {
         PropertyUtils.setProperty(props, key, data);

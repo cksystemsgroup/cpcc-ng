@@ -20,10 +20,15 @@ package cpcc.vvrte.services.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.CartesianCoordinate;
@@ -35,7 +40,7 @@ public class FlatWorldTest
 {
     private FlatWorld sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sut = new FlatWorld();
@@ -95,15 +100,14 @@ public class FlatWorldTest
 
     //    public CartesianCoordinate polarToRectangularCoordinates(PolarCoordinate pos)
 
-    @DataProvider
-    public Object[][] conversionDataProvider()
+    static Stream<Arguments> conversionDataProvider()
     {
-        return new Object[][]{
-            new Object[]{1.1, 2.2, 3.3, new CartesianCoordinate(2.2, 1.1, 3.3)},
-        };
+        return Stream.of(
+            arguments(1.1, 2.2, 3.3, new CartesianCoordinate(2.2, 1.1, 3.3)));
     }
 
-    @Test(dataProvider = "conversionDataProvider")
+    @ParameterizedTest
+    @MethodSource("conversionDataProvider")
     public void shouldConvertPolarToRectangularCoordinatesA(double latitude, double longitude, double altitude,
         CartesianCoordinate expected)
     {
@@ -114,7 +118,8 @@ public class FlatWorldTest
         assertThat(actual.getZ()).isEqualTo(altitude, offset(1E-9));
     }
 
-    @Test(dataProvider = "conversionDataProvider")
+    @ParameterizedTest
+    @MethodSource("conversionDataProvider")
     public void shouldConvertPolarToRectangularCoordinatesB(double latitude, double longitude, double altitude,
         CartesianCoordinate expected)
     {

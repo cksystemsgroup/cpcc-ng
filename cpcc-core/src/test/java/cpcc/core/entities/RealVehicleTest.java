@@ -19,6 +19,7 @@
 package cpcc.core.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
@@ -26,11 +27,14 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 /**
  * RealVehicleTest
@@ -40,140 +44,132 @@ public class RealVehicleTest
 
     private RealVehicle sut;
 
-    @BeforeMethod
+    @BeforeEach
     public void setUp()
     {
         sut = new RealVehicle();
     }
 
-    @DataProvider
-    public Object[][] integerDataProvider()
+    static Stream<Arguments> integerDataProvider()
     {
-        return new Object[][]{
-            new Object[]{0},
-            new Object[]{1},
-            new Object[]{2},
-            new Object[]{3},
-            new Object[]{5},
-            new Object[]{7},
-            new Object[]{11},
-            new Object[]{1009},
-        };
+        return Stream.of(
+            arguments(0),
+            arguments(1),
+            arguments(2),
+            arguments(3),
+            arguments(5),
+            arguments(7),
+            arguments(11),
+            arguments(1009));
     }
 
-    @Test(dataProvider = "integerDataProvider")
+    @ParameterizedTest
+    @MethodSource("integerDataProvider")
     public void shouldStoreId(int id)
     {
         sut.setId(id);
         assertThat(sut.getId()).isNotNull().isEqualTo(id);
     }
 
-    @DataProvider
-    public Object[][] stringDataProvider()
+    static Stream<Arguments> stringDataProvider()
     {
-        return new Object[][]{
-            new Object[]{""},
-            new Object[]{"a"},
-            new Object[]{"a,b"},
-            new Object[]{"a, b,c"},
-            new Object[]{"a,b , c"},
-        };
+        return Stream.of(
+            arguments(""),
+            arguments("a"),
+            arguments("a,b"),
+            arguments("a, b,c"),
+            arguments("a,b , c"));
     }
 
-    @Test(dataProvider = "stringDataProvider")
+    @ParameterizedTest
+    @MethodSource("stringDataProvider")
     public void shouldStoreAreaOfOperations(String areaOfOperation)
     {
         sut.setAreaOfOperation(areaOfOperation);
         assertThat(sut.getAreaOfOperation()).isNotNull().isEqualTo(areaOfOperation);
     }
 
-    @DataProvider
-    public Object[][] booleanDataProvider()
+    static Stream<Arguments> booleanDataProvider()
     {
-        return new Object[][]{
-            new Object[]{Boolean.TRUE},
-            new Object[]{Boolean.FALSE},
-        };
+        return Stream.of(
+            arguments(Boolean.TRUE),
+            arguments(Boolean.FALSE));
     }
 
-    @Test(dataProvider = "booleanDataProvider")
+    @ParameterizedTest
+    @MethodSource("booleanDataProvider")
     public void shouldStoreDeletedMarker(boolean deleted)
     {
         sut.setDeleted(deleted);
         assertThat(sut.getDeleted()).isNotNull().isEqualTo(deleted);
     }
 
-    @DataProvider
-    public Object[][] dateDataProvider()
+    static Stream<Arguments> dateDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new Date(System.currentTimeMillis() + 10)},
-            new Object[]{new Date(System.currentTimeMillis() + 100)},
-            new Object[]{new Date(System.currentTimeMillis() + 1000)},
-        };
+        return Stream.of(
+            arguments(new Date(System.currentTimeMillis() + 10)),
+            arguments(new Date(System.currentTimeMillis() + 100)),
+            arguments(new Date(System.currentTimeMillis() + 1000)));
     }
 
-    @Test(dataProvider = "dateDataProvider")
+    @ParameterizedTest
+    @MethodSource("dateDataProvider")
     public void shouldStoreLastUpdate(Date lastUpdate)
     {
         sut.setLastUpdate(lastUpdate);
         assertThat(sut.getLastUpdate()).isNotNull().isEqualTo(lastUpdate);
     }
 
-    @Test(dataProvider = "stringDataProvider")
+    @ParameterizedTest
+    @MethodSource("stringDataProvider")
     public void shouldStoreName(String name)
     {
         sut.setName(name);
         assertThat(sut.getName()).isNotNull().isEqualTo(name);
     }
 
-    @DataProvider
-    public Object[][] typeDataProvider()
+    static Stream<Arguments> typeDataProvider()
     {
-        RealVehicleType[] types = RealVehicleType.values();
-        Object[][] data = new Object[types.length][];
-        for (int k = 0; k < types.length; ++k)
-        {
-            data[k] = new Object[]{types[k]};
-        }
-        return data;
+        return Stream
+            .of(RealVehicleType.values())
+            .map(vType -> arguments(vType));
     }
 
-    @Test(dataProvider = "typeDataProvider")
+    @ParameterizedTest
+    @MethodSource("typeDataProvider")
     public void shouldStoreType(RealVehicleType type)
     {
         sut.setType(type);
         assertThat(sut.getType()).isNotNull().isEqualTo(type);
     }
 
-    @Test(dataProvider = "stringDataProvider")
+    @ParameterizedTest
+    @MethodSource("stringDataProvider")
     public void shouldStoreUrl(String url)
     {
         sut.setUrl(url);
         assertThat(sut.getUrl()).isNotNull().isEqualTo(url);
     }
 
-    @DataProvider
-    public Object[][] sensorDataProvider()
+    static Stream<Arguments> sensorDataProvider()
     {
-        return new Object[][]{
-            new Object[]{new SensorDefinition[]{
-                mock(SensorDefinition.class)}
-            },
-            new Object[]{new SensorDefinition[]{
-                mock(SensorDefinition.class), mock(SensorDefinition.class)}
-            },
-            new Object[]{new SensorDefinition[]{
-                mock(SensorDefinition.class), mock(SensorDefinition.class), mock(SensorDefinition.class)}
-            },
-        };
+        return Stream.of(
+            arguments(Arrays.asList(
+                mock(SensorDefinition.class))),
+            arguments(Arrays.asList(
+                mock(SensorDefinition.class), mock(SensorDefinition.class))),
+            arguments(Arrays.asList(
+                mock(SensorDefinition.class), mock(SensorDefinition.class), mock(SensorDefinition.class))));
     }
 
-    @Test(dataProvider = "sensorDataProvider")
-    public void should(SensorDefinition[] sensors)
+    @ParameterizedTest
+    @MethodSource("sensorDataProvider")
+    public void should(List<SensorDefinition> sensors)
     {
-        sut.setSensors(Arrays.asList(sensors));
-        assertThat(sut.getSensors()).isNotNull().containsExactly(sensors);
+        sut.setSensors(sensors);
+        assertThat(sut.getSensors())
+            .isNotNull()
+            .containsExactlyElementsOf(sensors);
     }
 
     @SuppressWarnings("unchecked")
@@ -191,8 +187,7 @@ public class RealVehicleTest
         return realVehicle;
     }
 
-    @DataProvider
-    public Object[][] equalRealVehicleDataProvider()
+    static Stream<Arguments> equalRealVehicleDataProvider()
     {
         SensorDefinition sen1 = mock(SensorDefinition.class);
 
@@ -205,22 +200,21 @@ public class RealVehicleTest
         RealVehicle rvC = setupRealVehicle("abc", true, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
             RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        return new Object[][]{
-            new Object[]{rvA, rvA},
-            new Object[]{rvA, rvB},
-            new Object[]{rvA, rvC},
-        };
+        return Stream.of(
+            arguments(rvA, rvA),
+            arguments(rvA, rvB),
+            arguments(rvA, rvC));
     }
 
-    @Test(dataProvider = "equalRealVehicleDataProvider")
+    @ParameterizedTest
+    @MethodSource("equalRealVehicleDataProvider")
     public void shouldFindEqualRealVehicles(RealVehicle a, RealVehicle b)
     {
         assertThat(a.equals(b)).isTrue();
         assertThat(a.hashCode()).describedAs("hash code").isEqualTo(b.hashCode());
     }
 
-    @DataProvider
-    public Object[][] notEqualRealVehicleDataProvider()
+    static Stream<Arguments> notEqualRealVehicleDataProvider()
     {
         SensorDefinition sen1 = mock(SensorDefinition.class);
         Mockito.when(sen1.getId()).thenReturn(1);
@@ -242,42 +236,42 @@ public class RealVehicleTest
         RealVehicle rvE = setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01", null,
             RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        return new Object[][]{
-            new Object[]{rvA,
+        return Stream.of(
+            arguments(rvA,
                 setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
-                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA,
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")),
+            arguments(rvA,
                 setupRealVehicle("abc", false, 20, new Date(123456789), "rv01", Arrays.asList(sen1),
-                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA,
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")),
+            arguments(rvA,
                 setupRealVehicle("abc", false, 10, new Date(987654321), "rv01", Arrays.asList(sen1),
-                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA,
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")),
+            arguments(rvA,
                 setupRealVehicle("abc", false, 10, new Date(123456789), "rv02", Arrays.asList(sen1),
-                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA,
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")),
+            arguments(rvA,
                 setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1, sen2),
-                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")},
-            new Object[]{rvA,
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01")),
+            arguments(rvA,
                 setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
-                    RealVehicleType.GROUND_STATION, "http://localhost:8080/rv01")},
-            new Object[]{rvA,
+                    RealVehicleType.GROUND_STATION, "http://localhost:8080/rv01")),
+            arguments(rvA,
                 setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
-                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv02")},
-            new Object[]{setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1, sen2),
-                RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"), rvA},
-            new Object[]{rvA, rvB},
-            new Object[]{rvB, rvA},
-            new Object[]{rvA, rvC},
-            new Object[]{rvC, rvA},
-            new Object[]{rvA, rvD},
-            new Object[]{rvD, rvA},
-            new Object[]{rvD, rvE},
-            new Object[]{rvE, rvD},
-        };
+                    RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv02")),
+            arguments(setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1, sen2),
+                RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"), rvA),
+            arguments(rvA, rvB),
+            arguments(rvB, rvA),
+            arguments(rvA, rvC),
+            arguments(rvC, rvA),
+            arguments(rvA, rvD),
+            arguments(rvD, rvA),
+            arguments(rvD, rvE),
+            arguments(rvE, rvD));
     }
 
-    @Test(dataProvider = "notEqualRealVehicleDataProvider")
+    @ParameterizedTest
+    @MethodSource("notEqualRealVehicleDataProvider")
     public void shouldFindNotEqualRealVehicles(RealVehicle a, RealVehicle b)
     {
         assertThat(a.equals(b)).isFalse();
@@ -302,14 +296,13 @@ public class RealVehicleTest
         assertThat(a.equals(new Object[0])).isFalse();
     }
 
-    @DataProvider
-    public Object[][] realVehicleDataProvider()
+    static Stream<Arguments> realVehicleDataProvider()
     {
         SensorDefinition sen1 = new SensorDefinition();
         sen1.setId(9174);
 
-        return new Object[][]{
-            new Object[]{Arrays.asList(
+        return Stream.of(
+            arguments(Arrays.asList(
                 setupRealVehicle("abcd", false, 10, new Date(123456789L), "rv01", Arrays.asList(sen1),
                     RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01"),
                 setupRealVehicle(null, false, 10, new Date(123456789L), "rv01", Arrays.asList(sen1),
@@ -325,12 +318,11 @@ public class RealVehicleTest
                 setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1), null,
                     "http://localhost:8080/rv01"),
                 setupRealVehicle("abcd", false, 10, new Date(123456789), "rv01", Arrays.asList(sen1),
-                    RealVehicleType.QUADROCOPTER, null))
-            },
-        };
+                    RealVehicleType.QUADROCOPTER, null))));
     }
 
-    @Test(dataProvider = "realVehicleDataProvider")
+    @ParameterizedTest
+    @MethodSource("realVehicleDataProvider")
     public void shouldCalculateHashCode(List<RealVehicle> rvList)
     {
         Set<Integer> codeSet = new HashSet<Integer>();
