@@ -76,7 +76,7 @@
 		<slf4j-version>1.7.32</slf4j-version>
 		<snakeyaml-version>1.29</snakeyaml-version>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-		<tapestry-release-version>5.7.2</tapestry-release-version>
+		<tapestry-release-version>5.7.3</tapestry-release-version>
 		<tomcat.version>9.0.52</tomcat.version>
 	</properties>
 
