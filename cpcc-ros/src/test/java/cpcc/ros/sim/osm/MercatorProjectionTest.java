@@ -28,7 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class MercatorProjectionTest
+class MercatorProjectionTest
 {
     static Stream<Arguments> mercatorData()
     {
@@ -39,7 +39,7 @@ public class MercatorProjectionTest
 
     @ParameterizedTest
     @MethodSource("mercatorData")
-    public void shouldConvertMercatorToTileCoordinates(int zoomLevel, double latitude, double longitude, int x, int y,
+    void shouldConvertMercatorToTileCoordinates(int zoomLevel, double latitude, double longitude, int x, int y,
         int xPixel, int yPixel)
     {
         MercatorProjection mp = new MercatorProjection(zoomLevel, latitude, longitude);
@@ -51,13 +51,13 @@ public class MercatorProjectionTest
     }
 
     @Test
-    public void shouldRecognizeTheSameTileCoordinates()
+    void shouldRecognizeTheSameTileCoordinates()
     {
         MercatorProjection mp1 = new MercatorProjection(19, 37.80789, -122.42697);
         MercatorProjection mp2 = new MercatorProjection(19, 37.80788, -122.42696);
 
         assertThat(mp1.equalsTile(mp2)).isTrue();
-        assertThat(mp1.equals(mp2)).isFalse();
+        assertThat(mp1).isNotEqualTo(mp2);
     }
 
     static Stream<Arguments> nonEqualMercatorProjectionDataProvider()
@@ -76,7 +76,7 @@ public class MercatorProjectionTest
 
     @ParameterizedTest
     @MethodSource("nonEqualMercatorProjectionDataProvider")
-    public void shouldRecognizeDifferentTileCoordinates(MercatorProjection a, MercatorProjection b)
+    void shouldRecognizeDifferentTileCoordinates(MercatorProjection a, MercatorProjection b)
     {
         assertThat(a.equalsTile(b)).isFalse();
     }

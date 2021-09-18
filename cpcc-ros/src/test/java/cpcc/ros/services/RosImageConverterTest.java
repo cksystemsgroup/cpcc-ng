@@ -47,14 +47,14 @@ import sensor_msgs.Image;
 /**
  * RosImageConverterTest
  */
-public class RosImageConverterTest
+class RosImageConverterTest
 {
     private RosImageConverterImpl conv;
     private ChannelBuffer buffer;
     private Image message;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         conv = new RosImageConverterImpl();
         buffer = mock(ChannelBuffer.class);
@@ -74,7 +74,7 @@ public class RosImageConverterTest
 
     @ParameterizedTest
     @MethodSource("emptyImageDataprovider")
-    public void shouldReturnNullOnEmptyImage(int height, int width, String encoding)
+    void shouldReturnNullOnEmptyImage(int height, int width, String encoding)
     {
         when(buffer.array()).thenReturn(new byte[0]);
         when(buffer.hasArray()).thenReturn(false);
@@ -95,7 +95,7 @@ public class RosImageConverterTest
 
     @ParameterizedTest
     @MethodSource("emptyImageDataprovider2")
-    public void shouldReturnEmptyImageOnNullImage(int height, int width, String encoding)
+    void shouldReturnEmptyImageOnNullImage(int height, int width, String encoding)
     {
         when(buffer.array()).thenReturn(new byte[0]);
         when(buffer.hasArray()).thenReturn(false);
@@ -119,7 +119,7 @@ public class RosImageConverterTest
 
     @ParameterizedTest
     @MethodSource("imageDataprovider")
-    public void shouldConvertGenericImages(int height, int width, String encoding, String imageName) throws IOException
+    void shouldConvertGenericImages(int height, int width, String encoding, String imageName) throws IOException
     {
         InputStream stream = RosImageConverterTest.class.getResourceAsStream(imageName);
         byte[] imageData = IOUtils.toByteArray(stream);
@@ -144,12 +144,11 @@ public class RosImageConverterTest
 
         byte[] resultImageData = bos.toByteArray();
 
-        assertThat(resultImageData.length).isEqualTo(imageData.length);
-        // assertThat(resultImageData).isEqualTo(imageData);
+        assertThat(resultImageData).hasSameSizeAs(imageData);
     }
 
     @Test
-    public void shouldReturnAnEmptyImageForACorruptedPNG() throws IOException
+    void shouldReturnAnEmptyImageForACorruptedPNG() throws IOException
     {
         int height = 90;
         int width = 120;
@@ -178,7 +177,7 @@ public class RosImageConverterTest
     }
 
     @Test
-    public void shouldReturnAnEmptyImageForUnknownImageFormats()
+    void shouldReturnAnEmptyImageForUnknownImageFormats()
     {
         int height = 91;
         int width = 121;
@@ -206,13 +205,13 @@ public class RosImageConverterTest
         {
             for (int x = 0; x < image.getWidth(); ++x)
             {
-                assertThat(image.getRGB(x, y)).overridingErrorMessage("Problem at x=%d, y=%d", x, y).isEqualTo(0);
+                assertThat(image.getRGB(x, y)).overridingErrorMessage("Problem at x=%d, y=%d", x, y).isZero();
             }
         }
     }
 
     @Test
-    public void shouldConvertRGB8Images() throws IOException
+    void shouldConvertRGB8Images() throws IOException
     {
         int height = 240;
         int width = 320;
@@ -248,7 +247,7 @@ public class RosImageConverterTest
     }
 
     @Test
-    public void shouldConvertRGBA8Images() throws IOException
+    void shouldConvertRGBA8Images() throws IOException
     {
         int height = 240;
         int width = 320;

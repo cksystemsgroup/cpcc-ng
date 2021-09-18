@@ -21,7 +21,6 @@ package cpcc.core.services.jobs;
 import static com.googlecode.catchexception.CatchException.catchException;
 import static com.googlecode.catchexception.CatchException.caughtException;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.doThrow;
@@ -46,12 +45,11 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.Job;
 import cpcc.core.entities.JobStatus;
 
-public class JobServiceTest
+class JobServiceTest
 {
     private static final String QUEUE_NAME_01 = "queueName01";
     private static final String QUEUE_NAME_02 = "queueName02";
@@ -70,10 +68,9 @@ public class JobServiceTest
     private JobQueue jobQueue01;
     private JobQueue jobQueue02;
     private ServiceResources serviceResources;
-    private Logger logger;
 
     @BeforeEach
-    public void setUp() throws JobExecutionException, NoSuchAlgorithmException
+    void setUp() throws JobExecutionException, NoSuchAlgorithmException
     {
         parameters01 = "parameters01";
         parameters02 = "parameters02";
@@ -90,8 +87,6 @@ public class JobServiceTest
 
         jobRepository = mock(JobRepository.class);
 
-        logger = mock(Logger.class);
-
         existingJob = mock(Job.class);
         when(existingJob.getQueueName()).thenReturn(QUEUE_NAME_01);
         when(existingJob.getParameters()).thenReturn(parameters01);
@@ -106,11 +101,11 @@ public class JobServiceTest
         jobQueue02 = mock(JobQueue.class);
         doThrow(JobExecutionException.class).when(jobQueue02).execute(failingJob);
 
-        sut = new JobServiceImpl(serviceResources, sessionManager, jobRepository, timeService, logger);
+        sut = new JobServiceImpl(serviceResources, sessionManager, jobRepository, timeService);
     }
 
     @Test
-    public void shouldAddJob() throws JobCreationException
+    void shouldAddJob() throws JobCreationException
     {
         when(timeService.newDate()).thenAnswer(new Answer<Date>()
         {
@@ -152,7 +147,7 @@ public class JobServiceTest
     }
 
     @Test
-    public void shouldAddJobWithData() throws JobCreationException
+    void shouldAddJobWithData() throws JobCreationException
     {
         when(timeService.newDate()).thenAnswer(new Answer<Date>()
         {
@@ -230,7 +225,7 @@ public class JobServiceTest
     }
 
     @Test
-    public void shouldAddJobIfNotExists() throws JobCreationException
+    void shouldAddJobIfNotExists() throws JobCreationException
     {
         when(timeService.newDate()).thenAnswer(new Answer<Date>()
         {
@@ -269,12 +264,10 @@ public class JobServiceTest
         assertThat(actual.getQueueName())
             .describedAs("Job queue name")
             .isEqualTo(QUEUE_NAME_01);
-
-        verifyNoInteractions(logger);
     }
 
     @Test
-    public void shouldAddJobWithDataIfNotExists() throws JobCreationException
+    void shouldAddJobWithDataIfNotExists() throws JobCreationException
     {
         byte[] data = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
@@ -317,12 +310,10 @@ public class JobServiceTest
         assertThat(actual.getQueueName())
             .describedAs("Job queue name")
             .isEqualTo(QUEUE_NAME_01);
-
-        verifyNoInteractions(logger);
     }
 
     @Test
-    public void shouldNotAddJobIfExists() throws JobCreationException
+    void shouldNotAddJobIfExists() throws JobCreationException
     {
         Job existingJob = mock(Job.class);
 
@@ -345,13 +336,10 @@ public class JobServiceTest
         sut.addJobIfNotExists(QUEUE_NAME_01, parameters01);
 
         verify(jobRepository).findOtherRunningJob(QUEUE_NAME_01, parameters01);
-
-        verify(logger)
-            .info("Job already executing in queue='" + QUEUE_NAME_01 + "', parameters='" + parameters01 + "'");
     }
 
     @Test
-    public void shouldNotAddJobWithDataIfExists() throws JobCreationException
+    void shouldNotAddJobWithDataIfExists() throws JobCreationException
     {
         byte[] data = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
@@ -377,13 +365,10 @@ public class JobServiceTest
         sut.addJobIfNotExists(QUEUE_NAME_01, parameters01, data);
 
         verify(jobRepository).findOtherRunningJob(QUEUE_NAME_01, parameterWithMd5);
-
-        verify(logger)
-            .info("Job already executing in queue='" + QUEUE_NAME_01 + "', parameters='" + parameterWithMd5 + "'");
     }
 
     @Test
-    public void shouldThrowJobCreationExceptionIfJobIsAlreadyActive() throws JobCreationException
+    void shouldThrowJobCreationExceptionIfJobIsAlreadyActive() throws JobCreationException
     {
         when(jobRepository.findOtherRunningJob(QUEUE_NAME_01, parameters01)).thenReturn(Arrays.asList(existingJob));
 
@@ -401,7 +386,7 @@ public class JobServiceTest
     }
 
     @Test
-    public void shouldDoNothingIfThereAreNoQueuedJobs() throws JobExecutionException
+    void shouldDoNothingIfThereAreNoQueuedJobs() throws JobExecutionException
     {
         verifyNoInteractions(session, sessionManager, timeService);
 
@@ -411,7 +396,7 @@ public class JobServiceTest
     }
 
     @Test
-    public void shouldExecuteSucceedingQueuedJobs() throws JobExecutionException
+    void shouldExecuteSucceedingQueuedJobs() throws JobExecutionException
     {
         when(jobRepository.findNextScheduledJobs()).thenReturn(Arrays.asList(existingJob));
 
@@ -430,7 +415,7 @@ public class JobServiceTest
     }
 
     @Test
-    public void shouldThrowExceptionIfJobQueueIsNotRegistered() throws JobCreationException
+    void shouldThrowExceptionIfJobQueueIsNotRegistered() throws JobCreationException
     {
         catchException(() -> sut.addJob(QUEUE_NAME_01, parameters01));
 
@@ -444,7 +429,7 @@ public class JobServiceTest
     }
 
     @Test
-    public void shouldResetJobs()
+    void shouldResetJobs()
     {
         sut.resetJobs();
 
@@ -452,7 +437,7 @@ public class JobServiceTest
     }
 
     @Test
-    public void shouldRemoveOldJobs()
+    void shouldRemoveOldJobs()
     {
         sut.removeOldJobs();
 
@@ -460,7 +445,7 @@ public class JobServiceTest
     }
 
     @Test
-    public void shouldCatchJEEOfFailingJob() throws JobExecutionException
+    void shouldCatchJEEOfFailingJob() throws JobExecutionException
     {
         when(jobRepository.findNextScheduledJobs()).thenReturn(Arrays.asList(failingJob));
 
@@ -468,7 +453,5 @@ public class JobServiceTest
         sut.executeJobs();
 
         verify(jobQueue02).execute(failingJob);
-
-        verify(logger).error(eq("Buggerit!"), any(JobExecutionException.class));
     }
 }

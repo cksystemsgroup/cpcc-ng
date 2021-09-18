@@ -72,7 +72,7 @@ public final class VirtualVehicleStorageUtils
         {
             return false;
         }
-        String messageType = (String) item.getContent().get("messageType", item.getContent());
+        Object messageType = item.getContent().get("messageType", item.getContent());
         return sensor_msgs.Image._TYPE.equals(messageType);
     }
 }

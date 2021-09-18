@@ -19,24 +19,28 @@
 package cpcc.commons.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.text.FieldPosition;
+import java.util.stream.Stream;
 
 import org.apache.tapestry5.commons.Messages;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.RealVehicleType;
 
-public class EnumFormatterTest
+class EnumFormatterTest
 {
     private EnumFormatter sut;
 
-    @BeforeMethod
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         Messages messages = mock(Messages.class);
         when(messages.get("BOAT")).thenReturn("boat");
@@ -44,25 +48,24 @@ public class EnumFormatterTest
         sut = new EnumFormatter(messages);
     }
 
-    @DataProvider
-    public Object[][] enumDataProvider()
+    static Stream<Arguments> enumDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null, ""},
-            new Object[]{RealVehicleType.BOAT, "boat"},
-        };
+        return Stream.of(
+            arguments(null, ""),
+            arguments(RealVehicleType.BOAT, "boat"));
     }
 
-    @Test(dataProvider = "enumDataProvider")
-    public void shouldFormatEnums(Enum<?> data, String expected)
+    @ParameterizedTest
+    @MethodSource("enumDataProvider")
+    void shouldFormatEnums(Enum<?> data, String expected)
     {
         StringBuffer actual = sut.format(data, new StringBuffer(), new FieldPosition(0));
 
-        assertThat(actual.toString()).isEqualTo(expected);
+        assertThat(actual).hasToString(expected);
     }
 
     @Test
-    public void shouldReturnNullOnParsing()
+    void shouldReturnNullOnParsing()
     {
         Object actual = sut.parseObject(null, null);
 

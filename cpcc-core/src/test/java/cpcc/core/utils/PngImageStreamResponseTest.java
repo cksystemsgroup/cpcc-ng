@@ -37,10 +37,10 @@ import org.junit.jupiter.api.Test;
 /**
  * PngImageStreamResponseTest
  */
-public class PngImageStreamResponseTest
+class PngImageStreamResponseTest
 {
     @Test
-    public void shouldCreateDefaultPngStreamResponse() throws IOException
+    void shouldCreateDefaultPngStreamResponse() throws IOException
     {
         byte[] expected = PngImageStreamResponse.ONE_PIXEL_EMPTY_PNG;
 
@@ -53,21 +53,16 @@ public class PngImageStreamResponseTest
     }
 
     @Test
-    public void shouldHaveContentTypePng()
+    void shouldHaveContentTypePng()
     {
         PngImageStreamResponse response = new PngImageStreamResponse();
+        response.prepareResponse(null);
+
         assertThat(response.getContentType()).isNotNull().isEqualTo("image/png");
     }
 
     @Test
-    public void shouldIgnorePrepareResponse()
-    {
-        PngImageStreamResponse response = new PngImageStreamResponse();
-        response.prepareResponse(null);
-    }
-
-    @Test
-    public void shouldStreamGivenImageData() throws IOException
+    void shouldStreamGivenImageData() throws IOException
     {
         byte[] imageData = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         PngImageStreamResponse response = new PngImageStreamResponse(imageData);
@@ -81,7 +76,7 @@ public class PngImageStreamResponseTest
     }
 
     @Test
-    public void shouldStreamGivenFile() throws IOException
+    void shouldStreamGivenFile() throws IOException
     {
         byte[] imageData = new byte[]{11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25};
         File file = File.createTempFile("random", "png");
@@ -100,7 +95,7 @@ public class PngImageStreamResponseTest
     }
 
     @Test
-    public void shouldDeliverDefaultImageWhenMissingFile() throws IOException
+    void shouldDeliverDefaultImageWhenMissingFile() throws IOException
     {
         byte[] expected = PngImageStreamResponse.ONE_PIXEL_EMPTY_PNG;
 
@@ -116,7 +111,7 @@ public class PngImageStreamResponseTest
     }
 
     @Test
-    public void shouldConvertBufferedImage() throws IOException
+    void shouldConvertBufferedImage() throws IOException
     {
         BufferedImage image = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
         Graphics gr = image.getGraphics();
@@ -138,7 +133,7 @@ public class PngImageStreamResponseTest
     }
 
     @Test
-    public void shouldConvertNullImageToDefaultImage() throws IOException
+    void shouldConvertNullImageToDefaultImage() throws IOException
     {
         byte[] expected = PngImageStreamResponse.ONE_PIXEL_EMPTY_PNG;
 

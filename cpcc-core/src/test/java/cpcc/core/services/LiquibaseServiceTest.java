@@ -2,12 +2,8 @@ package cpcc.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
@@ -20,16 +16,13 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.slf4j.Logger;
 
 import liquibase.exception.LiquibaseException;
 
-//@Test(singleThreaded = true)
-public class LiquibaseServiceTest
+class LiquibaseServiceTest
 {
     private static final String JNDI_COMP_ENV = "java:/comp/env";
     private static final String JNDI_RESOURCE = "jdbc/DATABASE";
@@ -37,59 +30,57 @@ public class LiquibaseServiceTest
 
     private static final String CHANGE_LOG = "test-dbchanges/update.xml";
 
-    private Logger logger;
-
-    @BeforeEach
-    public void setUp() throws SQLException, NamingException
-    {
-        logger = mock(Logger.class);
-    }
-
     @Test
-    public void shouldUpdateDatabase() throws LiquibaseException
+    void shouldUpdateDatabase() throws LiquibaseException, NamingException, SQLException
     {
         System.setProperty("liquibaseServiceTestShouldFail", "false");
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, MyInitialContextFactory.class.getName());
 
-        LiquibaseServiceImpl sut = new LiquibaseServiceImpl(logger, CHANGE_LOG, JNDI_URL);
+        LiquibaseServiceImpl sut = new LiquibaseServiceImpl(CHANGE_LOG, JNDI_URL);
 
         sut.update();
 
-        verifyNoInteractions(logger);
+        assertThat(sut.getUpdateOk())
+            .isNotNull()
+            .isTrue();
     }
 
     @Test
-    public void shouldLogJndiErrors() throws LiquibaseException
+    void shouldLogJndiErrors() throws LiquibaseException, NamingException
     {
         System.setProperty("liquibaseServiceTestShouldFail", "NamingException");
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, MyInitialContextFactory.class.getName());
 
-        LiquibaseServiceImpl sut = new LiquibaseServiceImpl(logger, CHANGE_LOG, JNDI_URL);
+        LiquibaseServiceImpl sut = new LiquibaseServiceImpl(CHANGE_LOG, JNDI_URL);
 
         sut.update();
 
-        verify(logger).error(eq("Thrown on purpose: NamingException!"), any(NamingException.class));
+        assertThat(sut.getUpdateOk())
+            .isNotNull()
+            .isFalse();
     }
 
     @Test
-    public void shouldLogSqlErrors() throws LiquibaseException
+    void shouldLogSqlErrors() throws LiquibaseException, NamingException
     {
         System.setProperty("liquibaseServiceTestShouldFail", "SQLException");
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, MyInitialContextFactory.class.getName());
 
-        LiquibaseServiceImpl sut = new LiquibaseServiceImpl(logger, CHANGE_LOG, JNDI_URL);
+        LiquibaseServiceImpl sut = new LiquibaseServiceImpl(CHANGE_LOG, JNDI_URL);
 
         sut.update();
 
-        verify(logger).error(eq("Thrown on purpose: SQLException!"), any(SQLException.class));
+        assertThat(sut.getUpdateOk())
+            .isNotNull()
+            .isFalse();
     }
 
     @Test
-    public void shouldThrowExceptionOnWrongJndiUrl()
+    void shouldThrowExceptionOnWrongJndiUrl()
     {
         try
         {
-            new LiquibaseServiceImpl(null, null, "wrong://database.URL");
+            new LiquibaseServiceImpl(null, "wrong://database.URL");
             failBecauseExceptionWasNotThrown(LiquibaseException.class);
         }
         catch (LiquibaseException e)
@@ -181,6 +172,16 @@ public class LiquibaseServiceTest
         public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException
         {
             return context;
+        }
+
+        public static DataSource getDataSourceMock()
+        {
+            return dataSource;
+        }
+
+        public static Connection getConnectionMock()
+        {
+            return connection;
         }
     }
 }

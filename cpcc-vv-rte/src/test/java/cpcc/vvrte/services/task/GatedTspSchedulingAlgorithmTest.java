@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.services.jobs.TimeService;
@@ -45,24 +44,22 @@ import cpcc.vvrte.entities.Task;
 /**
  * GatedTspSchedulingAlgorithmTest implementation.
  */
-public class GatedTspSchedulingAlgorithmTest
+class GatedTspSchedulingAlgorithmTest
 {
     private GatedTspSchedulingAlgorithm sut;
     private List<PolarCoordinate> depots;
-    private Logger logger;
     private TimeService timeService;
 
     /**
      * Test setup.
      */
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
-        logger = mock(Logger.class);
         timeService = mock(TimeService.class);
 
         depots = spy(new ArrayList<>());
-        sut = new GatedTspSchedulingAlgorithm(logger, timeService, 30);
+        sut = new GatedTspSchedulingAlgorithm(timeService, 30);
     }
 
     static Stream<Arguments> pendingTasksDataProvider()
@@ -116,7 +113,7 @@ public class GatedTspSchedulingAlgorithmTest
 
     @ParameterizedTest
     @MethodSource("pendingTasksDataProvider")
-    public void shouldSchedulePendingTasksIfNoTasksAreScheduled(PolarCoordinate rvPosition, List<Task> scheduled,
+    void shouldSchedulePendingTasksIfNoTasksAreScheduled(PolarCoordinate rvPosition, List<Task> scheduled,
         List<Task> pending, List<Task> expectedScheduled, List<Task> expectedPending, boolean expectedChange)
     {
         List<Task> scheduledTasks = new ArrayList<>(scheduled);
@@ -177,7 +174,7 @@ public class GatedTspSchedulingAlgorithmTest
 
     @ParameterizedTest
     @MethodSource("pendingTasksDataProviderWithDepot")
-    public void shouldSchedulePendingTasksIfNoTasksAreScheduledAndConsiderDepotPositions(PolarCoordinate rvPosition,
+    void shouldSchedulePendingTasksIfNoTasksAreScheduledAndConsiderDepotPositions(PolarCoordinate rvPosition,
         PolarCoordinate depotPosition, List<Task> scheduled, List<Task> pending, List<Task> expectedScheduled,
         List<Task> expectedPending, boolean expectedChange)
     {
@@ -197,7 +194,7 @@ public class GatedTspSchedulingAlgorithmTest
     }
 
     @Test
-    public void shouldNotChangeScheduleIfScheduledTaskAreActive()
+    void shouldNotChangeScheduleIfScheduledTaskAreActive()
     {
         Task taskA = mock(Task.class);
         Task taskB = mock(Task.class);
@@ -210,7 +207,7 @@ public class GatedTspSchedulingAlgorithmTest
     }
 
     @Test
-    public void shouldScheduleSingleTask()
+    void shouldScheduleSingleTask()
     {
         Task taskA = mock(Task.class);
         List<Task> scheduledTasks = spy(new ArrayList<Task>());

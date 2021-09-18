@@ -21,6 +21,9 @@ package cpcc.vvrte.services.js;
 import java.io.PrintStream;
 import java.io.Serializable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cpcc.core.utils.NullPrintStream;
 
 /**
@@ -29,8 +32,9 @@ import cpcc.core.utils.NullPrintStream;
 public final class VvRteFunctions implements Serializable
 {
     private static final long serialVersionUID = -5543843858420988049L;
+    private static final Logger LOG = LoggerFactory.getLogger(VvRteFunctions.class);
 
-    static final String[] FUNCTIONS = {"getVvRte", "getStdOut"};
+    static final String[] FUNCTIONS = {"getVvRte", "getStdOut", "logInfo"};
 
     private static BuiltInFunctions vvRte;
     private static PrintStream stdOut = new NullPrintStream();
@@ -73,6 +77,14 @@ public final class VvRteFunctions implements Serializable
     public static void setStdOut(PrintStream stdOut)
     {
         VvRteFunctions.stdOut = stdOut;
+    }
+    
+    /**
+     * @param message the info message to be logged.
+     */
+    public static void logInfo(String message)
+    {
+        LOG.info(message);
     }
 
 }

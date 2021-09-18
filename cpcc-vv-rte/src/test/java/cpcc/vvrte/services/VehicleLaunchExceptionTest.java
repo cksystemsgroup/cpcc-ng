@@ -26,17 +26,17 @@ import org.junit.jupiter.api.Test;
 /**
  * VehicleLauncherExceptionTest
  */
-public class VehicleLaunchExceptionTest
+class VehicleLaunchExceptionTest
 {
     @Test
-    public void shouldConstructWithoutParameters()
+    void shouldConstructWithoutParameters()
     {
         VirtualVehicleLaunchException ex = new VirtualVehicleLaunchException();
         assertThat(ex).isNotNull();
     }
 
     @Test
-    public void shouldConstructWithMessageOnly()
+    void shouldConstructWithMessageOnly()
     {
         String message = "buggerit!";
         VirtualVehicleLaunchException ex = new VirtualVehicleLaunchException(message);
@@ -45,7 +45,7 @@ public class VehicleLaunchExceptionTest
     }
 
     @Test
-    public void shouldConstructWithCauseOnly()
+    void shouldConstructWithCauseOnly()
     {
         Throwable cause = mock(Throwable.class);
 
@@ -55,7 +55,7 @@ public class VehicleLaunchExceptionTest
     }
 
     @Test
-    public void shouldConstructWithMessageAndCause()
+    void shouldConstructWithMessageAndCause()
     {
         String message = "buggerit II!";
         Throwable cause = mock(Throwable.class);

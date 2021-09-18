@@ -33,10 +33,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * ConvertUtilsTest
  */
-public class MathUtilsTest
+class MathUtilsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<MathUtils> cnt = MathUtils.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -53,7 +53,7 @@ public class MathUtilsTest
 
     @ParameterizedTest
     @MethodSource("doubleValuesDataProvider")
-    public void shouldConvertDoubleListToString(double a, double b, double expected)
+    void shouldConvertDoubleListToString(double a, double b, double expected)
     {
         double actual = MathUtils.avg(a, b);
 
@@ -72,7 +72,7 @@ public class MathUtilsTest
 
     @ParameterizedTest
     @MethodSource("doubleNaNValuesDataProvider")
-    public void shouldRecognizeNaNs(double[] values, boolean expected)
+    void shouldRecognizeNaNs(double[] values, boolean expected)
     {
         boolean actual = MathUtils.containsNoNaN(values);
 

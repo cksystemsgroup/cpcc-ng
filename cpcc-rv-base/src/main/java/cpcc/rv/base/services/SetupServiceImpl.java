@@ -23,6 +23,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.Parameter;
 import cpcc.core.services.QueryManager;
@@ -32,18 +33,17 @@ import cpcc.core.services.QueryManager;
  */
 public class SetupServiceImpl implements SetupService
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(SetupServiceImpl.class);
+
     private HibernateSessionManager sessionManager;
     private QueryManager qm;
 
     /**
-     * @param logger the application logger.
      * @param sessionManager the database session manager.
      * @param qm the query manager.
      */
-    public SetupServiceImpl(Logger logger, HibernateSessionManager sessionManager, QueryManager qm)
+    public SetupServiceImpl(HibernateSessionManager sessionManager, QueryManager qm)
     {
-        this.logger = logger;
         this.sessionManager = sessionManager;
         this.qm = qm;
     }
@@ -81,7 +81,7 @@ public class SetupServiceImpl implements SetupService
         {
             param.setValue(value);
             sessionManager.getSession().saveOrUpdate(param);
-            logger.info("Automatic configuration: {}={}", name, value);
+            LOG.info("Automatic configuration: {}={}", name, value);
         }
     }
 

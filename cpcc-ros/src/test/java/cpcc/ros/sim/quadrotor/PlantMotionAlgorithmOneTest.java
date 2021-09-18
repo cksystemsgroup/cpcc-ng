@@ -21,33 +21,20 @@ package cpcc.ros.sim.quadrotor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
 
 /**
  * PlantMotionAlgorithmTwoTest implementation.
  */
-public class PlantMotionAlgorithmOneTest
+class PlantMotionAlgorithmOneTest
 {
-    private Logger logger;
-
-    @BeforeEach
-    public void setUp()
-    {
-        logger = mock(Logger.class);
-    }
-
     static Stream<Arguments> takeOffDataProvider()
     {
         return Stream.of(
@@ -83,29 +70,31 @@ public class PlantMotionAlgorithmOneTest
 
     @ParameterizedTest
     @MethodSource("takeOffDataProvider")
-    public void shouldFly(double totalTime, double maxV, double maxA, double distance, double time, double expDistance,
+    void shouldFly(double totalTime, double maxV, double maxA, double distance, double time, double expDistance,
         double expVelocity, double expAcceleration)
     {
-        PlantMotionAlgorithmOne sut = new PlantMotionAlgorithmOne(logger, distance, maxV, maxA);
+        PlantMotionAlgorithmOne sut = new PlantMotionAlgorithmOne(distance, maxV, maxA);
 
         assertThat(sut.getTotalTime()).describedAs("Total flight time").isEqualTo(totalTime, offset(1E-2));
 
         assertThat(sut.velocity(time)).describedAs("Velocity").isEqualTo(expVelocity, offset(1E-2));
         assertThat(sut.distance(time)).describedAs("Distance").isEqualTo(expDistance, offset(1E-2));
         assertThat(sut.acceleration(time)).describedAs("Acceleration").isEqualTo(expAcceleration, offset(1E-2));
-
-        verify(logger).info("One: dist={}, maxV={}, maxA={}, totalTime={}, timeOne={}, timeTwo={}",
-            distance, maxV, maxA, 55.333333333333336, 8.0, 47.333333333333336);
     }
 
-    @Test
-    public void shouldWriteDataToFileA() throws FileNotFoundException
+    public static void main(String[] args) throws FileNotFoundException
+    {
+        new PlantMotionAlgorithmOneTest().shouldWriteDataToFileA();
+        new PlantMotionAlgorithmOneTest().shouldWriteDataToFileB();
+    }
+
+    void shouldWriteDataToFileA() throws FileNotFoundException
     {
         try (PrintWriter writer = new PrintWriter("target/plantAltgorithmOneA.csv"))
         {
             writer.println("time;distance;velocity;acceleration");
 
-            PlantMotionAlgorithmOne sut = new PlantMotionAlgorithmOne(logger, 1000.0, 20.0, 5.0);
+            PlantMotionAlgorithmOne sut = new PlantMotionAlgorithmOne(1000.0, 20.0, 5.0);
 
             double totalTime = sut.getTotalTime();
             double time = 0.0;
@@ -119,14 +108,13 @@ public class PlantMotionAlgorithmOneTest
         }
     }
 
-    @Test
-    public void shouldWriteDataToFileB() throws FileNotFoundException
+    void shouldWriteDataToFileB() throws FileNotFoundException
     {
         try (PrintWriter writer = new PrintWriter("target/plantAltgorithmOneB.csv"))
         {
             writer.println("time;distance;velocity;acceleration");
 
-            PlantMotionAlgorithmOne sut = new PlantMotionAlgorithmOne(logger, 10.0, 20.0, 5.0);
+            PlantMotionAlgorithmOne sut = new PlantMotionAlgorithmOne(10.0, 20.0, 5.0);
 
             double totalTime = sut.getTotalTime();
             double time = 0.0;

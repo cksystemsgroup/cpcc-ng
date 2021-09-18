@@ -19,6 +19,8 @@
 package cpcc.commons.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,28 +28,29 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 
-public class SensorDescriptionListFormatTest
+class SensorDescriptionListFormatTest
 {
     private SensorDescriptionListFormat sut;
 
-    @BeforeMethod
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         sut = new SensorDescriptionListFormat();
     }
 
-    @DataProvider
-    public Object[][] sensorDefinitionDataProvicer()
+    static Stream<Arguments> sensorDefinitionDataProvicer()
     {
         SensorDefinition s1 = mock(SensorDefinition.class);
         when(s1.getId()).thenReturn(1);
@@ -67,27 +70,34 @@ public class SensorDescriptionListFormatTest
         when(s2.getParameters()).thenReturn("random=1050:1080");
         when(s2.getLastUpdate()).thenReturn(new Date(20002));
 
-        return new Object[][]{
-            new Object[]{null, ""},
-            new Object[]{Collections.<SensorDefinition> emptyList(), ""},
-            new Object[]{Arrays.asList(s1), "Altimeter"},
-            new Object[]{Arrays.asList(s1, s2), "Altimeter, Barometer"},
-        };
+        return Stream.of(
+            arguments(null, ""),
+            arguments(Collections.<SensorDefinition> emptyList(), ""),
+            arguments(Arrays.asList(s1), "Altimeter"),
+            arguments(Arrays.asList(s1, s2), "Altimeter, Barometer"));
     }
 
-    @Test(dataProvider = "sensorDefinitionDataProvicer")
-    public void shouldFormatSensorDefinitionLists(List<SensorDefinition> sdList, String expected)
+    @ParameterizedTest
+    @MethodSource("sensorDefinitionDataProvicer")
+    void shouldFormatSensorDefinitionLists(List<SensorDefinition> sdList, String expected)
     {
         StringBuffer toAppendTo = new StringBuffer();
 
         sut.format(sdList, toAppendTo, null);
 
-        assertThat(toAppendTo.toString()).isEqualTo(expected);
+        assertThat(toAppendTo).hasToString(expected);
     }
 
-    @Test(expectedExceptions = {NotImplementedException.class})
-    public void shouldThrowExceptionOnParsing()
+    void shouldThrowExceptionOnParsing()
     {
-        sut.parseObject(null, null);
+        try
+        {
+            sut.parseObject(null, null);
+            failBecauseExceptionWasNotThrown(NotImplementedException.class);
+        }
+        catch (NotImplementedException e)
+        {
+            assertThat(e).hasMessage("");
+        }
     }
 }

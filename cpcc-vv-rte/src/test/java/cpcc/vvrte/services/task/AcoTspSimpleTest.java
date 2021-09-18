@@ -40,10 +40,10 @@ import cpcc.core.utils.CartesianCoordinate;
 /**
  * AcoTspSimpleTest implementation.
  */
-public class AcoTspSimpleTest
+class AcoTspSimpleTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<AcoTspSimple> cnt = AcoTspSimple.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -68,7 +68,7 @@ public class AcoTspSimpleTest
 
     @ParameterizedTest
     @MethodSource("pathDataProvider")
-    public void shouldCalculateTspPath(List<CartesianCoordinate> path, List<Integer> expected)
+    void shouldCalculateTspPath(List<CartesianCoordinate> path, List<Integer> expected)
     {
         int n = path.size();
 
@@ -100,7 +100,7 @@ public class AcoTspSimpleTest
 
     @ParameterizedTest
     @MethodSource("wreckedCostMatrixDataprovider")
-    public void shouldThrowExceptionOnInvalidMatrixDimenstions(int w, int h)
+    void shouldThrowExceptionOnInvalidMatrixDimenstions(int w, int h)
     {
         double[][] costMatrix = new double[w][h];
 
@@ -137,7 +137,7 @@ public class AcoTspSimpleTest
 
     @ParameterizedTest
     @MethodSource("fixPathDataProvider")
-    public void shouldFixPath(int index, List<Integer> data, List<Integer> expected)
+    void shouldFixPath(int index, List<Integer> data, List<Integer> expected)
     {
         List<Integer> actual = new ArrayList<>(data);
 

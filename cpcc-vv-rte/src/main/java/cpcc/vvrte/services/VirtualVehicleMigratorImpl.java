@@ -38,6 +38,7 @@ import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationResponse.Status;
@@ -57,6 +58,8 @@ import cpcc.vvrte.services.db.VvRteRepository;
  */
 public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 {
+    private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleMigratorImpl.class);
+
     private static final String CHUNK = "chunk";
     private static final String LAST_CHUNK = "last.chunk";
     private static final String END_TIME = "end.time";
@@ -74,7 +77,6 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private static final String DATA_VV_SOURCE_JS = "vv/vv-source.js";
     private static final String DATA_VV_CONTINUATION_JS = "vv/vv-continuation.js";
 
-    private Logger logger;
     private HibernateSessionManager sessionManager;
     private VvRteRepository vvRepository;
     private VirtualVehicleLauncher launcher;
@@ -85,7 +87,6 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     private int chunkSize;
 
     /**
-     * @param logger the application logger.
      * @param sessionManager the Hibernate session manager.
      * @param vvRepository the virtual vehicle repository.
      * @param launcher the virtual vehicle launcher.
@@ -98,7 +99,6 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     public VirtualVehicleMigratorImpl(ServiceResources serviceResources,
         @Symbol(VvRteConstants.MIGRATION_CHUNK_SIZE) int chunkSize)
     {
-        this.logger = serviceResources.getService(Logger.class);
         this.sessionManager = serviceResources.getService(HibernateSessionManager.class);
         this.vvRepository = serviceResources.getService(VvRteRepository.class);
         this.launcher = serviceResources.getService(VirtualVehicleLauncher.class);
@@ -259,7 +259,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     {
         for (VirtualVehicleStorage se : storageChunk)
         {
-            logger.debug("Writing storage entry '{}'", se.getName());
+            LOG.debug("Writing storage entry '{}'", se.getName());
 
             byte[] content = se.getContentAsByteArray();
             TarArchiveEntry entry = new TarArchiveEntry(STORAGE + se.getName());
@@ -375,7 +375,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
         else
         {
             String content = org.apache.commons.codec.binary.StringUtils.newStringUtf8(response.getContent());
-            logger.error("Migration ACK failed! Virtual vehicle: {} ({}) {}", vv.getName(), vv.getUuid(), content);
+            LOG.error("Migration ACK failed! Virtual vehicle: {} ({}) {}", vv.getName(), vv.getUuid(), content);
             updateStateAndCommit(vv, VirtualVehicleState.MIGRATION_INTERRUPTED_RCV, content);
         }
 
@@ -434,7 +434,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
     {
         String name = virtualVehicle != null ? " name=" + virtualVehicle.getName() : "";
         String lastChunkMsg = lastChunk ? " (last)" : " (not last)";
-        logger.debug("Migration of {}{}{}", chunkName, name, lastChunkMsg);
+        LOG.debug("Migration of {}{}{}", chunkName, name, lastChunkMsg);
     }
 
     /**
@@ -510,13 +510,13 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
                 + "is being migrated and can not be a migration target.");
         }
 
-        logger.debug("pre-migration:  {} ({}) {}", vv.getName(), vv.getUuid(), vv.getState());
+        LOG.debug("pre-migration:  {} ({}) {}", vv.getName(), vv.getUuid(), vv.getState());
 
         vv.setChunkNumber(Integer.parseInt(props.getProperty(CHUNK)));
         vv.setMigrationSource(rvRepository.findRealVehicleByName(props.getProperty(MIGRATION_SOURCE)));
         sessionManager.getSession().saveOrUpdate(vv);
 
-        logger.debug("post-migration: {} ({}) {}", vv.getName(), vv.getUuid(), vv.getState());
+        LOG.debug("post-migration: {} ({}) {}", vv.getName(), vv.getUuid(), vv.getState());
     }
 
     /**

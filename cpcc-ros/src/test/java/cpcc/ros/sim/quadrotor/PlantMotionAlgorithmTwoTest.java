@@ -21,35 +21,20 @@ package cpcc.ros.sim.quadrotor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
 
 /**
  * PlantMotionAlgorithmTwoTest implementation.
  */
-public class PlantMotionAlgorithmTwoTest
+class PlantMotionAlgorithmTwoTest
 {
-    private Logger logger;
-
-    @BeforeEach
-    public void setUp()
-    {
-        logger = mock(Logger.class);
-    }
-
     static Stream<Arguments> takeOffDataProvider()
     {
         return Stream.of(
@@ -81,28 +66,30 @@ public class PlantMotionAlgorithmTwoTest
 
     @ParameterizedTest
     @MethodSource("takeOffDataProvider")
-    public void shouldFly(double totalTime, double maxV, double maxA, double distance, double time, double expDistance,
+    void shouldFly(double totalTime, double maxV, double maxA, double distance, double time, double expDistance,
         double expVelocity, double expAcceleration)
     {
-        PlantMotionAlgorithmTwo sut = new PlantMotionAlgorithmTwo(logger, distance, maxA);
+        PlantMotionAlgorithmTwo sut = new PlantMotionAlgorithmTwo(distance, maxA);
 
         assertThat(sut.getTotalTime()).describedAs("Total flight time").isEqualTo(totalTime, offset(1E-2));
 
         assertThat(sut.velocity(time)).describedAs("Velocity").isEqualTo(expVelocity, offset(1E-2));
         assertThat(sut.distance(time)).describedAs("Distance").isEqualTo(expDistance, offset(1E-2));
         assertThat(sut.acceleration(time)).describedAs("Acceleration").isEqualTo(expAcceleration, offset(1E-2));
-
-        verify(logger).info(anyString(), any(), any(), any(), any());
     }
 
-    @Test
-    public void shouldWriteDataToFile() throws FileNotFoundException
+    public static void main(String[] args) throws FileNotFoundException
+    {
+        new PlantMotionAlgorithmTwoTest().shouldWriteDataToFile();
+    }
+
+    void shouldWriteDataToFile() throws FileNotFoundException
     {
         try (PrintWriter writer = new PrintWriter("target/plantAltgorithmTwo.csv"))
         {
             writer.println("time;distance;velocity;acceleration");
 
-            PlantMotionAlgorithmTwo sut = new PlantMotionAlgorithmTwo(logger, 1000.0, 5.0);
+            PlantMotionAlgorithmTwo sut = new PlantMotionAlgorithmTwo(1000.0, 5.0);
 
             double totalTime = sut.getTotalTime();
             double time = 0.0;

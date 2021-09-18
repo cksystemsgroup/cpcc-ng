@@ -33,10 +33,10 @@ import org.junit.jupiter.api.Test;
 /**
  * CommunicationModuleTest
  */
-public class CommunicationModuleTest
+class CommunicationModuleTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<CommunicationModule> cnt = CommunicationModule.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -47,7 +47,7 @@ public class CommunicationModuleTest
     }
 
     @Test
-    public void shouldBindServices()
+    void shouldBindServices()
     {
         ServiceBindingOptions options = mock(ServiceBindingOptions.class);
         ServiceBinder binder = mock(ServiceBinder.class);
@@ -59,7 +59,7 @@ public class CommunicationModuleTest
     }
 
     @Test
-    public void shouldContributeToHibernateEntityPackageManager()
+    void shouldContributeToHibernateEntityPackageManager()
     {
         @SuppressWarnings("unchecked")
         Configuration<String> configuration = mock(Configuration.class);

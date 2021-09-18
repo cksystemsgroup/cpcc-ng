@@ -24,6 +24,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.services.jobs.TimeService;
@@ -35,19 +36,18 @@ import cpcc.vvrte.entities.Task;
  */
 public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(GatedTspSchedulingAlgorithm.class);
+
     private TimeService timeService;
     private int maxTasks;
 
     /**
-     * @param logger the application logger.
      * @param timeService the time service.
      * @param maxTasks the maximum number of GTSP tasks to connect.
      */
-    public GatedTspSchedulingAlgorithm(Logger logger, TimeService timeService,
+    public GatedTspSchedulingAlgorithm(TimeService timeService,
         @Symbol(VvRteConstants.PROP_GTSP_MAX_TASKS) int maxTasks)
     {
-        this.logger = logger;
         this.timeService = timeService;
         this.maxTasks = maxTasks;
     }
@@ -80,7 +80,7 @@ public class GatedTspSchedulingAlgorithm implements TaskSchedulingAlgorithm
             catch (TimeoutException e)
             {
                 mt /= 2;
-                logger.warn("Reducing GTSP path length from {} to {}", maxTasks, mt);
+                LOG.warn("Reducing GTSP path length from {} to {}", maxTasks, mt);
             }
         }
 

@@ -28,13 +28,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.http.services.Response;
 import org.junit.jupiter.api.Test;
 
-public class ResourceStreamResponseTest
+class ResourceStreamResponseTest
 {
     private static final String CONTENT_TYPE_PNG = "application/png";
     private static final String PNG_RESOURCE_NAME = "cpcc/core/utils/red_tile.png";
 
     @Test
-    public void shouldReturnResourceAsStream() throws IOException
+    void shouldReturnResourceAsStream() throws IOException
     {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         byte[] expected = IOUtils.toByteArray(classLoader.getResourceAsStream(PNG_RESOURCE_NAME));
@@ -49,7 +49,7 @@ public class ResourceStreamResponseTest
     }
 
     @Test
-    public void shouldIgnoreCallsToPrepareResponse() throws IOException
+    void shouldIgnoreCallsToPrepareResponse() throws IOException
     {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         byte[] expected = IOUtils.toByteArray(classLoader.getResourceAsStream(PNG_RESOURCE_NAME));

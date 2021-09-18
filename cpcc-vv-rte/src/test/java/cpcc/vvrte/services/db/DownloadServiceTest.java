@@ -52,7 +52,7 @@ import cpcc.vvrte.entities.VirtualVehicleStorage;
 /**
  * DownloadServiceTest implementation.
  */
-public class DownloadServiceTest
+class DownloadServiceTest
 {
     private static final long CURRENT_TIME = 1458492762000L;
 
@@ -64,6 +64,7 @@ public class DownloadServiceTest
     private static final VirtualVehicleState VV_ONE_STATE = VirtualVehicleState.FINISHED;
     private static final String VV_ONE_STATE_INFO = "vv01 state info.";
     private static final Date VV_ONE_START_TIME = null;
+    private static final String VV_ONE_START_TIME_STR = null;
     // private static final String VV_ONE_START_TIME_STR = "2014-12-13 18:05:27";
     private static final Date VV_ONE_END_TIME = new Date(1418492327321L);
     // private static final String VV_ONE_END_TIME_STR = "2014-12-13 18:38:47";
@@ -111,7 +112,7 @@ public class DownloadServiceTest
     private ScriptableObject contentOne2;
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -184,7 +185,7 @@ public class DownloadServiceTest
     }
 
     @Test
-    public void shouldGetAllVirtualVehicles() throws IOException
+    void shouldGetAllVirtualVehicles() throws IOException
     {
         byte[] actual = sut.getAllVirtualVehicles();
 
@@ -205,7 +206,7 @@ public class DownloadServiceTest
         assertThat(actualProps.getProperty("api-version")).isEqualTo(Integer.toString(VV_ONE_API_VERSION));
         assertThat(actualProps.getProperty("end-time")).isEqualTo(sdf.format(VV_ONE_END_TIME));
         assertThat(actualProps.getProperty("name")).isEqualTo(VV_ONE_NAME);
-        assertThat(actualProps.getProperty("start-time")).isEqualTo(VV_ONE_START_TIME);
+        assertThat(actualProps.getProperty("start-time")).isEqualTo(VV_ONE_START_TIME_STR);
         assertThat(actualProps.getProperty("state")).isEqualTo(VV_ONE_STATE.name());
 
         entry = zis.getNextEntry();
@@ -266,7 +267,7 @@ public class DownloadServiceTest
     }
 
     // @Test
-    public void shouldListContent() throws IOException
+    void shouldListContent() throws IOException
     {
         byte[] actual = sut.getAllVirtualVehicles();
 

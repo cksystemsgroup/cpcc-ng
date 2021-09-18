@@ -47,14 +47,14 @@ import cpcc.core.entities.PolarCoordinate;
 /**
  * This class verifies the implementation of the WGS84 class.
  */
-public class WGS84TestCase
+class WGS84TestCase
 {
-    GeodeticSystem gs;
+    GeodeticSystem sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
-        gs = new WGS84();
+        sut = new WGS84();
     }
 
     static Stream<Arguments> polarAndRectangularDataProvider()
@@ -71,14 +71,14 @@ public class WGS84TestCase
      */
     @ParameterizedTest
     @MethodSource("polarAndRectangularDataProvider")
-    public void shouldConvertCoodinates(PolarCoordinate wgs, CartesianCoordinate rect)
+    void shouldConvertCoodinates(PolarCoordinate wgs, CartesianCoordinate rect)
     {
-        PolarCoordinate pos = gs.rectangularToPolarCoordinates(rect);
-        assertThat(wgs.getLatitude()).isEqualTo(pos.getLatitude(), offset(1E-4));
-        assertThat(wgs.getLongitude()).isEqualTo(pos.getLongitude(), offset(1E-4));
-        assertThat(wgs.getAltitude()).isEqualTo(pos.getAltitude(), offset(1E-4));
+        PolarCoordinate pos = sut.rectangularToPolarCoordinates(rect);
+        assertThat(pos.getLatitude()).isEqualTo(wgs.getLatitude(), offset(1E-4));
+        assertThat(pos.getLongitude()).isEqualTo(wgs.getLongitude(), offset(1E-4));
+        assertThat(pos.getAltitude()).isEqualTo(wgs.getAltitude(), offset(1E-4));
 
-        CartesianCoordinate rec = gs.polarToRectangularCoordinates(wgs);
+        CartesianCoordinate rec = sut.polarToRectangularCoordinates(wgs);
         assertThat(rec.getX()).isEqualTo(rect.getX(), offset(1E-4));
         assertThat(rec.getY()).isEqualTo(rect.getY(), offset(1E-4));
         assertThat(rec.getZ()).isEqualTo(rect.getZ(), offset(1E-4));
@@ -88,12 +88,12 @@ public class WGS84TestCase
      * This test calculates the elevation of a course.
      */
     @Test
-    public void shouldCalculateElevation()
+    void shouldCalculateElevation()
     {
         PolarCoordinate A = new PolarCoordinate(48, 13, 1010);
         PolarCoordinate B = new PolarCoordinate(48.001, 13.002, 1000);
-        CartesianCoordinate a = gs.polarToRectangularCoordinates(A);
-        CartesianCoordinate b = gs.polarToRectangularCoordinates(B);
+        CartesianCoordinate a = sut.polarToRectangularCoordinates(A);
+        CartesianCoordinate b = sut.polarToRectangularCoordinates(B);
 
         CartesianCoordinate mv = b.subtract(a);
         double distance = mv.norm();
@@ -130,9 +130,9 @@ public class WGS84TestCase
      */
     @ParameterizedTest
     @MethodSource("walkAroundDataProvider")
-    public void shouldWalkAround(PolarCoordinate startPos, CartesianCoordinate way, PolarCoordinate destPos)
+    void shouldWalkAround(PolarCoordinate startPos, CartesianCoordinate way, PolarCoordinate destPos)
     {
-        PolarCoordinate b = gs.walk(startPos, way.getX(), way.getY(), way.getZ());
+        PolarCoordinate b = sut.walk(startPos, way.getX(), way.getY(), way.getZ());
         assertThat(b.getLatitude()).isEqualTo(destPos.getLatitude(), offset(1E-8));
         assertThat(b.getLongitude()).isEqualTo(destPos.getLongitude(), offset(1E-8));
         assertThat(b.getAltitude()).isEqualTo(destPos.getAltitude(), offset(1E-8));
@@ -156,10 +156,10 @@ public class WGS84TestCase
 
     @ParameterizedTest
     @MethodSource("polarCoordinatesDataProvider")
-    public void shouldConvertCoordinatesToAndFro(PolarCoordinate pos)
+    void shouldConvertCoordinatesToAndFro(PolarCoordinate pos)
     {
-        CartesianCoordinate cartA = gs.polarToRectangularCoordinates(pos);
-        PolarCoordinate posA = gs.rectangularToPolarCoordinates(cartA);
+        CartesianCoordinate cartA = sut.polarToRectangularCoordinates(pos);
+        PolarCoordinate posA = sut.rectangularToPolarCoordinates(cartA);
 
         assertThat(posA.getLatitude())
             .overridingErrorMessage("Latitude")
@@ -191,9 +191,9 @@ public class WGS84TestCase
 
     @ParameterizedTest
     @MethodSource("specialCasesDataProvider")
-    public void shouldConsiderConvertingOfSpecialCases(CartesianCoordinate cartA, PolarCoordinate posA)
+    void shouldConsiderConvertingOfSpecialCases(CartesianCoordinate cartA, PolarCoordinate posA)
     {
-        PolarCoordinate result = gs.rectangularToPolarCoordinates(cartA);
+        PolarCoordinate result = sut.rectangularToPolarCoordinates(cartA);
         assertThat(result.getLatitude())
             .overridingErrorMessage("Latitude")
             .isEqualTo(posA.getLatitude(), offset(1E-3));
@@ -224,9 +224,9 @@ public class WGS84TestCase
 
     @ParameterizedTest
     @MethodSource("distancesDataProvider")
-    public void shouldCalculateDistances(PolarCoordinate a, PolarCoordinate b, double distance, double delta)
+    void shouldCalculateDistances(PolarCoordinate a, PolarCoordinate b, double distance, double delta)
     {
-        assertThat(gs.calculateDistance(a, b)).isEqualTo(distance, offset(delta));
+        assertThat(sut.calculateDistance(a, b)).isEqualTo(distance, offset(delta));
     }
 
     private static final double COS_60 = 0.5;
@@ -255,17 +255,17 @@ public class WGS84TestCase
             arguments("RV07", rv07));
     }
 
-    @ParameterizedTest
-    @MethodSource("startPositionDataProvider")
-    public void shouldRunAroundALittleBit(String name, PolarCoordinate startPosition)
+    //    @ParameterizedTest
+    //    @MethodSource("startPositionDataProvider")
+    void shouldRunAroundALittleBit(String name, PolarCoordinate startPosition)
         throws JsonProcessingException
     {
-        PolarCoordinate depotPos = gs.walk(startPosition, 0.0, DIAMETER, 0.0);
-        PolarCoordinate p1 = gs.walk(startPosition, -DIAMETER * SIN_60, DIAMETER * COS_60, 0.0);
-        PolarCoordinate p2 = gs.walk(startPosition, -DIAMETER * SIN_60, DIAMETER * COS_60 + DIAMETER, 0.0);
-        PolarCoordinate p3 = gs.walk(startPosition, 0.0, DIAMETER * 2.0, 0.0);
-        PolarCoordinate p4 = gs.walk(startPosition, DIAMETER * SIN_60, DIAMETER * COS_60 + DIAMETER, 0.0);
-        PolarCoordinate p5 = gs.walk(startPosition, DIAMETER * SIN_60, DIAMETER * COS_60, 0.0);
+        PolarCoordinate depotPos = sut.walk(startPosition, 0.0, DIAMETER, 0.0);
+        PolarCoordinate p1 = sut.walk(startPosition, -DIAMETER * SIN_60, DIAMETER * COS_60, 0.0);
+        PolarCoordinate p2 = sut.walk(startPosition, -DIAMETER * SIN_60, DIAMETER * COS_60 + DIAMETER, 0.0);
+        PolarCoordinate p3 = sut.walk(startPosition, 0.0, DIAMETER * 2.0, 0.0);
+        PolarCoordinate p4 = sut.walk(startPosition, DIAMETER * SIN_60, DIAMETER * COS_60 + DIAMETER, 0.0);
+        PolarCoordinate p5 = sut.walk(startPosition, DIAMETER * SIN_60, DIAMETER * COS_60, 0.0);
 
         Polygon poly = new Polygon();
         poly.add(Arrays.asList(toLLA(startPosition), toLLA(p1), toLLA(p2), toLLA(p3), toLLA(p4), toLLA(p5),

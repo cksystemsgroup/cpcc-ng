@@ -19,12 +19,15 @@
 package cpcc.ros.sim.quadrotor;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Plant motion algorithm one implementation.
  */
 public class PlantMotionAlgorithmOne implements PlantMotionAlgorithm
 {
+    private static final Logger LOG = LoggerFactory.getLogger(PlantMotionAlgorithmOne.class);
+
     private double dist;
     private double maxV;
     private double totalTime;
@@ -33,12 +36,11 @@ public class PlantMotionAlgorithmOne implements PlantMotionAlgorithm
     private double distTimeOne;
 
     /**
-     * @param log the application logger.
      * @param dist the travel distance.
      * @param maxV the maximum allowed velocity to travel.
      * @param maxA the maximum allowed acceleration to travel.
      */
-    public PlantMotionAlgorithmOne(Logger log, double dist, double maxV, double maxA)
+    public PlantMotionAlgorithmOne(double dist, double maxV, double maxA)
     {
         this.dist = dist;
         this.maxV = maxV;
@@ -48,7 +50,7 @@ public class PlantMotionAlgorithmOne implements PlantMotionAlgorithm
         timeOne = 2.0 * maxV / maxA;
         timeTwo = totalTime - timeOne;
 
-        log.info("One: dist={}, maxV={}, maxA={}, totalTime={}, timeOne={}, timeTwo={}",
+        LOG.info("One: dist={}, maxV={}, maxA={}, totalTime={}, timeOne={}, timeTwo={}",
             dist, maxV, maxA, totalTime, timeOne, timeTwo);
     }
 

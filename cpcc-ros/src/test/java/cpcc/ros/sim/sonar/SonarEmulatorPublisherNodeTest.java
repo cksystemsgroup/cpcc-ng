@@ -33,15 +33,13 @@ import org.junit.jupiter.api.Test;
 import org.ros.message.MessageFactory;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
-import org.slf4j.Logger;
 
 import sensor_msgs.NavSatFix;
 
-public class SonarEmulatorPublisherNodeTest
+class SonarEmulatorPublisherNodeTest
 {
     private static final String TOPIC_ROOT = "/topicRoot";
 
-    private Logger logger;
     private Map<String, List<String>> config;
     private ConnectedNode connectedNode;
     private std_msgs.Float32 newFloatMessage;
@@ -52,10 +50,8 @@ public class SonarEmulatorPublisherNodeTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
-        logger = mock(Logger.class);
-
         config = new HashMap<String, List<String>>();
         config.put("topicRoot", Arrays.asList(TOPIC_ROOT));
         config.put("origin", Arrays.asList("3.27"));
@@ -74,11 +70,11 @@ public class SonarEmulatorPublisherNodeTest
         message = mock(NavSatFix.class);
         when(message.getAltitude()).thenReturn(8.76);
 
-        sut = new SonarEmulatorPublisherNode(logger, config);
+        sut = new SonarEmulatorPublisherNode(config);
     }
 
     @Test
-    public void shouldStartNode() throws InterruptedException
+    void shouldStartNode() throws InterruptedException
     {
         sut.onStart(connectedNode);
 
@@ -87,7 +83,7 @@ public class SonarEmulatorPublisherNodeTest
     }
 
     @Test
-    public void shouldReceiveMessage() throws InterruptedException
+    void shouldReceiveMessage() throws InterruptedException
     {
         sut.onStart(connectedNode);
         sut.onNewMessage(message);

@@ -26,29 +26,28 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.Node;
 import org.ros.node.topic.Subscriber;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import sensor_msgs.NavSatFix;
 import cpcc.ros.sim.AnonymousNodeMain;
+import sensor_msgs.NavSatFix;
 
 /**
  * Sonar Emulator Listener Node
  */
 public class SonarEmulatorListenerNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(SonarEmulatorListenerNode.class);
+
     private MessageListener<NavSatFix> listenerNode;
     private Subscriber<sensor_msgs.NavSatFix> subscriber;
     private String listenTopic;
 
     /**
-     * @param logger the application logger.
      * @param config the device configuration.
      * @param listenerNode the listener node.
      */
-    public SonarEmulatorListenerNode(Logger logger, Map<String, List<String>> config,
-        MessageListener<NavSatFix> listenerNode)
+    public SonarEmulatorListenerNode(Map<String, List<String>> config, MessageListener<NavSatFix> listenerNode)
     {
-        this.logger = logger;
         this.listenerNode = listenerNode;
 
         listenTopic = config.get("gps").get(0);
@@ -60,7 +59,7 @@ public class SonarEmulatorListenerNode extends AnonymousNodeMain<sensor_msgs.Nav
     @Override
     public void onStart(ConnectedNode connectedNode)
     {
-        logger.info("onStart()");
+        LOG.info("onStart()");
 
         subscriber = connectedNode.newSubscriber(listenTopic, sensor_msgs.NavSatFix._TYPE);
         subscriber.addMessageListener(listenerNode);

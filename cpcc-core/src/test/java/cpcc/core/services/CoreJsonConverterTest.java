@@ -46,7 +46,7 @@ import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.core.entities.SensorVisibility;
 
-public class CoreJsonConverterTest
+class CoreJsonConverterTest
 {
     private static final String RV1_AREA_OF_OPERATION = "["
         + "{lat:37.80800,lng:-122.42600},{lat:37.80800,lng:-122.42700},{lat:37.80900,lng:-122.42700},"
@@ -68,7 +68,7 @@ public class CoreJsonConverterTest
     private static SensorDefinition s4 = mock(SensorDefinition.class);
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         when(s1.getId()).thenReturn(1);
         when(s1.getDescription()).thenReturn("Altimeter");
@@ -191,7 +191,7 @@ public class CoreJsonConverterTest
 
     @ParameterizedTest
     @MethodSource("singleVehicleDataProvider")
-    public void shouldConvertRealVehicles(RealVehicle vehicle, String expectedJsonString) throws JSONException
+    void shouldConvertRealVehicles(RealVehicle vehicle, String expectedJsonString) throws JSONException
     {
         JSONObject result = sut.toJson(false, vehicle);
         JSONAssert.assertEquals(expectedJsonString, result.toString(true), false);
@@ -269,7 +269,7 @@ public class CoreJsonConverterTest
 
     @ParameterizedTest
     @MethodSource("singleVehicleWithSensorIdsOnlyDataProvider")
-    public void shouldConvertRealVehiclesWithSensorIdsOnly(RealVehicle vehicle, String expectedJsonString)
+    void shouldConvertRealVehiclesWithSensorIdsOnly(RealVehicle vehicle, String expectedJsonString)
         throws JSONException
     {
         JSONObject result = sut.toJson(true, vehicle);
@@ -419,7 +419,7 @@ public class CoreJsonConverterTest
 
     @ParameterizedTest
     @MethodSource("multiVehicleDataProvider")
-    public void shouldConvertRealVehicleArrays(RealVehicle[] vehicles, String expectedJsonString)
+    void shouldConvertRealVehicleArrays(RealVehicle[] vehicles, String expectedJsonString)
         throws JSONException
     {
         JSONArray result = sut.toJsonArray(false, vehicles);
@@ -444,7 +444,7 @@ public class CoreJsonConverterTest
 
     @ParameterizedTest
     @MethodSource("polarCoordinateDataProvicer")
-    public void shouldConvertPolarCoordinates(PolarCoordinate data, String expected) throws JSONException
+    void shouldConvertPolarCoordinates(PolarCoordinate data, String expected) throws JSONException
     {
         JSONObject actual = sut.toJson(data);
 
@@ -464,29 +464,9 @@ public class CoreJsonConverterTest
 
     @ParameterizedTest
     @MethodSource("integerArrayDataProvicer")
-    public void shouldConvertIntegerArrays(List<Integer> data, String expected) throws JSONException
+    void shouldConvertIntegerArrays(List<Integer> data, String expected) throws JSONException
     {
         JSONArray actual = sut.toJsonArray(data.toArray(new Integer[data.size()]));
-
-        JSONAssert.assertEquals(expected, actual.toCompactString(), false);
-        JSONAssert.assertEquals(actual.toCompactString(), expected, false);
-    }
-
-    static Stream<Arguments> doubleArrayDataProvicer()
-    {
-        return Stream.of(
-            arguments(Arrays.asList(new Double[]{}), "[]"),
-            arguments(Arrays.asList(new Double[]{1.1}), "[1.1]"),
-            arguments(Arrays.asList(new Double[]{1.2, 2.3}), "[1.2,2.3]"),
-            arguments(Arrays.asList(new Double[]{1.4, 2.5, 3.6}), "[1.4,2.5,3.6]"),
-            arguments(Arrays.asList(new Double[]{1.7, 2.8, 3.9, 4.01}), "[1.7,2.8,3.9,4.01]"));
-    }
-
-    @ParameterizedTest
-    @MethodSource("doubleArrayDataProvicer")
-    public void shouldConvertDoubleArrays(List<Double> data, String expected) throws JSONException
-    {
-        JSONArray actual = sut.toJsonArray(data.toArray(new Double[data.size()]));
 
         JSONAssert.assertEquals(expected, actual.toCompactString(), false);
         JSONAssert.assertEquals(actual.toCompactString(), expected, false);
@@ -505,60 +485,6 @@ public class CoreJsonConverterTest
         realVehicle.setType((RealVehicleType) data[6]);
         realVehicle.setUrl((String) data[7]);
         return realVehicle;
-    }
-
-    static Stream<Arguments> newRealVehicleDataProvicer()
-    {
-        CoreJsonConverter conv = new CoreJsonConverterImpl();
-
-        SensorDefinition sensor1 = mock(SensorDefinition.class);
-        when(sensor1.getId()).thenReturn(1);
-        when(sensor1.getDescription()).thenReturn("Altimeter");
-        when(sensor1.getType()).thenReturn(SensorType.ALTIMETER);
-        when(sensor1.getMessageType()).thenReturn("std_msgs/Float32");
-        when(sensor1.getVisibility()).thenReturn(SensorVisibility.ALL_VV);
-        when(sensor1.getParameters()).thenReturn("random=10:35");
-        when(sensor1.getLastUpdate()).thenReturn(new Date(10001));
-
-        RealVehicle rvA = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sensor1),
-            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
-        String rvAJsonString = conv.toJson(true, rvA).toCompactString();
-
-        RealVehicle rvB = setupRealVehicle("abc", false, 10, new Date(123456788), "rv01",
-            Arrays.asList(new SensorDefinition[0]), RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
-        String rvBJsonString = conv.toJson(true, rvB).toCompactString();
-
-        RealVehicle rvC = setupRealVehicle("abcd", true, 10, new Date(123456791), "rv01c", Arrays.asList(sensor1),
-            RealVehicleType.TABLET, "http://localhost:8081/rv01");
-        String rvCJsonString = conv.toJson(true, rvC).toCompactString();
-
-        String rvDJsonString = rvAJsonString.replace(",\"deleted\":false", "").replace("123456789", "123456792");
-        String rvEJsonString = rvAJsonString.replace("123456789", "123456792");
-
-        return Stream.of(
-            arguments(sensor1, 0, rvAJsonString, rvAJsonString),
-            arguments(sensor1, -1, rvBJsonString, rvAJsonString),
-            arguments(sensor1, 1, rvCJsonString, rvCJsonString),
-            arguments(sensor1, 1, rvDJsonString, rvEJsonString));
-    }
-
-    @ParameterizedTest
-    @MethodSource("newRealVehicleDataProvicer")
-    public void shouldFillInNewerRealVehicleFromJsonObject(SensorDefinition sensor, int cmp, String data,
-        String expected) throws JSONException
-    {
-        RealVehicle vehicle = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(sensor),
-            RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
-
-        JSONObject obj = new JSONObject(data);
-
-        int actualCmp = sut.fillInNewerRealVehicleFromJsonObject(vehicle, obj);
-        assertThat(actualCmp).isEqualTo(cmp);
-
-        String actual = sut.toJson(true, vehicle).toCompactString();
-
-        JSONAssert.assertEquals(expected, actual, false);
-        JSONAssert.assertEquals(actual, expected, false);
     }
 
     static SensorDefinition setupSensorDefinition(Boolean deleted, String description, Integer id, Date lastUpdate,
@@ -606,29 +532,11 @@ public class CoreJsonConverterTest
             arguments(1, sdFJsonString, sdFJsonString));
     }
 
-    @ParameterizedTest
-    @MethodSource("newSensorDefinitionDataProvicer")
-    public void shouldFillInNewerSensorDefinitionFromJsonObject(int cmp, String data, String expected)
-        throws JSONException
-    {
-        SensorDefinition sdTest = setupSensorDefinition(false, "sensor1", 10, new Date(123456789), "msgs_type/t01",
-            "abc", SensorType.ALTIMETER, SensorVisibility.NO_VV);
-
-        JSONObject obj = new JSONObject(data);
-
-        int actualCmp = sut.fillInNewerSensorDefinitionFromJsonObject(sdTest, obj);
-        assertThat(actualCmp).isEqualTo(cmp);
-
-        String actual = sut.toJson(sdTest).toCompactString();
-
-        JSONAssert.assertEquals(expected, actual, false);
-        JSONAssert.assertEquals(actual, expected, false);
-    }
-
     static Stream<Arguments> regionsDataProvicer()
     {
         RealVehicle rv1 = mock(RealVehicle.class);
         RealVehicle rv2 = mock(RealVehicle.class);
+        RealVehicle rv3 = mock(RealVehicle.class);
 
         when(rv1.getName()).thenReturn("rv1");
         when(rv1.getUrl()).thenReturn("http://localhost/rv01");
@@ -650,12 +558,14 @@ public class CoreJsonConverterTest
             arguments(Arrays.asList(rv1), "{\"rv1\":" + RV1_AREA_OF_OPERATION + "}"),
             arguments(Arrays.asList(rv2), "{\"rv2\":" + RV2_AREA_OF_OPERATION + "}"),
             arguments(Arrays.asList(rv1, rv2),
-                "{\"rv1\":" + RV1_AREA_OF_OPERATION + ",\"rv2\":" + RV2_AREA_OF_OPERATION + "}"));
+                "{\"rv1\":" + RV1_AREA_OF_OPERATION + ",\"rv2\":" + RV2_AREA_OF_OPERATION + "}"),
+            arguments(Arrays.asList(rv3), "{}"));
+
     }
 
     @ParameterizedTest
     @MethodSource("regionsDataProvicer")
-    public void shouldConvertToRegionJson(List<RealVehicle> rvList, String expected)
+    void shouldConvertToRegionJson(List<RealVehicle> rvList, String expected)
     {
         String actual = sut.toRegionJson(rvList);
 
@@ -712,25 +622,10 @@ public class CoreJsonConverterTest
 
     @ParameterizedTest
     @MethodSource("statesDataProvicer")
-    public void shouldConvertoToRvSTateJson(List<RealVehicleState> statesList, String expected)
+    void shouldConvertoToRvSTateJson(List<RealVehicleState> statesList, String expected)
     {
         String actual = sut.toRealVehicleStateJson(statesList);
 
         assertThat(actual).isEqualTo(expected);
     }
-
-    //    @Test
-    //    public void shouldReturnEmptyJsonObjectOnCorruptedState()
-    //    {
-    //        RealVehicleState rvs = mock(RealVehicleState.class);
-    //        when(rvs.getId()).thenReturn(30303);
-    //        when(rvs.getRealVehicleName()).thenReturn("RV03");
-    //        when(rvs.getLastUpdate()).thenReturn(new Date(3030303L));
-    //        when(rvs.toString()).thenReturn("RV03");
-    //        when(rvs.getState()).thenReturn("{");
-    //        
-    //        String actual = sut.toRealVehicleStateJson(Arrays.asList(rvs));
-    //
-    //        assertThat(actual).isEqualTo("{\"30303\":{}}");
-    //    }
 }

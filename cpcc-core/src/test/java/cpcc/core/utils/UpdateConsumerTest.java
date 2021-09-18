@@ -37,13 +37,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Update Consumer Test implementation.
  */
-public class UpdateConsumerTest
+class UpdateConsumerTest
 {
     private Session session;
     private UpdateConsumer<Task> sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         session = mock(Session.class);
 
@@ -66,7 +66,7 @@ public class UpdateConsumerTest
 
     @ParameterizedTest
     @MethodSource("taskDataProvider")
-    public void shouldUpdateTasksInDatabase(List<Task> data)
+    void shouldUpdateTasksInDatabase(List<Task> data)
     {
         List<Task> taskList = new ArrayList<>();
         taskList.addAll(data);

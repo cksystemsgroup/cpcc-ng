@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleType;
@@ -36,16 +37,15 @@ import cpcc.vvrte.entities.Task;
  */
 public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleMapperImpl.class);
+
     private RealVehicleRepository rvRepo;
 
     /**
-     * @param logger the application logger.
      * @param rvRepo the real vehicle repository.
      */
-    public VirtualVehicleMapperImpl(Logger logger, RealVehicleRepository rvRepo)
+    public VirtualVehicleMapperImpl(RealVehicleRepository rvRepo)
     {
-        this.logger = logger;
         this.rvRepo = rvRepo;
     }
 
@@ -96,18 +96,18 @@ public class VirtualVehicleMapperImpl implements VirtualVehicleMapper
             {
                 if (rv.getSensors().containsAll(task.getSensors()))
                 {
-                    logger.info("Found migration candidate {} for task at {}", rv.getName(), task.getPosition());
+                    LOG.info("Found migration candidate {} for task at {}", rv.getName(), task.getPosition());
                     destinationRealVehicles.add(rv);
                 }
                 else
                 {
                     String sensorString = getSensorString(task.getSensors(), rv.getSensors());
-                    logger.debug("Migrate not to {} because of sensors {}", rv.getName(), sensorString);
+                    LOG.debug("Migrate not to {} because of sensors {}", rv.getName(), sensorString);
                 }
             }
             else
             {
-                logger.debug("Migrate not to {} because of position {}", rv.getName(), task.getPosition());
+                LOG.debug("Migrate not to {} because of position {}", rv.getName(), task.getPosition());
             }
         }
 

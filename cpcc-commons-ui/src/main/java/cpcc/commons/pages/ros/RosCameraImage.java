@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.PageActivationContext;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.utils.PngImageStreamResponse;
 import cpcc.ros.base.AbstractRosAdapter;
@@ -38,8 +39,7 @@ import cpcc.ros.services.RosNodeService;
  */
 public class RosCameraImage
 {
-    @Inject
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(RosCameraImage.class);
 
     @Inject
     private RosNodeService rns;
@@ -58,10 +58,10 @@ public class RosCameraImage
     {
         String rootTopic = rootTopicParam.replace(".", "/");
 
-        if (logger.isDebugEnabled())
+        if (LOG.isDebugEnabled())
         {
-            logger.debug("ctx={}, rootTopic={}", ctx, rootTopic);
-            logger.debug("Preparing image for root topic {}", rootTopicParam);
+            LOG.debug("ctx={}, rootTopic={}", ctx, rootTopic);
+            LOG.debug("Preparing image for root topic {}", rootTopicParam);
         }
 
         AbstractRosAdapter adapter = rns.getAdapterNodeByTopic(rootTopic);
@@ -74,7 +74,7 @@ public class RosCameraImage
 
         if (image == null)
         {
-            logger.error("No image adapter found for root topic {}", rootTopic);
+            LOG.error("No image adapter found for root topic {}", rootTopic);
             return new PngImageStreamResponse();
         }
 
@@ -86,7 +86,7 @@ public class RosCameraImage
         }
         catch (IOException e)
         {
-            logger.error("Can not convert image to StreamResponse.", e);
+            LOG.error("Can not convert image to StreamResponse.", e);
             return new PngImageStreamResponse();
         }
     }

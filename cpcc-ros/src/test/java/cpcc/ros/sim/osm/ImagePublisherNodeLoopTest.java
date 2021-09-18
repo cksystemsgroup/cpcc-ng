@@ -40,14 +40,13 @@ import org.mockserver.model.MediaType;
 import org.ros.message.MessageFactory;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.WGS84;
 import sensor_msgs.NavSatFix;
 
 @ExtendWith(MockServerExtension.class)
-public class ImagePublisherNodeLoopTest
+class ImagePublisherNodeLoopTest
 {
     private static final String TOPIC_ROOT = "/topicRoot";
     private static final String INFO_TOPIC = TOPIC_ROOT + "/camera_info";
@@ -63,15 +62,12 @@ public class ImagePublisherNodeLoopTest
     private MessageFactory messageFactory;
     private sensor_msgs.Image imageMessage;
     private sensor_msgs.CameraInfo cameraInfoMessage;
-    private Logger logger;
     private File tempDirectory;
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp(MockServerClient client) throws Exception
+    void setUp(MockServerClient client) throws Exception
     {
-        logger = mock(Logger.class);
-
         File path = new File("target/");
         tempDirectory = Files.createTempDirectory(path.toPath(), "tmp-test-ipnlt").toFile();
         assertThat(tempDirectory).exists();
@@ -127,15 +123,15 @@ public class ImagePublisherNodeLoopTest
     }
 
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         FileUtils.deleteDirectory(tileDir);
     }
 
     @Test
-    public void shouldReceiveMessage() throws Exception
+    void shouldReceiveMessage() throws Exception
     {
-        ImagePublisherNodeLoop sut = new ImagePublisherNodeLoop(logger, config, connectedNode);
+        ImagePublisherNodeLoop sut = new ImagePublisherNodeLoop(config, connectedNode);
 
         sut.loop();
         assertThat(sut.getMessage()).isNull();

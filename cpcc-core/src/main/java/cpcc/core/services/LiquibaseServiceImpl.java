@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.base.CoreConstants;
 import liquibase.Liquibase;
@@ -41,22 +42,23 @@ import liquibase.resource.ResourceAccessor;
  */
 public class LiquibaseServiceImpl implements LiquibaseService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(LiquibaseServiceImpl.class);
+
     private static final String JNDI_COMP_ENV = "java:/comp/env";
 
-    private final Logger logger;
     private String changeLog;
     private String dbResourceName;
+    private Boolean updateOk;
 
     /**
-     * @param logger the system logger.
      * @param changeLog the Liquibase change log.
      * @param databaseUrl the Liquibase database URL.
      * @throws LiquibaseException in case of errors.
      */
-    public LiquibaseServiceImpl(Logger logger, @Symbol(CoreConstants.PROP_LIQUIBASE_CHANGE_LOG_FILE) String changeLog,
+    public LiquibaseServiceImpl(
+        @Symbol(CoreConstants.PROP_LIQUIBASE_CHANGE_LOG_FILE) String changeLog,
         @Symbol(CoreConstants.PROP_LIQUIBASE_DATABASE_URL) String databaseUrl) throws LiquibaseException
     {
-        this.logger = logger;
         this.changeLog = changeLog;
 
         if (!databaseUrl.startsWith(JNDI_COMP_ENV + "/"))
@@ -89,10 +91,17 @@ public class LiquibaseServiceImpl implements LiquibaseService
                     l.update("");
                 }
             }
+            updateOk = Boolean.TRUE;
         }
         catch (Exception e)
         {
-            logger.error(e.getMessage(), e);
+            updateOk = Boolean.FALSE;
+            LOG.error(e.getMessage(), e);
         }
+    }
+
+    public Boolean getUpdateOk()
+    {
+        return updateOk;
     }
 }

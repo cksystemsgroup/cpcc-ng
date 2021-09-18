@@ -41,12 +41,12 @@ import cpcc.vvrte.entities.Task;
 /**
  * AcoTspTasksTest implementation.
  */
-public class AcoTspTasksTest
+class AcoTspTasksTest
 {
     private AcoTspTasks sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new AcoTspTasks();
     }
@@ -90,7 +90,7 @@ public class AcoTspTasksTest
 
     @ParameterizedTest
     @MethodSource("pathDataProvider")
-    public void shouldCalculateBestPathWithoutDepot(PolarCoordinate position, List<Task> path, List<Task> expected)
+    void shouldCalculateBestPathWithoutDepot(PolarCoordinate position, List<Task> path, List<Task> expected)
     {
         List<Task> actual = sut.calculateBestPath(position, path);
 
@@ -138,7 +138,7 @@ public class AcoTspTasksTest
 
     @ParameterizedTest
     @MethodSource("pathWithDepotDataProvider")
-    public void shouldCalculateBestPathWithDepot(PolarCoordinate position, List<Task> path, List<Task> expected)
+    void shouldCalculateBestPathWithDepot(PolarCoordinate position, List<Task> path, List<Task> expected)
     {
         List<Task> actual = sut.calculateBestPath(position, path);
 
@@ -146,7 +146,7 @@ public class AcoTspTasksTest
     }
 
     @Test
-    public void shouldReturnUnchangedPathIfDepotPositionIsNull()
+    void shouldReturnUnchangedPathIfDepotPositionIsNull()
     {
         List<Task> path = new ArrayList<>();
 
@@ -168,7 +168,7 @@ public class AcoTspTasksTest
 
     @ParameterizedTest
     @MethodSource("shortPathDataProvider")
-    public void shouldReturnUnchangedPathIfPathHasLessThanTwoTasks(List<Task> path)
+    void shouldReturnUnchangedPathIfPathHasLessThanTwoTasks(List<Task> path)
     {
         List<Task> actual = sut.calculateBestPath(null, path);
 

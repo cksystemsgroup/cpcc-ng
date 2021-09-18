@@ -31,12 +31,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * TopicTest
  */
-public class TopicTest
+class TopicTest
 {
     private Topic topic;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         topic = new Topic();
     }
@@ -56,7 +56,7 @@ public class TopicTest
 
     @ParameterizedTest
     @MethodSource("integerDataProvider")
-    public void shouldStoreId(Integer id)
+    void shouldStoreId(Integer id)
     {
         topic.setId(id);
         assertThat(topic.getId()).isEqualTo(id);
@@ -69,7 +69,7 @@ public class TopicTest
 
     @ParameterizedTest
     @MethodSource("nodeTypeDataProvider")
-    public void shouldStoreNodeType(RosNodeType nodeType)
+    void shouldStoreNodeType(RosNodeType nodeType)
     {
         topic.setNodeType(nodeType);
         assertThat(topic.getNodeType()).isEqualTo(nodeType);
@@ -86,7 +86,7 @@ public class TopicTest
 
     @ParameterizedTest
     @MethodSource("pathDataProvider")
-    public void shouldStoreSubPath(String path)
+    void shouldStoreSubPath(String path)
     {
         topic.setSubpath(path);
         assertThat(topic.getSubpath()).isEqualTo(path);
@@ -105,7 +105,7 @@ public class TopicTest
 
     @ParameterizedTest
     @MethodSource("messageTypeDataProvider")
-    public void shouldStoreMessagetype(String messageType)
+    void shouldStoreMessagetype(String messageType)
     {
         topic.setMessageType(messageType);
         assertThat(topic.getMessageType()).isEqualTo(messageType);
@@ -122,7 +122,7 @@ public class TopicTest
 
     @ParameterizedTest
     @MethodSource("classNameDataProvider")
-    public void shouldStoreAdapterClassName(String className)
+    void shouldStoreAdapterClassName(String className)
     {
         topic.setAdapterClassName(className);
         assertThat(topic.getAdapterClassName()).isEqualTo(className);
@@ -135,7 +135,7 @@ public class TopicTest
 
     @ParameterizedTest
     @MethodSource("topicCategoryDataProvider")
-    public void shouldStoreCategory(TopicCategory category)
+    void shouldStoreCategory(TopicCategory category)
     {
         topic.setCategory(category);
         assertThat(topic.getCategory()).isEqualTo(category);

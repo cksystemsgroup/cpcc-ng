@@ -27,6 +27,7 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationResponse.Status;
@@ -43,22 +44,21 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class MigrationSendAckJobRunnable implements JobRunnable
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(MigrationSendAckJobRunnable.class);
+
     private ServiceResources serviceResources;
     private Map<String, String> parameters;
     private byte[] data;
+    private boolean succeeded = false;
 
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param parameters the job parameters.
      * @param data the optional job data.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
-    public MigrationSendAckJobRunnable(Logger logger, ServiceResources serviceResources, Map<String, String> parameters,
-        byte[] data)
+    public MigrationSendAckJobRunnable(ServiceResources serviceResources, Map<String, String> parameters, byte[] data)
     {
-        this.logger = logger;
         this.serviceResources = serviceResources;
         this.parameters = parameters;
         this.data = data;
@@ -73,7 +73,7 @@ public class MigrationSendAckJobRunnable implements JobRunnable
         String id = parameters.get("id");
         if (StringUtils.isBlank(id))
         {
-            logger.error("Can not acknowledge virtual vehicle migration , parameters={}", parameters);
+            LOG.error("Can not acknowledge virtual vehicle migration , parameters={}", parameters);
             return;
         }
 
@@ -88,13 +88,13 @@ public class MigrationSendAckJobRunnable implements JobRunnable
 
         if (vehicle == null)
         {
-            logger.error("Can not find VV for ID {} (ACK).", vvId);
+            LOG.error("Can not find VV for ID {} (ACK).", vvId);
             return;
         }
 
         if (vehicle.getState() != VirtualVehicleState.MIGRATION_COMPLETED_SND)
         {
-            logger.error("Can not acknowledge vehicle {} ({}) because of wrong state {} instead of {}",
+            LOG.error("Can not acknowledge vehicle {} ({}) because of wrong state {} instead of {}",
                 vehicle.getName(), vehicle.getId(), vehicle.getState(), VirtualVehicleState.MIGRATION_COMPLETED_SND);
             return;
         }
@@ -111,12 +111,13 @@ public class MigrationSendAckJobRunnable implements JobRunnable
 
             if (response.getStatus() == Status.OK)
             {
-                logger.info("ACK virtual vehicle migration , parameters={} {}", parameters, content);
+                LOG.info("ACK virtual vehicle migration , parameters={} {}", parameters, content);
                 vvRepository.deleteVirtualVehicleById(vehicle);
+                succeeded = true;
             }
             else
             {
-                logger.error("Can not ACK VV {} to RV {} reason: {}",
+                LOG.error("Can not ACK VV {} to RV {} reason: {}",
                     vehicle.getName(), vehicle.getMigrationSource().getName(), content);
             }
 
@@ -124,7 +125,7 @@ public class MigrationSendAckJobRunnable implements JobRunnable
         }
         catch (IOException e)
         {
-            logger.error("Migration ACK aborted again! Virtual vehicle: {} ({})",
+            LOG.error("Migration ACK aborted again! Virtual vehicle: {} ({})",
                 vehicle.getName(), vehicle.getUuid(), e);
             sessionManager.abort();
         }
@@ -135,4 +136,12 @@ public class MigrationSendAckJobRunnable implements JobRunnable
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean executionSucceeded()
+    {
+        return succeeded;
+    }
 }

@@ -31,6 +31,7 @@ import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationResponse.Status;
@@ -48,7 +49,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class MigrationSendJobRunnable implements JobRunnable
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(MigrationSendJobRunnable.class);
+
     private ServiceResources serviceResources;
     private VirtualVehicleMigrator migrator;
     private HibernateSessionManager sessionManager;
@@ -57,18 +59,16 @@ public class MigrationSendJobRunnable implements JobRunnable
     private int chunkNumber = 0;
     private String dataString = null;
     private String uuid = null;
+    private boolean succeeded = false;
 
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param parameters the job parameters.
      * @param data the optional job data.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
-    public MigrationSendJobRunnable(Logger logger, ServiceResources serviceResources, Map<String, String> parameters,
-        byte[] data)
+    public MigrationSendJobRunnable(ServiceResources serviceResources, Map<String, String> parameters, byte[] data)
     {
-        this.logger = logger;
         this.serviceResources = serviceResources;
         this.parameters = parameters;
 
@@ -78,7 +78,7 @@ public class MigrationSendJobRunnable implements JobRunnable
 
             if (dataString.length() == 0 || dataString.charAt(0) != '{')
             {
-                logger.error("Can not migrate VV because of data: parameters={} data='{}'", parameters, dataString);
+                LOG.error("Can not migrate VV because of data: parameters={} data='{}'", parameters, dataString);
             }
 
             JSONObject obj = new JSONObject(dataString);
@@ -109,6 +109,15 @@ public class MigrationSendJobRunnable implements JobRunnable
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean executionSucceeded()
+    {
+        return succeeded;
+    }
+
+    /**
      * Run the migration job.
      */
     private void runMigration()
@@ -122,7 +131,7 @@ public class MigrationSendJobRunnable implements JobRunnable
         String id = parameters.get("id");
         if (StringUtils.isBlank(id))
         {
-            logger.error("Can not migrate virtual vehicle, parameters={}", parameters);
+            LOG.error("Can not migrate virtual vehicle, parameters={}", parameters);
             return;
         }
 
@@ -133,13 +142,13 @@ public class MigrationSendJobRunnable implements JobRunnable
 
         if (vehicle == null)
         {
-            logger.error("Can not find VV for ID {} UUID {}", vvId, uuid);
+            LOG.error("Can not find VV for ID {} UUID {}", vvId, uuid);
             return;
         }
 
         if (vvId == 0 && vehicle.getState() == VirtualVehicleState.MIGRATION_COMPLETED_SND)
         {
-            logger.info("VV Migration completed for ID {} {} UUID {}", vvId, vehicle.getName(), uuid);
+            LOG.info("VV Migration completed for ID {} {} UUID {}", vvId, vehicle.getName(), uuid);
             vvRepository.deleteVirtualVehicleById(vehicle);
             sessionManager.commit();
             return;
@@ -164,12 +173,14 @@ public class MigrationSendJobRunnable implements JobRunnable
 
             String content = org.apache.commons.codec.binary.StringUtils.newStringUtf8(response.getContent());
 
-            logger.info("Migration done! Virtual vehicle: {} ({}) {} {}",
+            LOG.info("Migration done! Virtual vehicle: {} ({}) {} {}",
                 vehicle.getName(), vehicle.getUuid(), response.getStatus(), content);
+
+            succeeded = true;
         }
         catch (IOException | ArchiveException e)
         {
-            logger.error("Migration aborted! Virtual vehicle: {} ({}) {}",
+            LOG.error("Migration aborted! Virtual vehicle: {} ({}) {}",
                 vehicle.getName(), vehicle.getUuid(), e.getMessage());
             sessionManager.abort();
 
@@ -196,7 +207,7 @@ public class MigrationSendJobRunnable implements JobRunnable
         }
         else
         {
-            logger.error("Migration failed! Virtual vehicle: {} ({}) {}",
+            LOG.error("Migration failed! Virtual vehicle: {} ({}) {}",
                 vehicle.getName(), vehicle.getUuid(), stateInfo);
             vehicle.setState(VirtualVehicleState.MIGRATION_INTERRUPTED_SND);
             vehicle.setStateInfo(stateInfo);
@@ -225,7 +236,7 @@ public class MigrationSendJobRunnable implements JobRunnable
             chunk = migrator.findChunk(vehicle, dataString, chunkNumber);
 
             String md5sum = DigestUtils.md5Hex(chunk);
-            logger.info("Initiating migration of virtual vehicle {}, chunk={}, parameters={}, len={}, md5={}",
+            LOG.info("Initiating migration of virtual vehicle {}, chunk={}, parameters={}, len={}, md5={}",
                 vehicle.getName(), chunkNumber, parameters, chunk.length, md5sum);
         }
         else
@@ -235,7 +246,7 @@ public class MigrationSendJobRunnable implements JobRunnable
             chunk = migrator.findChunk(vehicle, dataString, chunkNumber);
 
             String md5sum = DigestUtils.md5Hex(chunk);
-            logger.info("Continuing migration of virtual vehicle {}, chunk={}, parameters={}, len={}, md5={}",
+            LOG.info("Continuing migration of virtual vehicle {}, chunk={}, parameters={}, len={}, md5={}",
                 vehicle.getName(), chunkNumber, parameters, chunk.length, md5sum);
         }
 
@@ -249,14 +260,14 @@ public class MigrationSendJobRunnable implements JobRunnable
     {
         if (vehicle.getMigrationSource() == null)
         {
-            logger.error("Can not migrate vehicle {} ({}) because of missing source.",
+            LOG.error("Can not migrate vehicle {} ({}) because of missing source.",
                 vehicle.getName(), vehicle.getUuid());
             return false;
         }
 
         if (vehicle.getMigrationDestination() == null)
         {
-            logger.error("Can not migrate vehicle {} ({}) because of missing destination.",
+            LOG.error("Can not migrate vehicle {} ({}) because of missing destination.",
                 vehicle.getName(), vehicle.getUuid());
             return false;
         }
@@ -268,7 +279,7 @@ public class MigrationSendJobRunnable implements JobRunnable
 
         if (!VirtualVehicleState.VV_STATES_FOR_RESTART_MIGRATION_FROM_RV.contains(vehicle.getState()))
         {
-            logger.error("Can not migrate vehicle {} because of wrong state {}",
+            LOG.error("Can not migrate vehicle {} because of wrong state {}",
                 vehicle.getName(), vehicle.getState());
             return false;
         }

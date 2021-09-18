@@ -18,7 +18,6 @@
 
 package cpcc.core.services.jobs;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.Job;
 import cpcc.core.entities.JobStatus;
@@ -37,29 +37,27 @@ import cpcc.core.entities.JobStatus;
  */
 public class JobServiceImpl implements JobService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(JobServiceImpl.class);
+
     private ServiceResources serviceResources;
     private HibernateSessionManager sessionManager;
     private JobRepository jobRepository;
     private TimeService timeService;
     private Map<String, JobQueue> queueMap = new HashMap<>();
-    private Logger logger;
 
     /**
      * @param serviceResources the service resources.
      * @param sessionManager the Hibernate session manager.
      * @param jobRepository the job repository.
      * @param timeService the time service.
-     * @param logger the application logger.
-     * @throws NoSuchAlgorithmException in case of errors.
      */
     public JobServiceImpl(ServiceResources serviceResources, HibernateSessionManager sessionManager,
-        JobRepository jobRepository, TimeService timeService, Logger logger) throws NoSuchAlgorithmException
+        JobRepository jobRepository, TimeService timeService)
     {
         this.serviceResources = serviceResources;
         this.sessionManager = sessionManager;
         this.jobRepository = jobRepository;
         this.timeService = timeService;
-        this.logger = logger;
     }
 
     /**
@@ -93,7 +91,7 @@ public class JobServiceImpl implements JobService
         }
         catch (JobCreationException e)
         {
-            logger.info(e.getMessage());
+            LOG.info(e.getMessage());
         }
     }
 
@@ -109,7 +107,7 @@ public class JobServiceImpl implements JobService
         }
         catch (JobCreationException e)
         {
-            logger.info(e.getMessage());
+            LOG.info(e.getMessage());
         }
     }
 
@@ -159,12 +157,12 @@ public class JobServiceImpl implements JobService
                 try
                 {
                     queueMap.get(job.getQueueName()).execute(job);
-                    logger.debug("Executed job: {}, queue: {}, params: {}, result: {}",
+                    LOG.debug("Executed job: {}, queue: {}, params: {}, result: {}",
                         job.getId(), job.getQueueName(), job.getParameters(), job.getResultText());
                 }
                 catch (JobExecutionException e)
                 {
-                    logger.error("Buggerit!", e);
+                    LOG.error("Buggerit!", e);
                 }
             }
         }

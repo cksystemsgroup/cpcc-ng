@@ -36,7 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -56,7 +55,7 @@ import cpcc.vvrte.entities.Task;
 /**
  * VirtualVehicleMapperTest
  */
-public class VirtualVehicleMapperTest
+class VirtualVehicleMapperTest
 {
     private static final String GS_01 = "gs01";
     private static final String REAL_VEHICLE_ONE_NAME = "rv001";
@@ -88,13 +87,10 @@ public class VirtualVehicleMapperTest
     private QueryManager qm;
     private VirtualVehicleMapperImpl sut;
     private RealVehicleRepository realVehicleRepository;
-    private Logger logger;
 
     @BeforeEach
-    public void setUp() throws JsonParseException, JsonMappingException, IOException
+    void setUp() throws JsonParseException, JsonMappingException, IOException
     {
-        logger = mock(Logger.class);
-
         SensorDefinition altimeter = buildAltimeter();
         SensorDefinition barometer = buildBarometer();
         SensorDefinition co2Sensor = buildCo2Sensor();
@@ -147,7 +143,7 @@ public class VirtualVehicleMapperTest
         when(realVehicleRepository.findAllActiveRealVehiclesExceptOwn())
             .thenReturn(Arrays.asList(gs01, realVehicle2, realVehicle3));
 
-        sut = new VirtualVehicleMapperImpl(logger, realVehicleRepository);
+        sut = new VirtualVehicleMapperImpl(realVehicleRepository);
     }
 
     static Stream<Arguments> tasksThatCauseMigrationDataProvider()
@@ -162,7 +158,7 @@ public class VirtualVehicleMapperTest
 
     @ParameterizedTest
     @MethodSource("tasksThatCauseMigrationDataProvider")
-    public void shouldDecideForMigratingOfVirtualVehicles(double latitude, double longitude, double altitude,
+    void shouldDecideForMigratingOfVirtualVehicles(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
         PolarCoordinate pos = mock(PolarCoordinate.class);
@@ -193,7 +189,7 @@ public class VirtualVehicleMapperTest
 
     @ParameterizedTest
     @MethodSource("tasksThatNotCauseMigrationDataProvider")
-    public void shouldDecideForNotMigratingOfVirtualVehicles(double latitude, double longitude, double altitude,
+    void shouldDecideForNotMigratingOfVirtualVehicles(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
         PolarCoordinate pos = mock(PolarCoordinate.class);
@@ -228,7 +224,7 @@ public class VirtualVehicleMapperTest
 
     @ParameterizedTest
     @MethodSource("tasksThatCauseNoMigrationBecauseOfSensorsDataProvider")
-    public void shouldDecideForNoMigrationBecauseOfSensors(PolarCoordinate position, List<SensorDefinition> sensors)
+    void shouldDecideForNoMigrationBecauseOfSensors(PolarCoordinate position, List<SensorDefinition> sensors)
     {
         Task task = mock(Task.class);
         when(task.getPosition()).thenReturn(position);
@@ -253,7 +249,7 @@ public class VirtualVehicleMapperTest
 
     @ParameterizedTest
     @MethodSource("tasksThatCauseMigrationBecauseOfSensorsDataProvider")
-    public void shouldDecideForMigrationBecauseOfSensors(double latitude, double longitude, double altitude,
+    void shouldDecideForMigrationBecauseOfSensors(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
         PolarCoordinate pos = mock(PolarCoordinate.class);
@@ -288,7 +284,7 @@ public class VirtualVehicleMapperTest
 
     @ParameterizedTest
     @MethodSource("tasksThatCauseMigrationBecauseOfPositionDataProvider")
-    public void shouldDecideForMigrationBecauseOfPosition(double latitude, double longitude, double altitude,
+    void shouldDecideForMigrationBecauseOfPosition(double latitude, double longitude, double altitude,
         List<SensorDefinition> sensors)
     {
         PolarCoordinate pos = mock(PolarCoordinate.class);
@@ -312,19 +308,19 @@ public class VirtualVehicleMapperTest
     }
 
     @Test
-    public void shouldHandleUnconfiguredRealVehicleName() throws JsonParseException, JsonMappingException, IOException
+    void shouldHandleUnconfiguredRealVehicleName() throws JsonParseException, JsonMappingException, IOException
     {
         RealVehicleRepository realVehicleRepository2 = mock(RealVehicleRepository.class);
         Task task = mock(Task.class);
 
-        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(logger, realVehicleRepository2);
+        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(realVehicleRepository2);
         localSut.findMappingDecision(task);
 
         verifyNoInteractions(task);
     }
 
     @Test
-    public void shouldHandleUnconfiguredRealVehicleAreaOfOperation()
+    void shouldHandleUnconfiguredRealVehicleAreaOfOperation()
         throws JsonParseException, JsonMappingException, IOException
     {
         RealVehicle realVehicle3 = mock(RealVehicle.class);
@@ -334,7 +330,7 @@ public class VirtualVehicleMapperTest
 
         Task task = mock(Task.class);
 
-        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(logger, realVehicleRepository2);
+        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(realVehicleRepository2);
         VirtualVehicleMappingDecision actual = localSut.findMappingDecision(task);
 
         assertThat(actual.isMigration()).isTrue();
@@ -344,7 +340,7 @@ public class VirtualVehicleMapperTest
     }
 
     @Test
-    public void shouldHandleBrokenRealVehicleAreaOfOperation()
+    void shouldHandleBrokenRealVehicleAreaOfOperation()
         throws JsonParseException, JsonMappingException, IOException
     {
         RealVehicle realVehicle3 = mock(RealVehicle.class);
@@ -355,7 +351,7 @@ public class VirtualVehicleMapperTest
 
         Task task = mock(Task.class);
 
-        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(logger, rvRepo2);
+        VirtualVehicleMapperImpl localSut = new VirtualVehicleMapperImpl(rvRepo2);
         VirtualVehicleMappingDecision actual = localSut.findMappingDecision(task);
 
         assertThat(actual.isMigration()).isTrue();

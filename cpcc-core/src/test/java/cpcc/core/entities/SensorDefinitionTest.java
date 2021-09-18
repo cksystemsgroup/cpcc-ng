@@ -33,12 +33,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * SensorDefinitionTest
  */
-public class SensorDefinitionTest
+class SensorDefinitionTest
 {
     private SensorDefinition sd;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sd = new SensorDefinition();
     }
@@ -58,7 +58,7 @@ public class SensorDefinitionTest
 
     @ParameterizedTest
     @MethodSource("integerDataProvider")
-    public void shouldStoreId(int id)
+    void shouldStoreId(int id)
     {
         sd.setId(id);
         assertThat(sd.getId()).isNotNull().isEqualTo(id);
@@ -84,7 +84,7 @@ public class SensorDefinitionTest
 
     @ParameterizedTest
     @MethodSource("stringDataProvider")
-    public void shouldStoreDescription(String description)
+    void shouldStoreDescription(String description)
     {
         sd.setDescription(description);
         assertThat(sd.getDescription()).isNotNull().isEqualTo(description);
@@ -92,7 +92,7 @@ public class SensorDefinitionTest
 
     @ParameterizedTest
     @MethodSource("integerDataProvider")
-    public void shouldStoreLastUpdate(int lastUpdate)
+    void shouldStoreLastUpdate(int lastUpdate)
     {
         sd.setLastUpdate(new Date(lastUpdate));
         assertThat(sd.getLastUpdate()).isNotNull().isEqualTo(new Date(lastUpdate));
@@ -100,7 +100,7 @@ public class SensorDefinitionTest
 
     @ParameterizedTest
     @MethodSource("stringDataProvider")
-    public void shouldStoreMessageType(String messageType)
+    void shouldStoreMessageType(String messageType)
     {
         sd.setMessageType(messageType);
         assertThat(sd.getMessageType()).isNotNull().isEqualTo(messageType);
@@ -108,7 +108,7 @@ public class SensorDefinitionTest
 
     @ParameterizedTest
     @MethodSource("booleanDataProvider")
-    public void shouldStoreMessageType(Boolean deleted)
+    void shouldStoreMessageType(Boolean deleted)
     {
         sd.setDeleted(deleted);
         assertThat(sd.getDeleted()).isEqualTo(deleted);
@@ -116,7 +116,7 @@ public class SensorDefinitionTest
 
     @ParameterizedTest
     @MethodSource("stringDataProvider")
-    public void shouldStoreParameters(String parameters)
+    void shouldStoreParameters(String parameters)
     {
         sd.setParameters(parameters);
         assertThat(sd.getParameters()).isNotNull().isEqualTo(parameters);
@@ -129,7 +129,7 @@ public class SensorDefinitionTest
 
     @ParameterizedTest
     @MethodSource("sensorTypeDataProvider")
-    public void shouldStoreType(SensorType type)
+    void shouldStoreType(SensorType type)
     {
         sd.setType(type);
         assertThat(sd.getType()).isNotNull().isEqualTo(type);
@@ -142,14 +142,14 @@ public class SensorDefinitionTest
 
     @ParameterizedTest
     @MethodSource("visibilityDataProvider")
-    public void shouldStroreVisibility(SensorVisibility visibility)
+    void shouldStroreVisibility(SensorVisibility visibility)
     {
         sd.setVisibility(visibility);
         assertThat(sd.getVisibility()).isNotNull().isEqualTo(visibility);
     }
 
     @Test
-    public void shouldFindEqualObjects()
+    void shouldFindEqualObjects()
     {
         SensorDefinition sd1 = new SensorDefinition();
         sd1.setId(12);
@@ -160,7 +160,7 @@ public class SensorDefinitionTest
         sd1.setLastUpdate(new Date(12345678));
         sd1.setMessageType("std_msgs/String");
 
-        assertThat(sd1.equals(sd1)).isTrue();
+        assertThat(sd1).isEqualTo(sd1);
 
         SensorDefinition sd2 = new SensorDefinition();
         sd2.setId(15);
@@ -171,37 +171,38 @@ public class SensorDefinitionTest
         sd2.setLastUpdate(new Date(87654321));
         sd2.setMessageType("std_msgs/Float32");
 
-        assertThat(sd1.equals(null)).isFalse();
-        assertThat(sd1.equals(new Date())).isFalse();
-        assertThat(sd1.equals(sd2)).isFalse();
+        assertThat(sd1)
+            .isNotEqualTo(null)
+            .isNotEqualTo(new Date())
+            .isNotEqualTo(sd2);
 
         sd2.setDescription("sd1");
-        assertThat(sd1.equals(sd2)).isFalse();
+        assertThat(sd1).isNotEqualTo(sd2);
 
         sd2.setId(12);
-        assertThat(sd1.equals(sd2)).isFalse();
+        assertThat(sd1).isNotEqualTo(sd2);
 
         sd2.setType(SensorType.ALTIMETER);
-        assertThat(sd1.equals(sd2)).isFalse();
+        assertThat(sd1).isNotEqualTo(sd2);
 
         sd2.setParameters("params1");
-        assertThat(sd1.equals(sd2)).isFalse();
+        assertThat(sd1).isNotEqualTo(sd2);
 
         sd2.setVisibility(SensorVisibility.ALL_VV);
-        assertThat(sd1.equals(sd2)).isFalse();
+        assertThat(sd1).isNotEqualTo(sd2);
 
         sd2.setMessageType("std_msgs/String");
-        assertThat(sd1.equals(sd2)).isTrue();
+        assertThat(sd1).isEqualTo(sd2);
 
         sd2.setLastUpdate(new Date(12345678));
-        assertThat(sd1.equals(sd2)).isTrue();
+        assertThat(sd1).isEqualTo(sd2);
     }
 
     @Test
-    public void shouldCalculateOwnHashCode()
+    void shouldCalculateOwnHashCode()
     {
         SensorDefinition sd1 = new SensorDefinition();
-        assertThat(sd1.hashCode()).isEqualTo(0);
+        assertThat(sd1.hashCode()).isZero();
 
         sd1.setId(12);
         assertThat(sd1.hashCode()).isEqualTo(492);
@@ -226,7 +227,7 @@ public class SensorDefinitionTest
     }
 
     @Test
-    public void shouldImplementToString()
+    void shouldImplementToString()
     {
         SensorDefinition sd1 = new SensorDefinition();
         sd1.setId(12);

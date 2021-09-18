@@ -39,7 +39,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.ros.node.NodeConfiguration;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
@@ -63,7 +62,7 @@ import std_msgs.Float32;
 /**
  * TaskExecutionServiceTest
  */
-public class TaskExecutionServiceTest
+class TaskExecutionServiceTest
 {
     private Task taskA;
     private Task taskB;
@@ -88,7 +87,6 @@ public class TaskExecutionServiceTest
     private PolarCoordinate posB;
     private PolarCoordinate posC;
     private PolarCoordinate posD;
-    private Logger logger;
     private ServiceResources serviceResources;
     private PerthreadManager threadManager;
     private HibernateSessionManager sessionManager;
@@ -103,7 +101,7 @@ public class TaskExecutionServiceTest
      * Test setup.
      */
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         posVehicle = mock(PolarCoordinate.class);
         when(posVehicle.toString()).thenReturn("posVehicle");
@@ -203,8 +201,6 @@ public class TaskExecutionServiceTest
 
         scheduler = mock(TaskSchedulerService.class);
 
-        logger = mock(Logger.class);
-
         threadManager = mock(PerthreadManager.class);
 
         session = mock(Session.class);
@@ -227,15 +223,14 @@ public class TaskExecutionServiceTest
         when(serviceResources.getService(HibernateSessionManager.class)).thenReturn(sessionManager);
         when(serviceResources.getService(TaskRepository.class)).thenReturn(taskRepository);
 
-        sut = new TaskExecutionServiceImpl(logger, serviceResources, scheduler, rosNodeService, conv, timeService,
-            rvRepo);
+        sut = new TaskExecutionServiceImpl(serviceResources, scheduler, rosNodeService, conv, timeService, rvRepo);
     }
 
     /**
      * When initializing the task executor should query the ROS node services for active adapter nodes.
      */
     @Test
-    public void shouldRetrieveAdapterInformationOnStartUp()
+    void shouldRetrieveAdapterInformationOnStartUp()
     {
         verify(rosNodeService).getAdapterNodes();
     }
@@ -244,7 +239,7 @@ public class TaskExecutionServiceTest
      * When initializing the task executor should have found a way point controller.
      */
     @Test
-    public void shouldRetrieveWayPointControllerOnStartUp()
+    void shouldRetrieveWayPointControllerOnStartUp()
     {
         assertThat(sut.getWayPointController()).isSameAs(wpc);
         assertThat(sut.getWayPointController().getType()).isEqualTo(ActuatorType.SIMPLE_WAYPOINT_CONTROLLER);
@@ -254,7 +249,7 @@ public class TaskExecutionServiceTest
      * When initializing the task executor should have found a GPS receiver. It knows the position in WGS84 coordinates.
      */
     @Test
-    public void shouldHaveDetectedGpsReceiverOnStartUp()
+    void shouldHaveDetectedGpsReceiverOnStartUp()
     {
         assertThat(sut.getGpsReceiver()).isSameAs(gps);
         assertThat(sut.getGpsReceiver().getType()).isEqualTo(SensorType.GPS_RECEIVER);
@@ -264,14 +259,14 @@ public class TaskExecutionServiceTest
      * When initializing the task executor should have found an altimeter. It knows the altitude above ground.
      */
     @Test
-    public void shouldHaveDetectedAltimeterOnStartUp()
+    void shouldHaveDetectedAltimeterOnStartUp()
     {
         assertThat(sut.getAltimeter()).isSameAs(altimeter);
         assertThat(sut.getAltimeter().getType()).isEqualTo(SensorType.ALTIMETER);
     }
 
     @Test
-    public void shouldLoadNewTaskFromScheduler()
+    void shouldLoadNewTaskFromScheduler()
     {
         // TODO check
         when(scheduler.schedule(any(), any())).thenReturn(taskB);
@@ -286,7 +281,7 @@ public class TaskExecutionServiceTest
     }
 
     @Test
-    public void shouldLoadCompletedTaskFromScheduler()
+    void shouldLoadCompletedTaskFromScheduler()
     {
         when(altimeter.getValue()).thenReturn(float32altitude);
         when(scheduler.schedule(any(), any())).thenReturn(taskA);
@@ -306,7 +301,7 @@ public class TaskExecutionServiceTest
     }
 
     @Test
-    public void shouldDoNothingOnMissingTasks()
+    void shouldDoNothingOnMissingTasks()
     {
         sut.executeTasks();
 

@@ -18,7 +18,7 @@
 
 package cpcc.core.services;
 
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,10 +31,7 @@ import org.apache.tapestry5.json.JSONObject;
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleState;
-import cpcc.core.entities.RealVehicleType;
 import cpcc.core.entities.SensorDefinition;
-import cpcc.core.entities.SensorType;
-import cpcc.core.entities.SensorVisibility;
 import cpcc.core.utils.JSONUtils;
 
 /**
@@ -46,7 +43,6 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
     private static final String POSITON_LONGITUDE = "lon";
     private static final String POSITON_LATITUDE = "lat";
 
-    private static final String REAL_VEHICLE_ID = "id";
     private static final String REAL_VEHICLE_SENSORS = "sen";
     private static final String REAL_VEHICLE_LAST_UPDATE = "upd";
     private static final String REAL_VEHICLE_AREA_OF_OPERATION = "aoo";
@@ -69,7 +65,7 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
      */
     public CoreJsonConverterImpl()
     {
-        // intentionally empty.
+        // Intentionally empty.
     }
 
     /**
@@ -179,103 +175,8 @@ public class CoreJsonConverterImpl implements CoreJsonConverter
     public JSONArray toJsonArray(Integer... numbers)
     {
         JSONArray a = new JSONArray();
-        for (Integer num : numbers)
-        {
-            a.add(num);
-        }
+        a.addAll(Arrays.asList(numbers));
         return a;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JSONArray toJsonArray(Double... numbers)
-    {
-        JSONArray a = new JSONArray();
-        for (Double num : numbers)
-        {
-            a.add(num);
-        }
-        return a;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int fillInNewerRealVehicleFromJsonObject(RealVehicle rv, JSONObject rvObj)
-    {
-        Date lastUpdateNew = new Date(rvObj.getLong(REAL_VEHICLE_LAST_UPDATE));
-        long lastUpdateDb = rv.getLastUpdate().getTime();
-
-        if (lastUpdateNew.getTime() < lastUpdateDb)
-        {
-            return -1;
-        }
-
-        if (lastUpdateNew.getTime() == lastUpdateDb)
-        {
-            return 0;
-        }
-
-        rv.setId(rvObj.getInt(REAL_VEHICLE_ID));
-        rv.setLastUpdate(lastUpdateNew);
-        rv.setAreaOfOperation(rvObj.getString(REAL_VEHICLE_AREA_OF_OPERATION));
-        rv.setUrl(rvObj.getString(REAL_VEHICLE_URL));
-        rv.setName(rvObj.getString(REAL_VEHICLE_NAME));
-        rv.setType(RealVehicleType.valueOf(rvObj.getString(REAL_VEHICLE_TYPE)));
-        rv.setDeleted(
-            rvObj.isNull(REAL_VEHICLE_DELETED)
-                ? Boolean.FALSE
-                : rvObj.getBoolean(REAL_VEHICLE_DELETED));
-
-        // JSONArray sensors = (JSONArray) rvObj.get(REAL_VEHICLE_SENSORS);
-        //
-        // for (int k = 0, l = sensors.length(); k < l; ++k)
-        // {
-        //     SensorDefinition sd = new SensorDefinition();
-        //     sd.setId(sensors.getInt(k));
-        //     rv.getSensors().add(sd);
-        // }
-
-        return 1;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int fillInNewerSensorDefinitionFromJsonObject(SensorDefinition sd, JSONObject sensor)
-    {
-        Date lastUpdateNew = new Date(sensor.getLong(SENSOR_DEFINITION_LAST_UPDATE));
-        long lastUpdateDb = sd.getLastUpdate().getTime();
-
-        if (lastUpdateNew.getTime() < lastUpdateDb)
-        {
-            return -1;
-        }
-
-        if (lastUpdateNew.getTime() == lastUpdateDb)
-        {
-            return 0;
-        }
-
-        sd.setId(sensor.getInt(SENSOR_DEFINITION_ID));
-        sd.setDescription(sensor.getString(SENSOR_DEFINITION_DESCRIPTION));
-        sd.setType(SensorType.valueOf(sensor.getString(SENSOR_DEFINITION_TYPE)));
-        sd.setMessageType(sensor.getString(SENSOR_DEFINITION_MESSAGE_TYPE));
-        sd.setVisibility(SensorVisibility.valueOf(sensor.getString(SENSOR_DEFINITION_VISIBILITY)));
-        sd.setParameters(
-            sensor.isNull(SENSOR_DEFINITION_PARAMETERS)
-                ? null
-                : sensor.getString(SENSOR_DEFINITION_PARAMETERS));
-        sd.setLastUpdate(lastUpdateNew);
-        sd.setDeleted(
-            sensor.isNull(SENSOR_DEFINITION_DELETED)
-                ? Boolean.FALSE
-                : sensor.getBoolean(SENSOR_DEFINITION_DELETED));
-        return 1;
     }
 
     /**

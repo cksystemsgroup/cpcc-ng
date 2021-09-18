@@ -38,13 +38,15 @@ import org.apache.tapestry5.dom.Document;
 import org.apache.tapestry5.dom.Element;
 import org.apache.tapestry5.func.Predicate;
 import org.apache.tapestry5.test.PageTester;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import cpcc.core.base.CoreConstants;
 import cpcc.core.services.jobs.JobRepository;
 
-public class JobsListCheck
+class JobsListTest
 {
     private static final String DB_PREFIX = "target/page_test";
 
@@ -62,8 +64,8 @@ public class JobsListCheck
         + "cpcc.ros.services.RosServiceModule,"
         + "cpcc.vvrte.services.VvRteModule";
 
-    // @BeforeMethod
-    public void setUp() throws SQLException, ClassNotFoundException, NamingException
+    @BeforeEach
+    void setUp() throws SQLException, ClassNotFoundException, NamingException
     {
         Stream.of(DB_FILE_NAMES).map(x -> new File(x)).filter(File::exists).forEach(File::delete);
 
@@ -90,7 +92,7 @@ public class JobsListCheck
         initContext.bind(JNDI_URL, dataSource);
     }
 
-    public static Predicate<Element> byTagName(String tagName)
+    static Predicate<Element> byTagName(String tagName)
     {
         return new Predicate<Element>()
         {
@@ -102,8 +104,8 @@ public class JobsListCheck
 
     }
 
-    // @Test
-    public void test1()
+    @Test
+    void test1()
     {
         String appPackage = "cpcc.commons";
         String appName = "CommonsTest";
@@ -117,7 +119,7 @@ public class JobsListCheck
         actual.toMarkup(new PrintWriter(System.out));
 
         Element actualHeader = actual.getRootElement().getElement(byTagName("h4"));
-        assertThat(actualHeader.toString()).isEqualTo("<h4>Job Overview</h4>");
+        assertThat(actualHeader).hasToString("<h4>Job Overview</h4>");
 
         tester.shutdown();
     }

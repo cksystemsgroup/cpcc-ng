@@ -19,6 +19,7 @@
 package cpcc.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
@@ -40,7 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class UniqueIntegerIdGeneratorTest
+class UniqueIntegerIdGeneratorTest
 {
     private UniqueIntegerIdGenerator sut;
     private Type type;
@@ -51,7 +52,7 @@ public class UniqueIntegerIdGeneratorTest
     private EntityPersister persister;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new UniqueIntegerIdGenerator();
 
@@ -66,15 +67,22 @@ public class UniqueIntegerIdGeneratorTest
     }
 
     @Test
-    public void shouldRunConfiguration()
+    void shouldRunConfiguration()
     {
         when(params.getProperty(IdentifierGenerator.ENTITY_NAME)).thenReturn("name");
 
-        sut.configure(type, params, serviceRegistry);
+        try
+        {
+            sut.configure(type, params, serviceRegistry);
+        }
+        catch (MappingException e)
+        {
+            fail("MappingException should not have been thrown!");
+        }
     }
 
     @Test
-    public void shouldThrowExceptionOnEmptyEntityName()
+    void shouldThrowExceptionOnEmptyEntityName()
     {
         try
         {
@@ -97,7 +105,7 @@ public class UniqueIntegerIdGeneratorTest
 
     @ParameterizedTest
     @MethodSource("numberDataProvider")
-    public void shouldGenerateRandomId(Integer expected)
+    void shouldGenerateRandomId(Integer expected)
     {
         when(persister.getIdentifier(object, session)).thenReturn(expected);
 
@@ -111,7 +119,7 @@ public class UniqueIntegerIdGeneratorTest
     }
 
     @Test
-    public void shouldGenerateNewRandomId()
+    void shouldGenerateNewRandomId()
     {
         when(params.getProperty(IdentifierGenerator.ENTITY_NAME)).thenReturn("name");
         sut.configure(type, params, serviceRegistry);
@@ -124,9 +132,14 @@ public class UniqueIntegerIdGeneratorTest
         assertThat(actual2).isInstanceOf(Integer.class);
         assertThat(actual3).isInstanceOf(Integer.class);
 
-        assertThat((Integer) actual1).isNotEqualTo((Integer) actual2);
-        assertThat((Integer) actual2).isNotEqualTo((Integer) actual1);
-        assertThat((Integer) actual3).isNotEqualTo((Integer) actual2);
-        assertThat((Integer) actual3).isNotEqualTo((Integer) actual1);
+        assertThat((Integer) actual1)
+            .isNotEqualTo((Integer) actual2);
+
+        assertThat((Integer) actual2)
+            .isNotEqualTo((Integer) actual1);
+
+        assertThat((Integer) actual3)
+            .isNotEqualTo((Integer) actual2)
+            .isNotEqualTo((Integer) actual1);
     }
 }

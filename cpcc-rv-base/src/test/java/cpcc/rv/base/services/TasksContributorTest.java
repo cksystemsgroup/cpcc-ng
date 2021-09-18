@@ -44,7 +44,7 @@ import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.vvrte.entities.Task;
 
-public class TasksContributorTest
+class TasksContributorTest
 {
     private TasksContributor sut;
     private SensorDefinition s1;
@@ -54,7 +54,7 @@ public class TasksContributorTest
     private PolarCoordinate position;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         s1 = mock(SensorDefinition.class);
         when(s1.getType()).thenReturn(SensorType.ALTIMETER);
@@ -79,12 +79,12 @@ public class TasksContributorTest
         sut = new TasksContributor();
     }
 
-    public static final String EMPTY_PATH_FEATURE = "{\"type\":\"Feature\""
+    static final String EMPTY_PATH_FEATURE = "{\"type\":\"Feature\""
         + ",\"properties\":{\"type\":\"rvPath\"}"
         + ",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[33.5,21.6,54.1]]}}";
 
     @Test
-    public void shouldContributeEmptyFeatureCollectionWhenNoTaskExecutes()
+    void shouldContributeEmptyFeatureCollectionWhenNoTaskExecutes()
         throws JsonProcessingException, JSONException
     {
         FeatureCollection featureCollection = mock(FeatureCollection.class);
@@ -104,12 +104,12 @@ public class TasksContributorTest
         JSONAssert.assertEquals(actual, EMPTY_PATH_FEATURE, false);
     }
 
-    public static final String EXPECTED_01 = "{\"type\":\"Feature\""
+    static final String EXPECTED_01 = "{\"type\":\"Feature\""
         + ",\"properties\":{\"type\":\"rvPath\"}"
         + ",\"geometry\":{\"type\":\"LineString\",\"coordinates\":[[33.5,21.6,54.1],[3.4,1.2,5.6]]}}";
 
     @Test
-    public void shouldContributePointFeature() throws JsonProcessingException, JSONException
+    void shouldContributePointFeature() throws JsonProcessingException, JSONException
     {
         FeatureCollection featureCollection = mock(FeatureCollection.class);
 
@@ -130,7 +130,7 @@ public class TasksContributorTest
     }
 
     @Test
-    public void shouldNotContributeOnMissingRvPosition()
+    void shouldNotContributeOnMissingRvPosition()
     {
         FeatureCollection featureCollection = mock(FeatureCollection.class);
 

@@ -19,23 +19,25 @@
 package cpcc.ros.sim.quadrotor;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Plant motion algorithm zero implementation.
  */
 public class PlantMotionAlgorithmZero implements PlantMotionAlgorithm
 {
+    private static final Logger LOG = LoggerFactory.getLogger(PlantMotionAlgorithmZero.class);
+
     private double dist;
     private double totalTime;
 
     /**
-     * @param log the application logger.
      * @param state the plant state.
      * @param dist the distance to travel.
      * @param maxV the maximum allowed travel velocity.
      * @param maxA the maximum allowed acceleration.
      */
-    public PlantMotionAlgorithmZero(Logger log, State state, double dist, double maxV, double maxA)
+    public PlantMotionAlgorithmZero(State state, double dist, double maxV, double maxA)
     {
         this.dist = dist;
         this.totalTime = 1.5 * dist / maxV;
@@ -43,14 +45,14 @@ public class PlantMotionAlgorithmZero implements PlantMotionAlgorithm
         double ma = 6.0 * dist / (totalTime * totalTime);
         if (ma > maxA)
         {
-            log.warn("{}: maximum acceleration reduced from {} m/s^2 to {} m/s^2", state, ma, maxA);
+            LOG.warn("{}: maximum acceleration reduced from {} m/s^2 to {} m/s^2", state, ma, maxA);
 
             double totalTimeNew = Math.sqrt(6 * dist / maxA);
-            log.warn("{}: total time prolonged from {} s to {} s", state, totalTime, totalTimeNew);
+            LOG.warn("{}: total time prolonged from {} s to {} s", state, totalTime, totalTimeNew);
             totalTime = totalTimeNew;
 
             double maxVnew = 1.5 * dist / totalTime;
-            log.warn("{}: maximum velocity reduced from {} m/s to {} m/s", state, maxV, maxVnew);
+            LOG.warn("{}: maximum velocity reduced from {} m/s to {} m/s", state, maxV, maxVnew);
         }
     }
 

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.services.jobs.JobRunnable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -33,19 +34,20 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class MigrationReceiveJobRunnable implements JobRunnable
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(MigrationReceiveJobRunnable.class);
+
     private ServiceResources serviceResources;
     private byte[] data;
 
+    private boolean succeeded = true;
+
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param data the job data.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "This is exposed on purpose")
-    public MigrationReceiveJobRunnable(Logger logger, ServiceResources serviceResources, byte[] data)
+    public MigrationReceiveJobRunnable(ServiceResources serviceResources, byte[] data)
     {
-        this.logger = logger;
         this.serviceResources = serviceResources;
         this.data = data;
     }
@@ -68,7 +70,8 @@ public class MigrationReceiveJobRunnable implements JobRunnable
         }
         catch (Throwable e)
         {
-            logger.error("Migration receive aborted!", e);
+            LOG.error("Migration receive aborted!", e);
+            succeeded = false;
         }
         finally
         {
@@ -77,4 +80,12 @@ public class MigrationReceiveJobRunnable implements JobRunnable
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean executionSucceeded()
+    {
+        return succeeded;
+    }
 }

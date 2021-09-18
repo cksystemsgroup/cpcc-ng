@@ -37,12 +37,12 @@ import cpcc.vvrte.entities.Task;
 /**
  * VirtualVehicleMappingDecisionTest
  */
-public class VirtualVehicleMappingDecisionTest
+class VirtualVehicleMappingDecisionTest
 {
     private VirtualVehicleMappingDecision decision;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         decision = new VirtualVehicleMappingDecision();
     }
@@ -58,7 +58,7 @@ public class VirtualVehicleMappingDecisionTest
 
     @ParameterizedTest
     @MethodSource("mappingDataProvider")
-    public void shouldStoreData(boolean migration, Task task, RealVehicle[] realVehicle)
+    void shouldStoreData(boolean migration, Task task, RealVehicle[] realVehicle)
     {
         decision.setMigration(migration);
         decision.setTask(task);

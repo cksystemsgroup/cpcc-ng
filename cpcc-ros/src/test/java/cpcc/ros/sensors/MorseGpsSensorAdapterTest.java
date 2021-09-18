@@ -45,7 +45,7 @@ import sensor_msgs.NavSatStatus;
 /**
  * MorseGpsSensorAdapterTest implementation.
  */
-public class MorseGpsSensorAdapterTest
+class MorseGpsSensorAdapterTest
 {
     private MorseGpsSensorAdapter sut;
     private ConnectedNode connectedNode;
@@ -58,7 +58,7 @@ public class MorseGpsSensorAdapterTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         config = new HashMap<>();
         config.put("origin", Arrays.asList("47.001", "13.002", "0.003"));
@@ -93,14 +93,14 @@ public class MorseGpsSensorAdapterTest
     }
 
     @Test
-    public void shouldHaveCorrectType()
+    void shouldHaveCorrectType()
     {
         assertThat(sut.getType()).isEqualTo(SensorType.GPS_RECEIVER);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void shouldHaveCurrentState()
+    void shouldHaveCurrentState()
     {
         Map<String, List<String>> actual = sut.getCurrentState();
 
@@ -132,7 +132,7 @@ public class MorseGpsSensorAdapterTest
     }
 
     @Test
-    public void shouldThrowExceptionOnSetValue()
+    void shouldThrowExceptionOnSetValue()
     {
         try
         {
@@ -146,7 +146,7 @@ public class MorseGpsSensorAdapterTest
     }
 
     @Test
-    public void shouldSetPosition()
+    void shouldSetPosition()
     {
         sensor_msgs.NavSatFix position = mock(sensor_msgs.NavSatFix.class);
 
@@ -162,7 +162,7 @@ public class MorseGpsSensorAdapterTest
     }
 
     @Test
-    public void shouldSetName()
+    void shouldSetName()
     {
         GraphName name = mock(GraphName.class);
 
@@ -176,7 +176,7 @@ public class MorseGpsSensorAdapterTest
     }
 
     @Test
-    public void shouldHaveDefaultNodeName()
+    void shouldHaveDefaultNodeName()
     {
         GraphName actual = sut.getDefaultNodeName();
 
@@ -184,7 +184,7 @@ public class MorseGpsSensorAdapterTest
     }
 
     @Test
-    public void shouldSetAutopilotConnection()
+    void shouldSetAutopilotConnection()
     {
         sut.setConnectedToAutopilot(true);
 
@@ -196,7 +196,7 @@ public class MorseGpsSensorAdapterTest
     }
 
     @Test
-    public void shouldSetState()
+    void shouldSetState()
     {
         sut.onStart(connectedNode);
         assertThat(sut.getState()).isEqualTo(RosNodeState.RUNNING);

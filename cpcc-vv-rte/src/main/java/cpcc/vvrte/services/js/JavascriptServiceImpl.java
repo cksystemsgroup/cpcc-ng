@@ -30,6 +30,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.RhinoException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.vvrte.entities.VirtualVehicle;
 
@@ -38,19 +39,18 @@ import cpcc.vvrte.entities.VirtualVehicle;
  */
 public class JavascriptServiceImpl implements JavascriptService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(JavascriptServiceImpl.class);
+
     private Set<String> allowedClassesRegex = new HashSet<>();
 
-    private Logger logger;
     private ServiceResources serviceResources;
 
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param functions the built-in functions to use.
      */
-    public JavascriptServiceImpl(Logger logger, ServiceResources serviceResources, BuiltInFunctions functions)
+    public JavascriptServiceImpl(ServiceResources serviceResources, BuiltInFunctions functions)
     {
-        this.logger = logger;
         this.serviceResources = serviceResources;
 
         VvRteFunctions.setVvRte(functions);
@@ -65,7 +65,7 @@ public class JavascriptServiceImpl implements JavascriptService
         }
         catch (IllegalStateException e)
         {
-            logger.debug("ContextFactory already initialized");
+            LOG.debug("ContextFactory already initialized");
         }
     }
 
@@ -75,7 +75,7 @@ public class JavascriptServiceImpl implements JavascriptService
     @Override
     public JavascriptWorker createWorker(VirtualVehicle vehicle, boolean useContinuation) throws IOException
     {
-        return new JavascriptWorker(vehicle, useContinuation, logger, serviceResources, allowedClassesRegex);
+        return new JavascriptWorker(vehicle, useContinuation, serviceResources, allowedClassesRegex);
     }
 
     /**
@@ -99,7 +99,7 @@ public class JavascriptServiceImpl implements JavascriptService
         vehicle.setApiVersion(apiVersion);
         vehicle.setUuid(UUID.randomUUID().toString());
 
-        JavascriptWorker w = new JavascriptWorker(vehicle, false, logger, serviceResources, allowedClassesRegex);
+        JavascriptWorker w = new JavascriptWorker(vehicle, false, serviceResources, allowedClassesRegex);
 
         String completedScript = StringUtils.defaultIfBlank(w.getScript(), "");
 

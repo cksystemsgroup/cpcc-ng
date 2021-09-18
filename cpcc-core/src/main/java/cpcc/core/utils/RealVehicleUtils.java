@@ -115,7 +115,7 @@ public final class RealVehicleUtils
         }
         catch (IOException e)
         {
-            LOG.error("Can not de-serialize area of operation {} of RV {} ({})", aooString, e);
+            LOG.error("Can not de-serialize area of operation {}", aooString, e);
             return Collections.emptyList();
         }
 

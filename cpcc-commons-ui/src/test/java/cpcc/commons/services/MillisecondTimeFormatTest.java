@@ -19,26 +19,28 @@
 package cpcc.commons.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.text.ParsePosition;
+import java.util.stream.Stream;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class MillisecondTimeFormatTest
+class MillisecondTimeFormatTest
 {
-    @DataProvider
-    public Object[][] dateDataProvider()
+    static Stream<Arguments> dateDataProvider()
     {
-        return new Object[][]{
-            new Object[]{"yyyy-MM-dd HH:mm:ss", null, ""},
-            new Object[]{"yyyy-MM-dd HH:mm:ss", 1439721013072L, "2015-08-16 12:30:13"},
-            new Object[]{"yyyy-MM-dd HH:mm:ss.SSS", 1439721013072L, "2015-08-16 12:30:13.072"},
-        };
+        return Stream.of(
+            arguments("yyyy-MM-dd HH:mm:ss", null, ""),
+            arguments("yyyy-MM-dd HH:mm:ss", 1439721013072L, "2015-08-16 12:30:13"),
+            arguments("yyyy-MM-dd HH:mm:ss.SSS", 1439721013072L, "2015-08-16 12:30:13.072"));
     }
 
-    @Test(dataProvider = "dateDataProvider")
-    public void shouldFormatDate(String pattern, Long time, String expected)
+    @ParameterizedTest
+    @MethodSource("dateDataProvider")
+    void shouldFormatDate(String pattern, Long time, String expected)
     {
         MillisecondTimeFormat sut = new MillisecondTimeFormat(pattern);
 
@@ -46,20 +48,19 @@ public class MillisecondTimeFormatTest
 
         sut.format(time, actual, null);
 
-        assertThat(actual.toString()).isEqualTo(expected);
+        assertThat(actual).hasToString(expected);
     }
 
-    @DataProvider
-    public Object[][] dateStringDataProvider()
+    static Stream<Arguments> dateStringDataProvider()
     {
-        return new Object[][]{
-            new Object[]{"yyyy-MM-dd HH:mm:ss", "2015-08-16 12:30:13", 1439721013000L},
-            new Object[]{"yyyy-MM-dd HH:mm:ss.SSS", "2015-08-16 12:30:13.072", 1439721013072L},
-        };
+        return Stream.of(
+            arguments("yyyy-MM-dd HH:mm:ss", "2015-08-16 12:30:13", 1439721013000L),
+            arguments("yyyy-MM-dd HH:mm:ss.SSS", "2015-08-16 12:30:13.072", 1439721013072L));
     }
 
-    @Test(dataProvider = "dateStringDataProvider")
-    public void shouldParseDate(String pattern, String data, Long expected)
+    @ParameterizedTest
+    @MethodSource("dateStringDataProvider")
+    void shouldParseDate(String pattern, String data, Long expected)
     {
         MillisecondTimeFormat sut = new MillisecondTimeFormat(pattern);
 

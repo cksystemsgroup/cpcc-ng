@@ -33,7 +33,7 @@ import org.mockito.Mockito;
 
 import cpcc.core.entities.SensorDefinition;
 
-public class SensorDefinitionSelectHelpersTest
+class SensorDefinitionSelectHelpersTest
 {
     private static final String SENSOR_DEFINOTION_DESCRIPTION = "name1";
     private SensorDefinitionSelectHelpers sut;
@@ -41,7 +41,7 @@ public class SensorDefinitionSelectHelpersTest
     private SensorDefinition sensorDefinition;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sensorDefinition = mock(SensorDefinition.class);
         when(sensorDefinition.getDescription()).thenReturn(SENSOR_DEFINOTION_DESCRIPTION);
@@ -54,43 +54,43 @@ public class SensorDefinitionSelectHelpersTest
     }
 
     @Test
-    public void shouldReturnNullForClientValueNull()
+    void shouldReturnNullForClientValueNull()
     {
         SensorDefinition actual = encoder.toValue(null);
         assertThat(actual).isNull();
     }
 
     @Test
-    public void shouldReturnSensorDefinitionClientValueNotNull()
+    void shouldReturnSensorDefinitionClientValueNotNull()
     {
         SensorDefinition actual = encoder.toValue(SENSOR_DEFINOTION_DESCRIPTION);
         assertThat(actual).isEqualTo(sensorDefinition);
     }
 
     @Test
-    public void shouldReturnEmptyStringForClientValueNull()
+    void shouldReturnEmptyStringForClientValueNull()
     {
         String actual = encoder.toClient(null);
         assertThat(actual).isEqualTo(StringUtils.EMPTY);
     }
 
     @Test
-    public void shouldReturnNonEmptyStringForClientValueNotNull()
+    void shouldReturnNonEmptyStringForClientValueNotNull()
     {
         String actual = encoder.toClient(sensorDefinition);
         assertThat(actual).isEqualTo(SENSOR_DEFINOTION_DESCRIPTION);
     }
 
     @Test
-    public void shouldCreateEmptySelectModel()
+    void shouldCreateEmptySelectModel()
     {
         SelectModel actual = SensorDefinitionSelectHelpers.selectModel(Arrays.asList(new SensorDefinition[0]));
         assertThat(actual).isNotNull();
-        assertThat(actual.getOptions()).hasSize(0);
+        assertThat(actual.getOptions()).isEmpty();
     }
 
     @Test
-    public void shouldCreateSelectModelForOneSensorDefinition()
+    void shouldCreateSelectModelForOneSensorDefinition()
     {
         SelectModel actual = SensorDefinitionSelectHelpers.selectModel(Arrays.asList(sensorDefinition));
         assertThat(actual).isNotNull();

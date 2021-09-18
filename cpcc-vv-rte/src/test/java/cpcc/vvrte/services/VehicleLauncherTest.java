@@ -60,7 +60,7 @@ import cpcc.vvrte.services.js.JavascriptWorkerStateListener;
 /**
  * VehicleLauncherTest
  */
-public class VehicleLauncherTest
+class VehicleLauncherTest
 {
     private static final int INVALID_VV_ID = 31337;
 
@@ -77,7 +77,7 @@ public class VehicleLauncherTest
     private JobService jobService;
 
     @BeforeEach
-    public void setUp() throws IOException
+    void setUp() throws IOException
     {
         currentDate = new Date();
 
@@ -170,7 +170,7 @@ public class VehicleLauncherTest
     }
 
     @Test
-    public void shouldLaunchSimpleVirtualVehicle() throws Exception
+    void shouldLaunchSimpleVirtualVehicle() throws Exception
     {
         launcher.start(vehicle.getId());
 
@@ -182,7 +182,7 @@ public class VehicleLauncherTest
     }
 
     @Test
-    public void shouldStopSimpleVirtualVehicle() throws Exception
+    void shouldStopSimpleVirtualVehicle() throws Exception
     {
         launcher.stop(vehicle2.getId(), VirtualVehicleState.INIT);
 
@@ -195,7 +195,7 @@ public class VehicleLauncherTest
     }
 
     @Test()
-    public void shouldThrowVVLEOnInvalidVvId() throws IOException
+    void shouldThrowVVLEOnInvalidVvId() throws IOException
     {
         try
         {
@@ -209,7 +209,7 @@ public class VehicleLauncherTest
     }
 
     @Test
-    public void shouldThrowVVLEOnInvalidVvState() throws IOException
+    void shouldThrowVVLEOnInvalidVvState() throws IOException
     {
         try
         {
@@ -222,7 +222,7 @@ public class VehicleLauncherTest
         }
     }
 
-    public void shouldThrowVLEIfVirtualVehicleIsNull() throws IOException
+    void shouldThrowVLEIfVirtualVehicleIsNull() throws IOException
     {
         try
         {
@@ -235,7 +235,7 @@ public class VehicleLauncherTest
         }
     }
 
-    public void shouldThrowVLEIfVirtualVehicleHasWrongState() throws IOException
+    void shouldThrowVLEIfVirtualVehicleHasWrongState() throws IOException
     {
         try
         {

@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.owlike.genson.Genson;
 
@@ -44,24 +45,23 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class ConfigImportJobRunnable implements JobRunnable
 {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigImportJobRunnable.class);
+
     private byte[] data;
 
     private ServiceResources serviceResources;
-    private Logger logger;
     private Genson genson;
     private HibernateSessionManager sessionManager;
     private QueryManager queryManager;
     private RealVehicleRepository rvRepo;
 
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param data the data to import.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Exposed on purpose.")
-    public ConfigImportJobRunnable(Logger logger, ServiceResources serviceResources, byte[] data)
+    public ConfigImportJobRunnable(ServiceResources serviceResources, byte[] data)
     {
-        this.logger = logger;
         this.serviceResources = serviceResources;
         this.data = data;
         genson = new Genson();
@@ -84,6 +84,15 @@ public class ConfigImportJobRunnable implements JobRunnable
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean executionSucceeded()
+    {
+        return true;
+    }
+
+    /**
      * @param realVehicles the list of real vehicles.
      * @return the list of sent back real vehicles.
      */
@@ -96,23 +105,11 @@ public class ConfigImportJobRunnable implements JobRunnable
             int rdId = rv.getId();
             boolean saveOnly = !allRvsMap.containsKey(rdId);
 
-            //            RealVehicle dbRv = allRvsMap.get(rdId);
-            //
-            //            if (dbRv == null)
-            //            {
-            //                dbRv = new RealVehicle();
-            //                dbRv.setId(rdId);
-            //                dbRv.setLastUpdate(new Date(0));
-            //                allRvsMap.put(rdId, dbRv);
-            //                saveOnly = true;
-            //                logger.info("### new RealVehicle id=" + rdId);
-            //            }
-
             RealVehicle dbRv = allRvsMap.computeIfAbsent(rdId, k -> {
                 RealVehicle r = new RealVehicle();
                 r.setId(rdId);
                 r.setLastUpdate(new Date(0));
-                logger.info("### new RealVehicle id={}", rdId);
+                LOG.info("### new RealVehicle id={}", rdId);
                 return r;
             });
 
@@ -123,7 +120,7 @@ public class ConfigImportJobRunnable implements JobRunnable
             }
             catch (RuntimeException e)
             {
-                logger.error("Can not synchronize JSON object {}", rv.toString(), e);
+                LOG.error("Can not synchronize JSON object {}", rv, e);
                 continue;
             }
 
@@ -132,12 +129,12 @@ public class ConfigImportJobRunnable implements JobRunnable
                 updateSensorDefinitions(dbRv, rv);
                 if (saveOnly)
                 {
-                    logger.info("### save RealVehicle id={}", rdId);
+                    LOG.info("### save RealVehicle id={}", rdId);
                     sessionManager.getSession().save(dbRv);
                 }
                 else
                 {
-                    logger.info("### update RealVehicle id={}", rdId);
+                    LOG.info("### update RealVehicle id={}", rdId);
                     sessionManager.getSession().saveOrUpdate(dbRv);
                 }
             }
@@ -254,7 +251,7 @@ public class ConfigImportJobRunnable implements JobRunnable
                 dbSd.setLastUpdate(new Date(0));
                 allSdsMap.put(sdId, dbSd);
                 saveOnly = true;
-                logger.info("### new SensorDefinition id={}", sdId);
+                LOG.info("### new SensorDefinition id={}", sdId);
             }
 
             int updated = 0;
@@ -264,7 +261,7 @@ public class ConfigImportJobRunnable implements JobRunnable
             }
             catch (RuntimeException e)
             {
-                logger.error("Can not synchronize JSON object {}", sd, e);
+                LOG.error("Can not synchronize JSON object {}", sd, e);
                 continue;
             }
 
@@ -274,12 +271,12 @@ public class ConfigImportJobRunnable implements JobRunnable
             {
                 if (saveOnly)
                 {
-                    logger.info("### save SensorDefinition id={} {}", sdId, dbSd.getLastUpdate());
+                    LOG.info("### save SensorDefinition id={} {}", sdId, dbSd.getLastUpdate());
                     sessionManager.getSession().save(dbSd);
                 }
                 else
                 {
-                    logger.info("### update SensorDefinition id={} {}", sdId, dbSd.getLastUpdate());
+                    LOG.info("### update SensorDefinition id={} {}", sdId, dbSd.getLastUpdate());
                     sessionManager.getSession().saveOrUpdate(dbSd);
                 }
             }

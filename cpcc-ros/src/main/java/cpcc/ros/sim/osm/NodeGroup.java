@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.ros.node.DefaultNodeMainExecutor;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.ros.sim.AbstractRosNodeGroup;
 import cpcc.ros.sim.AnonymousNodeMain;
@@ -35,17 +36,10 @@ import sensor_msgs.NavSatFix;
  */
 public class NodeGroup extends AbstractRosNodeGroup
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(NodeGroup.class);
+
     private AnonymousNodeMain<sensor_msgs.NavSatFix> imagePublisherNode;
     private AnonymousNodeMain<sensor_msgs.NavSatFix> listenerNode;
-
-    /**
-     * @param logger the application logger.
-     */
-    public NodeGroup(Logger logger)
-    {
-        this.logger = logger;
-    }
 
     /**
      * {@inheritDoc}
@@ -53,14 +47,14 @@ public class NodeGroup extends AbstractRosNodeGroup
     @Override
     public void start()
     {
-        logger.info("start()");
+        LOG.info("start()");
 
         getConfig().put("topicRoot", Arrays.asList(getTopicRoot()));
 
         Configuration config = new Configuration(getNodeConfiguration(), getConfig());
 
-        imagePublisherNode = new ImagePublisherNode(logger, config);
-        listenerNode = new GpsListenerNode(logger, config, imagePublisherNode);
+        imagePublisherNode = new ImagePublisherNode(config);
+        listenerNode = new GpsListenerNode(config, imagePublisherNode);
 
         DefaultNodeMainExecutor.newDefault().execute(imagePublisherNode, getNodeConfiguration());
         DefaultNodeMainExecutor.newDefault().execute(listenerNode, getNodeConfiguration());
@@ -72,7 +66,7 @@ public class NodeGroup extends AbstractRosNodeGroup
     @Override
     public void shutdown()
     {
-        logger.info("shutdown()");
+        LOG.info("shutdown()");
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(listenerNode);
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(imagePublisherNode);
     }

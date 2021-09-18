@@ -27,13 +27,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.WGS84;
 import sensor_msgs.NavSatFix;
 
-public class ImagePublisherNodeTest
+class ImagePublisherNodeTest
 {
     private static final String TOPIC_ROOT = "/topicRoot";
     private static final String INFO_TOPIC = TOPIC_ROOT + "/camera_info";
@@ -45,14 +44,11 @@ public class ImagePublisherNodeTest
     private Publisher<sensor_msgs.CameraInfo> publisher2;
     private NavSatFix message;
     private ImagePublisherNode sut;
-    private Logger logger;
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
-        logger = mock(Logger.class);
-
         config = mock(Configuration.class);
         when(config.getTopicRoot()).thenReturn(TOPIC_ROOT);
         when(config.getCameraWidth()).thenReturn(640);
@@ -67,19 +63,19 @@ public class ImagePublisherNodeTest
         publisher2 = (Publisher<sensor_msgs.CameraInfo>) mock(Publisher.class);
 
         connectedNode = mock(ConnectedNode.class);
-        when(connectedNode.<sensor_msgs.Image>
-            newPublisher(IMAGE_TOPIC, sensor_msgs.Image._TYPE)).thenReturn(publisher1);
-        when(connectedNode.<sensor_msgs.CameraInfo>
-            newPublisher(INFO_TOPIC, sensor_msgs.CameraInfo._TYPE)).thenReturn(publisher2);
+        when(connectedNode.<sensor_msgs.Image> newPublisher(IMAGE_TOPIC, sensor_msgs.Image._TYPE))
+            .thenReturn(publisher1);
+        when(connectedNode.<sensor_msgs.CameraInfo> newPublisher(INFO_TOPIC, sensor_msgs.CameraInfo._TYPE))
+            .thenReturn(publisher2);
 
         message = mock(NavSatFix.class);
         when(message.getAltitude()).thenReturn(8.76);
 
-        sut = new ImagePublisherNode(logger, config);
+        sut = new ImagePublisherNode(config);
     }
 
     @Test
-    public void shouldStartNode() throws InterruptedException
+    void shouldStartNode() throws InterruptedException
     {
         sut.onStart(connectedNode);
 
@@ -89,7 +85,7 @@ public class ImagePublisherNodeTest
     }
 
     @Test
-    public void shouldReceiveMessage() throws InterruptedException
+    void shouldReceiveMessage() throws InterruptedException
     {
         sut.onNewMessage(message);
 

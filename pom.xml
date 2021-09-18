@@ -144,7 +144,7 @@
 			<dependency>
 				<groupId>org.mozilla</groupId>
 				<artifactId>rhino</artifactId>
-				<version>1.7.13</version>
+				<version>1.7R4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mock-server</groupId>
@@ -324,6 +324,12 @@
 				<artifactId>snakeyaml</artifactId>
 				<version>${snakeyaml-version}</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.mchange</groupId>
+				<artifactId>c3p0</artifactId>
+				<version>0.9.5.5</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>de.grundid.opendatalab</groupId>
@@ -547,11 +553,6 @@
 					<version>1.0.9</version>
 				</plugin>
 				<plugin>
-					<groupId>org.eclipse.jetty</groupId>
-					<artifactId>jetty-maven-plugin</artifactId>
-					<version>11.0.6</version>
-				</plugin>
-				<plugin>
 					<groupId>org.basepom.maven</groupId>
 					<artifactId>duplicate-finder-maven-plugin</artifactId>
 					<version>1.5.0</version>
@@ -595,6 +596,28 @@
 				<version>3.4.3</version>
 			</extension>
 		</extensions>
+
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.5</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
 	<distributionManagement>

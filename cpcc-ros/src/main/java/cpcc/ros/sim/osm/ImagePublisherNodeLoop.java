@@ -27,6 +27,7 @@ import org.ros.message.MessageFactory;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.PolarCoordinate;
 import sensor_msgs.CameraInfo;
@@ -38,7 +39,8 @@ import sensor_msgs.NavSatFix;
  */
 public class ImagePublisherNodeLoop extends CancellableLoop
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(ImagePublisherNodeLoop.class);
+
     private Configuration config;
     private ConnectedNode connectedNode;
     private Publisher<Image> imagePublisher;
@@ -47,13 +49,11 @@ public class ImagePublisherNodeLoop extends CancellableLoop
     private NavSatFix message;
 
     /**
-     * @param logger the application logger.
      * @param config the configuration.
      * @param connectedNode the connected node.
      */
-    public ImagePublisherNodeLoop(Logger logger, Configuration config, ConnectedNode connectedNode)
+    public ImagePublisherNodeLoop(Configuration config, ConnectedNode connectedNode)
     {
-        this.logger = logger;
         this.config = config;
         this.connectedNode = connectedNode;
 
@@ -101,7 +101,7 @@ public class ImagePublisherNodeLoop extends CancellableLoop
         }
         catch (IOException e)
         {
-            logger.error("Can not get camera image.", e);
+            LOG.error("Can not get camera image.", e);
         }
 
         Thread.sleep(1000);

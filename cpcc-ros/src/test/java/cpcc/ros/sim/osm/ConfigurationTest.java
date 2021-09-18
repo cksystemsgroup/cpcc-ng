@@ -37,13 +37,13 @@ import cpcc.core.utils.GeodeticSystem;
 /**
  * ConfigurationTest
  */
-public class ConfigurationTest
+class ConfigurationTest
 {
     NodeConfiguration nodeConfiguration;
     Map<String, List<String>> config;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         nodeConfiguration = mock(NodeConfiguration.class);
 
@@ -63,7 +63,7 @@ public class ConfigurationTest
     }
 
     @Test
-    public void shouldParseConfigurationWithoutOriginCorrectly()
+    void shouldParseConfigurationWithoutOriginCorrectly()
     {
         config.remove(Configuration.CFG_ORIGIN);
 
@@ -74,7 +74,7 @@ public class ConfigurationTest
     }
 
     @Test
-    public void shouldParseConfigurationWithOriginCorrectly()
+    void shouldParseConfigurationWithOriginCorrectly()
     {
         assertThat(config).containsKey(Configuration.CFG_ORIGIN);
 
@@ -91,16 +91,16 @@ public class ConfigurationTest
     {
         assertThat(cfg.getTopicRoot()).isNotNull().isEqualTo(config.get(Configuration.CFG_TOPIC_ROOT).get(0));
         assertThat(cfg.getGpsTopic()).isNotNull().isEqualTo(config.get(Configuration.CFG_GPS_TOPIC).get(0));
-        assertThat(cfg.getCameraApertureAngle()).isNotNull().isEqualTo(2.0, offset(1E-5));
-        assertThat(cfg.getCameraWidth()).isNotNull()
+        assertThat(cfg.getCameraApertureAngle()).isEqualTo(2.0, offset(1E-5));
+        assertThat(cfg.getCameraWidth())
             .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_CAMERA_WIDTH).get(0)));
-        assertThat(cfg.getCameraHeight()).isNotNull()
+        assertThat(cfg.getCameraHeight())
             .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_CAMERA_HEIGTH).get(0)));
-        assertThat(cfg.getZoomLevel()).isNotNull()
+        assertThat(cfg.getZoomLevel())
             .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_ZOOM_LEVEL).get(0)));
-        assertThat(cfg.getTileWidth()).isNotNull()
+        assertThat(cfg.getTileWidth())
             .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_TILE_WIDTH).get(0)));
-        assertThat(cfg.getTileHeight()).isNotNull()
+        assertThat(cfg.getTileHeight())
             .isEqualTo(Integer.parseInt(config.get(Configuration.CFG_TILE_HEIGTH).get(0)));
         assertThat(cfg.getTileCacheBaseDir()).isNotNull()
             .isEqualTo(config.get(Configuration.CFG_TILE_CACHE_DIR).get(0));

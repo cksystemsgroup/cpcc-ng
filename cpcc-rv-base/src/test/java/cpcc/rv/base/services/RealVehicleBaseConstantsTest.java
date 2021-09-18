@@ -27,10 +27,10 @@ import org.junit.jupiter.api.Test;
 /**
  * RealVehicleBaseConstantsTest implementation.
  */
-public class RealVehicleBaseConstantsTest
+class RealVehicleBaseConstantsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<RealVehicleBaseConstants> cnt = RealVehicleBaseConstants.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();

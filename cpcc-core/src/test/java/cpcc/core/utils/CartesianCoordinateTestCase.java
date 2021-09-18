@@ -26,13 +26,13 @@ import org.junit.jupiter.api.Test;
 /**
  * This class verifies the implementation of the Position class.
  */
-public class CartesianCoordinateTestCase
+class CartesianCoordinateTestCase
 {
     /**
      * Verify if the default constructor sets all variables zero.
      */
     @Test
-    public void createdSutShouldHaveZeroCoordinates()
+    void createdSutShouldHaveZeroCoordinates()
     {
         CartesianCoordinate p = new CartesianCoordinate();
         assertThat(p.getX()).isEqualTo(0.0, offset(1E-10));
@@ -44,7 +44,7 @@ public class CartesianCoordinateTestCase
      * Verify if the constructor using double values assigns the initialization values to the attributes correctly.
      */
     @Test
-    public void createdSutShouldHaveGivenCoordinates()
+    void createdSutShouldHaveGivenCoordinates()
     {
         CartesianCoordinate u = new CartesianCoordinate(1, 2, 3);
         assertThat(u.getX()).isEqualTo(1.0, offset(1E-10));
@@ -56,7 +56,7 @@ public class CartesianCoordinateTestCase
      * Verify if the copy constructor works correctly.
      */
     @Test
-    public void constructorShouldCopyCoordinates()
+    void constructorShouldCopyCoordinates()
     {
         CartesianCoordinate v = new CartesianCoordinate(1, 2, 3);
         CartesianCoordinate u = new CartesianCoordinate(v);
@@ -70,7 +70,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>add()</code> method.
      */
     @Test
-    public void shouldAddCoodinatesCorrectly()
+    void shouldAddCoodinatesCorrectly()
     {
         CartesianCoordinate u = new CartesianCoordinate(1, 2, 3);
         CartesianCoordinate v = new CartesianCoordinate(10, 20, 30);
@@ -90,7 +90,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>subtract()</code> method.
      */
     @Test
-    public void shouldSubtractCoodinatesCorrectly()
+    void shouldSubtractCoodinatesCorrectly()
     {
         CartesianCoordinate u = new CartesianCoordinate(1, 2, 3);
         CartesianCoordinate v = new CartesianCoordinate(10, 20, 30);
@@ -110,7 +110,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>norm()</code> method.
      */
     @Test
-    public void shouldCalculateNorm()
+    void shouldCalculateNorm()
     {
         CartesianCoordinate u = new CartesianCoordinate(10, 20, 30);
         double n = u.norm();
@@ -124,7 +124,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>set()</code> method.
      */
     @Test
-    public void shouldCopyCoordinatesFromForeignObjectViaSet()
+    void shouldCopyCoordinatesFromForeignObjectViaSet()
     {
         CartesianCoordinate p = new CartesianCoordinate();
         p.set(new CartesianCoordinate(1, 2, 3));
@@ -137,7 +137,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>setX()</code>, <code>setY()</code> and <code>setZ()</code> methods.
      */
     @Test
-    public void shouldSetCoordinatesIndividually()
+    void shouldSetCoordinatesIndividually()
     {
         CartesianCoordinate p = new CartesianCoordinate();
         p.setX(1);
@@ -152,7 +152,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>toString()</code> method.
      */
     @Test
-    public void shouldConvertCoodrinatesToString()
+    void shouldConvertCoodrinatesToString()
     {
         CartesianCoordinate p = new CartesianCoordinate(1, 2, 3);
         String coordinateString = p.toString();
@@ -163,7 +163,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>normalize()</code> method.
      */
     @Test
-    public void shouldCalculateNormalizedVector()
+    void shouldCalculateNormalizedVector()
     {
         CartesianCoordinate p = new CartesianCoordinate(1, 2, 3);
         CartesianCoordinate n = p.normalize();
@@ -177,7 +177,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>normalize()</code> method if the norm of the coordinate is zero.
      */
     @Test
-    public void shouldCalculateNormalizedNullVector()
+    void shouldCalculateNormalizedNullVector()
     {
         CartesianCoordinate p = new CartesianCoordinate(0, 0, 0);
         assertThat(p.norm()).isEqualTo(0.0, offset(1E-9));
@@ -192,7 +192,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>crossProduct()</code> method.
      */
     @Test
-    public void shouldCalculateCrossProductA()
+    void shouldCalculateCrossProductA()
     {
         CartesianCoordinate a = new CartesianCoordinate(1, 0, 0);
         CartesianCoordinate b = new CartesianCoordinate(0, 1, 0);
@@ -212,7 +212,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>crossProduct()</code> method.
      */
     @Test
-    public void shouldCalculateCrossProductB()
+    void shouldCalculateCrossProductB()
     {
         CartesianCoordinate a = new CartesianCoordinate(0, 1, 0);
         CartesianCoordinate b = new CartesianCoordinate(0, 0, 1);
@@ -232,7 +232,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>crossProduct()</code> method.
      */
     @Test
-    public void shouldCalculateCrossProductC()
+    void shouldCalculateCrossProductC()
     {
         CartesianCoordinate a = new CartesianCoordinate(1, 0, 0);
         CartesianCoordinate b = new CartesianCoordinate(0, 0, 1);
@@ -252,7 +252,7 @@ public class CartesianCoordinateTestCase
      * Verify the <code>crossProduct()</code> method.
      */
     @Test
-    public void shouldCalculateCrossProductD()
+    void shouldCalculateCrossProductD()
     {
         CartesianCoordinate a = new CartesianCoordinate(1, 2, 3);
         CartesianCoordinate b = new CartesianCoordinate(4, 5, 6);
@@ -269,7 +269,7 @@ public class CartesianCoordinateTestCase
     }
 
     //    @Test
-    //    public void testCase09()
+    //    void testCase09()
     //    {
     //        double a = 10;
     //        double c = 3;
@@ -299,7 +299,7 @@ public class CartesianCoordinateTestCase
     //        }
     //    }
     //
-    // public static double PI180TH = Math.PI / 180;
+    // static double PI180TH = Math.PI / 180;
     //
     //    /**
     //     * @param p a polar coordinate.

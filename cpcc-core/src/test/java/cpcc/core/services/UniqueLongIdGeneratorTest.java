@@ -19,6 +19,7 @@
 package cpcc.core.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.mock;
@@ -40,7 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class UniqueLongIdGeneratorTest
+class UniqueLongIdGeneratorTest
 {
     private UniqueLongIdGenerator sut;
     private Type type;
@@ -51,7 +52,7 @@ public class UniqueLongIdGeneratorTest
     private EntityPersister persister;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new UniqueLongIdGenerator();
 
@@ -66,14 +67,21 @@ public class UniqueLongIdGeneratorTest
     }
 
     @Test
-    public void shouldRunConfiguration()
+    void shouldRunConfiguration()
     {
         when(params.getProperty(IdentifierGenerator.ENTITY_NAME)).thenReturn("name");
 
-        sut.configure(type, params, serviceRegistry);
+        try
+        {
+            sut.configure(type, params, serviceRegistry);
+        }
+        catch (MappingException e)
+        {
+            fail("MappingException should not have been thrown!");
+        }
     }
 
-    public void shouldThrowExceptionOnEmptyEntityName()
+    void shouldThrowExceptionOnEmptyEntityName()
     {
         try
         {
@@ -96,7 +104,7 @@ public class UniqueLongIdGeneratorTest
 
     @ParameterizedTest
     @MethodSource("numberDataProvider")
-    public void shouldGenerateRandomId(Long expected)
+    void shouldGenerateRandomId(Long expected)
     {
         when(persister.getIdentifier(object, session)).thenReturn(expected);
 
@@ -110,7 +118,7 @@ public class UniqueLongIdGeneratorTest
     }
 
     @Test
-    public void shouldGenerateNewRandomId()
+    void shouldGenerateNewRandomId()
     {
         when(params.getProperty(IdentifierGenerator.ENTITY_NAME)).thenReturn("name");
         sut.configure(type, params, serviceRegistry);
@@ -123,9 +131,14 @@ public class UniqueLongIdGeneratorTest
         assertThat(actual2).isInstanceOf(Long.class);
         assertThat(actual3).isInstanceOf(Long.class);
 
-        assertThat((Long) actual1).isNotEqualTo((Long) actual2);
-        assertThat((Long) actual2).isNotEqualTo((Long) actual1);
-        assertThat((Long) actual3).isNotEqualTo((Long) actual2);
-        assertThat((Long) actual3).isNotEqualTo((Long) actual1);
+        assertThat((Long) actual1)
+            .isNotEqualTo((Long) actual2);
+
+        assertThat((Long) actual2)
+            .isNotEqualTo((Long) actual1);
+
+        assertThat((Long) actual3)
+            .isNotEqualTo((Long) actual2)
+            .isNotEqualTo((Long) actual1);
     }
 }

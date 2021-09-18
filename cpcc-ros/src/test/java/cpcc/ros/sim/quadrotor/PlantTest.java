@@ -37,7 +37,7 @@ import std_msgs.Float32;
 /**
  * PlantTest implementation.
  */
-public class PlantTest
+class PlantTest
 {
     private static final int MAX_LOOP_CYCLES = 200;
 
@@ -59,7 +59,7 @@ public class PlantTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         targetOne = mock(LatLngAlt.class);
         when(targetOne.getLatitude()).thenReturn(47.822898);
@@ -115,7 +115,7 @@ public class PlantTest
     }
 
     @Test
-    public void shouldTakeOffAndFly() throws InterruptedException
+    void shouldTakeOffAndFly() throws InterruptedException
     {
         int count = loopUntilStateChanges(sut, State.TAKE_OFF);
 
@@ -186,7 +186,7 @@ public class PlantTest
 
     //    @Test
     // TODO not working yet!
-    //    public void shouldInterruptOngoingFlightForNewTargets() throws InterruptedException
+    //    void shouldInterruptOngoingFlightForNewTargets() throws InterruptedException
     //    {
     //        loopUntilStateChanges(sut, State.TAKE_OFF);
     //
@@ -233,7 +233,7 @@ public class PlantTest
     //    }
 
     @Test
-    public void shouldInitiateDepotFlightOnLowBattery() throws InterruptedException
+    void shouldInitiateDepotFlightOnLowBattery() throws InterruptedException
     {
 
         loopUntilStateChanges(sut, State.TAKE_OFF);

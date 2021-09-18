@@ -30,10 +30,10 @@ import cpcc.vvrte.entities.Task;
 /**
  * ApplicationStateTest implementation.
  */
-public class ApplicationStateTest
+class ApplicationStateTest
 {
     @Test
-    public void shouldHoldMappingDecision()
+    void shouldHoldMappingDecision()
     {
         VirtualVehicleMappingDecision decision = mock(VirtualVehicleMappingDecision.class);
         when(decision.toString()).thenReturn("decision A");
@@ -44,11 +44,11 @@ public class ApplicationStateTest
         assertThat(sut.getTask()).isNull();
         assertThat(sut.isMappingDecision()).isTrue();
         assertThat(sut.isTask()).isFalse();
-        assertThat(sut.toString()).isEqualTo("Decision: decision A");
+        assertThat(sut).hasToString("Decision: decision A");
     }
 
     @Test
-    public void shouldHoldTask()
+    void shouldHoldTask()
     {
         Task task = mock(Task.class);
         when(task.toString()).thenReturn("task B");
@@ -59,11 +59,11 @@ public class ApplicationStateTest
         assertThat(sut.getTask()).isSameAs(task);
         assertThat(sut.isMappingDecision()).isFalse();
         assertThat(sut.isTask()).isTrue();
-        assertThat(sut.toString()).isEqualTo("Task: task B");
+        assertThat(sut).hasToString("Task: task B");
     }
 
     @Test
-    public void shouldHoldNothing()
+    void shouldHoldNothing()
     {
         ApplicationState sut = new ApplicationState((Task) null);
 
@@ -71,6 +71,6 @@ public class ApplicationStateTest
         assertThat(sut.getTask()).isNull();
         assertThat(sut.isMappingDecision()).isFalse();
         assertThat(sut.isTask()).isFalse();
-        assertThat(sut.toString()).isEqualTo("Application state unknown!");
+        assertThat(sut).hasToString("Application state unknown!");
     }
 }

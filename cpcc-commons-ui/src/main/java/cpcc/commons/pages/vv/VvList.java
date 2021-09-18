@@ -34,6 +34,7 @@ import org.apache.tapestry5.hibernate.annotations.CommitAfter;
 import org.apache.tapestry5.http.services.Request;
 import org.apache.tapestry5.services.ajax.AjaxResponseRenderer;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.commons.services.UuidFormatter;
 import cpcc.vvrte.entities.VirtualVehicle;
@@ -47,6 +48,8 @@ import cpcc.vvrte.services.db.VvRteRepository;
  */
 public class VvList
 {
+    private static final Logger LOG = LoggerFactory.getLogger(VvList.class);
+
     /**
      * View function
      */
@@ -55,9 +58,6 @@ public class VvList
         VIEW_LIST,
         VIEW_MODAL
     }
-
-    @Inject
-    private Logger logger;
 
     @Inject
     private HibernateSessionManager sessionManager;
@@ -177,7 +177,7 @@ public class VvList
         }
         catch (VirtualVehicleLaunchException | IOException e)
         {
-            logger.error("Can not start virtual vehicle " + id, e);
+            LOG.error("Can not start virtual vehicle " + id, e);
         }
 
         handleXhrRequest(paneZone);
@@ -200,7 +200,7 @@ public class VvList
         }
         catch (VirtualVehicleLaunchException | IOException e)
         {
-            logger.error("Can not restart migration of virtual vehicle " + id, e);
+            LOG.error("Can not restart migration of virtual vehicle " + id, e);
         }
 
         handleXhrRequest(paneZone);
@@ -210,7 +210,7 @@ public class VvList
     @CommitAfter
     void pauseVehicle(Integer id)
     {
-        logger.error("pauseVehicle {} not implemented.", id);
+        LOG.error("pauseVehicle {} not implemented.", id);
         handleXhrRequest(paneZone);
     }
 
@@ -236,7 +236,7 @@ public class VvList
         }
         catch (VirtualVehicleLaunchException | IOException e)
         {
-            logger.error("Can not stop virtual vehicle " + vehicle.getId(), e);
+            LOG.error("Can not stop virtual vehicle " + vehicle.getId(), e);
         }
     }
 
@@ -248,7 +248,7 @@ public class VvList
         }
         catch (VirtualVehicleLaunchException | IOException e)
         {
-            logger.error("Can not terminate virtual vehicle " + vehicle.getId(), e);
+            LOG.error("Can not terminate virtual vehicle " + vehicle.getId(), e);
         }
     }
 
@@ -268,7 +268,7 @@ public class VvList
     {
         if (!VirtualVehicleState.VV_STATES_FOR_RESTART.contains(vehicle.getState()))
         {
-            logger.info("Can not restart virtual vehicle {} because of state {}", vehicle.getId(), vehicle.getState());
+            LOG.info("Can not restart virtual vehicle {} because of state {}", vehicle.getId(), vehicle.getState());
             return;
         }
 
@@ -277,11 +277,11 @@ public class VvList
             vehicle.setState(VirtualVehicleState.INIT);
             sessionManager.commit();
             launcher.start(vehicle.getId());
-            logger.info("Virtual vehicle {} restarted.", vehicle.getId());
+            LOG.info("Virtual vehicle {} restarted.", vehicle.getId());
         }
         catch (VirtualVehicleLaunchException | IOException e)
         {
-            logger.error("Can not restart virtual vehicle {}", vehicle.getId(), e);
+            LOG.error("Can not restart virtual vehicle {}", vehicle.getId(), e);
         }
     }
 

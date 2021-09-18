@@ -19,80 +19,101 @@
 package cpcc.commons.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
+import java.util.stream.Stream;
 
 import org.apache.tapestry5.ValidationException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.ros.namespace.GraphName;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 /**
  * GraphNameTranslatorTest
  */
-public class GraphNameTranslatorTest
+class GraphNameTranslatorTest
 {
     GraphNameTranslator translator;
 
-    @BeforeMethod
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         translator = new GraphNameTranslator("noName");
     }
 
-    @DataProvider
-    public Object[][] nameDataProvider()
+    static Stream<Arguments> nameDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"name"},
-            new Object[]{"othername"},
-            new Object[]{"simpleName"},
-        };
+        return Stream.of(
+            arguments((String) null),
+            arguments(""),
+            arguments("name"),
+            arguments("othername"),
+            arguments("simpleName"));
     };
 
-    @Test(dataProvider = "nameDataProvider")
-    public void shouldStoreNameCorrectly(String name)
+    @ParameterizedTest
+    @MethodSource("nameDataProvider")
+    void shouldStoreNameCorrectly(String name)
     {
         GraphNameTranslator myTranslator = new GraphNameTranslator(name);
         assertThat(myTranslator.getName()).isEqualTo(name);
     }
 
-    @Test(dataProvider = "nameDataProvider")
-    public void shouldConvertToClientCorrectly(String name)
+    @ParameterizedTest
+    @MethodSource("nameDataProvider")
+    void shouldConvertToClientCorrectly(String name)
     {
         assertThat(translator.toClient(name == null ? null : GraphName.of(name))).isEqualTo(name == null ? "" : name);
     }
 
     @Test
-    public void shouldHaveCorrectType()
+    void shouldHaveCorrectType()
     {
         assertThat(translator.getType()).isEqualTo(GraphName.class);
     }
 
     @Test
-    public void shouldHaveCorrectMessageKey()
+    void shouldHaveCorrectMessageKey()
     {
         assertThat(translator.getMessageKey()).isEqualTo("graphname-format-exception");
     }
 
-    @Test(dataProvider = "nameDataProvider")
-    public void shouldParseClientCorrectly(String clientValue) throws ValidationException
+    @ParameterizedTest
+    @MethodSource("nameDataProvider")
+    void shouldParseClientCorrectly(String clientValue) throws ValidationException
     {
         assertThat(translator.parseClient(null, clientValue, null))
             .isNotNull()
             .isEqualTo(clientValue == null ? GraphName.empty() : GraphName.of(clientValue));
     }
 
-    @Test(expectedExceptions = ValidationException.class)
-    public void shouldThrowValidationExceptionForMalformedGraphNames() throws ValidationException
+    void shouldThrowValidationExceptionForMalformedGraphNames()
     {
-        translator.parseClient(null, "xx xx", null);
+        try
+        {
+            translator.parseClient(null, "xx xx", null);
+            failBecauseExceptionWasNotThrown(ValidationException.class);
+        }
+        catch (ValidationException e)
+        {
+            assertThat(e).hasMessage("");
+        }
     }
 
     @Test
-    public void shouldRenderAnything()
+    void shouldRenderAnything()
     {
-        translator.render(null, null, null, null);
+        try
+        {
+            translator.render(null, null, null, null);
+        }
+        catch (RuntimeException e)
+        {
+            assertThat(e).isNull();
+        }
     }
 }

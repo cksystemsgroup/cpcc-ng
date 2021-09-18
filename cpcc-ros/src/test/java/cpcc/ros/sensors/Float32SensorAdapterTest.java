@@ -41,7 +41,7 @@ import std_msgs.Float32;
 /**
  * Float32SensorAdapterTest implementation.
  */
-public class Float32SensorAdapterTest
+class Float32SensorAdapterTest
 {
     private Float32SensorAdapter sut;
     private ConnectedNode connectedNode;
@@ -52,7 +52,7 @@ public class Float32SensorAdapterTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         message1 = mock(std_msgs.Float32.class);
         when(message1.getData()).thenReturn(3.456f);
@@ -74,7 +74,7 @@ public class Float32SensorAdapterTest
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void shouldRegisterMessageListenerOnStartup()
+    void shouldRegisterMessageListenerOnStartup()
     {
         sut.onStart(connectedNode);
 
@@ -94,7 +94,7 @@ public class Float32SensorAdapterTest
     }
 
     @Test
-    public void shouldGetCurrentStateOnUninitializedNode()
+    void shouldGetCurrentStateOnUninitializedNode()
     {
         Map<String, List<String>> actual = sut.getCurrentState();
 
@@ -103,7 +103,7 @@ public class Float32SensorAdapterTest
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void shouldGetCurrentStateOnInitializedNode()
+    void shouldGetCurrentStateOnInitializedNode()
     {
         sut.onStart(connectedNode);
         ArgumentCaptor<MessageListener> captor = ArgumentCaptor.forClass(MessageListener.class);
@@ -121,7 +121,7 @@ public class Float32SensorAdapterTest
     }
 
     @Test
-    public void shouldReturnCorrectSensorType()
+    void shouldReturnCorrectSensorType()
     {
         SensorType actual = sut.getType();
 
@@ -129,7 +129,7 @@ public class Float32SensorAdapterTest
     }
 
     @Test
-    public void shouldThrowExceptionOnSetValue()
+    void shouldThrowExceptionOnSetValue()
     {
         try
         {

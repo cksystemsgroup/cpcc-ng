@@ -31,10 +31,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class JobCreationExceptionTest
+class JobCreationExceptionTest
 {
     @Test
-    public void shouldHaveDefaultConstructor() throws JobCreationException
+    void shouldHaveDefaultConstructor() throws JobCreationException
     {
         ExceptionThrower sut = new ExceptionThrower();
 
@@ -52,7 +52,7 @@ public class JobCreationExceptionTest
 
     @ParameterizedTest
     @MethodSource("messagesDataProvider")
-    public void shouldHaveMessageConstructor(String expected) throws JobCreationException
+    void shouldHaveMessageConstructor(String expected) throws JobCreationException
     {
         ExceptionThrower sut = new ExceptionThrower();
 
@@ -70,7 +70,7 @@ public class JobCreationExceptionTest
 
     @ParameterizedTest
     @MethodSource("messageAndCauseDataProvider")
-    public void shouldHaveMessageAndCauseConstructor(String expectedMessage, Throwable expectedCause)
+    void shouldHaveMessageAndCauseConstructor(String expectedMessage, Throwable expectedCause)
         throws JobCreationException
     {
         ExceptionThrower sut = new ExceptionThrower();
@@ -81,7 +81,7 @@ public class JobCreationExceptionTest
         assertThat(caughtException().getCause()).isEqualTo(expectedCause);
     }
 
-    public static class ExceptionThrower
+    static class ExceptionThrower
     {
         public void throwException() throws JobCreationException
         {

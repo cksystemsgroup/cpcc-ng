@@ -35,12 +35,15 @@ import javax.management.JMException;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SystemMonitorImpl implementation.
  */
 public class SystemMonitorImpl implements SystemMonitor
 {
+    private static final Logger LOG = LoggerFactory.getLogger(SystemMonitorImpl.class);
+
     private static final String PROCESS_CPU_TIME = "java.lang:type=OperatingSystem/ProcessCpuTime";
     private static final String PROCESS_CPU_LOAD = "java.lang:type=OperatingSystem/ProcessCpuLoad";
     private static final String SYSTEM_CPU_LOAD = "java.lang:type=OperatingSystem/SystemCpuLoad";
@@ -49,7 +52,6 @@ public class SystemMonitorImpl implements SystemMonitor
 
     private Runtime runtime;
     private MemoryMXBean memBean;
-    private Logger logger;
     private List<GarbageCollectorMXBean> gcBean;
     private List<MemoryPoolMXBean> memPoolBEans;
     private OperatingSystemMXBean opsysBean;
@@ -63,8 +65,6 @@ public class SystemMonitorImpl implements SystemMonitor
      */
     public SystemMonitorImpl(Map<String, Object> configuration)
     {
-        this.logger = (Logger) configuration.get("logger");
-
         runtime = Runtime.getRuntime();
         memBean = ManagementFactory.getMemoryMXBean();
         gcBean = ManagementFactory.getGarbageCollectorMXBeans();
@@ -93,8 +93,8 @@ public class SystemMonitorImpl implements SystemMonitor
         String keys = entries.stream().map(Pair::getLeft).collect(Collectors.joining(";"));
         String values = entries.stream().map(Pair::getRight).collect(Collectors.joining(";"));
 
-        logger.info(";SH;{}", keys);
-        logger.info(";SV;{}", values);
+        LOG.info(";SH;{}", keys);
+        LOG.info(";SV;{}", values);
     }
 
     private double readDoubleAttribute(String mxBeanAttributeName)
@@ -196,11 +196,11 @@ public class SystemMonitorImpl implements SystemMonitor
 
         if (!header.equals(newHeader))
         {
-            logger.info(newHeader);
+            LOG.info(newHeader);
             header = newHeader;
         }
 
         String values = entries.stream().map(Pair::getRight).collect(Collectors.joining(";"));
-        logger.info(";V;{}", values);
+        LOG.info(";V;{}", values);
     }
 }

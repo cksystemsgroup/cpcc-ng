@@ -48,10 +48,10 @@ import cpcc.core.services.jobs.JobRepository;
 import cpcc.core.services.jobs.JobService;
 import cpcc.core.services.jobs.TimeService;
 
-public class RealVehicleBaseModuleTest
+class RealVehicleBaseModuleTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<RealVehicleBaseModule> cnt = RealVehicleBaseModule.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -60,7 +60,7 @@ public class RealVehicleBaseModuleTest
     }
 
     @Test
-    public void shouldBindServices()
+    void shouldBindServices()
     {
         ServiceBinder binder = mock(ServiceBinder.class);
 
@@ -71,7 +71,7 @@ public class RealVehicleBaseModuleTest
     }
 
     @Test
-    public void shouldContributeComponentClassResolver()
+    void shouldContributeComponentClassResolver()
     {
         @SuppressWarnings("unchecked")
         Configuration<LibraryMapping> configuration = mock(Configuration.class);
@@ -82,7 +82,7 @@ public class RealVehicleBaseModuleTest
     }
 
     @Test
-    public void shouldScheduleJobs() throws JobExecutionException
+    void shouldScheduleJobs() throws JobExecutionException
     {
         PeriodicExecutor executor = mock(PeriodicExecutor.class);
         Logger logger = mock(Logger.class);
@@ -110,7 +110,7 @@ public class RealVehicleBaseModuleTest
     }
 
     @Test
-    public void shouldSetupCommunicationService()
+    void shouldSetupCommunicationService()
     {
         CommunicationService communicationService = mock(CommunicationService.class);
 
@@ -123,15 +123,14 @@ public class RealVehicleBaseModuleTest
     }
 
     @Test
-    public void shouldSetupJobQueues()
+    void shouldSetupJobQueues()
     {
-        Logger logger = mock(Logger.class);
         JobService jobService = mock(JobService.class);
         HibernateSessionManager sessionManager = mock(HibernateSessionManager.class);
         TimeService timeService = mock(TimeService.class);
         JobRepository jobRepository = mock(JobRepository.class);
 
-        RealVehicleBaseModule.setupJobQueues(logger, jobService, sessionManager, timeService, jobRepository, 10);
+        RealVehicleBaseModule.setupJobQueues(jobService, sessionManager, timeService, jobRepository, 10);
 
         verify(jobService).addJobQueue(eq(RealVehicleBaseConstants.JOB_QUEUE_NAME), any(JobQueue.class));
         verify(jobService).addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME, "mode=init");

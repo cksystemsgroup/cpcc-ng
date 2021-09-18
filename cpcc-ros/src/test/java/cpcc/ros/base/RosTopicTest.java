@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * RosTopicTest
  */
-public class RosTopicTest
+class RosTopicTest
 {
     static Stream<Arguments> topicDataProvider()
     {
@@ -43,7 +43,7 @@ public class RosTopicTest
 
     @ParameterizedTest
     @MethodSource("topicDataProvider")
-    public void shouldStoreNameAndType(String name, String type)
+    void shouldStoreNameAndType(String name, String type)
     {
         RosTopic topic = new RosTopic();
         topic.setName(name);

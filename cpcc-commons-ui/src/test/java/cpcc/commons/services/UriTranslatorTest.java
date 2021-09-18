@@ -19,46 +19,49 @@
 package cpcc.commons.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.stream.Stream;
 
 import org.apache.tapestry5.ValidationException;
 import org.assertj.core.api.Fail;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * UriTranslatorTest
  */
-public class UriTranslatorTest
+class UriTranslatorTest
 {
     UriTranslator translator;
 
-    @BeforeMethod
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         translator = spy(new UriTranslator(null));
     }
 
-    @DataProvider
-    public Object[][] nameDataProvider()
+    static Stream<Arguments> nameDataProvider()
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{""},
-            new Object[]{"/"},
-            new Object[]{"/a"},
-            new Object[]{"/abcdefg"},
-        };
+        return Stream.of(
+            arguments((String) null),
+            arguments(""),
+            arguments("/"),
+            arguments("/a"),
+            arguments("/abcdefg"));
     };
 
-    @Test(dataProvider = "nameDataProvider")
-    public void shouldStoreNameCorrectly(String name)
+    @ParameterizedTest
+    @MethodSource("nameDataProvider")
+    void shouldStoreNameCorrectly(String name)
     {
         translator = spy(new UriTranslator(name));
         verifyNoInteractions(translator);
@@ -66,18 +69,17 @@ public class UriTranslatorTest
         verify(translator).getName();
     }
 
-    @DataProvider
-    public Object[][] uriDataProvider() throws URISyntaxException
+    static Stream<Arguments> uriDataProvider() throws URISyntaxException
     {
-        return new Object[][]{
-            new Object[]{null},
-            new Object[]{new URI("http://www.acme.com/index.html")},
-            new Object[]{new URI("file:///tmp/notexistentfileordirectory")},
-        };
+        return Stream.of(
+            arguments((URI) null),
+            arguments(new URI("http://www.acme.com/index.html")),
+            arguments(new URI("file:///tmp/notexistentfileordirectory")));
     };
 
-    @Test(dataProvider = "uriDataProvider")
-    public void shouldConvertToClientCorrectly(URI uri)
+    @ParameterizedTest
+    @MethodSource("uriDataProvider")
+    void shouldConvertToClientCorrectly(URI uri)
     {
         if (uri == null)
         {
@@ -90,25 +92,33 @@ public class UriTranslatorTest
     }
 
     @Test
-    public void shouldBeOfTypeUriClass()
+    void shouldBeOfTypeUriClass()
     {
         assertThat(translator.getType()).isInstanceOf(Class.class).isEqualTo(URI.class);
     }
 
     @Test
-    public void shouldHaveASpecificMessageKey()
+    void shouldHaveASpecificMessageKey()
     {
         assertThat(translator.getMessageKey()).isEqualTo("uri-format-exception");
     }
 
-    @Test(dataProvider = "uriDataProvider")
-    public void shouldParseField(URI uri) throws ValidationException
+    @ParameterizedTest
+    @MethodSource("uriDataProvider")
+    void shouldParseField(URI uri)
     {
-        translator.parseClient(null, uri == null ? null : uri.toString(), null);
+        try
+        {
+            translator.parseClient(null, uri == null ? null : uri.toString(), null);
+        }
+        catch (ValidationException e)
+        {
+            assertThat(e).isNull();
+        }
     }
 
     @Test
-    public void parseClientShouldThrowUSEOnInvalidUri() throws ValidationException
+    void parseClientShouldThrowUSEOnInvalidUri() throws ValidationException
     {
         translator = new UriTranslator(null);
         String message = "an exception message";
@@ -125,8 +135,15 @@ public class UriTranslatorTest
     }
 
     @Test
-    public void shouldRenderNothing()
+    void shouldRenderNothing()
     {
-        translator.render(null, null, null, null);
+        try
+        {
+            translator.render(null, null, null, null);
+        }
+        catch (RuntimeException e)
+        {
+            assertThat(e).isNull();
+        }
     }
 }

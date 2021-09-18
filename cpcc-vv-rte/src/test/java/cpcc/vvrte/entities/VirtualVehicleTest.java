@@ -14,12 +14,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import cpcc.core.entities.RealVehicle;
 
-public class VirtualVehicleTest
+class VirtualVehicleTest
 {
     private VirtualVehicle sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new VirtualVehicle();
     }
@@ -221,7 +221,7 @@ public class VirtualVehicleTest
 
     @ParameterizedTest
     @MethodSource("dataProvider")
-    public void shouldStoreAndRetrieveValues(Integer id, String uuid, String name, Integer apiVersion, String code,
+    void shouldStoreAndRetrieveValues(Integer id, String uuid, String name, Integer apiVersion, String code,
         cpcc.vvrte.entities.VirtualVehicleState state, cpcc.vvrte.entities.VirtualVehicleState preMigrationState,
         cpcc.core.entities.RealVehicle migrationDestination, cpcc.core.entities.RealVehicle migrationSource,
         Integer chunkNumber, java.util.Date migrationStartTime, byte[] continuation, java.util.Date startTime,

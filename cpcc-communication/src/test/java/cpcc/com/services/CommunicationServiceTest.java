@@ -59,7 +59,7 @@ import org.mockito.stubbing.Answer;
 import cpcc.com.services.CommunicationResponse.Status;
 import cpcc.core.entities.RealVehicle;
 
-public class CommunicationServiceTest
+class CommunicationServiceTest
 {
     private static final String MIGRATE = "migrate";
 
@@ -74,7 +74,7 @@ public class CommunicationServiceTest
     private CommunicationServiceImpl com;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         content = null;
         throwHttpException = false;
@@ -131,7 +131,7 @@ public class CommunicationServiceTest
     }
 
     @AfterEach
-    public void tearDown() throws Exception
+    void tearDown() throws Exception
     {
         server.stop();
         server.awaitTermination(30, TimeUnit.SECONDS);
@@ -147,7 +147,7 @@ public class CommunicationServiceTest
 
     @ParameterizedTest
     @MethodSource("byteArrayDataProvider")
-    public void shouldTransferDataChunk(byte[] data) throws ClientProtocolException, IOException
+    void shouldTransferDataChunk(byte[] data) throws ClientProtocolException, IOException
     {
         CommunicationResponse response = com.transfer(realVehicle, MIGRATE, data);
 
@@ -164,7 +164,7 @@ public class CommunicationServiceTest
 
     @ParameterizedTest
     @MethodSource("byteArrayDataProvider")
-    public void shouldDetectTransferProblems(byte[] data) throws ClientProtocolException, IOException
+    void shouldDetectTransferProblems(byte[] data) throws ClientProtocolException, IOException
     {
         throwHttpException = true;
 
@@ -176,7 +176,7 @@ public class CommunicationServiceTest
     }
 
     @Test
-    public void shouldThrowExeptionWhenAddingConnectorsTwice()
+    void shouldThrowExeptionWhenAddingConnectorsTwice()
     {
         com.addConnector("connector", "path");
 

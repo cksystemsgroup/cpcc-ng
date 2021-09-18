@@ -125,7 +125,7 @@ class DeviceTest
     void shouldHaveNoChildren()
     {
         assertThat(device.hasChildren()).isFalse();
-        assertThat(device.getChildren()).isNotNull().hasSize(0);
+        assertThat(device.getChildren()).isNotNull().isEmpty();
     }
 
     @Test

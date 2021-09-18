@@ -65,4 +65,12 @@ public class StuckMigrationsJobRunnable implements JobRunnable
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean executionSucceeded()
+    {
+        return true;
+    }
 }

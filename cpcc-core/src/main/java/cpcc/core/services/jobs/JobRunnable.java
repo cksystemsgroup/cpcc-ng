@@ -31,4 +31,9 @@ public interface JobRunnable
      * @throws IOException in case of errors.
      */
     void run() throws IOException;
+
+    /**
+     * @return true if the execution succeeded.
+     */
+    boolean executionSucceeded();
 }

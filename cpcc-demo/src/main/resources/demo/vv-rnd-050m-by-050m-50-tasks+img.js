@@ -7,11 +7,13 @@ var gps = VV.sensor.get('GPS');
 var camera = VV.sensor.get('Belly Mounted Camera 640x480');
 
 var numberOfTasks = 50;
+var storageIndex = 0;
 
 function storePosition(sensorData)
 {
-	VV.storage.store("pos-" + k, sensorData[0]);
-	VV.storage.store("img-" + k, sensorData[1]);
+	VV.storage.store("pos-" + storageIndex, sensorData[0]);
+	VV.storage.store("img-" + storageIndex, sensorData[1]);
+	++storageIndex;
 }
 
 for (var k = 0; k < numberOfTasks; ++k)
@@ -22,7 +24,7 @@ for (var k = 0; k < numberOfTasks; ++k)
 	VV.task.execute({
 		type : 'point',
 		position : new VV.types.LatLngAlt(lat, lng, 50),
-		tolerance : 4,
+		tolerance : 1,
 		sensors : [ gps, camera ]
 	}, storePosition);
 }

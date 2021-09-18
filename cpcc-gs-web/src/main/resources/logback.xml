@@ -24,10 +24,22 @@
 	<logger name="cpcc.ros.sim.quadrotor.PlantStateEstimatorImpl" level="INFO" additivity="false">
 		<appender-ref ref="RVLOG" />
 	</logger>
-	<logger name="cpcc.vvrte.services.VvRteModule.TaskExecutionService" level="INFO" additivity="false">
+	<logger name="cpcc.vvrte.services.TaskExecutionService" level="INFO" additivity="false">
 		<appender-ref ref="RVLOG" />
 	</logger>
-	<logger name="RealVehicleStateJobLogger" level="INFO" additivity="false">
+	<logger name="cpcc.rv.base.services.RealVehicleJobRunnableFactory" level="INFO" additivity="false">
+		<appender-ref ref="RVLOG" />
+	</logger>
+	<logger name="cpcc.rv.base.services.ConfigImportJobRunnable" level="INFO" additivity="false">
+		<appender-ref ref="RVLOG" />
+	</logger>
+	<logger name="cpcc.rv.base.services.ConfigPushJobRunnable" level="INFO" additivity="false">
+		<appender-ref ref="RVLOG" />
+	</logger>
+	<logger name="cpcc.rv.base.services.RealVehicleInitJobRunnable" level="INFO" additivity="false">
+		<appender-ref ref="RVLOG" />
+	</logger>
+	<logger name="cpcc.rv.base.services.RealVehicleStateJobRunnable" level="INFO" additivity="false">
 		<appender-ref ref="RVLOG" />
 	</logger>
 
@@ -43,7 +55,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="SystemMonitorLogger" level="INFO" additivity="false">
+	<logger name="cpcc.rv.base.services.SystemMonitorImpl" level="INFO" additivity="false">
 		<appender-ref ref="SYSLOG" />
 	</logger>
 

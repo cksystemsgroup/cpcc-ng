@@ -42,7 +42,7 @@ import cpcc.vvrte.entities.Task;
 /**
  * FirstComeFirstServeAlgorithmTest implementation.
  */
-public class FirstComeFirstServeAlgorithmTest
+class FirstComeFirstServeAlgorithmTest
 {
     private FirstComeFirstServeAlgorithm sut;
     private List<PolarCoordinate> depots;
@@ -51,7 +51,7 @@ public class FirstComeFirstServeAlgorithmTest
      * Test setup.
      */
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         depots = spy(new ArrayList<>());
         sut = new FirstComeFirstServeAlgorithm();
@@ -109,7 +109,7 @@ public class FirstComeFirstServeAlgorithmTest
 
     @ParameterizedTest
     @MethodSource("pendingTasksDataProvider")
-    public void shouldSchedulePendingTasksIfNoTasksAreScheduled(PolarCoordinate rvPosition, List<Task> scheduled,
+    void shouldSchedulePendingTasksIfNoTasksAreScheduled(PolarCoordinate rvPosition, List<Task> scheduled,
         List<Task> pending, List<Task> expectedScheduled, List<Task> expectedPending, boolean expectedChange)
     {
         List<Task> scheduledTasks = new ArrayList<>(scheduled);

@@ -34,7 +34,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class TarArchiveDemo
+class TarArchiveDemoTest
 {
     private static final String GROUP_NAME_ONE = "cpcc1";
     private static final String GROUP_NAME_TWO = "cpcc2";
@@ -47,7 +47,7 @@ public class TarArchiveDemo
     private static final int STORAGE_ID_TWO = 484727;
 
     @Test
-    public void shouldWriteTarFile() throws IOException, ArchiveException
+    void shouldWriteTarFile() throws IOException, ArchiveException
     {
         byte[] c1 = "content1\n".getBytes("UTF-8");
         byte[] c2 = "content2 text\n".getBytes("UTF-8");
@@ -95,8 +95,9 @@ public class TarArchiveDemo
         ByteArrayOutputStream b1 = new ByteArrayOutputStream();
         IOUtils.copy(inStream, b1);
         b1.close();
-        assertThat(b1.toByteArray().length).isEqualTo(c1.length);
-        assertThat(b1.toByteArray()).isEqualTo(c1);
+        assertThat(b1.toByteArray())
+            .hasSameSizeAs(c1)
+            .isEqualTo(c1);
 
         TarArchiveEntry entry2 = (TarArchiveEntry) inStream.getNextEntry();
         assertThat(entry2.getModTime()).isEqualTo(t2);
@@ -108,8 +109,9 @@ public class TarArchiveDemo
         ByteArrayOutputStream b2 = new ByteArrayOutputStream();
         IOUtils.copy(inStream, b2);
         b2.close();
-        assertThat(b2.toByteArray().length).isEqualTo(c2.length);
-        assertThat(b2.toByteArray()).isEqualTo(c2);
+        assertThat(b2.toByteArray())
+            .hasSameSizeAs(c2)
+            .isEqualTo(c2);
 
         TarArchiveEntry entry3 = (TarArchiveEntry) inStream.getNextEntry();
         assertThat(entry3).isNull();

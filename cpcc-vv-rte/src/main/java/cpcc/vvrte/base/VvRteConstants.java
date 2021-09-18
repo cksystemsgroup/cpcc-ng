@@ -39,7 +39,7 @@ public final class VvRteConstants
     public static final String PROP_GTSP_MAX_TASKS_DEFAULT = "30";
 
     public static final String PROP_MIN_TOLERANCE_DISTANCE = "cpcc.vvrte.task.minimumToleranceDistance";
-    public static final String PROP_MIN_TOLERANCE_DISTANCE_DEFAULT = "3.0";
+    public static final String PROP_MIN_TOLERANCE_DISTANCE_DEFAULT = "1.0";
 
     public static final String MIGRATION_JOB_QUEUE_NAME = "VV Migrations";
     public static final String NUMBER_OF_MIGRATION_POOL_THREADS = "vvrte.mig.job.pool.threads";

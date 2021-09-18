@@ -46,7 +46,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
 
 import cpcc.core.base.CoreConstants;
 import cpcc.core.services.jobs.JobExecutionException;
@@ -57,10 +56,10 @@ import cpcc.core.services.opts.OptionsParserServiceImpl;
 /**
  * CoreModuleTest
  */
-public class CoreModuleTest
+class CoreModuleTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<CoreModule> cnt = CoreModule.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -69,7 +68,7 @@ public class CoreModuleTest
     }
 
     @Test
-    public void shouldBindQueryManager()
+    void shouldBindQueryManager()
     {
         ServiceBindingOptions options = mock(ServiceBindingOptions.class);
         ServiceBinder binder = mock(ServiceBinder.class);
@@ -86,7 +85,7 @@ public class CoreModuleTest
     }
 
     @Test
-    public void shouldContributeApplicationDefaults()
+    void shouldContributeApplicationDefaults()
     {
         @SuppressWarnings("unchecked")
         MappedConfiguration<String, String> configuration = mock(MappedConfiguration.class);
@@ -97,7 +96,7 @@ public class CoreModuleTest
     }
 
     @Test
-    public void shouldContributeComponentMessagesSource()
+    void shouldContributeComponentMessagesSource()
     {
         @SuppressWarnings("unchecked")
         OrderedConfiguration<String> configuration = mock(OrderedConfiguration.class);
@@ -108,7 +107,7 @@ public class CoreModuleTest
     }
 
     @Test
-    public void shouldContributeToHibernateEntityPackageManager()
+    void shouldContributeToHibernateEntityPackageManager()
     {
         @SuppressWarnings("unchecked")
         Configuration<String> configuration = mock(Configuration.class);
@@ -119,14 +118,13 @@ public class CoreModuleTest
     }
 
     @Test
-    public void shouldContributeHibernateSessionSource()
+    void shouldContributeHibernateSessionSource()
     {
         @SuppressWarnings("unchecked")
         OrderedConfiguration<HibernateConfigurer> configuration = mock(OrderedConfiguration.class);
-        Logger logger = mock(Logger.class);
         LiquibaseService liquibaseService = mock(LiquibaseService.class);
 
-        CoreModule.contributeHibernateSessionSource(configuration, logger, liquibaseService);
+        CoreModule.contributeHibernateSessionSource(configuration, liquibaseService);
 
         ArgumentCaptor<HibernateConfigurer> argument = ArgumentCaptor.forClass(HibernateConfigurer.class);
 
@@ -140,7 +138,7 @@ public class CoreModuleTest
     }
 
     @Test
-    public void shouldAdviseTransactions()
+    void shouldAdviseTransactions()
     {
         HibernateTransactionAdvisor advisor = mock(HibernateTransactionAdvisor.class);
         MethodAdviceReceiver receiver = mock(MethodAdviceReceiver.class);
@@ -151,16 +149,15 @@ public class CoreModuleTest
     }
 
     @Test
-    public void shouldScheduleJobs() throws JobExecutionException
+    void shouldScheduleJobs() throws JobExecutionException
     {
         PeriodicExecutor executor = mock(PeriodicExecutor.class);
-        Logger logger = mock(Logger.class);
         JobService jobService = mock(JobService.class);
         HibernateSessionManager sessionManager = mock(HibernateSessionManager.class);
 
-        CoreModule.scheduleJobs(executor, logger, jobService, sessionManager);
+        CoreModule.scheduleJobs(executor, jobService, sessionManager);
 
-        InOrder inOrder = Mockito.inOrder(executor, logger, jobService, sessionManager);
+        InOrder inOrder = Mockito.inOrder(executor, jobService, sessionManager);
 
         inOrder.verify(jobService).resetJobs();
         inOrder.verify(jobService).removeOldJobs();
@@ -177,7 +174,6 @@ public class CoreModuleTest
         doThrow(JobExecutionException.class).when(jobService).executeJobs();
         argument1.getValue().run();
         inOrder.verify(jobService).executeJobs();
-        inOrder.verify(logger).error(anyString(), any(JobExecutionException.class));
 
         argument2.getValue().run();
         inOrder.verify(jobService).removeOldJobs();

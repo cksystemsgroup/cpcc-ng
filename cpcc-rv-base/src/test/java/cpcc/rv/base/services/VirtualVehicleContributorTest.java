@@ -52,14 +52,14 @@ import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.services.db.VvRteRepository;
 import cpcc.vvrte.services.json.VvGeoJsonConverter;
 
-public class VirtualVehicleContributorTest
+class VirtualVehicleContributorTest
 {
     private VvGeoJsonConverter vjc;
     private VvRteRepository vvRepo;
     private VirtualVehicleContributor sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         Map<VirtualVehicleState, Integer> vvStats = new HashMap<>();
         vvStats.put(VirtualVehicleState.DEFECTIVE, 1230);
@@ -84,7 +84,7 @@ public class VirtualVehicleContributorTest
         sut = new VirtualVehicleContributor(vvRepo, vjc);
     }
 
-    public static final String EMPTY_VV_FEATURE = "{\"type\":\"Feature\""
+    static final String EMPTY_VV_FEATURE = "{\"type\":\"Feature\""
         + ",\"properties\":{\"vvsMigrating\":51150,\"vvsDefective\":1230,\"vvsDormant\":5460,\"vvsTotal\":93990"
         + ",\"type\":\"vvs\",\"vvsActive\":9460,\"vvsInterrupted\":26690}"
         + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[]}}";
@@ -98,7 +98,7 @@ public class VirtualVehicleContributorTest
 
     @ParameterizedTest
     @MethodSource("noVehiclesDataProvider")
-    public void shouldAddEmptyFeatureOnEmptyVirtualVehicleList(List<VirtualVehicle> emptyList)
+    void shouldAddEmptyFeatureOnEmptyVirtualVehicleList(List<VirtualVehicle> emptyList)
         throws JsonProcessingException, JSONException
     {
         when(vvRepo.findAllActiveVehicles(10)).thenReturn(emptyList);
@@ -177,7 +177,7 @@ public class VirtualVehicleContributorTest
 
     @ParameterizedTest
     @MethodSource("dataProvider")
-    public void shouldContribute(List<VirtualVehicle> vvList, List<GeoJsonObject> featureList, String expected)
+    void shouldContribute(List<VirtualVehicle> vvList, List<GeoJsonObject> featureList, String expected)
         throws JsonProcessingException, JSONException
     {
         when(vvRepo.findAllVehicles()).thenReturn(vvList);

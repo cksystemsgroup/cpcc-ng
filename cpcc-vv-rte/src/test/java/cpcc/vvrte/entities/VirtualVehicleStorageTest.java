@@ -33,12 +33,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
 
-public class VirtualVehicleStorageTest
+class VirtualVehicleStorageTest
 {
     private VirtualVehicleStorage sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new VirtualVehicleStorage();
     }
@@ -81,7 +81,7 @@ public class VirtualVehicleStorageTest
 
     @ParameterizedTest
     @MethodSource("valuesDataProvider")
-    public void shouldSetAndGetValues(Integer id, VirtualVehicle virtualVehicle, String name, ScriptableObject content)
+    void shouldSetAndGetValues(Integer id, VirtualVehicle virtualVehicle, String name, ScriptableObject content)
     {
         Date modificationTime = new Date();
 
@@ -109,12 +109,12 @@ public class VirtualVehicleStorageTest
         }
 
         assertThat(sut.getModificationTime()).isNotNull();
-        assertThat(sut.getModificationTime().getTime()).isNotNull().isEqualTo(modificationTime.getTime());
+        assertThat(sut.getModificationTime().getTime()).isEqualTo(modificationTime.getTime());
     }
 
     @ParameterizedTest
     @MethodSource("valuesDataProvider")
-    public void shouldReturnContentAsByteArray(Integer id, VirtualVehicle virtualVehicle, String name,
+    void shouldReturnContentAsByteArray(Integer id, VirtualVehicle virtualVehicle, String name,
         ScriptableObject content)
     {
         byte[] required = SerializationHelper.serialize(content);

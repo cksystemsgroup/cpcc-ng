@@ -18,8 +18,6 @@
 
 package cpcc.ros.sim.osm;
 
-import org.junit.jupiter.api.Test;
-
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.GeodeticSystem;
 import cpcc.core.utils.WGS84;
@@ -27,10 +25,14 @@ import cpcc.core.utils.WGS84;
 /**
  * ExampleDemo implementation. http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Zoom_levels
  */
-public class ExampleDemo
+class ExampleDemo
 {
-    @Test
-    public void shouldShowExampleCalculation()
+    public static void main(String[] args)
+    {
+        new ExampleDemo().shouldShowExampleCalculation();
+    }
+
+    void shouldShowExampleCalculation()
     {
         double cameraWidth = 320.0;
         double cameraHeight = 240.0;
@@ -61,12 +63,12 @@ public class ExampleDemo
         MercatorProjection mpSE = new MercatorProjection(zoomLevel, posSE.getLatitude(), posSE.getLongitude());
 
         InverseMercator impNW = new InverseMercator(mpNW.getxTile(), mpNW.getyTile(), zoomLevel);
-        InverseMercator impSE = new InverseMercator(mpSE.getxTile()+1, mpSE.getyTile()+1, zoomLevel);
+        InverseMercator impSE = new InverseMercator(mpSE.getxTile() + 1, mpSE.getyTile() + 1, zoomLevel);
 
         System.out.println("mpNW:  " + mpToString(mpNW, zoomLevel));
         System.out.println("mpPos: " + mpToString(mpPos, zoomLevel));
         System.out.println("mpSE:  " + mpToString(mpSE, zoomLevel));
-        
+
         System.out.printf("NW:    (%.6f\u00B0, %.6f\u00B0)%n", impNW.getLat(), impNW.getLon());
         System.out.printf("SE:    (%.6f\u00B0, %.6f\u00B0)%n", impSE.getLat(), impSE.getLon());
     }
@@ -100,7 +102,7 @@ public class ExampleDemo
         {
             return latDeg;
         }
-        
+
         public double getLon()
         {
             return lonDeg;

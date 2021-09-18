@@ -19,8 +19,6 @@
 package cpcc.rv.base.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -38,7 +36,6 @@ import org.hibernate.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.slf4j.Logger;
 
 import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationService;
@@ -49,7 +46,7 @@ import cpcc.core.services.RealVehicleRepository;
 /**
  * RealVehicleStateJobRunnableTest implementation.
  */
-public class RealVehicleStateJobRunnableTest
+class RealVehicleStateJobRunnableTest
 {
     private static final int RV_ID = 123;
 
@@ -64,14 +61,11 @@ public class RealVehicleStateJobRunnableTest
     private RealVehicle rv;
     private Session session;
     private CommunicationResponse response;
-    private Logger logger;
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
-        logger = mock(Logger.class);
-
         parameters = mock(Map.class);
         when(parameters.get("rv")).thenReturn(Integer.toString(RV_ID));
 
@@ -97,11 +91,11 @@ public class RealVehicleStateJobRunnableTest
         when(serviceResources.getService(CommunicationService.class)).thenReturn(com);
         when(serviceResources.getService(RealVehicleRepository.class)).thenReturn(rvRepo);
 
-        sut = new RealVehicleStateJobRunnable(logger, serviceResources, parameters);
+        sut = new RealVehicleStateJobRunnable(serviceResources, parameters);
     }
 
     @Test
-    public void shouldHandleExistingRvState() throws ClientProtocolException, IOException
+    void shouldHandleExistingRvState() throws ClientProtocolException, IOException
     {
         when(com.transfer(rv, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY))
             .thenReturn(response);
@@ -111,6 +105,8 @@ public class RealVehicleStateJobRunnableTest
 
         Date now = new Date();
         sut.run();
+
+        assertThat(sut.executionSucceeded()).isTrue();
 
         ArgumentCaptor<Date> captor = ArgumentCaptor.forClass(Date.class);
         verify(rvState).setLastUpdate(captor.capture());
@@ -122,17 +118,18 @@ public class RealVehicleStateJobRunnableTest
         verifyNoMoreInteractions(rvState);
 
         verify(session).saveOrUpdate(rvState);
-        verify(logger).info("RealVehicleState: ;{};{};", "RV01", "response string");
     }
 
     @Test
-    public void shouldHandleMissingRvState() throws ClientProtocolException, IOException
+    void shouldHandleMissingRvState() throws ClientProtocolException, IOException
     {
         when(com.transfer(rv, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY))
             .thenReturn(response);
 
         Date now = new Date();
         sut.run();
+
+        assertThat(sut.executionSucceeded()).isTrue();
 
         ArgumentCaptor<RealVehicleState> captor = ArgumentCaptor.forClass(RealVehicleState.class);
 
@@ -143,18 +140,16 @@ public class RealVehicleStateJobRunnableTest
         assertThat(rvState.getLastUpdate().getTime() - now.getTime()).isLessThan(1000);
         assertThat(rvState.getRealVehicleName()).isEqualTo(rv.getName());
         assertThat(rvState.getState()).isEqualTo(RESPONSE_STRING);
-
-        verify(logger).info("RealVehicleState: ;{};{};", "RV01", "response string");
     }
 
     @Test
-    public void shouldLogFailingConnections() throws ClientProtocolException, IOException
+    void shouldLogFailingConnections() throws ClientProtocolException, IOException
     {
         when(com.transfer(rv, RealVehicleBaseConstants.REAL_VEHICLE_STATUS_CONNECTOR, ArrayUtils.EMPTY_BYTE_ARRAY))
             .thenThrow(IOException.class);
 
         sut.run();
 
-        verify(logger).debug(eq("Real vehicle state query to {} did not work."), eq("RV01"), any(IOException.class));
+        assertThat(sut.executionSucceeded()).isFalse();
     }
 }

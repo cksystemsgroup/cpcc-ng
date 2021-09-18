@@ -37,7 +37,7 @@ import org.ros.node.topic.Publisher;
 
 import sensor_msgs.NavSatFix;
 
-public class SonarEmulatorPublisherLoopTest
+class SonarEmulatorPublisherLoopTest
 {
     private static final String TOPIC_ROOT = "/topicRoot";
 
@@ -51,7 +51,7 @@ public class SonarEmulatorPublisherLoopTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         config = new HashMap<String, List<String>>();
         config.put("topicRoot", Arrays.asList(TOPIC_ROOT));
@@ -77,7 +77,7 @@ public class SonarEmulatorPublisherLoopTest
     }
 
     @Test
-    public void shouldReceiveMessage() throws InterruptedException
+    void shouldReceiveMessage() throws InterruptedException
     {
         sut.loop();
         assertThat(sut.getMessage()).isNull();

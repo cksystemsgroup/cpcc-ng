@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * VirtualVehicleStateTest
  */
-public class VirtualVehicleStateTest
+class VirtualVehicleStateTest
 {
     /*
      * VirtualVehicleState.INIT
@@ -43,7 +43,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("validTransitionsFromInitDataprovider")
-    public void shouldDetectValidTransitionsFromInit(VirtualVehicleState state)
+    void shouldDetectValidTransitionsFromInit(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.INIT.canTraverseTo(state);
         assertThat(result).isTrue();
@@ -66,7 +66,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("invalidTransitionsFromInitDataprovider")
-    public void shouldDetectInvalidTransitionsFromInit(VirtualVehicleState state)
+    void shouldDetectInvalidTransitionsFromInit(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.INIT.canTraverseTo(state);
         assertThat(result).isFalse();
@@ -84,7 +84,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("validTransitionsFromRunningDataprovider")
-    public void shouldDetectValidTransitionsFromRunning(VirtualVehicleState state)
+    void shouldDetectValidTransitionsFromRunning(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.RUNNING.canTraverseTo(state);
         assertThat(result).isTrue();
@@ -106,7 +106,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("invalidTransitionsFromRunningDataprovider")
-    public void shouldDetectInvalidTransitionsFromRunning(VirtualVehicleState state)
+    void shouldDetectInvalidTransitionsFromRunning(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.RUNNING.canTraverseTo(state);
         assertThat(result).isFalse();
@@ -124,7 +124,7 @@ public class VirtualVehicleStateTest
 
     //    @ParameterizedTest
     //    @MethodSource("validTransitionsFromWaitingDataprovider")
-    //    public void shouldDetectValidTransitionsFromWaiting(VirtualVehicleState state)
+    //    void shouldDetectValidTransitionsFromWaiting(VirtualVehicleState state)
     //    {
     //        boolean result = VirtualVehicleState.WAITING.canTraverseTo(state);
     //        assertThat(result).isTrue();
@@ -146,7 +146,7 @@ public class VirtualVehicleStateTest
 
     //    @ParameterizedTest
     //    @MethodSource("invalidTransitionsFromWaitingDataprovider")
-    //    public void shouldDetectInvalidTransitionsFromWaiting(VirtualVehicleState state)
+    //    void shouldDetectInvalidTransitionsFromWaiting(VirtualVehicleState state)
     //    {
     //        boolean result = VirtualVehicleState.WAITING.canTraverseTo(state);
     //        assertThat(result).isFalse();
@@ -163,7 +163,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("validTransitionsFromMigrationAwaitedDataprovider")
-    public void shouldDetectValidTransitionsFromMigrationAwaited(VirtualVehicleState state)
+    void shouldDetectValidTransitionsFromMigrationAwaited(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_AWAITED_SND.canTraverseTo(state);
         assertThat(result).isTrue();
@@ -186,7 +186,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("invalidTransitionsFromMigrationAwaitedDataprovider")
-    public void shouldDetectInvalidTransitionsFromMigrationAwaited(VirtualVehicleState state)
+    void shouldDetectInvalidTransitionsFromMigrationAwaited(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_AWAITED_SND.canTraverseTo(state);
         assertThat(result).isFalse();
@@ -204,7 +204,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("validTransitionsFromMigratingDataprovider")
-    public void shouldDetectValidTransitionsFromMigrating(VirtualVehicleState state)
+    void shouldDetectValidTransitionsFromMigrating(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATING_SND.canTraverseTo(state);
         assertThat(result).isTrue();
@@ -226,7 +226,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("invalidTransitionsFromMigratingDataprovider")
-    public void shouldDetectInvalidTransitionsFromMigrating(VirtualVehicleState state)
+    void shouldDetectInvalidTransitionsFromMigrating(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATING_SND.canTraverseTo(state);
         assertThat(result).isFalse();
@@ -245,7 +245,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("validTransitionsFromMigrationInterruptedDataprovider")
-    public void shouldDetectValidTransitionsFromMigrationInterrupted(VirtualVehicleState state)
+    void shouldDetectValidTransitionsFromMigrationInterrupted(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_INTERRUPTED_SND.canTraverseTo(state);
         assertThat(result).isTrue();
@@ -267,7 +267,7 @@ public class VirtualVehicleStateTest
 
     @ParameterizedTest
     @MethodSource("invalidTransitionsFromMigrationInterruptedDataprovider")
-    public void shouldDetectInvalidTransitionsFromMigrationInterrupted(VirtualVehicleState state)
+    void shouldDetectInvalidTransitionsFromMigrationInterrupted(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_INTERRUPTED_SND.canTraverseTo(state);
         assertThat(result).isFalse();
@@ -296,7 +296,7 @@ public class VirtualVehicleStateTest
      */
     @ParameterizedTest
     @MethodSource("allStatesDataprovider")
-    public void shouldDetectInvalidTransitionsFromMigrationCompleted(VirtualVehicleState state)
+    void shouldDetectInvalidTransitionsFromMigrationCompleted(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.MIGRATION_COMPLETED_SND.canTraverseTo(state);
         assertThat(result).isFalse();
@@ -307,7 +307,7 @@ public class VirtualVehicleStateTest
      */
     @ParameterizedTest
     @MethodSource("allStatesDataprovider")
-    public void shouldDetectInvalidTransitionsFromFinished(VirtualVehicleState state)
+    void shouldDetectInvalidTransitionsFromFinished(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.FINISHED.canTraverseTo(state);
         assertThat(result).isFalse();
@@ -318,7 +318,7 @@ public class VirtualVehicleStateTest
      */
     @ParameterizedTest
     @MethodSource("allStatesDataprovider")
-    public void shouldDetectValidTransitionsFromInterrupted(VirtualVehicleState state)
+    void shouldDetectValidTransitionsFromInterrupted(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.INTERRUPTED.canTraverseTo(state);
         assertThat(result).isTrue();
@@ -329,7 +329,7 @@ public class VirtualVehicleStateTest
      */
     @ParameterizedTest
     @MethodSource("allStatesDataprovider")
-    public void shouldDetectValidTransitionsFromTaskCompletionAwaited(VirtualVehicleState state)
+    void shouldDetectValidTransitionsFromTaskCompletionAwaited(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.TASK_COMPLETION_AWAITED.canTraverseTo(state);
         assertThat(result).isTrue();
@@ -340,7 +340,7 @@ public class VirtualVehicleStateTest
      */
     @ParameterizedTest
     @MethodSource("allStatesDataprovider")
-    public void shouldDetectInvalidTransitionsFromDefective(VirtualVehicleState state)
+    void shouldDetectInvalidTransitionsFromDefective(VirtualVehicleState state)
     {
         boolean result = VirtualVehicleState.DEFECTIVE.canTraverseTo(state);
         assertThat(result).isFalse();

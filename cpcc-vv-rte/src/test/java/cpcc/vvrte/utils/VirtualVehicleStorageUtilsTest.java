@@ -40,10 +40,10 @@ import sensor_msgs.Image;
 /**
  * VirtualVehicleStorageUtilsTest implementation.
  */
-public class VirtualVehicleStorageUtilsTest
+class VirtualVehicleStorageUtilsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VirtualVehicleStorageUtils> cnt = VirtualVehicleStorageUtils.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -52,7 +52,7 @@ public class VirtualVehicleStorageUtilsTest
     }
 
     @Test
-    public void shouldConvertItemToRosImage()
+    void shouldConvertItemToRosImage()
     {
         byte[] data = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 
@@ -100,7 +100,7 @@ public class VirtualVehicleStorageUtilsTest
 
     @ParameterizedTest
     @MethodSource("fakeImageDataProvider")
-    public void shouldFindOutIfItemIsAnImage(VirtualVehicleStorage item, boolean expected)
+    void shouldFindOutIfItemIsAnImage(VirtualVehicleStorage item, boolean expected)
     {
         boolean actual = VirtualVehicleStorageUtils.isItemAnImage(item);
 

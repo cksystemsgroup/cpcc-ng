@@ -64,7 +64,7 @@ import cpcc.vvrte.services.json.VvGeoJsonConverter;
 import cpcc.vvrte.services.json.VvGeoJsonConverterImpl;
 import sensor_msgs.NavSatFix;
 
-public class StateServiceTest
+class StateServiceTest
 {
     private static final double POSITION_ALTITUDE_1 = 4.5;
     private static final double POSITION_LONGITUDE_1 = 6.7;
@@ -103,7 +103,7 @@ public class StateServiceTest
     private TimeService timeService;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         Map<VirtualVehicleState, Integer> vvStats = new HashMap<>();
         vvStats.put(VirtualVehicleState.DEFECTIVE, 1230);
@@ -352,7 +352,7 @@ public class StateServiceTest
 
     @ParameterizedTest
     @MethodSource("stateDataProvider")
-    public void shouldGetStateAsFeatureCollection(String what, long now, String expected)
+    void shouldGetStateAsFeatureCollection(String what, long now, String expected)
         throws IOException, JSONException
     {
         when(timeService.currentTimeMillis()).thenReturn(now);

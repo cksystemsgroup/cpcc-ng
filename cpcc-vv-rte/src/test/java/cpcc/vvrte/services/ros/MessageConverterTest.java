@@ -43,12 +43,12 @@ import org.mozilla.javascript.ScriptableObject;
 /**
  * MessageConverterTest
  */
-public class MessageConverterTest
+class MessageConverterTest
 {
     private MessageConverter conv;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         conv = new MessageConverterImpl();
     }
@@ -65,7 +65,7 @@ public class MessageConverterTest
 
     @ParameterizedTest
     @MethodSource("validFloatDataProvicer")
-    public void shouldConvertFloat32(float value)
+    void shouldConvertFloat32(float value)
     {
         std_msgs.Float32 msg = mock(std_msgs.Float32.class);
         when(msg.toString()).thenReturn("MessageImpl<std_msgs/Float32>");
@@ -86,7 +86,7 @@ public class MessageConverterTest
 
     @ParameterizedTest
     @MethodSource("validNavSatFixDataProvicer")
-    public void shouldConvertNavSatFix(double lat, double lon, double alt, double[] cov, byte covType, byte statusByte,
+    void shouldConvertNavSatFix(double lat, double lon, double alt, double[] cov, byte covType, byte statusByte,
         short service)
     {
         sensor_msgs.NavSatStatus status = mock(sensor_msgs.NavSatStatus.class);
@@ -120,8 +120,7 @@ public class MessageConverterTest
 
     @ParameterizedTest
     @MethodSource("validImageDataProvider")
-    public void shouldConvertImage(String encoding, int height, int width, int step, final byte[] bufArray,
-        int bufOffset)
+    void shouldConvertImage(String encoding, int height, int width, int step, final byte[] bufArray, int bufOffset)
     {
         byte[] data = Arrays.copyOfRange(bufArray, bufOffset, bufArray.length);
 
@@ -160,7 +159,7 @@ public class MessageConverterTest
     }
 
     @Test
-    public void shouldNotConvertUnknownMessageType()
+    void shouldNotConvertUnknownMessageType()
     {
         std_msgs.Header msg = mock(std_msgs.Header.class);
 

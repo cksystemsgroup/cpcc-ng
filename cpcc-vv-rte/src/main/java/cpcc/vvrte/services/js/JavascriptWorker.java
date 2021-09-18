@@ -41,6 +41,7 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.serialize.ScriptableInputStream;
 import org.mozilla.javascript.serialize.ScriptableOutputStream;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.utils.ExceptionFormatter;
 import cpcc.vvrte.entities.VirtualVehicle;
@@ -52,11 +53,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class JavascriptWorker extends Thread
 {
-    private static final String DEFECTIVE_VV = "Defective: VV={} ({} / {})";
+    private static final Logger LOG = LoggerFactory.getLogger(JavascriptWorker.class);
 
+    private static final String DEFECTIVE_VV = "Defective: VV={} ({} / {})";
     private static final String VVRTE_API_FORMAT = "vvrte-api-%1$03d.js";
 
-    private Logger logger;
     private ServiceResources serviceResources;
     private VirtualVehicleState workerState;
     private String script;
@@ -71,16 +72,13 @@ public class JavascriptWorker extends Thread
     /**
      * @param vehicle the Virtual Vehicle.
      * @param useContinuation true if the available continuation data should be applied.
-     * @param logger the application logger.
      * @param serviceResources the service resources instance.
      * @param allowedClassesRegex the additionally allowed class names as a regular expression.
      * @throws IOException in case of errors.
      */
-    public JavascriptWorker(VirtualVehicle vehicle, boolean useContinuation, Logger logger,
-        ServiceResources serviceResources, Set<String> allowedClassesRegex)
-        throws IOException
+    public JavascriptWorker(VirtualVehicle vehicle, boolean useContinuation, ServiceResources serviceResources,
+        Set<String> allowedClassesRegex) throws IOException
     {
-        this.logger = logger;
         this.serviceResources = serviceResources;
         this.allowedClassesRegex = allowedClassesRegex;
         this.vehicle = vehicle;
@@ -152,13 +150,13 @@ public class JavascriptWorker extends Thread
             }
 
             result = Context.toString(resultObj);
-            logger.info("Result obj: {}", result);
+            LOG.info("Result obj: {}", result);
 
             changeState(sessionManager, VirtualVehicleState.FINISHED);
         }
         catch (ContinuationPending cp)
         {
-            logger.info("Application State {}", cp.getApplicationState());
+            LOG.info("Application State {}", cp.getApplicationState());
             applicationState = (ApplicationState) cp.getApplicationState();
             try
             {
@@ -180,11 +178,11 @@ public class JavascriptWorker extends Thread
                     changeState(sessionManager, VirtualVehicleState.INTERRUPTED);
                 }
 
-                logger.info("snapshot is {} bytes long.", snapshot.length);
+                LOG.info("snapshot is {} bytes long.", snapshot.length);
             }
             catch (IOException e)
             {
-                logger.error(DEFECTIVE_VV, vehicle.getName(), vehicle.getId(), vehicle.getUuid(), e);
+                LOG.error(DEFECTIVE_VV, vehicle.getName(), vehicle.getId(), vehicle.getUuid(), e);
                 result = ExceptionFormatter.toString(e);
                 snapshot = null;
                 changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
@@ -192,7 +190,7 @@ public class JavascriptWorker extends Thread
         }
         catch (RhinoException e)
         {
-            logger.error(DEFECTIVE_VV, vehicle.getName(), vehicle.getId(), vehicle.getUuid(), e);
+            LOG.error(DEFECTIVE_VV, vehicle.getName(), vehicle.getId(), vehicle.getUuid(), e);
 
             result = e.getMessage() + ", line=" + (e.lineNumber() - scriptStartLine) + ":" + e.columnNumber()
                 + ", source='" + e.lineSource() + "'";
@@ -200,7 +198,7 @@ public class JavascriptWorker extends Thread
         }
         catch (ClassNotFoundException | IOException | NoSuchMethodError e)
         {
-            logger.error(DEFECTIVE_VV, vehicle.getName(), vehicle.getId(), vehicle.getUuid(), e);
+            LOG.error(DEFECTIVE_VV, vehicle.getName(), vehicle.getId(), vehicle.getUuid(), e);
             result = ExceptionFormatter.toString(e);
             changeState(sessionManager, VirtualVehicleState.DEFECTIVE);
         }

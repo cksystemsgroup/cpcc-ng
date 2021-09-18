@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import org.apache.tapestry5.StreamResponse;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.utils.PngImageStreamResponse;
 import cpcc.ros.services.RosImageConverter;
@@ -37,8 +38,7 @@ import cpcc.vvrte.utils.VirtualVehicleStorageUtils;
  */
 public class VvStorageImage
 {
-    @Inject
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(VvStorageImage.class);
 
     @Inject
     private VvRteRepository vvRteRepo;
@@ -51,7 +51,7 @@ public class VvStorageImage
      * @param storageId the identification of the stored item.
      * @return the currently available camera snapshot as <code>StreamResponse</code> image.
      */
-    public StreamResponse onActivate(Integer time, Integer storageId)
+    public StreamResponse onActivate(Long time, Integer storageId)
     {
         VirtualVehicleStorage item = vvRteRepo.findStorageItemById(storageId);
         sensor_msgs.Image image = VirtualVehicleStorageUtils.itemToRosImageMessage(item);
@@ -63,7 +63,7 @@ public class VvStorageImage
         }
         catch (IOException e)
         {
-            logger.error("Can not convert image to StreamResponse.", e);
+            LOG.error("Can not convert image to StreamResponse.", e);
             return new PngImageStreamResponse();
         }
     }

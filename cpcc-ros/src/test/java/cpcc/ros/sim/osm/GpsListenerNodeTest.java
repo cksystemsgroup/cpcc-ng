@@ -27,16 +27,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
-import org.slf4j.Logger;
 
 import cpcc.ros.sim.AnonymousNodeMain;
 import sensor_msgs.NavSatFix;
 
-public class GpsListenerNodeTest
+class GpsListenerNodeTest
 {
     private static final String LISTEN_TOPIC = "/topicRoot";
 
-    private Logger logger;
     private GpsListenerNode sut;
     private Configuration config;
     private ConnectedNode connectedNode;
@@ -45,10 +43,8 @@ public class GpsListenerNodeTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
-        logger = mock(Logger.class);
-
         config = mock(Configuration.class);
         when(config.getGpsTopic()).thenReturn(LISTEN_TOPIC);
 
@@ -60,11 +56,11 @@ public class GpsListenerNodeTest
 
         publisherNode = mock(ImagePublisherNode.class);
 
-        sut = new GpsListenerNode(logger, config, publisherNode);
+        sut = new GpsListenerNode(config, publisherNode);
     }
 
     @Test
-    public void shouldStartNode() throws InterruptedException
+    void shouldStartNode() throws InterruptedException
     {
         sut.onStart(connectedNode);
 
@@ -73,7 +69,7 @@ public class GpsListenerNodeTest
     }
 
     @Test
-    public void shouldPublishMessage()
+    void shouldPublishMessage()
     {
         NavSatFix message = mock(NavSatFix.class);
 
@@ -85,7 +81,7 @@ public class GpsListenerNodeTest
     }
 
     @Test
-    public void shouldHaveDefaultNodeName()
+    void shouldHaveDefaultNodeName()
     {
         assertThat(sut.getDefaultNodeName().toString()).matches("anonymous_\\d+");
     }

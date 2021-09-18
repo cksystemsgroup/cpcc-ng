@@ -24,10 +24,10 @@ import java.lang.reflect.Constructor;
 
 import org.junit.jupiter.api.Test;
 
-public class CoreConstantsTest
+class CoreConstantsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<CoreConstants> cnt = CoreConstants.class.getDeclaredConstructor();
 

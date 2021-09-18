@@ -49,7 +49,7 @@ import cpcc.core.services.RealVehicleRepository;
 /**
  * Configuration synchronization job runnable test.
  */
-public class ConfigSyncJobRunnableTest
+class ConfigSyncJobRunnableTest
 {
 
     private final static String EXPECTED_RESULT = "{\"rvs\":["
@@ -89,7 +89,7 @@ public class ConfigSyncJobRunnableTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sd01 = mock(SensorDefinition.class);
         when(sd01.getId()).thenReturn(1111);
@@ -171,7 +171,7 @@ public class ConfigSyncJobRunnableTest
     }
 
     @Test
-    public void shouldPrepareSyncData() throws Exception
+    void shouldPrepareSyncData() throws Exception
     {
         sut.run();
 
@@ -179,7 +179,7 @@ public class ConfigSyncJobRunnableTest
             argThat(new DataArgumentMatcher()));
     }
 
-    private class DataArgumentMatcher implements ArgumentMatcher<byte[]>
+    private static class DataArgumentMatcher implements ArgumentMatcher<byte[]>
     {
         @Override
         public boolean matches(byte[] argument)

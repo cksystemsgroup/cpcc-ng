@@ -26,10 +26,10 @@ import org.junit.jupiter.api.Test;
 
 import cpcc.vvrte.base.VvRteConstants;
 
-public class VvRteConstantsTest
+class VvRteConstantsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VvRteConstants> cnt = VvRteConstants.class.getDeclaredConstructor();
 

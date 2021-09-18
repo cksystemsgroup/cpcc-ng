@@ -28,6 +28,7 @@ public class SensorNew extends AbstractModifySensor
     void onPrepare()
     {
         sensor = new SensorDefinition();
+        sensor.setDeleted(false);
     }
 
     /**

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.Job;
 import cpcc.core.services.jobs.JobRunnable;
@@ -34,11 +35,13 @@ import cpcc.vvrte.base.VvRteConstants;
  */
 public class VvRteJobRunnableFactory implements JobRunnableFactory
 {
+    private static final Logger LOG = LoggerFactory.getLogger(VvRteJobRunnableFactory.class);
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public JobRunnable createRunnable(Logger logger, ServiceResources serviceResources, Job job)
+    public JobRunnable createRunnable(ServiceResources serviceResources, Job job)
     {
         Map<String, String> parameters = new HashMap<>();
 
@@ -52,17 +55,17 @@ public class VvRteJobRunnableFactory implements JobRunnableFactory
 
         if (VvRteConstants.MIGRATION_MODE_SEND.equals(mode))
         {
-            return new MigrationSendJobRunnable(logger, serviceResources, parameters, job.getData());
+            return new MigrationSendJobRunnable(serviceResources, parameters, job.getData());
         }
 
         if (VvRteConstants.MIGRATION_MODE_SEND_ACK.equals(mode))
         {
-            return new MigrationSendAckJobRunnable(logger, serviceResources, parameters, job.getData());
+            return new MigrationSendAckJobRunnable(serviceResources, parameters, job.getData());
         }
 
         if (VvRteConstants.MIGRATION_MODE_RECEIVE.equals(mode))
         {
-            return new MigrationReceiveJobRunnable(logger, serviceResources, job.getData());
+            return new MigrationReceiveJobRunnable(serviceResources, job.getData());
         }
 
         if (VvRteConstants.STUCK_MIGRATIONS_MODE.equals(mode))
@@ -70,8 +73,7 @@ public class VvRteJobRunnableFactory implements JobRunnableFactory
             return new StuckMigrationsJobRunnable(serviceResources);
         }
 
-        logger.error("VvRteJobRunnableFactory: Can not create a runnable for mode {} parameters are {}",
-            mode, parameters);
+        LOG.error("VvRteJobRunnableFactory: Can not create a runnable for mode {} parameters are {}", mode, parameters);
         return null;
     }
 }

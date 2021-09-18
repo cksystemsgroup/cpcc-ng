@@ -21,6 +21,7 @@ package cpcc.rv.base.services;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.services.RealVehicleRepository;
@@ -31,16 +32,16 @@ import cpcc.core.services.jobs.JobRunnable;
  */
 public class RealVehicleInitJobRunnable implements JobRunnable
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(RealVehicleInitJobRunnable.class);
+
     private ServiceResources serviceResources;
+    private boolean succeeded = false;
 
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      */
-    public RealVehicleInitJobRunnable(Logger logger, ServiceResources serviceResources)
+    public RealVehicleInitJobRunnable(ServiceResources serviceResources)
     {
-        this.logger = logger;
         this.serviceResources = serviceResources;
     }
 
@@ -53,20 +54,30 @@ public class RealVehicleInitJobRunnable implements JobRunnable
         RealVehicleRepository rvRepo = serviceResources.getService(RealVehicleRepository.class);
         HibernateSessionManager sessionManager = serviceResources.getService(HibernateSessionManager.class);
 
-        logger.info("Cleaning up old real vehicle states");
+        LOG.info("Cleaning up old real vehicle states");
         rvRepo.cleanupOldVehicleStates();
         sessionManager.commit();
 
         RealVehicle myself = rvRepo.findOwnRealVehicle();
         if (myself != null)
         {
-            logger.info("Found own vehicle name: {}, id={}. Initialization already complete.",
+            LOG.info("Found own vehicle name: {}, id={}. Initialization already complete.",
                 myself.getName(), myself.getId());
+            succeeded = true;
             return;
         }
 
-        logger.error("Own vehicle name not configured!");
+        LOG.error("Own vehicle name not configured!");
         SetupService setup = serviceResources.getService(SetupService.class);
         setup.setupRealVehicle();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean executionSucceeded()
+    {
+        return succeeded;
     }
 }

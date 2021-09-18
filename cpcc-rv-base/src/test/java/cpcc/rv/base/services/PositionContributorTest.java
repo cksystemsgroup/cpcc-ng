@@ -53,7 +53,7 @@ import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.Task;
 
-public class PositionContributorTest
+class PositionContributorTest
 {
     private static final long NOW = 1000000000L;
     private static final long NEW_TIME = NOW - 1L;
@@ -64,7 +64,7 @@ public class PositionContributorTest
     private PositionContributor sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         timeService = mock(TimeService.class);
         when(timeService.currentTimeMillis()).thenReturn(NOW);
@@ -75,7 +75,7 @@ public class PositionContributorTest
     }
 
     @Test
-    public void shouldNotContributeOnNullPosition()
+    void shouldNotContributeOnNullPosition()
     {
         FeatureCollection featureCollection = mock(FeatureCollection.class);
 
@@ -111,8 +111,7 @@ public class PositionContributorTest
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"UNKNOWN\",\"rvName\":\"unknown\",\"rvState\":\"none\",\"rvHeading\":0,"
                 + "\"rvId\":-1,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
-                + "}"
-            ),
+                + "}"),
 
             arguments(rv01, rvs01, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
@@ -121,8 +120,7 @@ public class PositionContributorTest
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
-                + "}"
-            ),
+                + "}"),
 
             arguments(rv01, rvs02, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
@@ -131,8 +129,7 @@ public class PositionContributorTest
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
-                + "}"
-            ),
+                + "}"),
 
             arguments(rv01, null, Collections.<Task> emptyList(), "{"
                 + "\"type\":\"Feature\","
@@ -141,8 +138,7 @@ public class PositionContributorTest
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"idle\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
-                + "}"
-            ),
+                + "}"),
 
             arguments(rv01, rvs01, Arrays.asList(task1), "{"
                 + "\"type\":\"Feature\","
@@ -151,13 +147,12 @@ public class PositionContributorTest
                 + "\"rvPosition\":{\"coordinates\":[111.1,222.2,333.3]},"
                 + "\"rvType\":\"BOAT\",\"rvName\":\"RV01\",\"rvState\":\"busy\",\"rvHeading\":0,"
                 + "\"rvId\":12345,\"type\":\"rvPosition\",\"rvTime\":1000000000}"
-                + "}"
-            ));
+                + "}"));
     }
 
     @ParameterizedTest
     @MethodSource("realVehicleDataProvider")
-    public void shouldContribute(RealVehicle realVehicle, RealVehicleState state, List<Task> taskList, String expected)
+    void shouldContribute(RealVehicle realVehicle, RealVehicleState state, List<Task> taskList, String expected)
         throws JsonProcessingException, JSONException
     {
         PolarCoordinate position = new PolarCoordinate(222.2, 111.1, 333.3);

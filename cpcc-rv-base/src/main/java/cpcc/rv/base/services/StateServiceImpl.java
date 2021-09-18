@@ -121,7 +121,7 @@ public class StateServiceImpl implements StateService
             .filter(sd -> sd.getType() == SensorType.GPS)
             .map(sd -> rns.findAdapterNodeBySensorDefinitionId(sd.getId()))
             .filter(Objects::nonNull)
-            .filter(adapter -> adapter instanceof AbstractSensorAdapter)
+            .filter(AbstractSensorAdapter.class::isInstance)
             .map(adapter -> ((AbstractGpsSensorAdapter) adapter).getPosition())
             .filter(Objects::nonNull)
             .map(pos -> new PolarCoordinate(pos.getLatitude(), pos.getLongitude(), pos.getAltitude()))

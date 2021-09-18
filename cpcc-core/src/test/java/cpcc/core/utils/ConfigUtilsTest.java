@@ -39,10 +39,10 @@ import cpcc.core.entities.PolarCoordinate;
 /**
  * ConfigUtilsTest
  */
-public class ConfigUtilsTest
+class ConfigUtilsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<ConfigUtils> cnt = ConfigUtils.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -77,7 +77,7 @@ public class ConfigUtilsTest
 
     @ParameterizedTest
     @MethodSource("stringConfigDataProvider")
-    public void shouldParseString(String propertyName, int index, String defaultValue, String expectedResult)
+    void shouldParseString(String propertyName, int index, String defaultValue, String expectedResult)
     {
         assertThat(ConfigUtils.parseString(stringConfig, propertyName, index, defaultValue)).isEqualTo(expectedResult);
     }
@@ -101,7 +101,7 @@ public class ConfigUtilsTest
 
     @ParameterizedTest
     @MethodSource("doubleConfigDataProvider")
-    public void shouldParseDouble(String propertyName, int index, double defaultValue, double expectedResult)
+    void shouldParseDouble(String propertyName, int index, double defaultValue, double expectedResult)
     {
         assertThat(ConfigUtils.parseDouble(doubleConfig, propertyName, index, defaultValue)).isEqualTo(expectedResult);
     }
@@ -125,7 +125,7 @@ public class ConfigUtilsTest
 
     @ParameterizedTest
     @MethodSource("integerConfigDataProvider")
-    public void shouldParseInteger(String propertyName, int index, int defaultValue, int expectedResult)
+    void shouldParseInteger(String propertyName, int index, int defaultValue, int expectedResult)
     {
         assertThat(ConfigUtils.parseInteger(integerConfig, propertyName, index, defaultValue))
             .isEqualTo(expectedResult);
@@ -151,7 +151,7 @@ public class ConfigUtilsTest
 
     @ParameterizedTest
     @MethodSource("polarCoordinateDataProvider")
-    public void shouldParsePolarCoordinates(String propertyName, int startIndex, PolarCoordinate expectedResult)
+    void shouldParsePolarCoordinates(String propertyName, int startIndex, PolarCoordinate expectedResult)
     {
         PolarCoordinate actual = ConfigUtils.parsePolarCoordinate(polarCoordinateConfig, propertyName, startIndex);
         assertThat(actual.getLatitude()).isEqualTo(expectedResult.getLatitude());

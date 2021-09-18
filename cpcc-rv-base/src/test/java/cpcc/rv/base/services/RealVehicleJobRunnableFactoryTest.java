@@ -25,77 +25,74 @@ import static org.mockito.Mockito.when;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.Job;
 import cpcc.core.services.jobs.JobRunnable;
 
-public class RealVehicleJobRunnableFactoryTest
+class RealVehicleJobRunnableFactoryTest
 {
     private RealVehicleJobRunnableFactory sut;
     private ServiceResources serviceResources;
-    private Logger logger;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
-        logger = mock(Logger.class);
         serviceResources = mock(ServiceResources.class);
 
         sut = new RealVehicleJobRunnableFactory();
     }
 
     @Test
-    public void shouldCreateRealVehicleStateJobRunnable()
+    void shouldCreateRealVehicleStateJobRunnable()
     {
         Job job = mock(Job.class);
         when(job.getParameters()).thenReturn("mode=status,rv=2002");
 
-        JobRunnable actual = sut.createRunnable(logger, serviceResources, job);
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
 
         assertThat(actual).isNotNull().isInstanceOf(RealVehicleStateJobRunnable.class);
     }
 
     @Test
-    public void shouldCreateConfigSyncJobRunnable()
+    void shouldCreateConfigSyncJobRunnable()
     {
         Job job = mock(Job.class);
         when(job.getParameters()).thenReturn("mode=config,rv=2002");
 
-        JobRunnable actual = sut.createRunnable(logger, serviceResources, job);
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
 
         assertThat(actual).isNotNull().isInstanceOf(ConfigPushJobRunnable.class);
     }
 
     @Test
-    public void shouldCreateRealVehicleInitJobRunnable()
+    void shouldCreateRealVehicleInitJobRunnable()
     {
         Job job = mock(Job.class);
         when(job.getParameters()).thenReturn("mode=init");
 
-        JobRunnable actual = sut.createRunnable(logger, serviceResources, job);
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
 
         assertThat(actual).isNotNull().isInstanceOf(RealVehicleInitJobRunnable.class);
     }
 
     @Test
-    public void shouldCreateConfigImportJobRunnable()
+    void shouldCreateConfigImportJobRunnable()
     {
         Job job = mock(Job.class);
         when(job.getParameters()).thenReturn("mode=import");
 
-        JobRunnable actual = sut.createRunnable(logger, serviceResources, job);
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
 
         assertThat(actual).isNotNull().isInstanceOf(ConfigImportJobRunnable.class);
     }
 
     @Test
-    public void shouldReturnNullOnUnknownMode()
+    void shouldReturnNullOnUnknownMode()
     {
         Job job = mock(Job.class);
         when(job.getParameters()).thenReturn("mode=unknown,rv=2002");
 
-        JobRunnable actual = sut.createRunnable(logger, serviceResources, job);
+        JobRunnable actual = sut.createRunnable(serviceResources, job);
 
         assertThat(actual).isNull();
     }

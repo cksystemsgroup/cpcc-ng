@@ -46,7 +46,6 @@ import org.ros.master.client.SystemState;
 import org.ros.master.client.TopicSystemState;
 import org.ros.namespace.GraphName;
 import org.ros.node.NodeConfiguration;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.Device;
 import cpcc.core.entities.DeviceType;
@@ -62,7 +61,7 @@ import cpcc.ros.sensors.Float32SensorAdapter;
 import cpcc.ros.sim.RosNodeGroup;
 import cpcc.ros.sim.sonar.SonarEmulator;
 
-public class RosNodeServiceTest
+class RosNodeServiceTest
 {
     private QueryManager qm;
     private OptionsParserService optionsParser;
@@ -75,7 +74,6 @@ public class RosNodeServiceTest
     private DeviceType type8;
     private Topic topic10;
     private MappingAttributes mappingAttribute;
-    private Logger logger;
     private ObjectLocator objectLocator;
     private SonarEmulator sonarEmulator;
     private Float32SensorAdapter float32SensorAdapter;
@@ -83,7 +81,7 @@ public class RosNodeServiceTest
 
     @SuppressWarnings("serial")
     @BeforeEach
-    public void setupTest() throws URISyntaxException, IOException, ParseException
+    void setupTest() throws URISyntaxException, IOException, ParseException
     {
         final int port = 40000 + (int) (Math.random() * 10000.0);
         final String uriString = "http://localhost:" + port + "/";
@@ -161,8 +159,6 @@ public class RosNodeServiceTest
         optionsParser = mock(OptionsParserService.class);
         when(optionsParser.parseConfig("origin=471 gps='/mav01/gps'")).thenReturn(options);
 
-        logger = mock(Logger.class);
-
         sonarEmulatorNodeConfiguration = mock(NodeConfiguration.class);
         when(sonarEmulatorNodeConfiguration.getNodeName()).thenReturn(GraphName.of("/sonar"));
 
@@ -177,9 +173,9 @@ public class RosNodeServiceTest
     }
 
     @Test
-    public void shouldStartAndStopAndStartInternalRosCore()
+    void shouldStartAndStopAndStartInternalRosCore()
     {
-        RosNodeServiceImpl svc = new RosNodeServiceImpl(logger, qm, optionsParser, objectLocator);
+        RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser, objectLocator);
         assertThat(svc).isNotNull();
 
         MasterClient master = new MasterClient(masterServer);
@@ -220,9 +216,9 @@ public class RosNodeServiceTest
     }
 
     @Test
-    public void shouldRestartInternalRosCoreOnMasterUriChange()
+    void shouldRestartInternalRosCoreOnMasterUriChange()
     {
-        RosNodeServiceImpl svc = new RosNodeServiceImpl(logger, qm, optionsParser, objectLocator);
+        RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser, objectLocator);
         assertThat(svc).isNotNull();
 
         MasterClient master = new MasterClient(masterServer);
@@ -244,9 +240,9 @@ public class RosNodeServiceTest
     }
 
     @Test
-    public void shouldUpdateDevice() throws IOException, ParseException
+    void shouldUpdateDevice() throws IOException, ParseException
     {
-        RosNodeServiceImpl svc = new RosNodeServiceImpl(logger, qm, optionsParser, objectLocator);
+        RosNodeServiceImpl svc = new RosNodeServiceImpl(qm, optionsParser, objectLocator);
         assertThat(svc).isNotNull();
 
         Map<String, RosNodeGroup> deviceNodes = svc.getDeviceNodes();
@@ -260,7 +256,7 @@ public class RosNodeServiceTest
         svc.shutdownDevice(device21);
     }
 
-    public void shouldThrowIAEOnWreckedMasterURI()
+    void shouldThrowIAEOnWreckedMasterURI()
     {
         QueryManager qmi = mock(QueryManager.class);
         when(qmi.findParameterByName(Parameter.MASTER_SERVER_URI)).thenReturn(wrongMasterServerURI);
@@ -268,7 +264,7 @@ public class RosNodeServiceTest
 
         try
         {
-            new RosNodeServiceImpl(logger, qmi, optionsParser, objectLocator);
+            new RosNodeServiceImpl(qmi, optionsParser, objectLocator);
             failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
         }
         catch (IllegalArgumentException e)

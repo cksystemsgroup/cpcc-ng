@@ -35,14 +35,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * OptionsScannerTest
  */
-public class OptionsScannerTest
+class OptionsScannerTest
 {
     /**
      * @throws IOException thrown in case of errors.
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanOneOption() throws IOException
+    void shouldScanOneOption() throws IOException
     {
         Reader reader = new StringReader("bugger=LA_LA");
         OptionsScanner scanner = new OptionsScanner(reader);
@@ -74,7 +74,7 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanOneLiteralOption() throws IOException
+    void shouldScanOneLiteralOption() throws IOException
     {
         Reader reader = new StringReader("bugger=\"LA_LA\"");
         OptionsScanner scanner = new OptionsScanner(reader);
@@ -106,7 +106,7 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanMultipleOptions() throws IOException
+    void shouldScanMultipleOptions() throws IOException
     {
         Reader reader = new StringReader("bugger=lala\nbugger2=lala2");
         OptionsScanner scanner = new OptionsScanner(reader);
@@ -150,7 +150,7 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanOptionsLists() throws IOException
+    void shouldScanOptionsLists() throws IOException
     {
         Reader reader = new StringReader("bugger=(lala,blbla,'nix xx')\nbugger2=('lala2';'xxx')\n");
         OptionsScanner scanner = new OptionsScanner(reader);
@@ -234,7 +234,7 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanNumberOptions01() throws IOException
+    void shouldScanNumberOptions01() throws IOException
     {
         Reader reader = new StringReader("bugger=+3.14\nbugger2=99999");
         OptionsScanner scanner = new OptionsScanner(reader);
@@ -271,7 +271,7 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanNumberOptions02() throws IOException
+    void shouldScanNumberOptions02() throws IOException
     {
         Reader reader = new StringReader("bugger=lala looney=3.141592 caspar='xxx uu'");
         OptionsScanner scanner = new OptionsScanner(reader);
@@ -319,7 +319,7 @@ public class OptionsScannerTest
      * @throws ParseException thrown in case of errors.
      */
     @Test
-    public void shouldScanGpsCoordinates() throws IOException
+    void shouldScanGpsCoordinates() throws IOException
     {
         Reader reader = new StringReader("origin=(37.86644;-122.30954;0)");
         OptionsScanner scanner = new OptionsScanner(reader);
@@ -371,7 +371,7 @@ public class OptionsScannerTest
     }
 
     @Test
-    public void shouldScanMalformedIdentifier() throws IOException
+    void shouldScanMalformedIdentifier() throws IOException
     {
         Reader reader = new StringReader("orig#in=3");
         OptionsScanner scanner = new OptionsScanner(reader);
@@ -405,7 +405,7 @@ public class OptionsScannerTest
     }
 
     @Test
-    public void shouldScanIdentifier() throws IOException
+    void shouldScanIdentifier() throws IOException
     {
         Reader reader = new StringReader("orig");
         OptionsScanner scanner = new OptionsScanner(reader);
@@ -431,7 +431,7 @@ public class OptionsScannerTest
 
     @ParameterizedTest
     @MethodSource("literalDataProvider")
-    public void shouldScanLiteral(String string, Symbol sym, String scannedResult, Double number)
+    void shouldScanLiteral(String string, Symbol sym, String scannedResult, Double number)
         throws IOException
     {
         Reader reader = new StringReader(string);
@@ -458,9 +458,8 @@ public class OptionsScannerTest
 
     @ParameterizedTest
     @MethodSource("wreckedItemsProvider")
-    public void shouldNotScanUmlautAsItems(String string, Symbol sym, String scannedResult, Double number, int column,
-        int line)
-        throws IOException
+    void shouldNotScanUmlautAsItems(String string, Symbol sym, String scannedResult, Double number, int column,
+        int line) throws IOException
     {
         Reader reader = new StringReader(string);
         OptionsScanner scanner = new OptionsScanner(reader);

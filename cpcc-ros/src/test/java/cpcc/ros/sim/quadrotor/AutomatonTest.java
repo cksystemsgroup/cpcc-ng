@@ -26,31 +26,31 @@ import org.junit.jupiter.api.Test;
 /**
  * AutomatonTest
  */
-public class AutomatonTest
+class AutomatonTest
 {
     private Automaton automaton;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         automaton = new Automaton();
     }
 
     @Test
-    public void shouldInitializeToOffline()
+    void shouldInitializeToOffline()
     {
         assertThat(automaton.getCurrentState()).isEqualTo(State.OFFLINE);
     }
 
     @Test
-    public void shouldAllowValidTransitions()
+    void shouldAllowValidTransitions()
     {
         automaton.transition(Event.UNLOCK);
         assertThat(automaton.getCurrentState()).isEqualTo(State.READY);
     }
 
     @Test
-    public void shouldDenyInvalidTransitions()
+    void shouldDenyInvalidTransitions()
     {
         automaton.transition(Event.REACHED);
         assertThat(automaton.getCurrentState()).isEqualTo(State.OFFLINE);

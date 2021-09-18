@@ -29,12 +29,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class RealVehicleStateTest
+class RealVehicleStateTest
 {
     private RealVehicleState sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new RealVehicleState();
     }

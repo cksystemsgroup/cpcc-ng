@@ -31,18 +31,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class PropertyUtilsTest
+class PropertyUtilsTest
 {
     private Properties props;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         props = new Properties();
     }
 
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<PropertyUtils> cnt = PropertyUtils.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -61,7 +61,7 @@ public class PropertyUtilsTest
 
     @ParameterizedTest
     @MethodSource("booleanDataProvider")
-    public void shouldSetBooleanProperty(String key, Boolean data, String expected)
+    void shouldSetBooleanProperty(String key, Boolean data, String expected)
     {
         PropertyUtils.setProperty(props, key, data);
 
@@ -86,7 +86,7 @@ public class PropertyUtilsTest
 
     @ParameterizedTest
     @MethodSource("longDataProvider")
-    public void shouldSetLongProperty(String key, Long data, String expected)
+    void shouldSetLongProperty(String key, Long data, String expected)
     {
         PropertyUtils.setProperty(props, key, data);
 

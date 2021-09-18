@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.services.jobs.TimeService;
 import cpcc.vvrte.entities.Task;
@@ -39,6 +42,8 @@ import cpcc.vvrte.entities.Task;
  */
 public class HeldKarpTspSolver extends AbstractTspSolver
 {
+    private static final Logger LOG = LoggerFactory.getLogger(HeldKarpTspSolver.class);
+
     private static final long MAX_CALCULATION_TIME = 10000;
 
     private TimeService timeService;
@@ -76,7 +81,6 @@ public class HeldKarpTspSolver extends AbstractTspSolver
 
         if (pathIndices.isEmpty())
         {
-            // System.out.println("### Buggerit! " + position + ",  tasks=" + path + ", r=" + r);
             return path;
         }
 
@@ -244,7 +248,7 @@ public class HeldKarpTspSolver extends AbstractTspSolver
         {
             if (++chk > 1)
             {
-                System.out.println("computeHeldKarp: " + chk);
+                LOG.info("computeHeldKarp: {}", chk);
             }
 
             lowerBound = Double.MIN_VALUE;

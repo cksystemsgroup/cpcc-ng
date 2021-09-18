@@ -34,6 +34,7 @@ import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.mozilla.javascript.NativeObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
@@ -64,10 +65,11 @@ import sensor_msgs.NavSatFix;
  */
 public class TaskExecutionServiceImpl implements TaskExecutionService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(TaskExecutionServiceImpl.class);
+
     private Task currentRunningTask = null;
 
     private ServiceResources serviceResources;
-    private Logger logger;
     private TaskSchedulerService scheduler;
     private RosNodeService rosNodeService;
     private MessageConverter conv;
@@ -83,7 +85,6 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     private List<PolarCoordinate> depotPositions;
 
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param scheduler the scheduler instance.
      * @param rosNodeService the ROS node service instance.
@@ -91,16 +92,16 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
      * @param timeService the time service instance.
      * @param rvRepo the Real Vehicle repository instance.
      */
-    public TaskExecutionServiceImpl(Logger logger, ServiceResources serviceResources, TaskSchedulerService scheduler,
+    public TaskExecutionServiceImpl(ServiceResources serviceResources, TaskSchedulerService scheduler,
         RosNodeService rosNodeService, MessageConverter conv, TimeService timeService, RealVehicleRepository rvRepo)
     {
         this.serviceResources = serviceResources;
-        this.logger = logger;
         this.scheduler = scheduler;
         this.rosNodeService = rosNodeService;
         this.conv = conv;
         this.timeService = timeService;
         this.rvRepo = rvRepo;
+
         init();
     }
 
@@ -231,7 +232,7 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
             }
             catch (RuntimeException e)
             {
-                logger.error("Buggerit!", e);
+                LOG.error("Buggerit!", e);
             }
 
             if (completed)
@@ -253,19 +254,20 @@ public class TaskExecutionServiceImpl implements TaskExecutionService
     private void logUnfinishedTasks()
     {
         TaskRepository repo = serviceResources.getService(TaskRepository.class);
-        logger.info("Unfinished tasks: ;time;{};name;{};id;{};incompleteTasks;{}",
+        LOG.info("Unfinished tasks: ;time;{};name;{};id;{};incompleteTasks;{}",
             System.currentTimeMillis(), myself.getName(), myself.getId(), repo.countAllIncompleteTasks());
     }
 
     private void logExecutionCompleted(Task task, double distance)
     {
-        logger.info("Task executed: ;{};{};{};{};{};{};",
-            vvToString(task.getVehicle()),
-            dateFormatter(task.getCreationTime()),
-            dateFormatter(task.getExecutionStart()),
-            dateFormatter(task.getExecutionEnd()),
-            positionToString(task.getPosition()),
-            distance);
+        String vv = vvToString(task.getVehicle());
+        String creationTimeStr = dateFormatter(task.getCreationTime());
+        String executionStartStr = dateFormatter(task.getExecutionStart());
+        String executionEndStr = dateFormatter(task.getExecutionEnd());
+        String positionStr = positionToString(task.getPosition());
+
+        LOG.info("Task executed: ;{};{};{};{};{};{};",
+            vv, creationTimeStr, executionStartStr, executionEndStr, positionStr, distance);
     }
 
     private static String dateFormatter(Date date)

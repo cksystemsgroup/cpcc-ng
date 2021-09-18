@@ -39,7 +39,7 @@ import cpcc.ros.base.RosTopic;
 /**
  * AltimeterAdapterTest implementation.
  */
-public class AltimeterAdapterTest
+class AltimeterAdapterTest
 {
     private AltimeterAdapter sut;
     private ConnectedNode connectedNode;
@@ -49,7 +49,7 @@ public class AltimeterAdapterTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         message1 = mock(std_msgs.Float32.class);
         when(message1.getData()).thenReturn(3.456f);
@@ -67,14 +67,14 @@ public class AltimeterAdapterTest
     }
 
     @Test
-    public void shouldHaveCorrectType()
+    void shouldHaveCorrectType()
     {
         assertThat(sut.getType()).isEqualTo(SensorType.ALTIMETER);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void shouldHaveCurrentState()
+    void shouldHaveCurrentState()
     {
         Map<String, List<String>> actual = sut.getCurrentState();
 

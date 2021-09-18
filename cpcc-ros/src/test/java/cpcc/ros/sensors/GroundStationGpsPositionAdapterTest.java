@@ -41,7 +41,7 @@ import sensor_msgs.NavSatStatus;
 /**
  * GroundStationGpsPositionAdapterTest implementation.
  */
-public class GroundStationGpsPositionAdapterTest
+class GroundStationGpsPositionAdapterTest
 {
     private GroundStationGpsPositionAdapter sut;
     private ConnectedNode connectedNode;
@@ -54,7 +54,7 @@ public class GroundStationGpsPositionAdapterTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         config = new HashMap<>();
         config.put("origin", Arrays.asList("47.001", "13.002", "0.003"));
@@ -89,13 +89,13 @@ public class GroundStationGpsPositionAdapterTest
     }
 
     @Test
-    public void shouldHaveCorrectType()
+    void shouldHaveCorrectType()
     {
         assertThat(sut.getType()).isEqualTo(SensorType.GPS_RECEIVER);
     }
 
     @Test
-    public void shouldHaveCurrentState()
+    void shouldHaveCurrentState()
     {
         Map<String, List<String>> actual = sut.getCurrentState();
 
@@ -119,7 +119,7 @@ public class GroundStationGpsPositionAdapterTest
     }
 
     @Test
-    public void shouldThrowExceptionOnSetValue()
+    void shouldThrowExceptionOnSetValue()
     {
         try
         {
@@ -133,7 +133,7 @@ public class GroundStationGpsPositionAdapterTest
     }
 
     @Test
-    public void shouldSetPosition()
+    void shouldSetPosition()
     {
         sensor_msgs.NavSatFix position = mock(sensor_msgs.NavSatFix.class);
 

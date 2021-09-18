@@ -52,7 +52,6 @@ import org.mozilla.javascript.ContinuationPending;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
-import org.slf4j.Logger;
 
 import cpcc.vvrte.base.VirtualVehicleMappingDecision;
 import cpcc.vvrte.entities.VirtualVehicle;
@@ -61,20 +60,17 @@ import cpcc.vvrte.entities.VirtualVehicleState;
 /**
  * JavascriptServiceTest
  */
-// @Test(singleThreaded = true)
-public class JavascriptServiceTest
+class JavascriptServiceTest
 {
     private PerthreadManager perthreadManager;
     private HibernateSessionManager sessionManager;
     private ServiceResources serviceResources;
-    private Logger logger;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         perthreadManager = mock(PerthreadManager.class);
         sessionManager = mock(HibernateSessionManager.class);
-        logger = mock(Logger.class);
 
         serviceResources = mock(ServiceResources.class);
         when(serviceResources.getService(PerthreadManager.class)).thenReturn(perthreadManager);
@@ -82,7 +78,7 @@ public class JavascriptServiceTest
     }
 
     @Test
-    public void shouldExecuteSimpleJS() throws InterruptedException, IOException
+    void shouldExecuteSimpleJS() throws InterruptedException, IOException
     {
         VirtualVehicle vv = new VirtualVehicle();
         vv.setId(123);
@@ -90,7 +86,7 @@ public class JavascriptServiceTest
         vv.setApiVersion(1);
         vv.setUuid("27369070-a042-11e5-a35d-0f12a6b8b54e");
 
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
         JavascriptWorker sut = jss.createWorker(vv, false);
         MyWorkerStateListener workerListener = new MyWorkerStateListener();
         sut.addStateListener(workerListener);
@@ -106,7 +102,7 @@ public class JavascriptServiceTest
     }
 
     @Test
-    public void shouldNotExecuteNaughtyScript() throws InterruptedException, IOException
+    void shouldNotExecuteNaughtyScript() throws InterruptedException, IOException
     {
         VirtualVehicle vv = new VirtualVehicle();
         vv.setId(123);
@@ -114,7 +110,7 @@ public class JavascriptServiceTest
         vv.setApiVersion(1);
         vv.setUuid("599b7ada-a042-11e5-98b1-9767a13e60f2");
 
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
         JavascriptWorker sut = jss.createWorker(vv, false);
         sut.run();
 
@@ -127,7 +123,7 @@ public class JavascriptServiceTest
     }
 
     @Test
-    public void shouldDenyWrongApiVersion() throws InterruptedException, IOException
+    void shouldDenyWrongApiVersion() throws InterruptedException, IOException
     {
         VirtualVehicle vv = new VirtualVehicle();
         vv.setId(123);
@@ -135,7 +131,7 @@ public class JavascriptServiceTest
         vv.setApiVersion(1000);
         vv.setUuid("599bf294-a042-11e5-a552-abf9c5301b8b");
 
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
 
         try
         {
@@ -152,10 +148,10 @@ public class JavascriptServiceTest
     }
 
     @Test
-    public void shouldHandleVvRte() throws IOException, InterruptedException
+    void shouldHandleVvRte() throws IOException, InterruptedException
     {
         MyBuiltInFunctions functions = new MyBuiltInFunctions();
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, functions);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, functions);
         jss.addAllowedClassRegex("cpcc.vvrte.services.js.JavascriptServiceTest\\$MyBuiltInFunctions");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -202,10 +198,10 @@ public class JavascriptServiceTest
     }
 
     @Test
-    public void shouldHandleVvStorage() throws IOException
+    void shouldHandleVvStorage() throws IOException
     {
         MyBuiltInFunctions functions = new MyBuiltInFunctions();
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, functions);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, functions);
         jss.addAllowedClassRegex("cpcc.vvrte.services.js.JavascriptServiceTest\\$MyBuiltInFunctions");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -251,7 +247,7 @@ public class JavascriptServiceTest
 
     @ParameterizedTest
     @MethodSource("emptyScriptDataProvider")
-    public void shouldHandleEmptyScript(String script) throws IOException, InterruptedException
+    void shouldHandleEmptyScript(String script) throws IOException, InterruptedException
     {
         VirtualVehicle vv = new VirtualVehicle();
         vv.setId(123);
@@ -259,7 +255,7 @@ public class JavascriptServiceTest
         vv.setApiVersion(1);
         vv.setUuid("599d4f4a-a042-11e5-a1d0-474802529ab0");
 
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
         JavascriptWorker sut = jss.createWorker(vv, false);
         sut.run();
         assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.DEFECTIVE);
@@ -270,15 +266,19 @@ public class JavascriptServiceTest
 
     @ParameterizedTest
     @MethodSource("emptyScriptDataProvider")
-    public void shouldCompileEmptyScript(String script) throws IOException
+    void shouldCompileEmptyScript(String script) throws IOException
     {
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
+
         Object[] result = jss.codeVerification(script, 1);
-        assertThat(result).isNotNull().hasSize(0);
+
+        assertThat(result)
+            .isNotNull()
+            .isEmpty();
     }
 
     @Test
-    public void shouldHandleNullContinuation() throws InterruptedException, IOException
+    void shouldHandleNullContinuation() throws InterruptedException, IOException
     {
         VirtualVehicle vv = new VirtualVehicle();
         vv.setId(123);
@@ -287,7 +287,7 @@ public class JavascriptServiceTest
         vv.setContinuation(null);
         vv.setUuid("599d9932-a042-11e5-911b-f785d3884ce0");
 
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
         JavascriptWorker sut = jss.createWorker(vv, true);
         sut.run();
         assertThat(sut.getWorkerState()).isNotNull().isEqualTo(VirtualVehicleState.DEFECTIVE);
@@ -297,7 +297,7 @@ public class JavascriptServiceTest
     }
 
     @Test
-    public void shouldReturnScriptWithApiPrefix() throws IOException
+    void shouldReturnScriptWithApiPrefix() throws IOException
     {
         String script = "function f(x){return x+1} f(7)";
 
@@ -307,7 +307,7 @@ public class JavascriptServiceTest
         vv.setApiVersion(1);
         vv.setUuid("599ddad2-a042-11e5-ab97-e3af3b4f34e8");
 
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
         JavascriptWorker sut = jss.createWorker(vv, false);
         assertThat(sut.getScript()).isNotNull().endsWith(script + "\n})();");
 
@@ -316,10 +316,10 @@ public class JavascriptServiceTest
     }
 
     @Test
-    public void shouldNotCompileErroneousScript() throws IOException
+    void shouldNotCompileErroneousScript() throws IOException
     {
         String script = "var x = 0;\nx x x";
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
         Object[] result = jss.codeVerification(script, 1);
         assertThat(result).isNotNull().hasSize(4);
 
@@ -338,12 +338,16 @@ public class JavascriptServiceTest
     }
 
     @Test
-    public void shouldCompileProperScript() throws IOException
+    void shouldCompileProperScript() throws IOException
     {
         String script = "function f(x){return x+1} f(7)";
-        JavascriptService jss = new JavascriptServiceImpl(logger, serviceResources, null);
+        JavascriptService jss = new JavascriptServiceImpl(serviceResources, null);
+
         Object[] result = jss.codeVerification(script, 1);
-        assertThat(result).isNotNull().hasSize(0);
+
+        assertThat(result)
+            .isNotNull()
+            .isEmpty();
 
         verifyNoInteractions(perthreadManager);
     }

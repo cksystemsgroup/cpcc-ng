@@ -44,12 +44,11 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.Job;
 import cpcc.core.entities.JobStatus;
 
-public class JobQueueTest
+class JobQueueTest
 {
     private static final int QUICK_JOB_ID = 101;
     private static final int SLOW_JOB_ID = 202;
@@ -72,13 +71,10 @@ public class JobQueueTest
     private ServiceResources serviceResources;
     private PerthreadManager perthreadManager;
     private JobRepository jobRepository;
-    private Logger logger;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
-        logger = mock(Logger.class);
-
         jobEnded = false;
         numberOfPoolThreads = 3;
 
@@ -145,15 +141,15 @@ public class JobQueueTest
         when(serviceResources.getService(JobRepository.class)).thenReturn(jobRepository);
 
         factory = mock(JobRunnableFactory.class);
-        when(factory.createRunnable(logger, serviceResources, quickJob)).thenReturn(quickJobRunnable);
-        when(factory.createRunnable(logger, serviceResources, slowJob)).thenReturn(slowJobRunnable);
+        when(factory.createRunnable(serviceResources, quickJob)).thenReturn(quickJobRunnable);
+        when(factory.createRunnable(serviceResources, slowJob)).thenReturn(slowJobRunnable);
 
-        sut = new JobQueue("JQ", logger, sessionManager, timeService, Arrays.asList(factory), numberOfPoolThreads);
+        sut = new JobQueue("JQ", sessionManager, timeService, Arrays.asList(factory), numberOfPoolThreads);
         sut.setServiceResources(serviceResources);
     }
 
     @Test
-    public void shouldExecuteJob() throws JobExecutionException, InterruptedException
+    void shouldExecuteJob() throws JobExecutionException, InterruptedException
     {
         sut.execute(quickJob);
 
@@ -185,7 +181,7 @@ public class JobQueueTest
     }
 
     @Test
-    public void shouldThrowExceptionIfJobAlreadyRuns() throws JobExecutionException
+    void shouldThrowExceptionIfJobAlreadyRuns() throws JobExecutionException
     {
         sut.execute(slowJob);
 
@@ -198,7 +194,7 @@ public class JobQueueTest
     }
 
     @Test
-    public void shouldReExecuteAnAlreadyFinishedJob() throws Exception
+    void shouldReExecuteAnAlreadyFinishedJob() throws Exception
     {
         Job reusableJob = new Job();
         reusableJob.setId(REUSABLE_JOB_ID);
@@ -207,7 +203,7 @@ public class JobQueueTest
 
         JobRunnable reusableJobRunnable = mock(JobRunnable.class);
 
-        when(factory.createRunnable(logger, serviceResources, reusableJob)).thenReturn(reusableJobRunnable);
+        when(factory.createRunnable(serviceResources, reusableJob)).thenReturn(reusableJobRunnable);
 
         sut.execute(reusableJob);
 

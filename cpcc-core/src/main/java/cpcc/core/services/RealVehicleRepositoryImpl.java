@@ -21,9 +21,7 @@ package cpcc.core.services;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.criterion.Property;
-import org.hibernate.criterion.Restrictions;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 
 import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
@@ -40,24 +38,23 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
 
     private static final String LAST_UPDATE = "lastUpdate";
     private static final String TYPE = "type";
-    private static final String DELETED = "deleted";
     private static final String ID = "id";
-    private static final String REAL_VEHICLE_NAME = "name";
-    private static final String REAL_VEHICLE_URL = "url";
+    private static final String NAME = "name";
+    private static final String URL = "url";
 
-    private Session session;
+    private HibernateSessionManager sessionManager;
     private QueryManager qm;
     private TimeService timeService;
     private long connectionTimeout;
 
     /**
-     * @param session the Hibernate {@link Session}
+     * @param sessionManager the Hibernate session manager {@link HibernateSessionManager}
      * @param qm the query manager instance.
      * @param timeService the time service instance.
      */
-    public RealVehicleRepositoryImpl(Session session, QueryManager qm, TimeService timeService)
+    public RealVehicleRepositoryImpl(HibernateSessionManager sessionManager, QueryManager qm, TimeService timeService)
     {
-        this.session = session;
+        this.sessionManager = sessionManager;
         this.qm = qm;
         this.timeService = timeService;
         this.connectionTimeout = 10000L;
@@ -66,47 +63,40 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<RealVehicle> findAllRealVehicles()
     {
-        return session
-            .createCriteria(RealVehicle.class)
-            .addOrder(Property.forName(ID).asc())
+        return sessionManager.getSession()
+            .createQuery("FROM RealVehicle ORDER BY id", RealVehicle.class)
             .list();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<RealVehicle> findAllActiveRealVehicles()
     {
-        return session
-            .createCriteria(RealVehicle.class)
-            .add(Restrictions.eq(DELETED, Boolean.FALSE))
-            .addOrder(Property.forName(ID).asc())
+        return sessionManager.getSession()
+            .createQuery("FROM RealVehicle WHERE deleted = FALSE ORDER BY id", RealVehicle.class)
             .list();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<RealVehicle> findAllGroundStations()
     {
-        return session
-            .createCriteria(RealVehicle.class, "rv")
-            .add(Restrictions.eq(TYPE, RealVehicleType.GROUND_STATION))
+        return sessionManager.getSession()
+            .createQuery("FROM RealVehicle WHERE type = :type", RealVehicle.class)
+            .setParameter(TYPE, RealVehicleType.GROUND_STATION)
             .list();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<RealVehicle> findAllActiveRealVehiclesExceptOwn()
     {
@@ -116,37 +106,32 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
             return findAllActiveRealVehicles();
         }
 
-        return session
-            .createCriteria(RealVehicle.class)
-            .add(Restrictions.not(Restrictions.eq(REAL_VEHICLE_NAME, rvNameParam.getValue())))
-            .add(Restrictions.eq(DELETED, Boolean.FALSE))
+        return sessionManager.getSession()
+            .createQuery("FROM RealVehicle WHERE deleted = FALSE AND name != :name", RealVehicle.class)
+            .setParameter(NAME, rvNameParam.getValue())
             .list();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<RealVehicle> findAllRealVehiclesOrderByName()
     {
-        return session
-            .createCriteria(RealVehicle.class)
-            .addOrder(Property.forName(REAL_VEHICLE_NAME).asc())
+        return sessionManager.getSession()
+            .createQuery("FROM RealVehicle ORDER BY name", RealVehicle.class)
             .list();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public RealVehicle findRealVehicleByName(String name)
     {
-        List<RealVehicle> rvList = session
-            .createCriteria(RealVehicle.class)
-            .add(Restrictions.eq(REAL_VEHICLE_NAME, name))
-            .add(Restrictions.eq(DELETED, Boolean.FALSE))
+        List<RealVehicle> rvList = sessionManager.getSession()
+            .createQuery("FROM RealVehicle WHERE name = :name AND deleted = FALSE", RealVehicle.class)
+            .setParameter(NAME, name)
             .list();
 
         return !rvList.isEmpty() ? rvList.get(0) : null;
@@ -158,9 +143,9 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public RealVehicle findRealVehicleByUrl(String url)
     {
-        return (RealVehicle) session
-            .createCriteria(RealVehicle.class)
-            .add(Restrictions.eq(REAL_VEHICLE_URL, url))
+        return sessionManager.getSession()
+            .createQuery("FROM RealVehicle WHERE url = :url", RealVehicle.class)
+            .setParameter(URL, url)
             .uniqueResult();
     }
 
@@ -170,9 +155,9 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public RealVehicle findRealVehicleById(Integer id)
     {
-        return (RealVehicle) session
-            .createCriteria(RealVehicle.class)
-            .add(Restrictions.eq(ID, id))
+        return sessionManager.getSession()
+            .createQuery("FROM RealVehicle WHERE id = :id", RealVehicle.class)
+            .setParameter(ID, id)
             .uniqueResult();
     }
 
@@ -189,12 +174,11 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<RealVehicleState> findAllRealVehicleStates()
     {
-        return session
-            .createCriteria(RealVehicleState.class)
+        return sessionManager.getSession()
+            .createQuery("FROM RealVehicleState", RealVehicleState.class)
             .list();
     }
 
@@ -204,9 +188,9 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public RealVehicleState findRealVehicleStateById(int id)
     {
-        return (RealVehicleState) session
-            .createCriteria(RealVehicleState.class)
-            .add(Restrictions.eq(ID, id))
+        return sessionManager.getSession()
+            .createQuery("FROM RealVehicleState WHERE id = :id", RealVehicleState.class)
+            .setParameter(ID, id)
             .uniqueResult();
     }
 
@@ -216,13 +200,12 @@ public class RealVehicleRepositoryImpl implements RealVehicleRepository
     @Override
     public void cleanupOldVehicleStates()
     {
-        @SuppressWarnings("unchecked")
-        List<RealVehicleState> oldRvStates = session
-            .createCriteria(RealVehicleState.class)
-            .add(Restrictions.le(LAST_UPDATE, new Date(timeService.currentTimeMillis() - TOO_OLD_TO_REMEMBER)))
+        List<RealVehicleState> oldRvStates = sessionManager.getSession()
+            .createQuery("FROM RealVehicleState WHERE lastUpdate <= :lastUpdate", RealVehicleState.class)
+            .setParameter(LAST_UPDATE, new Date(timeService.currentTimeMillis() - TOO_OLD_TO_REMEMBER))
             .list();
 
-        oldRvStates.stream().forEach(x -> session.delete(x));
+        oldRvStates.forEach(x -> sessionManager.getSession().delete(x));
     }
 
     /**

@@ -26,6 +26,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.com.services.CommunicationResponse;
 import cpcc.com.services.CommunicationService;
@@ -39,18 +40,18 @@ import cpcc.core.services.jobs.JobRunnable;
  */
 public class RealVehicleStateJobRunnable implements JobRunnable
 {
+    private static final Logger LOG = LoggerFactory.getLogger(RealVehicleStateJobRunnable.class);
+
     private int id;
-    private Logger logger;
     private ServiceResources serviceResources;
+    private boolean executedSuccessful = true;
 
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param parameters the job parameters.
      */
-    public RealVehicleStateJobRunnable(Logger logger, ServiceResources serviceResources, Map<String, String> parameters)
+    public RealVehicleStateJobRunnable(ServiceResources serviceResources, Map<String, String> parameters)
     {
-        this.logger = logger;
         this.serviceResources = serviceResources;
 
         id = Integer.parseInt(parameters.get("rv"));
@@ -85,13 +86,20 @@ public class RealVehicleStateJobRunnable implements JobRunnable
             rvState.setRealVehicleName(target.getName());
             rvState.setState(stateString);
 
-            logger.info("RealVehicleState: ;{};{};", target.getName(), stateString);
+            LOG.info("RealVehicleState: ;{};{};", target.getName(), stateString);
 
             sessionManager.getSession().saveOrUpdate(rvState);
         }
         catch (IOException e)
         {
-            logger.debug("Real vehicle state query to {} did not work.", target.getName(), e);
+            LOG.debug("Real vehicle state query to {} did not work.", target.getName(), e);
+            executedSuccessful = false;
         }
+    }
+
+    @Override
+    public boolean executionSucceeded()
+    {
+        return executedSuccessful;
     }
 }

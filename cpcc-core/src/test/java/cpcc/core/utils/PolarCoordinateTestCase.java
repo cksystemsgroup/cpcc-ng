@@ -25,31 +25,30 @@ import org.junit.jupiter.api.Test;
 
 import cpcc.core.entities.PolarCoordinate;
 
-public class PolarCoordinateTestCase
+class PolarCoordinateTestCase
 {
-
     /**
      * Verify if the default constructor sets all variables zero.
      */
     @Test
-    public void testCase01()
+    void testCase01()
     {
         PolarCoordinate p = new PolarCoordinate();
-        assertThat(0.0).isEqualTo(p.getLatitude(), offset(1E-10));
-        assertThat(0.0).isEqualTo(p.getLongitude(), offset(1E-10));
-        assertThat(0.0).isEqualTo(p.getAltitude(), offset(1E-10));
+        assertThat(p.getLatitude()).isEqualTo(0.0, offset(1E-10));
+        assertThat(p.getLongitude()).isEqualTo(0.0, offset(1E-10));
+        assertThat(p.getAltitude()).isEqualTo(0.0, offset(1E-10));
     }
 
     /**
      * Verify if the constructor using double values assigns the initialization values to the attributes correctly.
      */
     @Test
-    public void testCase02()
+    void testCase02()
     {
         PolarCoordinate u = new PolarCoordinate(1, 2, 3);
-        assertThat(1.0).isEqualTo(u.getLatitude(), offset(1E-10));
-        assertThat(2.0).isEqualTo(u.getLongitude(), offset(1E-10));
-        assertThat(3.0).isEqualTo(u.getAltitude(), offset(1E-10));
+        assertThat(u.getLatitude()).isEqualTo(1.0, offset(1E-10));
+        assertThat(u.getLongitude()).isEqualTo(2.0, offset(1E-10));
+        assertThat(u.getAltitude()).isEqualTo(3.0, offset(1E-10));
     }
 
     /**
@@ -57,52 +56,52 @@ public class PolarCoordinateTestCase
      * correctly.
      */
     @Test
-    public void testCase03()
+    void testCase03()
     {
         PolarCoordinate v = new PolarCoordinate(1, 2, 3);
         PolarCoordinate u = new PolarCoordinate(v);
-        assertThat(1.0).isEqualTo(u.getLatitude(), offset(1E-10));
-        assertThat(2.0).isEqualTo(u.getLongitude(), offset(1E-10));
-        assertThat(3.0).isEqualTo(u.getAltitude(), offset(1E-10));
+        assertThat(u.getLatitude()).isEqualTo(1.0, offset(1E-10));
+        assertThat(u.getLongitude()).isEqualTo(2.0, offset(1E-10));
+        assertThat(u.getAltitude()).isEqualTo(3.0, offset(1E-10));
     }
 
     /**
      * Verify if the setter methods work correctly.
      */
     @Test
-    public void testCase04()
+    void testCase04()
     {
         PolarCoordinate u = new PolarCoordinate();
         u.setLatitude(1);
         u.setLongitude(2);
         u.setAltitude(3);
-        assertThat(1.0).isEqualTo(u.getLatitude(), offset(1E-10));
-        assertThat(2.0).isEqualTo(u.getLongitude(), offset(1E-10));
-        assertThat(3.0).isEqualTo(u.getAltitude(), offset(1E-10));
+        assertThat(u.getLatitude()).isEqualTo(1.0, offset(1E-10));
+        assertThat(u.getLongitude()).isEqualTo(2.0, offset(1E-10));
+        assertThat(u.getAltitude()).isEqualTo(3.0, offset(1E-10));
     }
 
     /**
      * Verify if the setter method for setting all coordinate values works correctly.
      */
     @Test
-    public void testCase05()
+    void testCase05()
     {
         PolarCoordinate v = new PolarCoordinate(1, 2, 3);
         PolarCoordinate u = new PolarCoordinate();
         u.set(v);
-        assertThat(1.0).isEqualTo(u.getLatitude(), offset(1E-10));
-        assertThat(2.0).isEqualTo(u.getLongitude(), offset(1E-10));
-        assertThat(3.0).isEqualTo(u.getAltitude(), offset(1E-10));
+        assertThat(u.getLatitude()).isEqualTo(1.0, offset(1E-10));
+        assertThat(u.getLongitude()).isEqualTo(2.0, offset(1E-10));
+        assertThat(u.getAltitude()).isEqualTo(3.0, offset(1E-10));
     }
 
     /**
      * Verify the <code>toString()</code> method.
      */
     @Test
-    public void testCase06()
+    void testCase06()
     {
         PolarCoordinate v = new PolarCoordinate(1, 2, 3);
         String cooardinateString = v.toString();
-        assertThat("(1.0\u00B0, 2.0\u00B0, 3.0m)").isEqualTo(cooardinateString);
+        assertThat(cooardinateString).isEqualTo("(1.0\u00B0, 2.0\u00B0, 3.0m)");
     }
 }

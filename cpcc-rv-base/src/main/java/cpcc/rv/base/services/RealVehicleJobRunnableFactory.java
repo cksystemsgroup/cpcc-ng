@@ -34,11 +34,13 @@ import cpcc.core.services.jobs.JobRunnableFactory;
  */
 public class RealVehicleJobRunnableFactory implements JobRunnableFactory
 {
+    private static final Logger LOG = LoggerFactory.getLogger(RealVehicleJobRunnableFactory.class);
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public JobRunnable createRunnable(Logger logger, ServiceResources serviceResources, Job job)
+    public JobRunnable createRunnable(ServiceResources serviceResources, Job job)
     {
         Map<String, String> parameters = new HashMap<>();
 
@@ -57,21 +59,20 @@ public class RealVehicleJobRunnableFactory implements JobRunnableFactory
 
         if (RealVehicleBaseConstants.JOB_MODE_IMPORT.equals(mode))
         {
-            return new ConfigImportJobRunnable(logger, serviceResources, job.getData());
+            return new ConfigImportJobRunnable(serviceResources, job.getData());
         }
 
         if (RealVehicleBaseConstants.JOB_MODE_STATUS.equals(mode))
         {
-            Logger rvStateJobLogger = LoggerFactory.getLogger("RealVehicleStateJobLogger");
-            return new RealVehicleStateJobRunnable(rvStateJobLogger, serviceResources, parameters);
+            return new RealVehicleStateJobRunnable(serviceResources, parameters);
         }
 
         if (RealVehicleBaseConstants.JOB_MODE_INIT.equals(mode))
         {
-            return new RealVehicleInitJobRunnable(logger, serviceResources);
+            return new RealVehicleInitJobRunnable(serviceResources);
         }
 
-        logger.error("RealVehicleJobRunnableFactory: Can not create a runnable for mode {} parameters are {}",
+        LOG.error("RealVehicleJobRunnableFactory: Can not create a runnable for mode {} parameters are {}",
             mode, parameters);
         return null;
     }

@@ -30,9 +30,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * SymbolTest
  */
-public class SymbolTest
+class SymbolTest
 {
-    static Stream<Arguments>  symbolDataProvicer()
+    static Stream<Arguments> symbolDataProvicer()
     {
         return Stream.of(
             arguments(Symbol.LEFT_PAREN, "("),
@@ -45,14 +45,14 @@ public class SymbolTest
 
     @ParameterizedTest
     @MethodSource("symbolDataProvicer")
-    public void shouldHaveANotNullSymbolString(Symbol symbol, String string)
+    void shouldHaveANotNullSymbolString(Symbol symbol, String string)
     {
         assertThat(string).isEqualTo(symbol.getSymbolString());
     }
 
     @ParameterizedTest
     @MethodSource("symbolDataProvicer")
-    public void shouldConvertStringToSymbol(Symbol symbol, String string)
+    void shouldConvertStringToSymbol(Symbol symbol, String string)
     {
         assertThat(Symbol.getSymbol(string)).isEqualTo(symbol);
     }
@@ -69,7 +69,7 @@ public class SymbolTest
 
     @ParameterizedTest
     @MethodSource("nullStringSymbolDataProvicer")
-    public void shouldHaveANullSymbolString(Symbol symbol)
+    void shouldHaveANullSymbolString(Symbol symbol)
     {
         assertThat(symbol.getSymbolString()).isNull();
     }
@@ -84,7 +84,7 @@ public class SymbolTest
 
     @ParameterizedTest
     @MethodSource("nonSymbolDataProvicer")
-    public void shouldReturnNullForNonSymbolStrings(String symbol)
+    void shouldReturnNullForNonSymbolStrings(String symbol)
     {
         assertThat(Symbol.getSymbol(symbol)).isNull();
     }

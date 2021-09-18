@@ -28,7 +28,6 @@ import java.util.concurrent.Executors;
 
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.Job;
 import cpcc.core.entities.JobStatus;
@@ -38,7 +37,6 @@ import cpcc.core.entities.JobStatus;
  */
 public class JobQueue implements JobQueueCallback
 {
-    private Logger logger;
     private HibernateSessionManager sessionManager;
     private TimeService timeService;
     private List<JobRunnableFactory> factoryList;
@@ -50,16 +48,14 @@ public class JobQueue implements JobQueueCallback
 
     /**
      * @param queueName the (unique) name of this queue.
-     * @param logger the application logger.
      * @param sessionManager the Hibernate session manager.
      * @param timeService the time service.
      * @param factoryList the factory list.
      * @param numberOfPoolThreads the number of pool threads to be used.
      */
-    public JobQueue(String queueName, Logger logger, HibernateSessionManager sessionManager, TimeService timeService,
+    public JobQueue(String queueName, HibernateSessionManager sessionManager, TimeService timeService,
         List<JobRunnableFactory> factoryList, int numberOfPoolThreads)
     {
-        this.logger = logger;
         this.sessionManager = sessionManager;
         this.timeService = timeService;
         this.factoryList = factoryList;
@@ -94,7 +90,7 @@ public class JobQueue implements JobQueueCallback
         sessionManager.getSession().update(job);
         sessionManager.commit();
 
-        JobExecutor executor = new JobExecutor(logger, serviceResources, factoryList, job.getId(), this);
+        JobExecutor executor = new JobExecutor(serviceResources, factoryList, job.getId(), this);
 
         synchronized (taskMap)
         {

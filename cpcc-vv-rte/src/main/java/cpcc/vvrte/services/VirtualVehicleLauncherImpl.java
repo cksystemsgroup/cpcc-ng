@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.tapestry5.commons.Messages;
 import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
@@ -53,9 +53,12 @@ import cpcc.vvrte.services.js.JavascriptWorker;
  */
 public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 {
-    private static final String MSG_MAPPING_DECISION = "virtual.vehicle.launcher.mapping.decision";
+    private static final Logger LOG = LoggerFactory.getLogger(VirtualVehicleLauncherImpl.class);
 
-    private Logger logger;
+    private static final String FMT_MAPPING_DECISION =
+        "No suitable real vehicle found to migrate to!\\n\\n"
+            + "Migration: %s\\nTask Position: {lat: %.8f, lng: %.8f, alt: %.8f}\\n\n";
+
     private HibernateSessionManager sessionManager;
     private JavascriptService jss;
     private VirtualVehicleMigrator migrator;
@@ -64,7 +67,6 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     private TimeService timeService;
     private Map<JavascriptWorker, Integer> vehicleMap =
         Collections.synchronizedMap(new HashMap<JavascriptWorker, Integer>());
-    private Messages messages;
     private TaskRepository taskRepository;
     private JobService jobService;
 
@@ -73,14 +75,12 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
      */
     public VirtualVehicleLauncherImpl(ServiceResources serviceResources)
     {
-        this.logger = serviceResources.getService(Logger.class);
         this.sessionManager = serviceResources.getService(HibernateSessionManager.class);
         this.jss = serviceResources.getService(JavascriptService.class);
         this.migrator = serviceResources.getService(VirtualVehicleMigrator.class);
         this.vvRteRepository = serviceResources.getService(VvRteRepository.class);
         this.rvRepository = serviceResources.getService(RealVehicleRepository.class);
         this.timeService = serviceResources.getService(TimeService.class);
-        this.messages = serviceResources.getService(Messages.class);
         this.taskRepository = serviceResources.getService(TaskRepository.class);
         this.jobService = serviceResources.getService(JobService.class);
 
@@ -194,7 +194,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
         }
         catch (IOException e)
         {
-            logger.error("Can not (re)start virtual vehicle " + vehicle.getUuid()
+            LOG.error("Can not (re)start virtual vehicle " + vehicle.getUuid()
                 + ", id=" + vehicle.getId() + ", name=" + vehicle.getName(), e);
 
             vehicle.setState(VirtualVehicleState.DEFECTIVE);
@@ -208,7 +208,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void stateChange(int vehicleId, VirtualVehicleState newState)
     {
-        logger.debug("New vehicle state for vehicle {} : {}", vehicleId, newState);
+        LOG.debug("New vehicle state for vehicle {} : {}", vehicleId, newState);
         if (newState == VirtualVehicleState.MIGRATION_COMPLETED_RCV)
         {
             VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleId);
@@ -222,7 +222,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void notify(Task tsk)
     {
-        logger.debug("notify(): task={} {}", tsk.getId(), tsk.getTaskState());
+        LOG.debug("notify(): task={} {}", tsk.getId(), tsk.getTaskState());
 
         Task task = taskRepository.findTaskById(tsk.getId());
         VirtualVehicle vehicle = task.getVehicle();
@@ -239,7 +239,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     @Override
     public void notify(JavascriptWorker worker, VirtualVehicleState vehicleState)
     {
-        logger.debug("notify(): worker={}, state={}", worker.getName(), vehicleState);
+        LOG.debug("notify(): worker={}, state={}", worker.getName(), vehicleState);
         VirtualVehicle vehicle = vvRteRepository.findVirtualVehicleById(vehicleMap.get(worker));
 
         if (vehicle == null || vehicleState == null)
@@ -275,7 +275,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         if (decision != null && vehicle.getMigrationDestination() != null)
         {
-            logger.info("initiate Migration of VV {} ({}) to {}",
+            LOG.info("initiate Migration of VV {} ({}) to {}",
                 vehicle.getName(), vehicle.getUuid(), vehicle.getMigrationDestination().getName());
             migrator.initiateMigration(vehicle);
         }
@@ -293,7 +293,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
      */
     private VirtualVehicleMappingDecision handleDefectiveVehicle(JavascriptWorker worker, VirtualVehicle vehicle)
     {
-        logger.error("Virtual Vehicle crashed! Message is: {}", worker.getResult());
+        LOG.error("Virtual Vehicle crashed! Message is: {}", worker.getResult());
         vehicle.setStateInfo(worker.getResult());
         return handleFinishedVehicle(vehicle);
     }
@@ -376,7 +376,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
     {
         PolarCoordinate position = decision.getTask().getPosition();
 
-        return messages.format(MSG_MAPPING_DECISION, decision.isMigration(), position.getLatitude(),
+        return String.format(FMT_MAPPING_DECISION, decision.isMigration(), position.getLatitude(),
             position.getLongitude(), position.getAltitude());
     }
 
@@ -394,7 +394,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
             return;
         }
 
-        logger.debug("Handling stuck VVs.");
+        LOG.debug("Handling stuck VVs.");
 
         Set<VirtualVehicleState> requiredStates = me.getType() == RealVehicleType.GROUND_STATION
             ? VirtualVehicleState.VV_STATES_FOR_RESTART_STUCK_MIGRATION_FROM_GS
@@ -402,7 +402,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
 
         for (VirtualVehicle vehicle : vvRteRepository.findAllStuckVehicles(requiredStates))
         {
-            logger.info("Found stuck VV: {} {}", vehicle.getName(), vehicle.getState());
+            LOG.info("Found stuck VV: {} {}", vehicle.getName(), vehicle.getState());
             handleOneStuckMigration(groundStations, requiredStates, vehicle);
             sessionManager.commit();
         }
@@ -436,7 +436,7 @@ public class VirtualVehicleLauncherImpl implements VirtualVehicleLauncher
             String result =
                 new JSONObject("uuid", vehicle.getUuid(), "chunk", vehicle.getChunkNumber()).toCompactString();
 
-            logger.debug("Queuing ACK job for VV: {}  {} result is {}",
+            LOG.debug("Queuing ACK job for VV: {}  {} result is {}",
                 vehicle.getName(), vehicle.getState(), result);
 
             jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME,

@@ -68,6 +68,11 @@ public final class ConfigUtils
     public static double parseDouble(Map<String, List<String>> config, String propertyName, int index,
         double defaultValue)
     {
+        if (config == null)
+        {
+            return defaultValue;
+        }
+
         List<String> property = config.get(propertyName);
 
         if (property == null)

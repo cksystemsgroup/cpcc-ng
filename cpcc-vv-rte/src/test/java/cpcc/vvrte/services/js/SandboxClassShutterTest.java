@@ -33,7 +33,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * SandboxClassShutterTest
  */
-public class SandboxClassShutterTest
+class SandboxClassShutterTest
 {
     private SandboxClassShutter shutter;
 
@@ -49,7 +49,7 @@ public class SandboxClassShutterTest
     private static final Set<String> EXTRA_ALLOWED_CLASSES = new HashSet<String>();
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         shutter = new SandboxClassShutter(EXTRA_ALLOWED_CLASSES, EXTRA_REGEX_DEFINED_CLASSES);
     }
@@ -70,7 +70,7 @@ public class SandboxClassShutterTest
 
     @ParameterizedTest
     @MethodSource("basicallyAllowedClasses")
-    public void shouldAcceptAllowedClasses(String fullClassName)
+    void shouldAcceptAllowedClasses(String fullClassName)
     {
         boolean result = shutter.visibleToScripts(fullClassName);
         assertThat(result).isTrue();
@@ -89,7 +89,7 @@ public class SandboxClassShutterTest
 
     @ParameterizedTest
     @MethodSource("someForbiddenClasses")
-    public void shouldNotAcceptOtherClasses(String fullClassName)
+    void shouldNotAcceptOtherClasses(String fullClassName)
     {
         boolean result = shutter.visibleToScripts(fullClassName);
         assertThat(result).isFalse();
@@ -104,7 +104,7 @@ public class SandboxClassShutterTest
 
     @ParameterizedTest
     @MethodSource("extraRegexDefinedClassesDataProvider")
-    public void shouldAcceptAdditionalRegisteredRegexClasses(String fullClassName)
+    void shouldAcceptAdditionalRegisteredRegexClasses(String fullClassName)
     {
         boolean result = shutter.visibleToScripts(fullClassName);
         assertThat(result).isTrue();

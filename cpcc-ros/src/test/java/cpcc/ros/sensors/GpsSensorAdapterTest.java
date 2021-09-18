@@ -41,7 +41,7 @@ import sensor_msgs.NavSatStatus;
 /**
  * GpsSensorAdapterTest implementation.
  */
-public class GpsSensorAdapterTest
+class GpsSensorAdapterTest
 {
     private GpsSensorAdapter sut;
     private ConnectedNode connectedNode;
@@ -52,7 +52,7 @@ public class GpsSensorAdapterTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         status = mock(NavSatStatus.class);
         when(status.getStatus()).thenReturn(sensor_msgs.NavSatStatus.STATUS_FIX);
@@ -79,14 +79,14 @@ public class GpsSensorAdapterTest
     }
 
     @Test
-    public void shouldHaveCorrectType()
+    void shouldHaveCorrectType()
     {
         assertThat(sut.getType()).isEqualTo(SensorType.GPS_RECEIVER);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void shouldHaveCurrentState()
+    void shouldHaveCurrentState()
     {
         Map<String, List<String>> actual = sut.getCurrentState();
 
@@ -109,8 +109,8 @@ public class GpsSensorAdapterTest
 
         assertThat(actual.keySet())
             .hasSize(6)
-            .contains("node.state", "sensor.gps.position.covariance.type", "sensor.gps.position"
-                , "sensor.gps.position.covariance", "sensor.gps.status.service", "sensor.gps.status.status");
+            .contains("node.state", "sensor.gps.position.covariance.type", "sensor.gps.position",
+                "sensor.gps.position.covariance", "sensor.gps.status.service", "sensor.gps.status.status");
 
         assertThat(actual.get("node.state")).containsExactly(RosNodeState.RUNNING.name());
         assertThat(actual.get("sensor.gps.position.covariance.type")).containsExactly("3");
@@ -121,7 +121,7 @@ public class GpsSensorAdapterTest
     }
 
     @Test
-    public void shouldThrowExceptionOnSetValue()
+    void shouldThrowExceptionOnSetValue()
     {
         try
         {
@@ -135,7 +135,7 @@ public class GpsSensorAdapterTest
     }
 
     @Test
-    public void shouldSetPosition()
+    void shouldSetPosition()
     {
         sensor_msgs.NavSatFix position = mock(sensor_msgs.NavSatFix.class);
 

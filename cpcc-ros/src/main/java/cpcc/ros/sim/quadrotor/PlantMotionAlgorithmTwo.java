@@ -19,29 +19,31 @@
 package cpcc.ros.sim.quadrotor;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * PlantMotionAlgorithmTwo implementation.
  */
 public class PlantMotionAlgorithmTwo implements PlantMotionAlgorithm
 {
+    private static final Logger LOG = LoggerFactory.getLogger(PlantMotionAlgorithmTwo.class);
+
     private double dist;
     private double maxA;
     private double totalTime;
 
     /**
-     * @param log the application logger.
      * @param dist the distance to travel.
      * @param maxA the maximum allowed acceleration.
      */
-    public PlantMotionAlgorithmTwo(Logger log, double dist, double maxA)
+    public PlantMotionAlgorithmTwo(double dist, double maxA)
     {
         this.dist = dist;
         this.maxA = maxA;
         this.totalTime = Math.sqrt(6.0 * dist / maxA);
 
         double maxVPrime = maxA * totalTime / 4.0;
-        log.info("Two: dist={}, maxV'={}, maxA={}, totalTime={}", dist, maxVPrime, maxA, totalTime);
+        LOG.info("Two: dist={}, maxV'={}, maxA={}, totalTime={}", dist, maxVPrime, maxA, totalTime);
     }
 
     /**

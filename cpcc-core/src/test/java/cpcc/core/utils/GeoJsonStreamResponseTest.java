@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class GeoJsonStreamResponseTest
+class GeoJsonStreamResponseTest
 {
     @Test
-    public void shouldReturnFeatureCollectionAsJsonStream() throws IOException
+    void shouldReturnFeatureCollectionAsJsonStream() throws IOException
     {
         FeatureCollection featureCollection = new FeatureCollection();
         byte[] expected = new ObjectMapper()
@@ -51,7 +51,7 @@ public class GeoJsonStreamResponseTest
     }
 
     @Test
-    public void shouldIgnoreCallsToPrepareResponse() throws IOException
+    void shouldIgnoreCallsToPrepareResponse() throws IOException
     {
         FeatureCollection featureCollection = new FeatureCollection();
         byte[] expected = new ObjectMapper()

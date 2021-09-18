@@ -31,6 +31,7 @@ import org.apache.tapestry5.ioc.annotations.Startup;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.base.CoreConstants;
 import cpcc.core.services.jobs.JobExecutionException;
@@ -48,6 +49,8 @@ import cpcc.core.services.opts.OptionsParserServiceImpl;
  */
 public final class CoreModule
 {
+    private static final Logger LOG = LoggerFactory.getLogger(CoreModule.class);
+
     private CoreModule()
     {
         // Intentionally empty.
@@ -107,16 +110,15 @@ public final class CoreModule
 
     /**
      * @param config the current configuration.
-     * @param logger the current logger.
      * @param liquibaseService the Liquibase service.
      */
     public static void contributeHibernateSessionSource(OrderedConfiguration<HibernateConfigurer> config,
-        final Logger logger, final LiquibaseService liquibaseService)
+        final LiquibaseService liquibaseService)
     {
         config.add("EventListener", configuration -> {
-            logger.info("Updating database by liquibase service...");
+            LOG.info("Updating database by liquibase service...");
             liquibaseService.update();
-            logger.info("Updating database done.");
+            LOG.info("Updating database done.");
         });
     }
 
@@ -132,12 +134,11 @@ public final class CoreModule
 
     /**
      * @param executor the periodic executor service.
-     * @param logger the application logger.
      * @param jobService the job service.
      * @param sessionManager the database session manager.
      */
     @Startup
-    public static void scheduleJobs(PeriodicExecutor executor, final Logger logger, final JobService jobService,
+    public static void scheduleJobs(PeriodicExecutor executor, final JobService jobService,
         HibernateSessionManager sessionManager)
     {
         jobService.resetJobs();
@@ -151,7 +152,7 @@ public final class CoreModule
                 }
                 catch (JobExecutionException e)
                 {
-                    logger.error("Job execution failed.", e);
+                    LOG.error("Job execution failed.", e);
                 }
             });
 

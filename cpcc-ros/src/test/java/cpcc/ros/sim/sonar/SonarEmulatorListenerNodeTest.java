@@ -32,15 +32,13 @@ import org.junit.jupiter.api.Test;
 import org.ros.message.MessageListener;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Subscriber;
-import org.slf4j.Logger;
 
 import sensor_msgs.NavSatFix;
 
-public class SonarEmulatorListenerNodeTest
+class SonarEmulatorListenerNodeTest
 {
     private static final String LISTEN_TOPIC = "/topicRoot";
 
-    private Logger logger;
     private SonarEmulatorListenerNode sut;
     private Map<String, List<String>> config;
     private ConnectedNode connectedNode;
@@ -49,10 +47,8 @@ public class SonarEmulatorListenerNodeTest
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
-        logger = mock(Logger.class);
-
         config = new HashMap<String, List<String>>();
         config.put("gps", Arrays.asList(LISTEN_TOPIC));
 
@@ -64,11 +60,11 @@ public class SonarEmulatorListenerNodeTest
 
         listenerNode = (MessageListener<NavSatFix>) mock(MessageListener.class);
 
-        sut = new SonarEmulatorListenerNode(logger, config, listenerNode);
+        sut = new SonarEmulatorListenerNode(config, listenerNode);
     }
 
     @Test
-    public void shouldStartNode() throws InterruptedException
+    void shouldStartNode() throws InterruptedException
     {
         sut.onStart(connectedNode);
 

@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * TokenTest
  */
-public class TokenTest
+class TokenTest
 {
     static Stream<Arguments> tokenDataProvider()
     {
@@ -49,7 +49,7 @@ public class TokenTest
 
     @ParameterizedTest
     @MethodSource("tokenDataProvider")
-    public void shouldStoreData(Symbol symbol, String itemString, BigDecimal number)
+    void shouldStoreData(Symbol symbol, String itemString, BigDecimal number)
     {
         Token token = new Token(symbol, itemString, number);
 
@@ -69,7 +69,7 @@ public class TokenTest
 
     @ParameterizedTest
     @MethodSource("tokenDataProvider")
-    public void shouldCopyDataViaConstructor(Symbol symbol, String itemString, BigDecimal number)
+    void shouldCopyDataViaConstructor(Symbol symbol, String itemString, BigDecimal number)
     {
         Token helperToken = new Token(symbol, itemString, number);
         Token token = new Token(helperToken);
@@ -90,7 +90,7 @@ public class TokenTest
 
     @ParameterizedTest
     @MethodSource("tokenDataProvider")
-    public void shouldCopyData(Symbol symbol, String itemString, BigDecimal number)
+    void shouldCopyData(Symbol symbol, String itemString, BigDecimal number)
     {
         Token helperToken = new Token(symbol, itemString, number);
         Token token = new Token(Symbol.END, "", null);

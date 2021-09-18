@@ -24,26 +24,26 @@ import java.util.Map;
 import org.ros.node.ConnectedNode;
 import org.ros.node.Node;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import sensor_msgs.NavSatFix;
 import cpcc.ros.sim.AnonymousNodeMain;
+import sensor_msgs.NavSatFix;
 
 /**
  * Sonar Emulator Publisher Node
  */
 public class SonarEmulatorPublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(SonarEmulatorPublisherNode.class);
+
     private Map<String, List<String>> config;
     private SonarEmulatorPublisherLoop loop;
 
     /**
-     * @param logger the application logger.
      * @param config the device configuration
      */
-    public SonarEmulatorPublisherNode(Logger logger, Map<String, List<String>> config)
+    public SonarEmulatorPublisherNode(Map<String, List<String>> config)
     {
-        this.logger = logger;
         this.config = config;
     }
 
@@ -53,7 +53,7 @@ public class SonarEmulatorPublisherNode extends AnonymousNodeMain<sensor_msgs.Na
     @Override
     public void onStart(final ConnectedNode connectedNode)
     {
-        logger.info("onStart");
+        LOG.info("onStart");
         loop = new SonarEmulatorPublisherLoop(config, connectedNode);
         connectedNode.executeCancellableLoop(loop);
     }

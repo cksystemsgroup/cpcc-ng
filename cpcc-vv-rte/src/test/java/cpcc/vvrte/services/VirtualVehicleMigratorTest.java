@@ -71,7 +71,7 @@ import cpcc.vvrte.entities.VirtualVehicleState;
 import cpcc.vvrte.entities.VirtualVehicleStorage;
 import cpcc.vvrte.services.db.VvRteRepository;
 
-public class VirtualVehicleMigratorTest
+class VirtualVehicleMigratorTest
 {
     private static final int VV_ID1 = 123456;
     private static final int VV_ID2 = 654321;
@@ -95,7 +95,7 @@ public class VirtualVehicleMigratorTest
     private RealVehicleRepository rvRepository;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         logger = mock(Logger.class);
         jobService = mock(JobService.class);
@@ -140,7 +140,7 @@ public class VirtualVehicleMigratorTest
         sut = new VirtualVehicleMigratorImpl(serviceResources, 1000);
     }
 
-    public void setUpVv1()
+    void setUpVv1()
     {
         Date startTime = new Date();
         Date modificationTime1 = new Date(startTime.getTime() + 100);
@@ -255,7 +255,7 @@ public class VirtualVehicleMigratorTest
             .thenReturn(new ArrayList<VirtualVehicleStorage>());
     }
 
-    public void setUpVv2()
+    void setUpVv2()
     {
         Date startTime = new Date();
         Date modificationTime1 = new Date(startTime.getTime() + 100);
@@ -450,15 +450,15 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"vv/vv.properties", 204, 0, 0, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 8, 0, 0, "vvrte", "cpcc"},
                         new Object[]{"vv/vv-continuation.js", 10, 0, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 711, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 727, 1789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 204, 0, 1, "vvrte", "cpcc", "storage/storage1"},
-                        new Object[]{"storage/storage2", 878, 2789, 1, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 897, 2789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 204, 0, 2, "vvrte", "cpcc", "storage/storage2"},
-                        new Object[]{"storage/storage3", 558, 3789, 2, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 574, 3789, 2, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 204, 0, 3, "vvrte", "cpcc", "storage/storage3"},
@@ -471,12 +471,12 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"vv/vv.properties", 204, 0, 0, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 8, 0, 0, "vvrte", "cpcc"},
                         new Object[]{"vv/vv-continuation.js", 10, 0, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 711, 1789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 878, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 727, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 897, 2789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 204, 0, 1, "vvrte", "cpcc", "storage/storage2"},
-                        new Object[]{"storage/storage3", 558, 3789, 1, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 574, 3789, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 1, "vvrte", "cpcc"},
                     }
                 }),
@@ -486,9 +486,9 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"vv/vv.properties", 204, 0, 0, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 8, 0, 0, "vvrte", "cpcc"},
                         new Object[]{"vv/vv-continuation.js", 10, 0, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 711, 1789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 878, 2789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage3", 558, 3789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 727, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 897, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 574, 3789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 220, 0, 1, "vvrte", "cpcc", "storage/storage3"},
@@ -501,9 +501,9 @@ public class VirtualVehicleMigratorTest
                         new Object[]{"vv/vv.properties", 204, 0, 0, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 8, 0, 0, "vvrte", "cpcc"},
                         new Object[]{"vv/vv-continuation.js", 10, 0, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 711, 1789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 878, 2789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage3", 558, 3789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 727, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 897, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 574, 3789, 0, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 0, "vvrte", "cpcc"},
                     }
                 }),
@@ -513,15 +513,15 @@ public class VirtualVehicleMigratorTest
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 12, 0, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 710, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 726, 1789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 1, "vvrte", "cpcc", "storage/storage1"},
-                        new Object[]{"storage/storage2", 835, 2789, 1, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 854, 2789, 1, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 2, "vvrte", "cpcc", "storage/storage2"},
-                        new Object[]{"storage/storage3", 639, 3789, 2, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 655, 3789, 2, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 3, "vvrte", "cpcc", "storage/storage3"},
@@ -533,12 +533,12 @@ public class VirtualVehicleMigratorTest
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 12, 0, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 710, 1789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 835, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 726, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 854, 2789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 1, "vvrte", "cpcc", "storage/storage2"},
-                        new Object[]{"storage/storage3", 639, 3789, 1, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 655, 3789, 1, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 1, "vvrte", "cpcc"},
                     }
                 }),
@@ -547,9 +547,9 @@ public class VirtualVehicleMigratorTest
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 12, 0, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 710, 1789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 835, 2789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage3", 639, 3789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 726, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 854, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 655, 3789, 0, "vvrte", "cpcc"},
                     },
                     new Object[]{
                         new Object[]{"vv/vv.properties", 149, 0, 1, "vvrte", "cpcc", "storage/storage3"},
@@ -561,9 +561,9 @@ public class VirtualVehicleMigratorTest
                     new Object[]{
                         new Object[]{"vv/vv.properties", 133, 0, 0, "vvrte", "cpcc", null},
                         new Object[]{"vv/vv-source.js", 12, 0, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage1", 710, 1789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage2", 835, 2789, 0, "vvrte", "cpcc"},
-                        new Object[]{"storage/storage3", 639, 3789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage1", 726, 1789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage2", 854, 2789, 0, "vvrte", "cpcc"},
+                        new Object[]{"storage/storage3", 655, 3789, 0, "vvrte", "cpcc"},
                         new Object[]{"storage/storage4", 5, 4789, 0, "vvrte", "cpcc"},
                     }
                 }));
@@ -571,7 +571,7 @@ public class VirtualVehicleMigratorTest
 
     @ParameterizedTest
     @MethodSource("chunkDataProvider")
-    public void shouldZipVirtualVehicleToByteArray(int vvId, int chunkSize, int numberOfChunks, Object[] params)
+    void shouldZipVirtualVehicleToByteArray(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
         sut.setChunkSize(chunkSize);
@@ -609,16 +609,12 @@ public class VirtualVehicleMigratorTest
         for (TarArchiveEntry entry = readEntry(inStream); entry != null; entry = readEntry(inStream), ++entryNumber)
         {
             byte[] content = IOUtils.toByteArray(inStream); // readContent(inStream);
-            // System.out.print("Content: '");
-            // System.out.write(content);
-            // System.out.print("'");
 
             assertThat(chunkParams)
                 .describedAs("Chunk parameter")
                 .isNotNull();
-            assertThat(((Object[]) chunkParams).length)
-                .describedAs("Chunk parameter length")
-                .isGreaterThan(entryNumber);
+            assertThat((Object[]) chunkParams)
+                .hasSizeGreaterThan(entryNumber);
 
             Object[] entryParams = (Object[]) chunkParams[entryNumber];
 
@@ -634,12 +630,12 @@ public class VirtualVehicleMigratorTest
                 .isNotNull().isEqualTo(name);
             assertThat(entry.getSize())
                 .overridingErrorMessage("Expected size %d but was %d in chunk %d", length, entry.getSize(), chunkNumber)
-                .isNotNull().isEqualTo(length);
-            assertThat(entry.getLongUserId()).isNotNull().isEqualTo(storageId);
-            assertThat(entry.getLongGroupId()).isNotNull().isEqualTo(chunkId);
+                .isEqualTo(length);
+            assertThat(entry.getLongUserId()).isEqualTo(storageId);
+            assertThat(entry.getLongGroupId()).isEqualTo(chunkId);
             assertThat(entry.getUserName()).isNotNull().isEqualTo(userName);
             assertThat(entry.getGroupName()).isNotNull().isEqualTo(groupName);
-            assertThat(content.length).isEqualTo(length);
+            assertThat(content).hasSize(length);
         }
 
         inStream.close();
@@ -668,7 +664,7 @@ public class VirtualVehicleMigratorTest
 
     @ParameterizedTest
     @MethodSource("chunkDataProvider")
-    public void shouldStoreChunksInDatabase(int vvId, int chunkSize, int numberOfChunks, Object[] params)
+    void shouldStoreChunksInDatabase(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
         sut.setChunkSize(chunkSize);
@@ -734,25 +730,25 @@ public class VirtualVehicleMigratorTest
             arguments("unknown/unknown", new byte[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
     }
 
-    //    @Test(dataProvider = "unknownEntryTypeDataProvider", expectedExceptions = {IOException.class},
-    //        expectedExceptionsMessageRegExp = "Can not store unknown type of entry .*")
     @ParameterizedTest
     @MethodSource("unknownEntryTypeDataProvider")
-    public void shouldThrowIOEOnUnknownEntryType(String entryName, byte[] content) throws ArchiveException, IOException
+    void shouldThrowIOEOnUnknownEntryType(String entryName, byte[] content) throws ArchiveException, IOException
     {
         ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
+        byte[] chunk;
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ArchiveOutputStream os = factory.createArchiveOutputStream("tar", baos);
-
-        try
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ArchiveOutputStream os = factory.createArchiveOutputStream("tar", baos))
         {
             appendEntryToStream(entryName, content, os);
             os.close();
             baos.close();
 
-            byte[] chunk = baos.toByteArray();
+            chunk = baos.toByteArray();
+        }
 
+        try
+        {
             sut.storeChunk(new ByteArrayInputStream(chunk));
 
             failBecauseExceptionWasNotThrown(IOException.class);
@@ -775,22 +771,25 @@ public class VirtualVehicleMigratorTest
     //        expectedExceptionsMessageRegExp = "Can not store unknown virtual vehicle entry .*")
     @ParameterizedTest
     @MethodSource("unknownVirtualVehicleEntryDataProvider")
-    public void shouldThrowIOEOnUnknownVirtualVehicleEntry(String entryName, byte[] content) throws ArchiveException,
+    void shouldThrowIOEOnUnknownVirtualVehicleEntry(String entryName, byte[] content) throws ArchiveException,
         IOException
     {
         ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ArchiveOutputStream os = factory.createArchiveOutputStream("tar", baos);
+        byte[] chunk;
 
-        try
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ArchiveOutputStream os = factory.createArchiveOutputStream("tar", baos))
         {
             appendEntryToStream(entryName, content, os);
             os.close();
             baos.close();
 
-            byte[] chunk = baos.toByteArray();
+            chunk = baos.toByteArray();
+        }
 
+        try
+        {
             sut.storeChunk(new ByteArrayInputStream(chunk));
 
             failBecauseExceptionWasNotThrown(IOException.class);
@@ -803,7 +802,7 @@ public class VirtualVehicleMigratorTest
 
     @ParameterizedTest
     @MethodSource("chunkDataProvider")
-    public void shouldOverwriteExistingStorageEntries(int vvId, int chunkSize, int numberOfChunks, Object[] params)
+    void shouldOverwriteExistingStorageEntries(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
         sut.setChunkSize(chunkSize);
@@ -896,7 +895,7 @@ public class VirtualVehicleMigratorTest
     //        expectedExceptionsMessageRegExp = "Virtual vehicle \\S+ (\\S+) has not state MIGRATING_RCV but FINISHED")
     @ParameterizedTest
     @MethodSource("chunkDataProvider")
-    public void shouldThrowIOEOnWrongVirtualVehicleState(int vvId, int chunkSize, int numberOfChunks, Object[] params)
+    void shouldThrowIOEOnWrongVirtualVehicleState(int vvId, int chunkSize, int numberOfChunks, Object[] params)
         throws IOException, ArchiveException
     {
         sut.setChunkSize(chunkSize);
@@ -934,7 +933,7 @@ public class VirtualVehicleMigratorTest
     //            + "and can not be a migration target.")
     @ParameterizedTest
     @MethodSource("chunkDataProvider")
-    public void shouldThrowIOEIfVirtualVehicleIsBeingMigrated(int vvId, int chunkSize, int numberOfChunks,
+    void shouldThrowIOEIfVirtualVehicleIsBeingMigrated(int vvId, int chunkSize, int numberOfChunks,
         Object[] params)
         throws IOException, ArchiveException
     {
@@ -986,7 +985,7 @@ public class VirtualVehicleMigratorTest
 
     @ParameterizedTest
     @MethodSource("chunkDataProvider")
-    public void shouldMigrateVirtualVehicleToRemoteRealVehicle(int vvId, int chunkSize, int numberOfChunks,
+    void shouldMigrateVirtualVehicleToRemoteRealVehicle(int vvId, int chunkSize, int numberOfChunks,
         Object[] params)
         throws IOException, ArchiveException
     {

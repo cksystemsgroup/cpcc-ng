@@ -44,12 +44,12 @@ import cpcc.core.entities.RealVehicle;
 import cpcc.vvrte.entities.VirtualVehicle;
 import cpcc.vvrte.entities.VirtualVehicleState;
 
-public class VvGeoJsonConverterTest
+class VvGeoJsonConverterTest
 {
     private VvGeoJsonConverter sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new VvGeoJsonConverterImpl();
     }
@@ -80,7 +80,7 @@ public class VvGeoJsonConverterTest
 
     @ParameterizedTest
     @MethodSource("vvDataProvider")
-    public void shouldConvertToJson(VirtualVehicle virtualVehicle, String expected)
+    void shouldConvertToJson(VirtualVehicle virtualVehicle, String expected)
         throws JsonProcessingException, JSONException
     {
         Feature feature = sut.toFeature(virtualVehicle);
@@ -145,7 +145,7 @@ public class VvGeoJsonConverterTest
 
     @ParameterizedTest
     @MethodSource("vvListDataProvider")
-    public void shouldConvertListToJsonArray(List<VirtualVehicle> virtualVehicleList, String expected)
+    void shouldConvertListToJsonArray(List<VirtualVehicle> virtualVehicleList, String expected)
         throws JsonProcessingException, JSONException
     {
         List<GeoJsonObject> featureList = sut.toGeometryObjectsList(virtualVehicleList);

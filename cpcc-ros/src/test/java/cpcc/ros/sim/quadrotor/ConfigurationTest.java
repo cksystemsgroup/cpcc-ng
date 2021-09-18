@@ -22,10 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.ros.node.NodeConfiguration;
 
@@ -34,39 +37,35 @@ import cpcc.core.utils.GeodeticSystem;
 /**
  * ConfigurationTest
  */
-public class ConfigurationTest
+class ConfigurationTest
 {
-    @SuppressWarnings("serial")
-    private static final Map<String, List<String>> CONFIG = new HashMap<String, List<String>>()
-    {
-        {
-            put("topicRoot", Arrays.asList("/mav93"));
-            put("origin", Arrays.asList("37.80806", "-122.42661", "0.3"));
-            put("maxVelocity", Arrays.asList("10"));
-            put("maxAcceleration", Arrays.asList("2"));
-            put("precision", Arrays.asList("3"));
-            put("updateCycle", Arrays.asList("100"));
-            put("idlePower", Arrays.asList("17"));
-            put("hoverPower", Arrays.asList("179"));
-            put("mass", Arrays.asList("2.2"));
-            put("batteryCapacity", Arrays.asList("41.3"));
-            put("rechargingTime", Arrays.asList("40"));
-            put("takeOffHeight", Arrays.asList("10"));
-            put("takeOffVelocity", Arrays.asList("2.7"));
-            put("takeOffAcceleration", Arrays.asList("1.3"));
-            put("landingVelocity", Arrays.asList("1"));
-            put("landingAcceleration", Arrays.asList("0.5"));
-        }
-    };
+    private static final Map<String, List<String>> CONFIG = Collections.unmodifiableMap(Stream
+        .of(Pair.of("topicRoot", Arrays.asList("/mav93")),
+            Pair.of("origin", Arrays.asList("37.80806", "-122.42661", "0.3")),
+            Pair.of("maxVelocity", Arrays.asList("10")),
+            Pair.of("maxAcceleration", Arrays.asList("2")),
+            Pair.of("precision", Arrays.asList("3")),
+            Pair.of("updateCycle", Arrays.asList("100")),
+            Pair.of("idlePower", Arrays.asList("17")),
+            Pair.of("hoverPower", Arrays.asList("179")),
+            Pair.of("mass", Arrays.asList("2.2")),
+            Pair.of("batteryCapacity", Arrays.asList("41.3")),
+            Pair.of("rechargingTime", Arrays.asList("40")),
+            Pair.of("takeOffHeight", Arrays.asList("10")),
+            Pair.of("takeOffVelocity", Arrays.asList("2.7")),
+            Pair.of("takeOffAcceleration", Arrays.asList("1.3")),
+            Pair.of("landingVelocity", Arrays.asList("1")),
+            Pair.of("landingAcceleration", Arrays.asList("0.5")))
+        .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
 
     @Test
-    public void shouldParseConfiguration()
+    void shouldParseConfiguration()
     {
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
         Configuration cfg = new Configuration(nodeConfiguration, CONFIG);
 
         assertThat(cfg.getBatteryCapacity()).isEqualTo(41.3, offset(1E-4));
-        assertThat(cfg.getGeodeticSystem() instanceof GeodeticSystem);
+        assertThat(cfg.getGeodeticSystem()).isInstanceOf(GeodeticSystem.class);
         assertThat(cfg.getHoverPower()).isEqualTo(179.0, offset(1E-3));
         assertThat(cfg.getIdlePower()).isEqualTo(17.0, offset(1E-3));
         assertThat(cfg.getLandingAcceleration()).isEqualTo(0.5, offset(1E-3));

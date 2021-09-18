@@ -36,18 +36,18 @@ import cpcc.core.utils.CartesianCoordinate;
 /**
  * FlatWorldTest implementation.
  */
-public class FlatWorldTest
+class FlatWorldTest
 {
     private FlatWorld sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new FlatWorld();
     }
 
     @Test
-    public void shouldThrowExceptionOnCallOfRectangularToPolarCoordinatesA()
+    void shouldThrowExceptionOnCallOfRectangularToPolarCoordinatesA()
     {
         try
         {
@@ -60,7 +60,7 @@ public class FlatWorldTest
     }
 
     @Test
-    public void shouldThrowExceptionOnCallOfRectangularToPolarCoordinatesB()
+    void shouldThrowExceptionOnCallOfRectangularToPolarCoordinatesB()
     {
         try
         {
@@ -73,7 +73,7 @@ public class FlatWorldTest
     }
 
     @Test
-    public void shouldThrowExceptionOnCallOfWalk()
+    void shouldThrowExceptionOnCallOfWalk()
     {
         try
         {
@@ -86,7 +86,7 @@ public class FlatWorldTest
     }
 
     @Test
-    public void shouldThrowExceptionOnCallOfCalculateDistance()
+    void shouldThrowExceptionOnCallOfCalculateDistance()
     {
         try
         {
@@ -98,8 +98,6 @@ public class FlatWorldTest
         }
     }
 
-    //    public CartesianCoordinate polarToRectangularCoordinates(PolarCoordinate pos)
-
     static Stream<Arguments> conversionDataProvider()
     {
         return Stream.of(
@@ -108,7 +106,7 @@ public class FlatWorldTest
 
     @ParameterizedTest
     @MethodSource("conversionDataProvider")
-    public void shouldConvertPolarToRectangularCoordinatesA(double latitude, double longitude, double altitude,
+    void shouldConvertPolarToRectangularCoordinatesA(double latitude, double longitude, double altitude,
         CartesianCoordinate expected)
     {
         CartesianCoordinate actual = sut.polarToRectangularCoordinates(latitude, longitude, altitude);
@@ -120,7 +118,7 @@ public class FlatWorldTest
 
     @ParameterizedTest
     @MethodSource("conversionDataProvider")
-    public void shouldConvertPolarToRectangularCoordinatesB(double latitude, double longitude, double altitude,
+    void shouldConvertPolarToRectangularCoordinatesB(double latitude, double longitude, double altitude,
         CartesianCoordinate expected)
     {
         PolarCoordinate pos = new PolarCoordinate(latitude, longitude, altitude);

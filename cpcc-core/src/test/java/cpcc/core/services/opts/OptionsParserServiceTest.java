@@ -39,32 +39,32 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * OptionsParserServiceTest
  */
-public class OptionsParserServiceTest
+class OptionsParserServiceTest
 {
     private OptionsParserService svc;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         svc = new OptionsParserServiceImpl();
     }
 
     @Test
-    public void shouldParseEmptyOptions() throws IOException, ParseException
+    void shouldParseEmptyOptions() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse("");
         assertThat(result).isNotNull().isEmpty();
     }
 
     @Test
-    public void shouldParseNullOptions() throws IOException, ParseException
+    void shouldParseNullOptions() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse(null);
         assertThat(result).isNotNull().isEmpty();
     }
 
     @Test
-    public void shouldParseCorrectOptions() throws IOException, ParseException
+    void shouldParseCorrectOptions() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse("bugger=lala looney=3.141592 caspar='xxx uu'");
 
@@ -111,7 +111,7 @@ public class OptionsParserServiceTest
     }
 
     @Test
-    public void shouldParseCorrectOptionList() throws IOException, ParseException
+    void shouldParseCorrectOptionList() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse("bugger=(lala,'looney',3.141592)");
         assertThat(result).isNotNull().hasSize(1);
@@ -132,7 +132,7 @@ public class OptionsParserServiceTest
     }
 
     @Test
-    public void shouldParseCorrectGpsCoordinates() throws IOException, ParseException
+    void shouldParseCorrectGpsCoordinates() throws IOException, ParseException
     {
         Collection<Option> result = svc.parse("origin=(37.86644;-122.30954;0)");
         assertThat(result).isNotNull().hasSize(1);
@@ -155,7 +155,7 @@ public class OptionsParserServiceTest
     }
 
     @Test()
-    public void shouldFailOnInvalidItem() throws IOException, ParseException
+    void shouldFailOnInvalidItem() throws IOException, ParseException
     {
         try
         {
@@ -169,7 +169,7 @@ public class OptionsParserServiceTest
     }
 
     @Test()
-    public void shouldFailOnMissingEqualSymbol() throws IOException, ParseException
+    void shouldFailOnMissingEqualSymbol() throws IOException, ParseException
     {
         String source = "bugger nix";
 
@@ -186,7 +186,7 @@ public class OptionsParserServiceTest
     }
 
     @Test
-    public void shouldFailOnInvalidList() throws IOException, ParseException
+    void shouldFailOnInvalidList() throws IOException, ParseException
     {
         String source = "bugger=(nix";
 
@@ -203,7 +203,7 @@ public class OptionsParserServiceTest
     }
 
     @Test
-    public void shouldFailOnAdditionalEqualsSymbol() throws IOException, ParseException
+    void shouldFailOnAdditionalEqualsSymbol() throws IOException, ParseException
     {
         String source = "bugger==nix=a";
 
@@ -220,7 +220,7 @@ public class OptionsParserServiceTest
     }
 
     @Test
-    public void shouldParseConfigurationCorrectly() throws IOException, ParseException
+    void shouldParseConfigurationCorrectly() throws IOException, ParseException
     {
         String source = "lala=13.4\npos=(47.1,13.2,10)";
         Map<String, List<String>> result = svc.parseConfig(source);
@@ -231,7 +231,7 @@ public class OptionsParserServiceTest
     }
 
     @Test()
-    public void shouldFailOnMalformedList() throws IOException, ParseException
+    void shouldFailOnMalformedList() throws IOException, ParseException
     {
         String source = "bugger=(1,=";
 
@@ -264,7 +264,7 @@ public class OptionsParserServiceTest
 
     @ParameterizedTest
     @MethodSource("errorMessageDataProvider")
-    public void shouldFormatParserErrorMessageCorrectly(String source, String format, String expected, ParseException e)
+    void shouldFormatParserErrorMessageCorrectly(String source, String format, String expected, ParseException e)
     {
         String result = svc.formatParserErrorMessage(source, format, e);
         assertThat(result).isNotNull().isEqualTo(expected);

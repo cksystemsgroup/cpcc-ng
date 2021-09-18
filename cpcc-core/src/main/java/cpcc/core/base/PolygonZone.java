@@ -119,8 +119,6 @@ public class PolygonZone
                 maxLon = vertices[k].y;
             }
         }
-
-        // TODO setDepotPosition(getCenterOfGravity());
     }
 
     /**
@@ -150,7 +148,6 @@ public class PolygonZone
         }
 
         int right = 0;
-        int left = 0;
         for (int i = 0, l = vertices.length; i < l; ++i)
         {
             double ax = vertices[i].x;
@@ -179,7 +176,6 @@ public class PolygonZone
 
             if (segmentIsLeftOfPoint(ax, bx, cx))
             {
-                ++left;
                 continue;
             }
 
@@ -189,28 +185,9 @@ public class PolygonZone
             {
                 ++right;
             }
-            else
-            {
-                ++left;
-            }
         }
 
-        return testForUneven(right, left);
-    }
-
-    /**
-     * @param right the right counter.
-     * @param left the left counter.
-     * @return true if right or left are uneven.
-     */
-    private boolean testForUneven(int right, int left)
-    {
-        if (right != 0)
-        {
-            return right % 2 != 0;
-        }
-
-        return left % 2 != 0;
+        return right % 2 != 0;
     }
 
     /**

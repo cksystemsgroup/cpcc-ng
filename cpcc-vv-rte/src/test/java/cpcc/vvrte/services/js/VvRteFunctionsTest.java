@@ -34,11 +34,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * VvRteFunctionsTest
  */
-// @Test(singleThreaded = true)
-public class VvRteFunctionsTest
+class VvRteFunctionsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VvRteFunctions> cnt = VvRteFunctions.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -56,10 +55,10 @@ public class VvRteFunctionsTest
 
     @ParameterizedTest
     @MethodSource("vvRteDataProvider")
-    public void shouldStoreVvRte(BuiltInFunctions vvRte)
+    void shouldStoreVvRte(BuiltInFunctions vvRte)
     {
         VvRteFunctions.setVvRte(vvRte);
-        assertThat(VvRteFunctions.getVvRte()).isNotNull().isEqualTo(vvRte);
+        assertThat(VvRteFunctions.getVvRte()).isNotNull().isSameAs(vvRte);
     }
 
     static Stream<Arguments> stdOutDataProvider()
@@ -72,10 +71,10 @@ public class VvRteFunctionsTest
 
     @ParameterizedTest
     @MethodSource("stdOutDataProvider")
-    public void shouldStoreVvRte(PrintStream stdOut)
+    void shouldStoreVvRte(PrintStream stdOut)
     {
         VvRteFunctions.setStdOut(stdOut);
-        assertThat(VvRteFunctions.getStdOut()).isNotNull().isEqualTo(stdOut);
+        assertThat(VvRteFunctions.getStdOut()).isNotNull().isSameAs(stdOut);
     }
 
 }

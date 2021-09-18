@@ -38,45 +38,45 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * TreeNodeAdapterTest
  */
-public class TreeNodeAdapterTest
+class TreeNodeAdapterTest
 {
     private TreeNodeAdapter treeNodeAdapter;
     private ITreeNode treeNode;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         treeNodeAdapter = new TreeNodeAdapter();
         treeNode = mock(ITreeNode.class);
     }
 
     @Test
-    public void shouldHandleLeafCorrectly()
+    void shouldHandleLeafCorrectly()
     {
         when(treeNode.isLeaf()).thenReturn(true);
-        assertThat(treeNodeAdapter.isLeaf(treeNode)).isEqualTo(true);
+        assertThat(treeNodeAdapter.isLeaf(treeNode)).isTrue();
         verify(treeNode).isLeaf();
 
         when(treeNode.isLeaf()).thenReturn(false);
-        assertThat(treeNodeAdapter.isLeaf(treeNode)).isEqualTo(false);
+        assertThat(treeNodeAdapter.isLeaf(treeNode)).isFalse();
 
         verify(treeNode, times(2)).isLeaf();
     }
 
     @Test
-    public void shouldHandleHasChildrenCorrectly()
+    void shouldHandleHasChildrenCorrectly()
     {
         when(treeNode.hasChildren()).thenReturn(false);
-        assertThat(treeNodeAdapter.hasChildren(treeNode)).isEqualTo(false);
+        assertThat(treeNodeAdapter.hasChildren(treeNode)).isFalse();
         verify(treeNode).hasChildren();
 
         when(treeNode.hasChildren()).thenReturn(true);
-        assertThat(treeNodeAdapter.hasChildren(treeNode)).isEqualTo(true);
+        assertThat(treeNodeAdapter.hasChildren(treeNode)).isTrue();
         verify(treeNode, times(2)).hasChildren();
     }
 
     @Test
-    public void shouldHandleGetChildrenCorrectly()
+    void shouldHandleGetChildrenCorrectly()
     {
         when(treeNode.getChildren()).thenReturn(null);
         assertThat(treeNodeAdapter.getChildren(treeNode)).isNull();
@@ -99,7 +99,7 @@ public class TreeNodeAdapterTest
 
     @ParameterizedTest
     @MethodSource("labelDataProvider")
-    public void shouldHandleGetLabelCorrectly(String label)
+    void shouldHandleGetLabelCorrectly(String label)
     {
         when(treeNode.getLabel()).thenReturn(label);
         assertThat(treeNodeAdapter.getLabel(treeNode)).isEqualTo(label);

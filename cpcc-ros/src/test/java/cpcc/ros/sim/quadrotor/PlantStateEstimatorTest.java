@@ -45,7 +45,7 @@ import cpcc.core.entities.PolarCoordinate;
 /**
  * PlantStateEstimatorTest
  */
-public class PlantStateEstimatorTest
+class PlantStateEstimatorTest
 {
     private static final Map<String, List<String>> configMap = Collections.unmodifiableMap(Stream
         .of(
@@ -73,7 +73,7 @@ public class PlantStateEstimatorTest
      * Tasks to be done before running tests.
      */
     @BeforeEach
-    public void beforeClass()
+    void beforeClass()
     {
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
         config = new Configuration(nodeConfiguration, configMap);
@@ -88,7 +88,7 @@ public class PlantStateEstimatorTest
      * @throws IOException thrown in case of errors.
      */
     @Test
-    public void shouldTakeOffPlant() throws IOException
+    void shouldTakeOffPlant() throws IOException
     {
         PlantState plantState = new PlantState(initialPlantState);
         PlantStateEstimator e = new PlantStateEstimatorImpl(config, plantState, State.TAKE_OFF);
@@ -125,7 +125,7 @@ public class PlantStateEstimatorTest
      * @throws IOException thrown in case of errors.
      */
     @Test
-    public void shouldLandPlant() throws IOException
+    void shouldLandPlant() throws IOException
     {
         PlantState plantState = new PlantState(initialPlantState);
         plantState.getPosition().setAltitude(20.0);
@@ -163,7 +163,7 @@ public class PlantStateEstimatorTest
      * @throws IOException thrown in case of errors.
      */
     @Test
-    public void shouldFlyHorizontallyNorthSouth() throws IOException
+    void shouldFlyHorizontallyNorthSouth() throws IOException
     {
         PlantState plantState = new PlantState(initialPlantState);
         plantState.getPosition().setAltitude(20.0);
@@ -200,7 +200,7 @@ public class PlantStateEstimatorTest
      * @throws IOException thrown in case of errors.
      */
     @Test
-    public void shouldFlyHorizontallyEastWest() throws IOException
+    void shouldFlyHorizontallyEastWest() throws IOException
     {
         PlantState plantState = new PlantState(initialPlantState);
         plantState.getPosition().setAltitude(20.0);
@@ -242,7 +242,7 @@ public class PlantStateEstimatorTest
      * @throws IOException thrown in case of errors.
      */
     @Test
-    public void shouldBreakBeforeFlyingToNewPoint() throws IOException
+    void shouldBreakBeforeFlyingToNewPoint() throws IOException
     {
         PlantState plantState = new PlantState(initialPlantState);
         plantState.getPosition().setAltitude(20.0);
@@ -286,16 +286,15 @@ public class PlantStateEstimatorTest
 
     @ParameterizedTest
     @MethodSource("numberDataProvider")
-    public void shouldStoreRemainingBatteryCapacity(double capacity)
+    void shouldStoreRemainingBatteryCapacity(double capacity)
     {
         PlantState plantState = new PlantState(initialPlantState);
         plantState.setRemainingBatteryCapacity(capacity);
-        assertThat(plantState.getRemainingBatteryCapacity())
-            .isNotNull().isEqualTo(capacity, offset(1E-6));
+        assertThat(plantState.getRemainingBatteryCapacity()).isEqualTo(capacity, offset(1E-6));
     }
 
     @Test
-    public void shouldHaveFullStateMap()
+    void shouldHaveFullStateMap()
     {
         PlantState plantState = new PlantState(initialPlantState);
         Map<String, List<String>> map = plantState.getStateMap("test");

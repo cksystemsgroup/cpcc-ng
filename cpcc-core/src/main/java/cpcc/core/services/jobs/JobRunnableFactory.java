@@ -19,7 +19,6 @@
 package cpcc.core.services.jobs;
 
 import org.apache.tapestry5.ioc.ServiceResources;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.Job;
 
@@ -29,10 +28,9 @@ import cpcc.core.entities.Job;
 public interface JobRunnableFactory
 {
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param job the job entry in the database.
      * @return a newly created {@code JobRunnable}.
      */
-    JobRunnable createRunnable(Logger logger, ServiceResources serviceResources, Job job);
+    JobRunnable createRunnable(ServiceResources serviceResources, Job job);
 }

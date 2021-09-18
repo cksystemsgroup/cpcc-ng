@@ -29,10 +29,10 @@ import org.apache.tapestry5.http.services.Response;
 import org.apache.tapestry5.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-public class JsonStreamResponseTest
+class JsonStreamResponseTest
 {
     @Test
-    public void shouldReturnJsonObjectAsStream() throws IOException
+    void shouldReturnJsonObjectAsStream() throws IOException
     {
         JSONObject obj = new JSONObject("{\"a\":10}");
         byte[] expected = obj.toCompactString().getBytes("UTF-8");
@@ -46,7 +46,7 @@ public class JsonStreamResponseTest
     }
 
     @Test
-    public void shouldIgnoreCallsToPrepareResponse() throws IOException
+    void shouldIgnoreCallsToPrepareResponse() throws IOException
     {
         JSONObject obj = new JSONObject("{\"a\":10}");
         byte[] expected = obj.toCompactString().getBytes("UTF-8");

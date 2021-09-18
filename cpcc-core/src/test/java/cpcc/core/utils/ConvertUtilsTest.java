@@ -33,10 +33,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * ConvertUtilsTest
  */
-public class ConvertUtilsTest
+class ConvertUtilsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<ConvertUtils> cnt = ConvertUtils.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -55,7 +55,7 @@ public class ConvertUtilsTest
 
     @ParameterizedTest
     @MethodSource("doubleValuesDataProvider")
-    public void shouldConvertDoubleListToString(double[] values, String[] expectedResult)
+    void shouldConvertDoubleListToString(double[] values, String[] expectedResult)
     {
         List<String> result = ConvertUtils.doubleListAsString(values);
         assertThat(result).isNotNull().containsExactly(expectedResult);
@@ -75,7 +75,7 @@ public class ConvertUtilsTest
 
     @ParameterizedTest
     @MethodSource("byteValuesDataProvider")
-    public void shouldConvertByteToString(byte value, String expectedResult)
+    void shouldConvertByteToString(byte value, String expectedResult)
     {
         List<String> result = ConvertUtils.byteAsString(value);
         assertThat(result).isNotNull().containsExactly(expectedResult);
@@ -99,7 +99,7 @@ public class ConvertUtilsTest
 
     @ParameterizedTest
     @MethodSource("shortValuesDataProvider")
-    public void shouldConvertShortToString(short value, String expectedResult)
+    void shouldConvertShortToString(short value, String expectedResult)
     {
         List<String> result = ConvertUtils.shortAsString(value);
         assertThat(result).isNotNull().containsExactly(expectedResult);
@@ -123,7 +123,7 @@ public class ConvertUtilsTest
 
     @ParameterizedTest
     @MethodSource("floatValuesDataProvider")
-    public void shouldConvertFloatToString(float value, String expectedResult)
+    void shouldConvertFloatToString(float value, String expectedResult)
     {
         List<String> result = ConvertUtils.floatAsString(value);
         assertThat(result).isNotNull().containsExactly(expectedResult);

@@ -38,7 +38,7 @@ import cpcc.vvrte.entities.Task;
 /**
  * TaskAnalyzerTest
  */
-public class TaskAnalyzerTest
+class TaskAnalyzerTest
 {
     private static final int SENSOR_ID = 1;
     private static final String SENSOR_DESCRIPTION = "camera";
@@ -55,7 +55,7 @@ public class TaskAnalyzerTest
     private NativeArray sensors;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         SensorDefinition sensorDefinition = mock(SensorDefinition.class);
         when(sensorDefinition.getId()).thenReturn(SENSOR_ID);
@@ -91,7 +91,7 @@ public class TaskAnalyzerTest
     }
 
     @Test
-    public void shouldAnalyzePointTask()
+    void shouldAnalyzePointTask()
     {
         taskParameters.put("type", taskParameters, "point");
         Task task = analyzer.analyzeTaskParameters(taskParameters, 0);
@@ -118,14 +118,14 @@ public class TaskAnalyzerTest
     }
 
     @Test
-    public void shouldNotAnalyzeUnknownTask()
+    void shouldNotAnalyzeUnknownTask()
     {
         Task task = analyzer.analyzeTaskParameters(taskParameters, 0);
         assertThat(task).isNull();
     }
 
     @Test
-    public void shouldLimitTheToleranceDistance()
+    void shouldLimitTheToleranceDistance()
     {
         taskParameters.put("type", taskParameters, "point");
         taskParameters.put("tolerance", taskParameters, Double.valueOf(2.0));
@@ -137,7 +137,7 @@ public class TaskAnalyzerTest
     }
 
     @Test
-    public void shouldIgnoreNullSensors()
+    void shouldIgnoreNullSensors()
     {
         taskParameters.put("type", taskParameters, "point");
         sensors.put(0, sensors, null);

@@ -6,10 +6,10 @@ import java.lang.reflect.Constructor;
 
 import org.junit.jupiter.api.Test;
 
-public class ExceptionFormatterTest
+class ExceptionFormatterTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<ExceptionFormatter> cnt = ExceptionFormatter.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -18,7 +18,7 @@ public class ExceptionFormatterTest
     }
 
     @Test
-    public void shouldConvertExceptionsToString()
+    void shouldConvertExceptionsToString()
     {
         Throwable t = new Throwable("xxx");
 
@@ -26,7 +26,7 @@ public class ExceptionFormatterTest
 
         String[] actualLines = actual.split("\n");
 
-        assertThat(actualLines.length).isGreaterThan(5);
+        assertThat(actualLines).hasSizeGreaterThan(5);
         assertThat(actualLines[0]).isEqualTo("java.lang.Throwable: xxx");
     }
 }

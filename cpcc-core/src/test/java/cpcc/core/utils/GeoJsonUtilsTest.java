@@ -51,14 +51,14 @@ import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.RealVehicleType;
 
-public class GeoJsonUtilsTest
+class GeoJsonUtilsTest
 {
     private static RealVehicle rv1 = mock(RealVehicle.class);
     private static RealVehicle rv2 = mock(RealVehicle.class);
     private static RealVehicle rv3 = mock(RealVehicle.class);
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         when(rv1.getName()).thenReturn("rv1");
         when(rv1.getType()).thenReturn(RealVehicleType.QUADROCOPTER);
@@ -85,7 +85,7 @@ public class GeoJsonUtilsTest
     }
 
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<GeoJsonUtils> cnt = GeoJsonUtils.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -116,7 +116,7 @@ public class GeoJsonUtilsTest
 
     @ParameterizedTest
     @MethodSource("geoJsonObjectsDataProvider")
-    public void shouldFindBoundingBox(GeoJsonObject obj, double[] expected)
+    void shouldFindBoundingBox(GeoJsonObject obj, double[] expected)
     {
         double[] actual = GeoJsonUtils.findBoundingBox(obj);
 
@@ -146,7 +146,7 @@ public class GeoJsonUtilsTest
 
     @ParameterizedTest
     @MethodSource("bboxPositionDataProvider")
-    public void shouldMergeBoundingBoxWithPosition(double[] actual, LngLatAlt position, double[] expected)
+    void shouldMergeBoundingBoxWithPosition(double[] actual, LngLatAlt position, double[] expected)
     {
         GeoJsonUtils.mergeBoundingBox(actual, position);
 
@@ -176,7 +176,7 @@ public class GeoJsonUtilsTest
 
     @ParameterizedTest
     @MethodSource("bboxesDataProvider")
-    public void shouldMergeBoundingBoxes(double[] actual, double[] other, double[] expected)
+    void shouldMergeBoundingBoxes(double[] actual, double[] other, double[] expected)
     {
         GeoJsonUtils.mergeBoundingBoxes(actual, other);
 
@@ -199,7 +199,7 @@ public class GeoJsonUtilsTest
 
     @ParameterizedTest
     @MethodSource("polarCoordinatesDataProvider")
-    public void shouldConvertPolarCoordinateToPoint(PolarCoordinate position, LngLatAlt expected)
+    void shouldConvertPolarCoordinateToPoint(PolarCoordinate position, LngLatAlt expected)
     {
         Point point = GeoJsonUtils.toPoint(position);
         LngLatAlt coord = point.getCoordinates();
@@ -230,7 +230,7 @@ public class GeoJsonUtilsTest
 
     @ParameterizedTest
     @MethodSource("positionDataProvider")
-    public void shouldConvertPolarCoordinateToPositionMap(PolarCoordinate position)
+    void shouldConvertPolarCoordinateToPositionMap(PolarCoordinate position)
     {
         Map<String, Double> actual = GeoJsonUtils.toPosition(position);
 
@@ -255,7 +255,7 @@ public class GeoJsonUtilsTest
 
     @ParameterizedTest
     @MethodSource("realVehicleDataProvider")
-    public void shouldConvertRealVehicleToFeature(RealVehicle rv, String expected) throws IOException, JSONException
+    void shouldConvertRealVehicleToFeature(RealVehicle rv, String expected) throws IOException, JSONException
     {
         Feature feature = GeoJsonUtils.toFeature(rv);
 

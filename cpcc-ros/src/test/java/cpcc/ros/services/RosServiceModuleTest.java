@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Test;
 /**
  * RosServiceModuleTest
  */
-public class RosServiceModuleTest
+class RosServiceModuleTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<RosServiceModule> cnt = RosServiceModule.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -44,7 +44,7 @@ public class RosServiceModuleTest
     }
 
     @Test
-    public void shouldBindServices()
+    void shouldBindServices()
     {
         ServiceBindingOptions options1 = mock(ServiceBindingOptions.class);
         ServiceBinder binder = mock(ServiceBinder.class);

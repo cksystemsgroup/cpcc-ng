@@ -43,15 +43,13 @@ import cpcc.core.entities.SensorDefinition;
 /**
  * TaskTest
  */
-public class TaskTest
+class TaskTest
 {
     private Task sut;
     private VirtualVehicle vehicle;
 
-    // private Logger logger;
-
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         vehicle = mock(VirtualVehicle.class);
 
@@ -70,7 +68,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("idDataProvider")
-    public void shouldStoreId(Integer id)
+    void shouldStoreId(Integer id)
     {
         sut.setId(id);
 
@@ -79,7 +77,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("idDataProvider")
-    public void shouldStoreOrder(Integer id)
+    void shouldStoreOrder(Integer id)
     {
         sut.setOrder(id);
 
@@ -93,7 +91,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("stateDataProvider")
-    public void shouldStoreState(TaskState state)
+    void shouldStoreState(TaskState state)
     {
         sut.setTaskState(state);
 
@@ -111,7 +109,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("positionDataProvider")
-    public void shouldStorePosition(PolarCoordinate position)
+    void shouldStorePosition(PolarCoordinate position)
     {
         sut.setPosition(position);
 
@@ -122,7 +120,7 @@ public class TaskTest
     {
         return Stream.of(
             arguments(3.9),
-            arguments((Double)null),
+            arguments((Double) null),
             arguments(3.333),
             arguments(7.1111),
             arguments(8.3));
@@ -130,17 +128,20 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("distanceDataProvider")
-    public void shouldStoreDistanceToTarget(Double expected)
+    void shouldStoreDistanceToTarget(Double expected)
     {
         sut.setDistanceToTarget(expected);
         assertThat(sut.getDistanceToTarget()).describedAs("distance to target").isEqualTo(expected);
     }
 
     @Test
-    public void shouldHaveDefaultCreationTime()
+    void shouldHaveDefaultCreationTime()
     {
         long now = System.currentTimeMillis();
-        assertThat(now - sut.getCreationTime().getTime()).isGreaterThanOrEqualTo(0).isLessThan(1000);
+        
+        assertThat(now - sut.getCreationTime().getTime())
+            .isNotNegative()
+            .isLessThan(1000);
     }
 
     static Stream<Arguments> timeDataProvider()
@@ -155,7 +156,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("timeDataProvider")
-    public void shouldStoreCreationTime(long time)
+    void shouldStoreCreationTime(long time)
     {
         sut.setCreationTime(new Date(time));
         assertThat(sut.getCreationTime().getTime()).isEqualTo(time);
@@ -175,7 +176,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("toleranceDistanceDataProvider")
-    public void shouldStoreTolerance(double tolerance, double expectedTolerance)
+    void shouldStoreTolerance(double tolerance, double expectedTolerance)
     {
         sut.setTolerance(tolerance);
         assertThat(sut.getTolerance()).isEqualTo(expectedTolerance, offset(1E-8));
@@ -201,7 +202,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("sensorListDataProvider")
-    public void shouldStoreSensorList(List<SensorDefinition> sensorList)
+    void shouldStoreSensorList(List<SensorDefinition> sensorList)
     {
         sut.getSensors().addAll(sensorList);
 
@@ -221,7 +222,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("dateDataProvider")
-    public void shouldStoreExecutionStart(Date date)
+    void shouldStoreExecutionStart(Date date)
     {
         sut.setExecutionStart(date);
 
@@ -230,7 +231,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("dateDataProvider")
-    public void shouldStoreExecutionEnd(Date date)
+    void shouldStoreExecutionEnd(Date date)
     {
         sut.setExecutionEnd(date);
 
@@ -238,7 +239,7 @@ public class TaskTest
     }
 
     @Test
-    public void shouldStoreVehicle()
+    void shouldStoreVehicle()
     {
         sut.setVehicle(vehicle);
 
@@ -255,7 +256,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("keyValuePairsDataProvider")
-    public void shouldStoreSensorValues(String name, Object expected)
+    void shouldStoreSensorValues(String name, Object expected)
     {
         NativeObject sensorValues = new NativeObject();
         sensorValues.put(name, sensorValues, expected);
@@ -313,7 +314,7 @@ public class TaskTest
 
     @ParameterizedTest
     @MethodSource("valueDataProvider")
-    public void shouldHaveProperStringRepresentation(Date creationTime, Date executionStart, Date executionEnd,
+    void shouldHaveProperStringRepresentation(Date creationTime, Date executionStart, Date executionEnd,
         PolarCoordinate position, TaskState taskState, int order, double tolerance, VirtualVehicle vehicle,
         String expected)
     {
@@ -326,6 +327,6 @@ public class TaskTest
         sut.setTolerance(tolerance);
         sut.setVehicle(vehicle);
 
-        assertThat(sut.toString()).isEqualTo(expected);
+        assertThat(sut).hasToString(expected);
     }
 }

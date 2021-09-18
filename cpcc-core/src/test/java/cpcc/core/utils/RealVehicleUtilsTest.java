@@ -46,7 +46,7 @@ import cpcc.core.entities.RealVehicleType;
 /**
  * RealVehicleUtilsTest implementation.
  */
-public class RealVehicleUtilsTest
+class RealVehicleUtilsTest
 {
     private static final String AOO_001 =
         "{\"type\":\"FeatureCollection\",\"features\":["
@@ -141,7 +141,7 @@ public class RealVehicleUtilsTest
             new LngLatAlt(-122.42366373538971, 37.80775384632759)));
 
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<RealVehicleUtils> cnt = RealVehicleUtils.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -160,7 +160,7 @@ public class RealVehicleUtilsTest
 
     @ParameterizedTest
     @MethodSource("depotDataProvider")
-    public void shouldGetDepotPosition(String areaOfOperation, List<LngLatAlt> depotPosition) throws IOException
+    void shouldGetDepotPosition(String areaOfOperation, List<LngLatAlt> depotPosition) throws IOException
     {
         List<PolarCoordinate> expected = depotPosition.stream()
             .map(x -> new PolarCoordinate(x.getLatitude(), x.getLongitude(), x.getAltitude()))
@@ -182,7 +182,7 @@ public class RealVehicleUtilsTest
 
     @ParameterizedTest
     @MethodSource("polygonDataProvider")
-    public void shouldGetPolygons(String areaOfOperation, List<List<LngLatAlt>> polygons) throws IOException
+    void shouldGetPolygons(String areaOfOperation, List<List<LngLatAlt>> polygons) throws IOException
     {
         List<PolygonZone> expected = polygons.stream().map(x -> new PolygonZone(x)).collect(Collectors.toList());
 
@@ -206,7 +206,7 @@ public class RealVehicleUtilsTest
 
     @ParameterizedTest
     @MethodSource("positionDataProvider")
-    public void shouldCheckIfPositionsAreInsideTheAreaOfOperation(String areaOfOperation, PolarCoordinate position,
+    void shouldCheckIfPositionsAreInsideTheAreaOfOperation(String areaOfOperation, PolarCoordinate position,
         boolean expectedResult) throws IOException
     {
         boolean actual = RealVehicleUtils.isInsideAreaOfOperation(areaOfOperation, position);
@@ -214,44 +214,26 @@ public class RealVehicleUtilsTest
         assertThat(actual).isEqualTo(expectedResult);
     }
 
-    @Test
-    public void shouldReturnFalseIfAreaOfOperationIsEmptyInInsideCheck()
+    static Stream<Arguments> failingInsideCheckDataProvider()
     {
-        PolarCoordinate pos = mock(PolarCoordinate.class);
+        return Stream.of(
+            arguments("", mock(PolarCoordinate.class)),
+            arguments((String) null, mock(PolarCoordinate.class)),
+            arguments("{", mock(PolarCoordinate.class)));
+    }
 
-        boolean actual = RealVehicleUtils.isInsideAreaOfOperation("", pos);
+    @ParameterizedTest
+    @MethodSource("failingInsideCheckDataProvider")
+    void shouldReturnFalseOnFailingInsideChecks(String areaOfOperation, PolarCoordinate position)
+    {
+        boolean actual = RealVehicleUtils.isInsideAreaOfOperation(areaOfOperation, position);
 
         assertThat(actual).isFalse();
-
-        verifyNoInteractions(pos);
+        verifyNoInteractions(position);
     }
 
     @Test
-    public void shouldReturnFalseIfAreaOfOperationIsNullInInsideCheck()
-    {
-        PolarCoordinate pos = mock(PolarCoordinate.class);
-
-        boolean actual = RealVehicleUtils.isInsideAreaOfOperation(null, pos);
-
-        assertThat(actual).isFalse();
-
-        verifyNoInteractions(pos);
-    }
-
-    @Test
-    public void shouldReturnFalseIfAreaOfOperationIsCorruptInInsideCheck()
-    {
-        PolarCoordinate pos = mock(PolarCoordinate.class);
-
-        boolean actual = RealVehicleUtils.isInsideAreaOfOperation("{", pos);
-
-        assertThat(actual).isFalse();
-
-        verifyNoInteractions(pos);
-    }
-
-    @Test
-    public void shouldReturnEmptyDepotListIfAreaOfOperationIsEmpty() throws IOException
+    void shouldReturnEmptyDepotListIfAreaOfOperationIsEmpty() throws IOException
     {
         List<PolarCoordinate> actual = RealVehicleUtils.getDepotPositions("");
 
@@ -259,7 +241,7 @@ public class RealVehicleUtilsTest
     }
 
     @Test
-    public void shouldReturnEmptyPolygonListIfAreaOfOperationIsEmpty() throws IOException
+    void shouldReturnEmptyPolygonListIfAreaOfOperationIsEmpty() throws IOException
     {
         List<PolygonZone> actual = RealVehicleUtils.getPolygons(null);
 
@@ -312,7 +294,7 @@ public class RealVehicleUtilsTest
 
     @ParameterizedTest
     @MethodSource("bboxPositionDataProvider")
-    public void shouldFindBoundingBox(BBTestParameters params)
+    void shouldFindBoundingBox(BBTestParameters params)
     {
         double[] actual = RealVehicleUtils.findBoundingBox(params.getRealVehicle());
 

@@ -27,9 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.hibernate.Session;
-import org.hibernate.criterion.Property;
-import org.hibernate.criterion.Restrictions;
 
 import cpcc.core.entities.Device;
 import cpcc.core.entities.DeviceType;
@@ -48,17 +47,17 @@ public class QueryManagerImpl implements QueryManager
     private static final String DEVICE_ID = "deviceId";
     private static final String SENSOR_DESCRIPTION = "description";
     private static final String SENSOR_MESSAGETYPE = "messageType";
-    private static final String DEVICE_NAME = "name";
+    private static final String NAME = "name";
     private static final String TOPIC_ROOT = "topicRoot";
 
-    private Session session;
+    private HibernateSessionManager sessionManager;
 
     /**
      * @param session the Hibernate {@link Session}
      */
-    public QueryManagerImpl(Session session)
+    public QueryManagerImpl(Session session, HibernateSessionManager sessionManager)
     {
-        this.session = session;
+        this.sessionManager = sessionManager;
     }
 
     /**
@@ -67,22 +66,20 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public Device findDeviceByTopicRoot(String topicRoot)
     {
-        return (Device) session
-            .createCriteria(Device.class)
-            .add(Restrictions.eq(TOPIC_ROOT, topicRoot))
+        return sessionManager.getSession()
+            .createQuery("FROM Device WHERE topicRoot = :topicRoot", Device.class)
+            .setParameter(TOPIC_ROOT, topicRoot)
             .uniqueResult();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<Device> findAllDevices()
     {
-        return session
-            .createCriteria(Device.class)
-            .addOrder(Property.forName(TOPIC_ROOT).asc())
+        return sessionManager.getSession()
+            .createQuery("FROM Device ORDER BY topicRoot", Device.class)
             .list();
     }
 
@@ -92,22 +89,20 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public DeviceType findDeviceTypeByName(String name)
     {
-        return (DeviceType) session
-            .createCriteria(DeviceType.class)
-            .add(Restrictions.eq(DEVICE_NAME, name))
+        return sessionManager.getSession()
+            .createQuery("FROM DeviceType WHERE name = :name", DeviceType.class)
+            .setParameter(NAME, name)
             .uniqueResult();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<DeviceType> findAllDeviceTypes()
     {
-        return session
-            .createCriteria(DeviceType.class)
-            .addOrder(Property.forName(DEVICE_NAME).asc())
+        return sessionManager.getSession()
+            .createQuery("FROM DeviceType ORDER BY name", DeviceType.class)
             .list();
     }
 
@@ -117,9 +112,9 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public Parameter findParameterByName(String name)
     {
-        return (Parameter) session
-            .createCriteria(Parameter.class)
-            .add(Restrictions.eq(DEVICE_NAME, name))
+        return sessionManager.getSession()
+            .createQuery("FROM Parameter WHERE name = :name", Parameter.class)
+            .setParameter(NAME, name)
             .uniqueResult();
     }
 
@@ -148,22 +143,21 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public SensorDefinition findSensorDefinitionById(Integer id)
     {
-        return (SensorDefinition) session
-            .createCriteria(SensorDefinition.class)
-            .add(Restrictions.eq("id", id))
+        return sessionManager.getSession()
+            .createQuery("FROM Parameter WHERE id = :id", SensorDefinition.class)
+            .setParameter("id", id)
             .uniqueResult();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<SensorDefinition> findSensorDefinitionsByMessageType(String messagetype)
     {
-        return session
-            .createCriteria(SensorDefinition.class)
-            .add(Restrictions.eq(SENSOR_MESSAGETYPE, messagetype))
+        return sessionManager.getSession()
+            .createQuery("FROM SensorDefinition WHERE messageType = :messageType", SensorDefinition.class)
+            .setParameter(SENSOR_MESSAGETYPE, messagetype)
             .list();
     }
 
@@ -173,9 +167,9 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public SensorDefinition findSensorDefinitionByDescription(String description)
     {
-        return (SensorDefinition) session
-            .createCriteria(SensorDefinition.class)
-            .add(Restrictions.eq(SENSOR_DESCRIPTION, description))
+        return sessionManager.getSession()
+            .createQuery("FROM SensorDefinition WHERE description = :description", SensorDefinition.class)
+            .setParameter(SENSOR_DESCRIPTION, description)
             .uniqueResult();
     }
 
@@ -185,12 +179,12 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public Date findLatestSensorDefinitionOrRealVehicleChangeDate()
     {
-        Date sdd = (Date) session
-            .createQuery("select max(lastUpdate) from SensorDefinition")
+        Date sdd = sessionManager.getSession()
+            .createQuery("SELECT MAX(lastUpdate) FROM SensorDefinition", Date.class)
             .uniqueResult();
 
-        Date rvd = (Date) session
-            .createQuery("select max(lastUpdate) from RealVehicle")
+        Date rvd = sessionManager.getSession()
+            .createQuery("SELECT MAX(lastUpdate) FROM RealVehicle", Date.class)
             .uniqueResult();
 
         if (sdd != null && rvd != null)
@@ -207,49 +201,47 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public void deleteSensorDefinitionById(Integer id)
     {
-        session
+        sessionManager.getSession()
             .createQuery("DELETE FROM SensorDefinition WHERE id = :id")
-            .setInteger("id", id);
+            .setParameter("id", id);
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<SensorDefinition> findAllSensorDefinitions()
     {
-        return session
-            .createCriteria(SensorDefinition.class)
-            .addOrder(Property.forName("id").asc())
+        return sessionManager.getSession()
+            .createQuery("FROM SensorDefinition ORDER BY id", SensorDefinition.class)
             .list();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<SensorDefinition> findAllVisibleSensorDefinitions()
     {
-        return session
-            .createCriteria(SensorDefinition.class)
-            .add(Restrictions.ne("visibility", SensorVisibility.NO_VV))
+        return sessionManager.getSession()
+            .createQuery("FROM SensorDefinition WHERE visibility != :visibility", SensorDefinition.class)
+            .setParameter("visibility", SensorVisibility.NO_VV)
             .list();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<SensorDefinition> findAllActiveSensorDefinitions()
     {
-        return session
+        return sessionManager.getSession()
             .createQuery("SELECT d "
                 + "FROM SensorDefinition d, MappingAttributes m "
-                + "WHERE m.sensorDefinition = d.id AND m.vvVisible = true AND d.visibility != :visibility")
-            .setString("visibility", SensorVisibility.NO_VV.toString())
+                + "WHERE m.sensorDefinition = d.id "
+                + "AND m.vvVisible = true "
+                + "AND d.visibility != :visibility", SensorDefinition.class)
+            .setParameter("visibility", SensorVisibility.NO_VV.toString())
             .list();
     }
 
@@ -259,22 +251,22 @@ public class QueryManagerImpl implements QueryManager
     @Override
     public MappingAttributes findMappingAttribute(Device device, Topic topic)
     {
-        return (MappingAttributes) session
-            .createQuery("from MappingAttributes where pk.device.id = :deviceId and pk.topic.id = :topicId")
-            .setInteger(DEVICE_ID, device.getId())
-            .setInteger("topicId", topic.getId())
+        return sessionManager.getSession()
+            .createQuery("FROM MappingAttributes "
+                + "WHERE pk.device.id = :deviceId and pk.topic.id = :topicId", MappingAttributes.class)
+            .setParameter(DEVICE_ID, device.getId())
+            .setParameter("topicId", topic.getId())
             .uniqueResult();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public Collection<MappingAttributes> findMappingAttributesByDevice(Device device)
     {
-        return session
-            .createQuery("from MappingAttributes where pk.device.id = :deviceId)")
+        return sessionManager.getSession()
+            .createQuery("FROM MappingAttributes WHERE pk.device.id = :deviceId", MappingAttributes.class)
             .setParameter(DEVICE_ID, device.getId())
             .list();
     }
@@ -282,25 +274,22 @@ public class QueryManagerImpl implements QueryManager
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<MappingAttributes> findAllMappingAttributes()
     {
-        return session
-            .createCriteria(MappingAttributes.class)
+        return sessionManager.getSession()
+            .createQuery("FROM MappingAttributes", MappingAttributes.class)
             .list();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<MappingAttributes> findAllVvVisibleMappingAttributes()
     {
-        return session
-            .createCriteria(MappingAttributes.class)
-            .add(Restrictions.eq("vvVisible", Boolean.TRUE))
+        return sessionManager.getSession()
+            .createQuery("FROM MappingAttributes WHERE vvVisible = TRUE)", MappingAttributes.class)
             .list();
     }
 
@@ -383,7 +372,7 @@ public class QueryManagerImpl implements QueryManager
 
             if (!found)
             {
-                session.delete(attribute);
+                sessionManager.getSession().delete(attribute);
             }
         }
 
@@ -407,7 +396,7 @@ public class QueryManagerImpl implements QueryManager
                 newAttributes.setPk(pk);
                 newAttributes.setVvVisible(Boolean.FALSE);
                 newAttributes.setConnectedToAutopilot(Boolean.FALSE);
-                session.saveOrUpdate(newAttributes);
+                sessionManager.getSession().saveOrUpdate(newAttributes);
             }
         }
     }

@@ -72,27 +72,6 @@ public interface CoreJsonConverter
     JSONArray toJsonArray(Integer... numbers);
 
     /**
-     * @param numbers a list of double numbers.
-     * @return the requested JSON object.
-     */
-    JSONArray toJsonArray(Double... numbers);
-
-    /**
-     * @param rv the vehicle object to be filled.
-     * @param rvObj the vehicle as a JSON object.
-     * @return 1 if the vehicle has been updated, 0 if both vehicles are equal, -1 if the JSON object is older.
-     */
-    int fillInNewerRealVehicleFromJsonObject(RealVehicle rv, JSONObject rvObj);
-
-    /**
-     * @param sd the sensor definition object to be filled.
-     * @param sdObj the source sensor definition as a JSON object.
-     * @return 1 if the sensor definition has been updated, 0 if both sensor definitions are equal, -1 if the JSON
-     *         object is older.
-     */
-    int fillInNewerSensorDefinitionFromJsonObject(SensorDefinition sd, JSONObject sdObj);
-
-    /**
      * @param rvList the list of real vehicles.
      * @return the real vehicle regions as a JSON object.
      */

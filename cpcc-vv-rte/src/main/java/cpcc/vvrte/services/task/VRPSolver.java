@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.graphhopper.jsprit.core.algorithm.VehicleRoutingAlgorithm;
 import com.graphhopper.jsprit.core.algorithm.box.Jsprit;
 import com.graphhopper.jsprit.core.problem.Location;
@@ -44,6 +47,8 @@ import cpcc.vvrte.entities.Task;
  */
 public class VRPSolver implements TspSolver
 {
+    private static final Logger LOG = LoggerFactory.getLogger(VRPSolver.class);
+
     private static final int WEIGHT_INDEX = 0;
 
     private static double scale(double actualValue, double minValue, double maxValue)
@@ -59,9 +64,9 @@ public class VRPSolver implements TspSolver
             return path;
         }
 
-        System.out.println("Buggerit start.");
-        path.stream().forEach(x -> System.out.println("Buggerit: " + x.toString()));
-        System.out.println("Buggerit end.");
+        LOG.info("Buggerit start.");
+        path.stream().forEach(x -> LOG.info("Buggerit: {}", x));
+        LOG.info("Buggerit end.");
 
         Map<String, Task> taskMap = path.stream().collect(Collectors.toMap(x -> x.getId().toString(), y -> y));
 

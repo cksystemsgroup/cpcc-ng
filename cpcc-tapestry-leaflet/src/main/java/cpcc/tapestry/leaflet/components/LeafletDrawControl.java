@@ -70,19 +70,19 @@ public class LeafletDrawControl
 
     @Property
     @Parameter(required = false, defaultPrefix = BindingConstants.LITERAL, value = "true")
-    private Boolean polygonEnabled;
+    private boolean polygonEnabled;
 
     @Property
     @Parameter(required = false, defaultPrefix = BindingConstants.LITERAL, value = "true")
-    private Boolean rectangleEnabled;
+    private boolean rectangleEnabled;
 
     @Property
     @Parameter(required = false, defaultPrefix = BindingConstants.LITERAL, value = "true")
-    private Boolean polylineEnabled;
+    private boolean polylineEnabled;
 
     @Property
     @Parameter(required = false, defaultPrefix = BindingConstants.LITERAL, value = "true")
-    private Boolean circleEnabled;
+    private boolean circleEnabled;
 
     @Property
     @Parameter(required = true, defaultPrefix = BindingConstants.LITERAL)

@@ -60,7 +60,7 @@ public class MxBeanUtils
             throw new MalformedObjectNameException("Can not handle object " + attributeName);
         }
 
-        x[0] = x[0].replaceAll("\\\\", "");
+        x[0] = x[0].replace("\\\\", "");
         ObjectName on = new ObjectName(x[0]);
         Object a = pmbs.getAttribute(on, x[1]);
 
@@ -87,7 +87,7 @@ public class MxBeanUtils
                     Object key1 = iter1.next();
                     CompositeData valuedata = data.get(new Object[]{key1});
                     String value = (String) valuedata.get("value");
-                    value = value.replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r").replaceAll("\t", "\\\\t");
+                    value = value.replace("\n", "\\\\n").replace("\r", "\\\\r").replace("\t", "\\\\t");
                     m.put(key1.toString(), value);
                 }
             }
@@ -155,7 +155,7 @@ public class MxBeanUtils
                     {
                         beans.add(attributeName);
                         String[] x = attributeName.split("(?<!\\\\)" + PATH_SEPARATOR);
-                        x[0] = x[0].replaceAll("\\\\", "");
+                        x[0] = x[0].replace("\\\\", "");
                     }
                 }
             }

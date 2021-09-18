@@ -19,7 +19,6 @@
 package cpcc.ros.sim.sonar;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -40,7 +39,6 @@ import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.Node;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.topic.Publisher;
-import org.slf4j.Logger;
 
 import cpcc.ros.sim.AnonymousNodeMain;
 import sensor_msgs.NavSatFix;
@@ -48,9 +46,8 @@ import sensor_msgs.NavSatFix;
 /**
  * SonarEmulatorTest implementation.
  */
-public class SonarEmulatorTest
+class SonarEmulatorTest
 {
-    private Logger logger;
     private SonarEmulator sut;
     private Map<String, List<String>> config;
     private NodeConfiguration nodeConfiguration;
@@ -58,7 +55,7 @@ public class SonarEmulatorTest
     private AnonymousNodeMain<NavSatFix> senderNode;
 
     @BeforeEach
-    public void setUp() throws URISyntaxException, InterruptedException
+    void setUp() throws URISyntaxException, InterruptedException
     {
         int port = RandomUtils.nextInt(20000, 40000);
         String hostName = InetAddressFactory.newNonLoopback().getHostName();
@@ -69,13 +66,11 @@ public class SonarEmulatorTest
 
         nodeConfiguration = NodeConfiguration.newPublic(hostName, rosCore.getMasterServer().getUri());
 
-        logger = mock(Logger.class);
-
         config = new HashMap<>();
         config.put("gps", Arrays.asList("/gpsrcv"));
         config.put("origin", Arrays.asList("0"));
 
-        sut = new SonarEmulator(logger);
+        sut = new SonarEmulator();
         sut.setTopicRoot("/topicRoot");
         sut.setConfig(config);
         sut.setNodeConfiguration(nodeConfiguration);
@@ -85,7 +80,7 @@ public class SonarEmulatorTest
     }
 
     @AfterEach
-    public void tearDown() throws InterruptedException
+    void tearDown() throws InterruptedException
     {
         if (senderNode != null)
         {
@@ -141,7 +136,7 @@ public class SonarEmulatorTest
     }
 
     @Test
-    public void shouldProduceStateWithMessagesReceived() throws InterruptedException
+    void shouldProduceStateWithMessagesReceived() throws InterruptedException
     {
         setupMessageSender();
 
@@ -184,7 +179,7 @@ public class SonarEmulatorTest
     }
 
     @Test
-    public void shouldProduceStateWithoutMessagesReceived()
+    void shouldProduceStateWithoutMessagesReceived()
     {
         Map<String, List<String>> actual = sut.getCurrentState();
 

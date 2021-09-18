@@ -71,7 +71,7 @@ import cpcc.ros.test.RequestListenerThread;
 /**
  * CameraTest
  */
-public class CameraTest
+class CameraTest
 {
     private static final String BLACK_TILE = "data/black_tile.png";
     private static final String BLUE_TILE = "data/blue_tile.png";
@@ -115,7 +115,7 @@ public class CameraTest
     private File tempDir;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         int port = ProcessUtils.getRandomPortNumber(30000, 60000);
 
@@ -204,7 +204,7 @@ public class CameraTest
      * @throws IOException
      */
     @AfterEach
-    public void teadDown() throws IOException
+    void teadDown() throws IOException
     {
         requestListenerThread.interrupt();
         FileUtils.deleteDirectory(tempDir);
@@ -279,7 +279,7 @@ public class CameraTest
 
     @ParameterizedTest
     @MethodSource("imageDataProvider")
-    public void shouldGetImageForGivenPositionAndHeight(PolarCoordinate position, int width, int height,
+    void shouldGetImageForGivenPositionAndHeight(PolarCoordinate position, int width, int height,
         String imageFormat, String imageName) throws IOException
     {
         byte[] buffer = camera.getImage(position);
@@ -292,10 +292,10 @@ public class CameraTest
     }
 
     @Test
-    public void shouldReturnNullImageOnNullPosition() throws IOException
+    void shouldReturnNullImageOnNullPosition() throws IOException
     {
         byte[] buffer = camera.getImage(null);
-        assertThat(buffer).isNotNull().hasSize(0);
+        assertThat(buffer).isNotNull().isEmpty();
     }
 
 }

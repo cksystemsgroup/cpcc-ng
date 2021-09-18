@@ -34,7 +34,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import cpcc.core.entities.RealVehicle;
 import cpcc.core.entities.SensorDefinition;
 
-public class ConfigSyncDataTest
+class ConfigSyncDataTest
 {
     static Stream<Arguments> syncDataProvider()
     {
@@ -52,7 +52,7 @@ public class ConfigSyncDataTest
 
     @ParameterizedTest
     @MethodSource("syncDataProvider")
-    public void shouldHandleDefaultConstructor(List<SensorDefinition> sensors, List<RealVehicle> realVehicles)
+    void shouldHandleDefaultConstructor(List<SensorDefinition> sensors, List<RealVehicle> realVehicles)
     {
         ConfigSyncData sut = new ConfigSyncData(null, null);
         sut.setSen(sensors);
@@ -64,7 +64,7 @@ public class ConfigSyncDataTest
 
     @ParameterizedTest
     @MethodSource("syncDataProvider")
-    public void shouldHandleAlternativeConstructor(List<SensorDefinition> sensors, List<RealVehicle> realVehicles)
+    void shouldHandleAlternativeConstructor(List<SensorDefinition> sensors, List<RealVehicle> realVehicles)
     {
         ConfigSyncData sut = new ConfigSyncData(sensors, realVehicles);
 

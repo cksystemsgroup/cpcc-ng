@@ -108,6 +108,7 @@
 			<unpackOptions>
 				<includes>
 					<include>dbchange/**/*</include>
+					<include>liquibase.properties</include>
 				</includes>
 			</unpackOptions>
 		</dependencySet>

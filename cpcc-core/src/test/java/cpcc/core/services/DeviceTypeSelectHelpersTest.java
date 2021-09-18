@@ -33,7 +33,7 @@ import org.mockito.Mockito;
 
 import cpcc.core.entities.DeviceType;
 
-public class DeviceTypeSelectHelpersTest
+class DeviceTypeSelectHelpersTest
 {
     private static final String DEVICE_TYPE_NAME = "name1";
     private DeviceTypeSelectHelpers sut;
@@ -41,7 +41,7 @@ public class DeviceTypeSelectHelpersTest
     private DeviceType deviceType;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         deviceType = mock(DeviceType.class);
         when(deviceType.getName()).thenReturn(DEVICE_TYPE_NAME);
@@ -54,43 +54,43 @@ public class DeviceTypeSelectHelpersTest
     }
 
     @Test
-    public void shouldReturnNullForClientValueNull()
+    void shouldReturnNullForClientValueNull()
     {
         DeviceType actual = encoder.toValue(null);
         assertThat(actual).isNull();
     }
 
     @Test
-    public void shouldReturnDeviceTypeClientValueNotNull()
+    void shouldReturnDeviceTypeClientValueNotNull()
     {
         DeviceType actual = encoder.toValue(DEVICE_TYPE_NAME);
         assertThat(actual).isEqualTo(deviceType);
     }
 
     @Test
-    public void shouldReturnEmptyStringForClientValueNull()
+    void shouldReturnEmptyStringForClientValueNull()
     {
         String actual = encoder.toClient(null);
         assertThat(actual).isEqualTo(StringUtils.EMPTY);
     }
 
     @Test
-    public void shouldReturnNonEmptyStringForClientValueNotNull()
+    void shouldReturnNonEmptyStringForClientValueNotNull()
     {
         String actual = encoder.toClient(deviceType);
         assertThat(actual).isEqualTo(DEVICE_TYPE_NAME);
     }
 
     @Test
-    public void shouldCreateEmptySelectModel()
+    void shouldCreateEmptySelectModel()
     {
         SelectModel actual = DeviceTypeSelectHelpers.selectModel(Arrays.asList(new DeviceType[0]));
         assertThat(actual).isNotNull();
-        assertThat(actual.getOptions()).hasSize(0);
+        assertThat(actual.getOptions()).isEmpty();
     }
 
     @Test
-    public void shouldCreateSelectModelForOneDeviceType()
+    void shouldCreateSelectModelForOneDeviceType()
     {
         SelectModel actual = DeviceTypeSelectHelpers.selectModel(Arrays.asList(deviceType));
         assertThat(actual).isNotNull();

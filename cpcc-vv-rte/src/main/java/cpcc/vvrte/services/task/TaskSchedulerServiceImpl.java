@@ -25,6 +25,7 @@ import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.hibernate.Session;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.UpdateConsumer;
@@ -38,22 +39,21 @@ import cpcc.vvrte.services.db.TaskRepository;
  */
 public class TaskSchedulerServiceImpl implements TaskSchedulerService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(TaskSchedulerServiceImpl.class);
+
     private TaskSchedulingAlgorithm algorithm = null;
-    private Logger logger;
     private Session session;
     private TaskRepository taskRepository;
     private ServiceResources serviceResources;
 
     /**
      * @param scheduler the task scheduling algorithm.
-     * @param logger the application logger.
      * @param session the database session.
      * @param taskRepository the task repository.
      */
-    public TaskSchedulerServiceImpl(@Symbol(VvRteConstants.PROP_SCHEDULER_CLASS_NAME) String scheduler, Logger logger,
-        Session session, TaskRepository taskRepository, ServiceResources serviceResources)
+    public TaskSchedulerServiceImpl(@Symbol(VvRteConstants.PROP_SCHEDULER_CLASS_NAME) String scheduler, Session session,
+        TaskRepository taskRepository, ServiceResources serviceResources)
     {
-        this.logger = logger;
         this.session = session;
         this.taskRepository = taskRepository;
         this.serviceResources = serviceResources;
@@ -64,7 +64,7 @@ public class TaskSchedulerServiceImpl implements TaskSchedulerService
         }
         catch (ClassNotFoundException e)
         {
-            logger.error("Can not load default scheduling algorithm: " + scheduler, e);
+            LOG.error("Can not load default scheduling algorithm: " + scheduler, e);
         }
     }
 
@@ -76,7 +76,7 @@ public class TaskSchedulerServiceImpl implements TaskSchedulerService
     {
         if (algorithm == null)
         {
-            logger.error("No TaskSchedulingAlgorithm defined!");
+            LOG.error("No TaskSchedulingAlgorithm defined!");
             return null;
         }
 

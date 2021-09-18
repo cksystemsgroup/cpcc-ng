@@ -29,12 +29,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class TimeServiceTest
+class TimeServiceTest
 {
     private TimeServiceImpl sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new TimeServiceImpl();
     }
@@ -56,7 +56,7 @@ public class TimeServiceTest
 
     @ParameterizedTest
     @MethodSource("sequenceDataProvider")
-    public void shouldCreateDateObjects(int number)
+    void shouldCreateDateObjects(int number)
     {
         Date expected = new Date();
         Date actual = sut.newDate();
@@ -67,7 +67,7 @@ public class TimeServiceTest
 
     @ParameterizedTest
     @MethodSource("sequenceDataProvider")
-    public void shouldReturnTheCurrentTime(int number)
+    void shouldReturnTheCurrentTime(int number)
     {
         long expected = System.currentTimeMillis();
         long actual = sut.currentTimeMillis();

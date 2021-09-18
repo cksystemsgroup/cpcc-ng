@@ -36,10 +36,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * JSONUtilsTest
  */
-public class JSONUtilsTest
+class JSONUtilsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<JSONUtils> cnt = JSONUtils.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -60,7 +60,7 @@ public class JSONUtilsTest
 
     @ParameterizedTest
     @MethodSource("jsonDataProvider")
-    public void shouldConvertJsonObjectsToByteArrays(String jsonString) throws IOException
+    void shouldConvertJsonObjectsToByteArrays(String jsonString) throws IOException
     {
         JSONObject obj = new JSONObject(jsonString);
         byte[] ba = JSONUtils.toByteArray(obj);
@@ -77,7 +77,7 @@ public class JSONUtilsTest
 
     @ParameterizedTest
     @MethodSource("mapDataProvider")
-    public void shouldConvertMapToJsonObject(String[][] data, String expected)
+    void shouldConvertMapToJsonObject(String[][] data, String expected)
     {
         Map<String, String> actual = new TreeMap<String, String>();
         for (String[] entry : data)

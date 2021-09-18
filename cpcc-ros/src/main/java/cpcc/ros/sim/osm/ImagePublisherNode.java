@@ -20,26 +20,26 @@ package cpcc.ros.sim.osm;
 
 import org.ros.node.ConnectedNode;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import sensor_msgs.NavSatFix;
 import cpcc.ros.sim.AnonymousNodeMain;
+import sensor_msgs.NavSatFix;
 
 /**
  * ImagePublisherNode
  */
 public class ImagePublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(ImagePublisherNode.class);
+
     private Configuration config;
     private ImagePublisherNodeLoop loop;
 
     /**
-     * @param logger the application logger.
      * @param config the configuration.
      */
-    public ImagePublisherNode(Logger logger, Configuration config)
+    public ImagePublisherNode(Configuration config)
     {
-        this.logger = logger;
         this.config = config;
     }
 
@@ -49,9 +49,9 @@ public class ImagePublisherNode extends AnonymousNodeMain<sensor_msgs.NavSatFix>
     @Override
     public void onStart(final ConnectedNode connectedNode)
     {
-        logger.info("onStart");
+        LOG.info("onStart");
 
-        loop = new ImagePublisherNodeLoop(logger, config, connectedNode);
+        loop = new ImagePublisherNodeLoop(config, connectedNode);
         connectedNode.executeCancellableLoop(loop);
     }
 

@@ -73,4 +73,14 @@ public class ConfigPushJobRunnable implements JobRunnable
 
         com.transfer(target, RealVehicleBaseConstants.CONFIGURATION_UPDATE_CONNECTOR, data);
     }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean executionSucceeded()
+    {
+        return true;
+    }
 }

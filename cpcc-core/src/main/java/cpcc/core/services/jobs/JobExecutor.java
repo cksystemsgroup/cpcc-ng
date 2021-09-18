@@ -25,6 +25,7 @@ import org.apache.tapestry5.hibernate.HibernateSessionManager;
 import org.apache.tapestry5.ioc.ServiceResources;
 import org.apache.tapestry5.ioc.services.PerthreadManager;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.Job;
 import cpcc.core.entities.JobStatus;
@@ -34,23 +35,22 @@ import cpcc.core.entities.JobStatus;
  */
 public class JobExecutor implements Runnable
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(JobExecutor.class);
+
     private ServiceResources serviceResources;
     private List<JobRunnableFactory> factoryList;
     private int jobNumber;
     private JobQueueCallback callBack;
 
     /**
-     * @param logger the application logger.
      * @param serviceResources the service resources.
      * @param factoryList the factory list.
      * @param jobNumber the id of the job to be executed.
      * @param callBack the job queue callback.
      */
-    public JobExecutor(Logger logger, ServiceResources serviceResources, List<JobRunnableFactory> factoryList,
-        int jobNumber, JobQueueCallback callBack)
+    public JobExecutor(ServiceResources serviceResources, List<JobRunnableFactory> factoryList, int jobNumber,
+        JobQueueCallback callBack)
     {
-        this.logger = logger;
         this.serviceResources = serviceResources;
         this.factoryList = factoryList;
         this.jobNumber = jobNumber;
@@ -74,13 +74,13 @@ public class JobExecutor implements Runnable
         sessionManager.getSession().update(job);
         sessionManager.commit();
 
-        logger.debug("Executing job {} {} parameters={}", jobNumber, job.getQueueName(), job.getParameters());
+        LOG.debug("Executing job {} {} parameters={}", jobNumber, job.getQueueName(), job.getParameters());
 
         job.setStatus(JobStatus.NO_FACTORY);
 
         for (JobRunnableFactory factory : factoryList)
         {
-            JobRunnable runnable = factory.createRunnable(logger, serviceResources, job);
+            JobRunnable runnable = factory.createRunnable(serviceResources, job);
             if (runnable != null)
             {
                 try
@@ -94,7 +94,7 @@ public class JobExecutor implements Runnable
                     job.setResultText(e.getMessage());
                     job.setStatus(JobStatus.FAILED);
 
-                    logger.error("Job failed: {} {} parameters={}. {}",
+                    LOG.error("Job failed: {} {} parameters={}. {}",
                         jobNumber, job.getQueueName(), job.getParameters(), e.getMessage());
                 }
                 catch (Throwable e)
@@ -103,7 +103,7 @@ public class JobExecutor implements Runnable
                     job.setResultText(e.getMessage());
                     job.setStatus(JobStatus.FAILED);
 
-                    logger.error("Job failed: {} {} parameters={}.",
+                    LOG.error("Job failed: {} {} parameters={}.",
                         jobNumber, job.getQueueName(), job.getParameters(), e);
                 }
 

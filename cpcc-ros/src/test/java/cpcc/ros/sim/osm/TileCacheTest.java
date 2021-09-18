@@ -56,7 +56,7 @@ import org.mockserver.model.MediaType;
  * Tile Cache Test
  */
 @ExtendWith(MockServerExtension.class)
-public class TileCacheTest
+class TileCacheTest
 {
     private static final String USER_AGENT_HEADER = "User-Agent";
 
@@ -74,7 +74,7 @@ public class TileCacheTest
     private MockServerClient client;
 
     @BeforeEach
-    public void setUp(MockServerClient client) throws Exception
+    void setUp(MockServerClient client) throws Exception
     {
         this.client = client;
 
@@ -141,7 +141,7 @@ public class TileCacheTest
     }
 
     @AfterEach
-    public void tearDown() throws IOException
+    void tearDown() throws IOException
     {
         FileUtils.forceDelete(tempDirectory);
     }
@@ -157,27 +157,27 @@ public class TileCacheTest
 
     @ParameterizedTest
     @MethodSource("tileCoordinatesDataProvider")
-    public void shouldCreateTileCacheDirectoryIfNotPresent(int zoom, int x, int y) throws IOException
+    void shouldCreateTileCacheDirectoryIfNotPresent(int zoom, int x, int y) throws IOException
     {
         FileUtils.deleteDirectory(tempDirectory);
         assertThat(tempDirectory).doesNotExist();
 
         File file = sut.getTile(zoom, x, y);
 
-        assertThat(file.exists()).isTrue();
+        assertThat(file).exists();
         FileUtils.forceDelete(file);
         assertThat(file).doesNotExist();
         assertThat(tempDirectory).exists();
 
         file = sut.getTile(zoom, x, y);
 
-        assertThat(file.exists()).isTrue();
+        assertThat(file).exists();
         assertThat(tempDirectory).exists();
     }
 
     @ParameterizedTest
     @MethodSource("tileCoordinatesDataProvider")
-    public void shouldCreateTileCacheFile(int zoom, int x, int y, String expectedData) throws Exception
+    void shouldCreateTileCacheFile(int zoom, int x, int y, String expectedData) throws Exception
     {
         File file = sut.getTile(zoom, x, y);
 
@@ -187,7 +187,7 @@ public class TileCacheTest
 
     @ParameterizedTest
     @MethodSource("tileCoordinatesDataProvider")
-    public void shouldLoadCachedTileCacheFile(int zoom, int x, int y, String expectedData) throws Exception
+    void shouldLoadCachedTileCacheFile(int zoom, int x, int y, String expectedData) throws Exception
     {
         File file1 = sutSpy.getTile(zoom, x, y);
         String content1 = IOUtils.toString(new FileInputStream(file1), "UTF-8");
@@ -204,7 +204,7 @@ public class TileCacheTest
 
     @ParameterizedTest
     @MethodSource("tileCoordinatesDataProvider")
-    public void shouldHandleIncorrectDownloadUrl(int zoom, int x, int y) throws Exception
+    void shouldHandleIncorrectDownloadUrl(int zoom, int x, int y) throws Exception
     {
         try
         {
@@ -228,7 +228,7 @@ public class TileCacheTest
 
     @ParameterizedTest
     @MethodSource("notExistingTileCoordinatesDataProvider")
-    public void shouldHandleDownLoadErrors(int zoom, int x, int y) throws IOException
+    void shouldHandleDownLoadErrors(int zoom, int x, int y) throws IOException
     {
         try
         {

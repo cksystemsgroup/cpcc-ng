@@ -20,11 +20,7 @@ package cpcc.vvrte.services.db;
 
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
+import org.apache.tapestry5.hibernate.HibernateSessionManager;
 
 import cpcc.vvrte.entities.Task;
 import cpcc.vvrte.entities.TaskState;
@@ -35,34 +31,30 @@ import cpcc.vvrte.entities.TaskState;
 public class TaskRepositoryImpl implements TaskRepository
 {
     private static final String ID = "id";
-    private static final String CREATION_TIME = "creationTime";
-    private static final String ORDER = "order";
-    private static final String EXECUTION_START = "executionStart";
     private static final String TASK_STATE = "taskState";
 
-    private Session session;
+    private HibernateSessionManager sessionManager;
 
     /**
-     * @param session the Hibernate {@link Session}
+     * @param sessionManager the Hibernate session manager.
      */
-    public TaskRepositoryImpl(Session session)
+    public TaskRepositoryImpl(HibernateSessionManager sessionManager)
     {
-        this.session = session;
+        this.sessionManager = sessionManager;
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<Task> findAllIncompleteTasks()
     {
-        return session.createCriteria(Task.class)
-            .add(Restrictions.not(Restrictions.eq(TASK_STATE, TaskState.COMPLETED)))
-            .add(Restrictions.not(Restrictions.eq(TASK_STATE, TaskState.EXECUTED)))
-            .addOrder(Order.desc(EXECUTION_START))
-            .addOrder(Order.desc(ORDER))
-            .addOrder(Order.desc(CREATION_TIME))
+        return sessionManager.getSession()
+            .createQuery("FROM Task "
+                + "WHERE taskState != :completed AND taskState != :executed "
+                + "ORDER BY executionStart, order, creationTime", Task.class)
+            .setParameter("completed", TaskState.COMPLETED)
+            .setParameter("executed", TaskState.EXECUTED)
             .list();
     }
 
@@ -72,11 +64,12 @@ public class TaskRepositoryImpl implements TaskRepository
     @Override
     public long countAllIncompleteTasks()
     {
-        return (Long) session.createCriteria(Task.class)
-            .add(Restrictions.not(Restrictions.eq(TASK_STATE, TaskState.COMPLETED)))
-            .add(Restrictions.not(Restrictions.eq(TASK_STATE, TaskState.EXECUTED)))
-            .setProjection(Projections.rowCount())
-            .uniqueResult();
+        return sessionManager.getSession()
+            .createQuery("SELECT COUNT(*) FROM Task "
+                + "WHERE taskState != :completed AND taskState != :executed", Long.class)
+            .setParameter("completed", TaskState.COMPLETED)
+            .setParameter("executed", TaskState.EXECUTED)
+            .getSingleResult();
     }
 
     /**
@@ -85,34 +78,33 @@ public class TaskRepositoryImpl implements TaskRepository
     @Override
     public Task findTaskById(int taskId)
     {
-        return (Task) session.createCriteria(Task.class)
-            .add(Restrictions.eq(ID, taskId))
+        return sessionManager.getSession()
+            .createQuery("FROM Task WHERE id = :id", Task.class)
+            .setParameter(ID, taskId)
             .uniqueResult();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<Task> getPendingTasks()
     {
-        return session.createCriteria(Task.class)
-            .add(Restrictions.eq(TASK_STATE, TaskState.PENDING))
-            .addOrder(Order.asc(CREATION_TIME))
+        return sessionManager.getSession()
+            .createQuery("FROM Task WHERE taskState = :pending ORDER BY creationTime", Task.class)
+            .setParameter("pending", TaskState.PENDING)
             .list();
     }
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<Task> getScheduledTasks()
     {
-        return session.createCriteria(Task.class)
-            .add(Restrictions.eq(TASK_STATE, TaskState.SCHEDULED))
-            .addOrder(Order.asc(ORDER))
+        return sessionManager.getSession()
+            .createQuery("FROM Task WHERE taskState = :scheduled ORDER BY order", Task.class)
+            .setParameter("scheduled", TaskState.SCHEDULED)
             .list();
     }
 
@@ -122,8 +114,9 @@ public class TaskRepositoryImpl implements TaskRepository
     @Override
     public Task getCurrentRunningTask()
     {
-        return (Task) session.createCriteria(Task.class)
-            .add(Restrictions.eq(TASK_STATE, TaskState.RUNNING))
+        return sessionManager.getSession()
+            .createQuery("FROM Task WHERE taskState = :taskState", Task.class)
+            .setParameter(TASK_STATE, TaskState.RUNNING)
             .uniqueResult();
     }
 
@@ -133,10 +126,11 @@ public class TaskRepositoryImpl implements TaskRepository
     @Override
     public void unlinkTasksFromVirtualVehicleById(Integer id)
     {
-        @SuppressWarnings("unchecked")
-        List<Task> taskList = session.createCriteria(Task.class, "t")
-            .createCriteria("t.vehicle", JoinType.LEFT_OUTER_JOIN)
-            .add(Restrictions.eq(ID, id))
+        List<Task> taskList = sessionManager.getSession()
+            .createQuery("SELECT t FROM Task t "
+                + "LEFT OUTER JOIN VirtualVehicle v ON t.vehicle.id = v.id "
+                + "WHERE v.id = :id", Task.class)
+            .setParameter(ID, id)
             .list();
 
         for (Task task : taskList)
@@ -144,13 +138,13 @@ public class TaskRepositoryImpl implements TaskRepository
             if (task.getTaskState() == TaskState.COMPLETED)
             {
                 task.setVehicle(null);
-                session.update(task);
+                sessionManager.getSession().update(task);
             }
             else
             {
                 task.getSensors().clear();
-                session.update(task);
-                session.delete(task);
+                sessionManager.getSession().update(task);
+                sessionManager.getSession().delete(task);
             }
         }
     }

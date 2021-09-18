@@ -42,7 +42,7 @@ import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorType;
 import cpcc.vvrte.entities.Task;
 
-public class SensorsContributorTest
+class SensorsContributorTest
 {
     private SensorsContributor sut;
     private SensorDefinition s1;
@@ -51,7 +51,7 @@ public class SensorsContributorTest
     private PolarCoordinate position;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         s1 = mock(SensorDefinition.class);
         when(s1.getType()).thenReturn(SensorType.ALTIMETER);
@@ -68,12 +68,12 @@ public class SensorsContributorTest
         sut = new SensorsContributor();
     }
 
-    public static final String EMPTY_SENSOR_FEATURE = "{\"type\":\"Feature\""
+    static final String EMPTY_SENSOR_FEATURE = "{\"type\":\"Feature\""
         + ",\"properties\":{\"type\":\"sensors\"}"
         + ",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[]}}";
 
     @Test
-    public void shouldContributeEmptyFeatureCollectionWhenNoTaskExecutes()
+    void shouldContributeEmptyFeatureCollectionWhenNoTaskExecutes()
         throws JsonProcessingException, JSONException
     {
         FeatureCollection featureCollection = mock(FeatureCollection.class);
@@ -93,7 +93,7 @@ public class SensorsContributorTest
         JSONAssert.assertEquals(actual, EMPTY_SENSOR_FEATURE, false);
     }
 
-    public static final String EXPECTED_01 = "{\"type\":\"Feature\""
+    static final String EXPECTED_01 = "{\"type\":\"Feature\""
         + ",\"properties\":{\"type\":\"sensors\"}"
         + ",\"geometry\":{\"type\":\"GeometryCollection\""
         + ",\"geometries\":["
@@ -102,7 +102,7 @@ public class SensorsContributorTest
         + "]}}";
 
     @Test
-    public void shouldContributePointFeature() throws JsonProcessingException, JSONException
+    void shouldContributePointFeature() throws JsonProcessingException, JSONException
     {
         FeatureCollection featureCollection = mock(FeatureCollection.class);
 

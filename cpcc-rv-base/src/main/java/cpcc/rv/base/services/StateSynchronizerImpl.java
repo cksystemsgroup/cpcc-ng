@@ -20,6 +20,7 @@ package cpcc.rv.base.services;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
@@ -33,21 +34,19 @@ import cpcc.core.services.jobs.JobService;
  */
 public class StateSynchronizerImpl implements StateSynchronizer
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(StateSynchronizerImpl.class);
+
     private QueryManager qm;
     private JobService jobService;
     private RealVehicleRepository realVehicleRepository;
 
     /**
-     * @param logger the application logger.
      * @param qm the query manager.
      * @param jobService the job service.
      * @param realVehicleRepository the real vehicle repository.
      */
-    public StateSynchronizerImpl(Logger logger, QueryManager qm, JobService jobService,
-        RealVehicleRepository realVehicleRepository)
+    public StateSynchronizerImpl(QueryManager qm, JobService jobService, RealVehicleRepository realVehicleRepository)
     {
-        this.logger = logger;
         this.qm = qm;
         this.jobService = jobService;
         this.realVehicleRepository = realVehicleRepository;
@@ -89,7 +88,7 @@ public class StateSynchronizerImpl implements StateSynchronizer
         Parameter param = qm.findParameterByName(Parameter.REAL_VEHICLE_NAME);
         if (param == null || StringUtils.isEmpty(param.getValue()))
         {
-            logger.error("Hosting real vehicle name is not configured. Config sync aborted!");
+            LOG.error("Hosting real vehicle name is not configured. Config sync aborted!");
             return;
         }
 
@@ -102,7 +101,7 @@ public class StateSynchronizerImpl implements StateSynchronizer
             }
             catch (JobCreationException e)
             {
-                logger.debug("Can not create config sync job for real vehicle {} ({}), mode={}",
+                LOG.debug("Can not create config sync job for real vehicle {} ({}), mode={}",
                     rv.getName(), rv.getId(), mode, e);
             }
         }

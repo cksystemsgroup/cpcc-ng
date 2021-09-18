@@ -19,12 +19,9 @@
 package cpcc.rv.base.services;
 
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -35,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
 
 import cpcc.core.entities.Parameter;
 import cpcc.core.entities.RealVehicle;
@@ -44,13 +40,12 @@ import cpcc.core.services.RealVehicleRepository;
 import cpcc.core.services.jobs.JobCreationException;
 import cpcc.core.services.jobs.JobService;
 
-public class StateSynchronizerTest
+class StateSynchronizerTest
 {
     private static final String EXPECTED_CONFIG_PARAMETERS_1 = "mode=config,rv=1001";
     private static final String EXPECTED_CONFIG_PARAMETERS_2 = "mode=config,rv=2002";
     private static final String EXPECTED_RV_PARAMETERS = "mode=status,rv=1001";
 
-    private Logger logger;
     private QueryManager qm;
     private JobService jobService;
     private StateSynchronizerImpl sut;
@@ -60,7 +55,7 @@ public class StateSynchronizerTest
     private RealVehicleRepository realVehicleRepository;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         String rv01Name = "RV01";
         String rv02Name = "RV02";
@@ -77,8 +72,6 @@ public class StateSynchronizerTest
         when(rv02.getName()).thenReturn(rv02Name);
         when(rv02.getId()).thenReturn(2002);
 
-        logger = mock(Logger.class);
-
         qm = mock(QueryManager.class);
 
         realVehicleRepository = mock(RealVehicleRepository.class);
@@ -86,11 +79,11 @@ public class StateSynchronizerTest
 
         jobService = mock(JobService.class);
 
-        sut = new StateSynchronizerImpl(logger, qm, jobService, realVehicleRepository);
+        sut = new StateSynchronizerImpl(qm, jobService, realVehicleRepository);
     }
 
     @Test
-    public void shouldSynchronizeConfig() throws JobCreationException
+    void shouldSynchronizeConfig() throws JobCreationException
     {
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(hostRvName);
 
@@ -101,7 +94,6 @@ public class StateSynchronizerTest
 
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_1);
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_CONFIG_PARAMETERS_2);
-        verifyNoInteractions(logger);
     }
 
     static Stream<Arguments> importConfigDataProvider()
@@ -113,7 +105,7 @@ public class StateSynchronizerTest
 
     @ParameterizedTest
     @MethodSource("importConfigDataProvider")
-    public void shouldImportConfiguratin(byte[] data) throws JobCreationException
+    void shouldImportConfiguratin(byte[] data) throws JobCreationException
     {
         sut.importConfiguration(data);
 
@@ -121,7 +113,7 @@ public class StateSynchronizerTest
     }
 
     @Test
-    public void shouldSynchronizeRealVehicleState() throws JobCreationException
+    void shouldSynchronizeRealVehicleState() throws JobCreationException
     {
         when(rv02.getDeleted()).thenReturn(true);
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(hostRvName);
@@ -132,23 +124,20 @@ public class StateSynchronizerTest
         verify(realVehicleRepository).findAllActiveRealVehicles();
 
         verify(jobService).addJob(RealVehicleBaseConstants.JOB_QUEUE_NAME, EXPECTED_RV_PARAMETERS);
-        verifyNoInteractions(logger);
     }
 
     @Test
-    public void shouldLogErrorMessageIfRvNameIsNull() throws JobCreationException
+    void shouldLogErrorMessageIfRvNameIsNull() throws JobCreationException
     {
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(null);
 
         sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
-
-        verify(logger).error("Hosting real vehicle name is not configured. Config sync aborted!");
     }
 
     @Test
-    public void shouldLogErrorMessageIfRvNameIsEmpty() throws JobCreationException
+    void shouldLogErrorMessageIfRvNameIsEmpty() throws JobCreationException
     {
         Parameter emptyRvName = mock(Parameter.class);
         when(emptyRvName.getName()).thenReturn(Parameter.REAL_VEHICLE_NAME);
@@ -159,12 +148,10 @@ public class StateSynchronizerTest
         sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
-
-        verify(logger).error("Hosting real vehicle name is not configured. Config sync aborted!");
     }
 
     @Test
-    public void shouldLogErrorMessageAddingJobsIsNotPossible() throws JobCreationException
+    void shouldLogErrorMessageAddingJobsIsNotPossible() throws JobCreationException
     {
         when(qm.findParameterByName(Parameter.REAL_VEHICLE_NAME)).thenReturn(hostRvName);
 
@@ -178,9 +165,5 @@ public class StateSynchronizerTest
         sut.pushConfiguration();
 
         verify(qm).findParameterByName(Parameter.REAL_VEHICLE_NAME);
-
-        verify(logger).debug(eq("Can not create config sync job for real vehicle {} ({}), mode={}"),
-            eq("RV02"), eq(2002), eq("config"), any());
-
     }
 }

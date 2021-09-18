@@ -44,6 +44,8 @@ import cpcc.core.services.jobs.TimeService;
  */
 public final class RealVehicleBaseModule
 {
+    private static final Logger LOG = LoggerFactory.getLogger(RealVehicleBaseModule.class);
+
     private RealVehicleBaseModule()
     {
         // Intentionally empty.
@@ -80,14 +82,6 @@ public final class RealVehicleBaseModule
     }
 
     /**
-     * @param configuration the IoC configuration.
-     */
-    public static void contributeSystemMonitor(MappedConfiguration<String, Object> configuration)
-    {
-        configuration.add("logger", LoggerFactory.getLogger("SystemMonitorLogger"));
-    }
-
-    /**
      * @param executor the periodic executor service.
      * @param stateSync the state synchronization service.
      * @param monitor the system monitor.
@@ -116,7 +110,6 @@ public final class RealVehicleBaseModule
     }
 
     /**
-     * @param logger the application logger.
      * @param jobService the job service instance.
      * @param sessionManager the session manager instance.
      * @param timeService the time service.
@@ -124,17 +117,17 @@ public final class RealVehicleBaseModule
      * @param numberOfPoolThreads the number of job queue pool threads.
      */
     @Startup
-    public static void setupJobQueues(Logger logger, JobService jobService, HibernateSessionManager sessionManager,
+    public static void setupJobQueues(JobService jobService, HibernateSessionManager sessionManager,
         TimeService timeService, JobRepository jobRepository,
         @Symbol(RealVehicleBaseConstants.RV_BASE_JOB_POOL_THREADS) int numberOfPoolThreads)
     {
-        logger.info("Creating job queue '{}' having {} pool threads.",
+        LOG.info("Creating job queue '{}' having {} pool threads.",
             RealVehicleBaseConstants.JOB_QUEUE_NAME, numberOfPoolThreads);
 
         JobRunnableFactory factory = new RealVehicleJobRunnableFactory();
 
         jobService.addJobQueue(RealVehicleBaseConstants.JOB_QUEUE_NAME, new JobQueue(
-            RealVehicleBaseConstants.JOB_QUEUE_NAME, logger, sessionManager, timeService, Arrays.asList(factory),
+            RealVehicleBaseConstants.JOB_QUEUE_NAME, sessionManager, timeService, Arrays.asList(factory),
             numberOfPoolThreads));
 
         jobService.addJobIfNotExists(RealVehicleBaseConstants.JOB_QUEUE_NAME,

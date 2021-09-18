@@ -18,9 +18,6 @@
 
 package cpcc.ros.sim.quadrotor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import cpcc.core.entities.PolarCoordinate;
 import cpcc.core.utils.CartesianCoordinate;
 import cpcc.core.utils.GeodeticSystem;
@@ -30,8 +27,6 @@ import cpcc.core.utils.GeodeticSystem;
  */
 public class PlantStateEstimatorImpl implements PlantStateEstimator
 {
-    private static final Logger LOG = LoggerFactory.getLogger(PlantStateEstimatorImpl.class);
-
     private Configuration config;
     private PlantState plantState;
     private State state;
@@ -132,8 +127,8 @@ public class PlantStateEstimatorImpl implements PlantStateEstimator
         double minDistOne = 8.0 * maxV * maxV / 3.0 / maxA;
 
         algorithm = distNorm >= minDistOne
-            ? new PlantMotionAlgorithmOne(LOG, distNorm, maxV, maxA)
-            : new PlantMotionAlgorithmTwo(LOG, distNorm, maxA);
+            ? new PlantMotionAlgorithmOne(distNorm, maxV, maxA)
+            : new PlantMotionAlgorithmTwo(distNorm, maxA);
 
         totalTime = algorithm.getTotalTime();
 

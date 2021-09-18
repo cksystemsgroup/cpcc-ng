@@ -25,13 +25,13 @@ import org.junit.jupiter.api.Test;
 /**
  * NullPrintStream Test
  */
-public class NullPrintStreamTest
+class NullPrintStreamTest
 {
     /**
      * Should behave like a {@code PrintStream}
      */
     @Test
-    public void shouldBehaveLikeAPrintStream()
+    void shouldBehaveLikeAPrintStream()
     {
         NullPrintStream ps = new NullPrintStream(); // .newInstance();
         assertThat(ps).isNotNull();

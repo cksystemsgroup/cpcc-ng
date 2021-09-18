@@ -31,6 +31,7 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.core.entities.SensorDefinition;
 import cpcc.core.entities.SensorVisibility;
@@ -54,6 +55,12 @@ import cpcc.vvrte.services.task.TaskAnalyzer;
  */
 public class BuiltInFunctionsImpl implements BuiltInFunctions
 {
+    private static final String VALID = "valid";
+
+    private static final String SENSOR_VALUES = "sensorValues";
+
+    private static final Logger LOG = LoggerFactory.getLogger(BuiltInFunctionsImpl.class);
+
     private static final String SENSORS = "sensors";
     private static final String PARAMS = "params";
     private static final String ID = "id";
@@ -70,7 +77,6 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private VvRteRepository vvRteRepo;
     private QueryManager qm;
     private HibernateSessionManager sessionManager;
-    private Logger logger;
 
     /**
      * @param opts the options parser service-
@@ -79,10 +85,9 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      * @param vvRteRepo the virtual vehicle repository.
      * @param qm the query manager.
      * @param sessionManager the Hibernate session manager.
-     * @param logger the application logger.
      */
     public BuiltInFunctionsImpl(OptionsParserService opts, VirtualVehicleMapper mapper, TaskAnalyzer taskAnalyzer,
-        VvRteRepository vvRteRepo, QueryManager qm, HibernateSessionManager sessionManager, Logger logger)
+        VvRteRepository vvRteRepo, QueryManager qm, HibernateSessionManager sessionManager)
     {
         this.opts = opts;
         this.mapper = mapper;
@@ -90,7 +95,6 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
         this.vvRteRepo = vvRteRepo;
         this.qm = qm;
         this.sessionManager = sessionManager;
-        this.logger = logger;
     }
 
     /**
@@ -99,7 +103,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public List<ScriptableObject> listSensors()
     {
-        logger.debug("listSensors start");
+        LOG.debug("listSensors start");
         List<SensorDefinition> asd = qm.findAllVisibleSensorDefinitions();
         return converToScriptableObjectList(asd);
     }
@@ -110,7 +114,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public List<ScriptableObject> listActiveSensors()
     {
-        logger.debug("listActiveSensors start");
+        LOG.debug("listActiveSensors start");
         List<SensorDefinition> asd = qm.findAllActiveSensorDefinitions();
         return converToScriptableObjectList(asd);
     }
@@ -162,7 +166,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             }
             catch (IOException | ParseException e)
             {
-                logger.error("Parsing parameters of sensor definition " + sd.getId() + " failed!", e);
+                LOG.error("Parsing parameters of sensor definition " + sd.getId() + " failed!", e);
             }
         }
         return sensor;
@@ -215,14 +219,15 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     @Override
     public void executeTask(ScriptableObject managementParameters, ScriptableObject taskParameters)
     {
-        logger.debug("*** executeTask");
+        LOG.debug("*** executeTask");
 
         String vehicleUUID = (String) managementParameters.get("vehicleUUID");
         VirtualVehicle vehicle = vvRteRepo.findVirtualVehicleByUUID(vehicleUUID);
 
         if (vehicle == null)
         {
-            logger.error("Can not find Virtual Vehicle for UUID {}", vehicleUUID);
+            LOG.error("Can not find Virtual Vehicle for UUID {}", vehicleUUID);
+            managementParameters.put(REPEAT, managementParameters, Boolean.FALSE);
             return;
         }
 
@@ -233,12 +238,12 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             return;
         }
 
-        managementParameters.put(REPEAT, managementParameters, Boolean.FALSE);
-
         Number sequence = (Number) managementParameters.get(SEQUENCE);
         task = taskAnalyzer.analyzeTaskParameters(taskParameters, sequence.intValue());
         if (task == null)
         {
+            LOG.debug("*** nullTask");
+            managementParameters.put(REPEAT, managementParameters, Boolean.FALSE);
             return;
         }
 
@@ -267,7 +272,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
     private void handleExecutedTask(VirtualVehicle vehicle, ScriptableObject managementParameters,
         ScriptableObject taskParameters)
     {
-        logger.debug("*** handleExecutedTask");
+        LOG.debug("*** handleExecutedTask");
 
         Task task = vehicle.getTask();
 
@@ -275,7 +280,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
 
         Number sequence = (Number) managementParameters.get(SEQUENCE);
 
-        managementParameters.put("valid", managementParameters, Boolean.TRUE);
+        managementParameters.put(VALID, managementParameters, Boolean.TRUE);
         managementParameters.put(SEQUENCE, managementParameters, Integer.valueOf(sequence.intValue() + 1));
 
         NativeArray sensors = (NativeArray) taskParameters.get(SENSORS);
@@ -286,10 +291,9 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
             NativeObject s = (NativeObject) sensors.get(k);
             String description = (String) s.get(DESCRIPTION);
             sensorValues.put(k, sensorValues, sensorValues2.get(description));
-            // sensorValues.put(k, sensorValues, getSensorValue(node, s));
         }
 
-        managementParameters.put("sensorValues", managementParameters, sensorValues);
+        managementParameters.put(SENSOR_VALUES, managementParameters, sensorValues);
         managementParameters.put(REPEAT, managementParameters, Boolean.FALSE);
 
         task.setTaskState(TaskState.COMPLETED);
@@ -305,7 +309,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
      */
     private void initiateTaskExecution(ScriptableObject managementParameters, Task task)
     {
-        logger.debug("*** no migration (execute task).");
+        LOG.debug("*** no migration (execute task).");
 
         Context cx = Context.enter();
         try
@@ -324,7 +328,7 @@ public class BuiltInFunctionsImpl implements BuiltInFunctions
 
     private void initiateMigration(ScriptableObject managementParameters, VirtualVehicleMappingDecision decision)
     {
-        logger.debug("*** initiateMigration");
+        LOG.debug("*** initiateMigration");
 
         Context cx = Context.enter();
         try

@@ -39,13 +39,12 @@ import org.mockito.Mockito;
 /**
  * RealVehicleTest
  */
-public class RealVehicleTest
+class RealVehicleTest
 {
-
     private RealVehicle sut;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         sut = new RealVehicle();
     }
@@ -65,7 +64,7 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("integerDataProvider")
-    public void shouldStoreId(int id)
+    void shouldStoreId(int id)
     {
         sut.setId(id);
         assertThat(sut.getId()).isNotNull().isEqualTo(id);
@@ -83,7 +82,7 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("stringDataProvider")
-    public void shouldStoreAreaOfOperations(String areaOfOperation)
+    void shouldStoreAreaOfOperations(String areaOfOperation)
     {
         sut.setAreaOfOperation(areaOfOperation);
         assertThat(sut.getAreaOfOperation()).isNotNull().isEqualTo(areaOfOperation);
@@ -98,10 +97,10 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("booleanDataProvider")
-    public void shouldStoreDeletedMarker(boolean deleted)
+    void shouldStoreDeletedMarker(boolean deleted)
     {
         sut.setDeleted(deleted);
-        assertThat(sut.getDeleted()).isNotNull().isEqualTo(deleted);
+        assertThat(sut.getDeleted()).isEqualTo(deleted);
     }
 
     static Stream<Arguments> dateDataProvider()
@@ -114,7 +113,7 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("dateDataProvider")
-    public void shouldStoreLastUpdate(Date lastUpdate)
+    void shouldStoreLastUpdate(Date lastUpdate)
     {
         sut.setLastUpdate(lastUpdate);
         assertThat(sut.getLastUpdate()).isNotNull().isEqualTo(lastUpdate);
@@ -122,7 +121,7 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("stringDataProvider")
-    public void shouldStoreName(String name)
+    void shouldStoreName(String name)
     {
         sut.setName(name);
         assertThat(sut.getName()).isNotNull().isEqualTo(name);
@@ -137,7 +136,7 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("typeDataProvider")
-    public void shouldStoreType(RealVehicleType type)
+    void shouldStoreType(RealVehicleType type)
     {
         sut.setType(type);
         assertThat(sut.getType()).isNotNull().isEqualTo(type);
@@ -145,7 +144,7 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("stringDataProvider")
-    public void shouldStoreUrl(String url)
+    void shouldStoreUrl(String url)
     {
         sut.setUrl(url);
         assertThat(sut.getUrl()).isNotNull().isEqualTo(url);
@@ -164,7 +163,7 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("sensorDataProvider")
-    public void should(List<SensorDefinition> sensors)
+    void should(List<SensorDefinition> sensors)
     {
         sut.setSensors(sensors);
         assertThat(sut.getSensors())
@@ -208,10 +207,11 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("equalRealVehicleDataProvider")
-    public void shouldFindEqualRealVehicles(RealVehicle a, RealVehicle b)
+    void shouldFindEqualRealVehicles(RealVehicle a, RealVehicle b)
     {
-        assertThat(a.equals(b)).isTrue();
-        assertThat(a.hashCode()).describedAs("hash code").isEqualTo(b.hashCode());
+        assertThat(a)
+            .isEqualTo(b)
+            .hasSameHashCodeAs(b);
     }
 
     static Stream<Arguments> notEqualRealVehicleDataProvider()
@@ -272,28 +272,28 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("notEqualRealVehicleDataProvider")
-    public void shouldFindNotEqualRealVehicles(RealVehicle a, RealVehicle b)
+    void shouldFindNotEqualRealVehicles(RealVehicle a, RealVehicle b)
     {
-        assertThat(a.equals(b)).isFalse();
+        assertThat(a).isNotEqualTo(b);
         assertThat(a.hashCode()).describedAs("hash code").isNotEqualTo(b.hashCode());
     }
 
     @Test
-    public void shouldReturnFalseOnComparisonWithNull()
+    void shouldReturnFalseOnComparisonWithNull()
     {
         RealVehicle a = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(),
             RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        assertThat(a.equals(null)).isFalse();
+        assertThat(a).isNotEqualTo(null);
     }
 
     @Test
-    public void shouldReturnFalseOnComparisonWithOtherTypes()
+    void shouldReturnFalseOnComparisonWithOtherTypes()
     {
         RealVehicle a = setupRealVehicle("abc", false, 10, new Date(123456789), "rv01", Arrays.asList(),
             RealVehicleType.QUADROCOPTER, "http://localhost:8080/rv01");
 
-        assertThat(a.equals(new Object[0])).isFalse();
+        assertThat(a).isNotEqualTo(new Object[0]);
     }
 
     static Stream<Arguments> realVehicleDataProvider()
@@ -323,7 +323,7 @@ public class RealVehicleTest
 
     @ParameterizedTest
     @MethodSource("realVehicleDataProvider")
-    public void shouldCalculateHashCode(List<RealVehicle> rvList)
+    void shouldCalculateHashCode(List<RealVehicle> rvList)
     {
         Set<Integer> codeSet = new HashSet<Integer>();
 
@@ -336,7 +336,7 @@ public class RealVehicleTest
     }
 
     @Test
-    public void shouldStoreState()
+    void shouldStoreState()
     {
         RealVehicleState state = mock(RealVehicleState.class);
 

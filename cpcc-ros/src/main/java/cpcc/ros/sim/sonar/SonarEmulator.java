@@ -24,26 +24,20 @@ import java.util.Map;
 
 import org.ros.node.DefaultNodeMainExecutor;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import sensor_msgs.NavSatFix;
 import cpcc.ros.sim.AbstractRosNodeGroup;
+import sensor_msgs.NavSatFix;
 
 /**
  * SonarEmulator
  */
 public class SonarEmulator extends AbstractRosNodeGroup
 {
-    private Logger logger;
+    private static final Logger LOG = LoggerFactory.getLogger(SonarEmulator.class);
+
     private SonarEmulatorPublisherNode publisherNode;
     private SonarEmulatorListenerNode listenerNode;
-
-    /**
-     * @param logger the application logger.
-     */
-    public SonarEmulator(Logger logger)
-    {
-        this.logger = logger;
-    }
 
     /**
      * {@inheritDoc}
@@ -51,11 +45,11 @@ public class SonarEmulator extends AbstractRosNodeGroup
     @Override
     public void start()
     {
-        logger.info("start()");
+        LOG.info("start()");
         getConfig().put("topicRoot", Arrays.asList(getTopicRoot()));
 
-        publisherNode = new SonarEmulatorPublisherNode(logger, getConfig());
-        listenerNode = new SonarEmulatorListenerNode(logger, getConfig(), publisherNode);
+        publisherNode = new SonarEmulatorPublisherNode(getConfig());
+        listenerNode = new SonarEmulatorListenerNode(getConfig(), publisherNode);
 
         DefaultNodeMainExecutor.newDefault().execute(publisherNode, getNodeConfiguration());
         DefaultNodeMainExecutor.newDefault().execute(listenerNode, getNodeConfiguration());
@@ -67,7 +61,7 @@ public class SonarEmulator extends AbstractRosNodeGroup
     @Override
     public void shutdown()
     {
-        logger.info("shutdown()");
+        LOG.info("shutdown()");
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(listenerNode);
         listenerNode.onShutdown(null);
         DefaultNodeMainExecutor.newDefault().shutdownNodeMain(publisherNode);

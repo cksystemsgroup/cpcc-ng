@@ -42,10 +42,10 @@ import cpcc.core.entities.SensorVisibility;
 /**
  * Java Script utilities tests.
  */
-public class JavaScriptUtilsTest
+class JavaScriptUtilsTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<JavaScriptUtils> cnt = JavaScriptUtils.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -87,7 +87,7 @@ public class JavaScriptUtilsTest
 
     @ParameterizedTest
     @MethodSource("jsDataProvider")
-    public void shouldConvertJsObjectsToStrings(Map<String, Object> data, String expected) throws JSONException
+    void shouldConvertJsObjectsToStrings(Map<String, Object> data, String expected) throws JSONException
     {
         NativeObject obj = new NativeObject();
         for (Entry<String, Object> entry : data.entrySet())
@@ -103,7 +103,7 @@ public class JavaScriptUtilsTest
     }
 
     @Test
-    public void shouldReturnNullOnNullObject()
+    void shouldReturnNullOnNullObject()
     {
         String actual = JavaScriptUtils.toJsonString(null);
 

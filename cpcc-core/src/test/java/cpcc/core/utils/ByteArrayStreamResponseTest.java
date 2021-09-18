@@ -28,12 +28,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.tapestry5.http.services.Response;
 import org.junit.jupiter.api.Test;
 
-public class ByteArrayStreamResponseTest
+class ByteArrayStreamResponseTest
 {
     private static final String CONTENT_TYPE_TEXT = "application/text";
 
     @Test
-    public void shouldReturnByteArrayAsStream() throws IOException
+    void shouldReturnByteArrayAsStream() throws IOException
     {
         byte[] expected = new byte[]{65, 66, 67, 68, 69, 70, 71, 72, 73, 74};
 
@@ -46,7 +46,7 @@ public class ByteArrayStreamResponseTest
     }
 
     @Test
-    public void shouldIgnoreCallsToPrepareResponse() throws IOException
+    void shouldIgnoreCallsToPrepareResponse() throws IOException
     {
         byte[] expected = new byte[]{65, 66, 67, 68, 69, 70, 71, 72, 73, 74};
 

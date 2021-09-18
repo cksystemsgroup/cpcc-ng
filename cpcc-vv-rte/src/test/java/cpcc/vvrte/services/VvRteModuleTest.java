@@ -44,7 +44,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.slf4j.Logger;
 
 import cpcc.com.services.CommunicationService;
 import cpcc.core.services.jobs.JobQueue;
@@ -71,10 +70,10 @@ import cpcc.vvrte.services.task.TaskSchedulerServiceImpl;
 /**
  * VvRteModuleTest
  */
-public class VvRteModuleTest
+class VvRteModuleTest
 {
     @Test
-    public void shouldHavePrivateConstructor() throws Exception
+    void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VvRteModule> cnt = VvRteModule.class.getDeclaredConstructor();
         assertThat(cnt.isAccessible()).isFalse();
@@ -83,7 +82,7 @@ public class VvRteModuleTest
     }
 
     @Test
-    public void shouldBindServices()
+    void shouldBindServices()
     {
         ServiceBindingOptions options = mock(ServiceBindingOptions.class);
         ServiceBinder binder = mock(ServiceBinder.class);
@@ -117,7 +116,7 @@ public class VvRteModuleTest
     }
 
     @Test
-    public void shouldContributeToHibernateEntityPackageManager()
+    void shouldContributeToHibernateEntityPackageManager()
     {
         @SuppressWarnings("unchecked")
         Configuration<String> configuration = mock(Configuration.class);
@@ -137,7 +136,7 @@ public class VvRteModuleTest
     @SuppressWarnings("unchecked")
     @ParameterizedTest
     @MethodSource("applicationDefaultsDataProvider")
-    public void shouldContributeApplicationDefaults(String className)
+    void shouldContributeApplicationDefaults(String className)
     {
         MappedConfiguration<String, String> configuration = mock(MappedConfiguration.class);
 
@@ -150,7 +149,7 @@ public class VvRteModuleTest
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldContributeComponentMessagesSource()
+    void shouldContributeComponentMessagesSource()
     {
         OrderedConfiguration<String> configuration = mock(OrderedConfiguration.class);
 
@@ -160,15 +159,14 @@ public class VvRteModuleTest
     }
 
     @Test
-    public void shouldSchedulePeriodicJobs()
+    void shouldSchedulePeriodicJobs()
     {
         VvRteRepository vvRteRepo = mock(VvRteRepository.class);
         PeriodicExecutor executor = mock(PeriodicExecutor.class);
         TaskExecutionService taskExecutionService = mock(TaskExecutionService.class);
         JobService jobService = mock(JobService.class);
-        Logger logger = mock(Logger.class);
 
-        VvRteModule.scheduleJobs(vvRteRepo, executor, taskExecutionService, jobService, logger);
+        VvRteModule.scheduleJobs(vvRteRepo, executor, taskExecutionService, jobService);
 
         ArgumentCaptor<Runnable> argument = ArgumentCaptor.forClass(Runnable.class);
 
@@ -181,7 +179,7 @@ public class VvRteModuleTest
     }
 
     @Test
-    public void shouldAddMigrationConnectorToCommunicationService()
+    void shouldAddMigrationConnectorToCommunicationService()
     {
         CommunicationService communicationService = mock(CommunicationService.class);
 
@@ -191,7 +189,7 @@ public class VvRteModuleTest
     }
 
     @Test
-    public void shouldSetupTaskExecutionService()
+    void shouldSetupTaskExecutionService()
     {
         TaskExecutionService tes = mock(TaskExecutionService.class);
         VirtualVehicleLauncher vvl = mock(VirtualVehicleLauncher.class);
@@ -202,15 +200,14 @@ public class VvRteModuleTest
     }
 
     @Test
-    public void shouldSetupJobQueues()
+    void shouldSetupJobQueues()
     {
-        Logger logger = mock(Logger.class);
         JobService jobService = mock(JobService.class);
         HibernateSessionManager sessionManager = mock(HibernateSessionManager.class);
         TimeService timeService = mock(TimeService.class);
         JobRepository jobRepository = mock(JobRepository.class);
 
-        VvRteModule.setupJobQueues(logger, jobService, sessionManager, timeService, jobRepository, 10);
+        VvRteModule.setupJobQueues(jobService, sessionManager, timeService, jobRepository, 10);
 
         verify(jobService).addJobQueue(eq(VvRteConstants.MIGRATION_JOB_QUEUE_NAME), any(JobQueue.class));
     }

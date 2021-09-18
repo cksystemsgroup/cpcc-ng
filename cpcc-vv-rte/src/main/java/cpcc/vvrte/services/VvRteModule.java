@@ -31,6 +31,7 @@ import org.apache.tapestry5.ioc.annotations.Symbol;
 import org.apache.tapestry5.ioc.services.cron.CronSchedule;
 import org.apache.tapestry5.ioc.services.cron.PeriodicExecutor;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cpcc.com.services.CommunicationService;
 import cpcc.core.services.jobs.JobQueue;
@@ -65,6 +66,8 @@ import cpcc.vvrte.services.task.TaskSchedulerServiceImpl;
  */
 public final class VvRteModule
 {
+    private static final Logger LOG = LoggerFactory.getLogger(VvRteModule.class);
+
     private VvRteModule()
     {
         // Intentionally empty.
@@ -139,18 +142,17 @@ public final class VvRteModule
      * @param executor the periodic executor service.
      * @param taskExecutionService the task executor service.
      * @param jobService the job service.
-     * @param logger the application logger.
      */
     @Startup
     public static void scheduleJobs(VvRteRepository vvRteRepo, PeriodicExecutor executor,
-        final TaskExecutionService taskExecutionService, final JobService jobService, final Logger logger)
+        final TaskExecutionService taskExecutionService, final JobService jobService)
     {
         vvRteRepo.resetVirtualVehicleStates();
 
         executor.addJob(new CronSchedule("* * * * * ?"), "VvRte Task execution.", taskExecutionService::executeTasks);
 
         executor.addJob(new CronSchedule("0,30 * * * * ?"), "VvRte handle stuck migrations.", () -> {
-            logger.debug("### Add job for stuck migrations.");
+            LOG.debug("### Add job for stuck migrations.");
             jobService.addJobIfNotExists(VvRteConstants.MIGRATION_JOB_QUEUE_NAME, VvRteConstants.STUCK_MIGRATIONS);
         });
     }
@@ -181,7 +183,6 @@ public final class VvRteModule
     }
 
     /**
-     * @param logger the application logger.
      * @param jobService the job service instance.
      * @param sessionManager the session manager instance.
      * @param timeService the time service.
@@ -189,14 +190,14 @@ public final class VvRteModule
      * @param numberOfPoolThreads the number of migration job queue pool threads.
      */
     @Startup
-    public static void setupJobQueues(Logger logger, JobService jobService, HibernateSessionManager sessionManager,
+    public static void setupJobQueues(JobService jobService, HibernateSessionManager sessionManager,
         TimeService timeService, JobRepository jobRepository,
         @Symbol(VvRteConstants.NUMBER_OF_MIGRATION_POOL_THREADS) int numberOfPoolThreads)
     {
         JobRunnableFactory factory = new VvRteJobRunnableFactory();
 
         jobService.addJobQueue(VvRteConstants.MIGRATION_JOB_QUEUE_NAME, new JobQueue(
-            VvRteConstants.MIGRATION_JOB_QUEUE_NAME, logger, sessionManager, timeService, Arrays.asList(factory),
+            VvRteConstants.MIGRATION_JOB_QUEUE_NAME, sessionManager, timeService, Arrays.asList(factory),
             numberOfPoolThreads));
     }
 }
