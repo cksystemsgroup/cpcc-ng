@@ -168,5 +168,21 @@
         <addUniqueConstraint columnNames="URL" constraintName="IX_REALVEHICLE_URL" deferrable="false" disabled="false" initiallyDeferred="false" tableName="REALVEHICLE"/>
         <addUniqueConstraint columnNames="NAME" constraintName="IX_DEVICETYPE_NAME" deferrable="false" disabled="false" initiallyDeferred="false" tableName="DEVICETYPE"/>
         <addUniqueConstraint columnNames="TOPICROOT" constraintName="IX_DEVICE_TOPICROOT" deferrable="false" disabled="false" initiallyDeferred="false" tableName="DEVICE"/>
+        <modifySql dbms="oracle">
+            <regExpReplace replace="BOOLEAN\(\d+\)" with="NUMBER(1,0)" />
+            <regExpReplace replace="BIGINT\(\d+\)" with="NUMBER(19,0)" />
+            <regExpReplace replace="INT\(\d+\)" with="INTEGER" />
+        </modifySql>
+        <modifySql dbms="postgresql">
+            <regExpReplace replace="BIGINT\(\d+\)" with="INT8" />
+            <regExpReplace replace="BLOB" with="BYTEA" />
+            <regExpReplace replace="BOOLEAN\(\d+\)" with="BOOLEAN" />
+            <regExpReplace replace="CLOB" with="TEXT" />
+            <regExpReplace replace="CHAR\((\d+)(\s*CHAR)?\)" with="CHAR($1)" />
+            <regExpReplace replace="INT\(\d+\)" with="INT4" />
+            <regExpReplace replace="OID" with="BYTEA" />
+            <regExpReplace replace="VARCHAR\((\d+)(\s*CHAR)?\)" with="VARCHAR($1)" />
+            <regExpReplace replace="VARCHAR2\((\d+)(\s*CHAR)?\)" with="VARCHAR($1)" />
+        </modifySql>	
     </changeSet>
 </databaseChangeLog>
