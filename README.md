@@ -11,7 +11,7 @@ paradigm of cloud computing to virtualized versions of unmanned vehicles. Our im
 of multi-customer information acquisition missions as well as their execution on real hardware running the robot
 operating system (ROS).
 
-Homepage: http://cpcc.cs.uni-salzburg.at
+Homepage: http://cpcc.cs.sbg.ac.at
 
 
 ## Demo distribution
@@ -21,7 +21,7 @@ Homepage: http://cpcc.cs.uni-salzburg.at
 - 2 GB RAM for the Ground Station and 1 GB for each Real Vehicle.
 
 ### Setup and start
-Download the demo distribution from [here](http://cpcc.cs.uni-salzburg.at/cpcc-demo-0.0.5-SNAPSHOT-demo.tar.gz) and unpack it, and start the setup script as follows:
+Download the demo distribution from [here](http://cpcc.cs.sbg.ac.at/cpcc-demo-0.0.5-SNAPSHOT-demo.tar.gz) and unpack it, and start the setup script as follows:
 
 	$ tar -xzf cpcc-demo-<version>-demo.tar.gz
 	$ cd cpcc-demo-<version>
