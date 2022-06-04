@@ -33,7 +33,7 @@ for d in $CATALINA_BASE $CATALINA_BASE/conf $CATALINA_BASE/webapps $CATALINA_BAS
 cp $CPCC_DIR/conf/*.xml $CPCC_DIR/conf/*.properties $CATALINA_BASE/conf
 
 OPTS="$OPTS -Duser.timezone=CET -Dfile.encoding=UTF-8 -Djava.awt.headless=true $CATALINA_OPTS";
-OPTS="$OPTS -Dcatalina.base=$CATALINA_BASE -Dshutdown.port=${SHUTDOWN_PORT[$APP_CONTEXT_PATH]} -Dhttp.connector.port=${CONNECTOR_PORT[$APP_CONTEXT_PATH]}";
+OPTS="$OPTS -Dcatalina.base=$CATALINA_BASE -Dshutdown.port=${SHUTDOWN_PORT[$APP_CONTEXT_PATH]} -Dhttp.connector.port=${CONNECTOR_PORT[$APP_CONTEXT_PATH]} -Dhttp.connector.proxy-name=${CONNECTOR_PROXY_NAME} -Dhttp.connector.proxy-port=${CONNECTOR_PROXY_PORT}";
 OPTS="$OPTS -Dapp.base=webapps -Dapp.context.path=$APP_CONTEXT_PATH -Dcpcc.context.path=$CPCC_CONTEXT_PATH -Dapp.war.file=$APP_WAR_FILE"
 OPTS="$OPTS -Dhibernate.dialect=org.hibernate.dialect.H2Dialect -Ddb.driver=org.h2.Driver -Ddb.url=jdbc:h2:file:${DBDIR}/${APP_CONTEXT_PATH};AUTOCOMMIT=OFF;RETENTION_TIME=0;CACHE_SIZE=65536";
 

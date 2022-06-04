@@ -146,19 +146,9 @@
 				<version>1.7.14</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mock-server</groupId>
-				<artifactId>mockserver-netty</artifactId>
-				<version>${mockserver-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.mock-server</groupId>
-				<artifactId>mockserver-client-java</artifactId>
-				<version>${mockserver-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.mock-server</groupId>
-				<artifactId>mockserver-junit-jupiter</artifactId>
-				<version>${mockserver-version}</version>
+			    <groupId>org.mock-server</groupId>
+			    <artifactId>mockserver-junit-jupiter-no-dependencies</artifactId>
+			    <version>${mockserver-version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
@@ -200,12 +190,6 @@
 				<groupId>org.skyscreamer</groupId>
 				<artifactId>jsonassert</artifactId>
 				<version>1.5.0</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tapestry</groupId>
-				<artifactId>tapestry-test</artifactId>
-				<version>${tapestry-release-version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -496,10 +480,6 @@
 			<groupId>eu.codearte.catch-exception</groupId>
 			<artifactId>catch-exception</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity-engine-core</artifactId>
 		</dependency>
 	</dependencies>
 

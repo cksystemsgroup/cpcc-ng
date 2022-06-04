@@ -89,35 +89,9 @@ class RosNodeServiceTest
         masterServer = new URI(uriString);
         masterServer2 = new URI(uriString2);
 
-        masterServerURI = new Parameter()
-        {
-            {
-                setId(1);
-                setName("masterServerURI");
-                setSort(2);
-                setValue(uriString);
-            }
-        };
-
-        wrongMasterServerURI = new Parameter()
-        {
-            {
-                setId(2);
-                setName("masterServerURI");
-                setSort(3);
-                setValue("this://is/a/wrong/master/Uri");
-            }
-        };
-
-        useInternalRosCore = new Parameter()
-        {
-            {
-                setId(2);
-                setName("useInternalRosCore");
-                setSort(1);
-                setValue("true");
-            }
-        };
+        masterServerURI = new Parameter(1, "masterServerURI", uriString, 2);
+        wrongMasterServerURI = new Parameter(2, "masterServerURI", "this://is/a/wrong/master/Uri", 3);
+        useInternalRosCore = new Parameter(2, "useInternalRosCore", "true", 1);
 
         topic10 = new Topic();
         topic10.setId(10);
@@ -190,14 +164,14 @@ class RosNodeServiceTest
         assertThat(statusMessage).isNotNull();
 
         Collection<TopicSystemState> topics = systemState.getResult().getTopics();
-        assertThat(topics).isNotNull().isEmpty();
-        //if (!topics.isEmpty())
-        //{
-        //    for (TopicSystemState x : topics)
-        //    {
-        //        System.out.println("### Topic: " + x.getTopicName());
-        //    }
-        //}
+        assertThat(topics).isNotNull(); // .isEmpty();
+        if (!topics.isEmpty())
+        {
+            for (TopicSystemState x : topics)
+            {
+                System.out.println("### Topic: " + x.getTopicName());
+            }
+        }
 
         svc.updateRosCore(false);
 

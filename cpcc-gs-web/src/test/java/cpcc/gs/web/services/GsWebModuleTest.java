@@ -28,7 +28,7 @@ import java.lang.reflect.Constructor;
 
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.commons.MappedConfiguration;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * AppModuleTest

@@ -10,6 +10,7 @@
 . $(dirname $0)/profile.sh no-setup
 
 HTTP_DOMAIN=localhost
+HTTP_PORT=80
 
 setup() {
 	BASE_PORT='';
@@ -25,6 +26,7 @@ setup() {
 	
 	CONTEXT_PREFIX=$(askUser 'Please enter the base context prefix (leave empty if unsure)' '.*' '')
 	HTTP_DOMAIN=$(askUser 'Please enter the HTTP server''s virtual host name (use localhost if unsure)' '.*' "$HTTP_DOMAIN")
+	HTTP_PORT=$(askUser 'Please enter the HTTP server''s port number (use 80 if unsure)' '.*' "$HTTP_PORT")
 	CAMERAS=$(askUser 'Do you want to enable the OSM camera simulation? (y/N)' '[YyNn]' '')
 	
 	echo "Setup using configuration in $1 and base port number $BASE_PORT"	
@@ -53,6 +55,9 @@ setup() {
 		echo
 		echo "CONTEXT_PREFIX=\"$CONTEXT_PREFIX\""
 		echo "HTTP_DOMAIN=\"$HTTP_DOMAIN\""
+		echo
+		echo "CONNECTOR_PROXY_NAME=\"$HTTP_DOMAIN\""
+		echo "CONNECTOR_PROXY_PORT=\"$HTTP_PORT\""
 		echo
 	} > $CONFIG;
 	

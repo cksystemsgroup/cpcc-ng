@@ -54,6 +54,19 @@ public class Parameter implements Serializable
     @NotNull
     private Integer sort;
 
+    public Parameter()
+    {
+        // Intentionally empty.
+    }
+
+    public Parameter(Integer id, String name, String value, Integer sort)
+    {
+        this.id = id;
+        this.name = name;
+        this.value = value;
+        this.sort = sort;
+    }
+
     /**
      * @return the parameter ID.
      */
