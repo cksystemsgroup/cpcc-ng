@@ -60,7 +60,7 @@
 		<assertj-version>3.23.1</assertj-version>
 		<awaitility-version>4.2.0</awaitility-version>
 		<cobertura.report.format>xml</cobertura.report.format>
-		<com.h2database.version>2.1.212</com.h2database.version>
+		<com.h2database.version>2.1.214</com.h2database.version>
 		<easymock-version>4.3</easymock-version>
 		<httpclient-version>4.5.13</httpclient-version>
 		<java-version>1.8</java-version>
