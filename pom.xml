@@ -68,7 +68,7 @@
 		<junit.jupiter.version>5.9.2</junit.jupiter.version>
 		<liquibase-version>4.19.0</liquibase-version>
 		<logback-version>1.4.5</logback-version>
-		<mockito-version>5.0.0</mockito-version>
+		<mockito-version>5.1.1</mockito-version>
 		<mockserver-version>5.15.0</mockserver-version>
 		<rosjava-version>0.0.6</rosjava-version>
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
