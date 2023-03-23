@@ -12,6 +12,7 @@
 .tomcatplugin
 bin
 build
+build.sh
 logs
 nix*
 null
