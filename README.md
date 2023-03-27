@@ -17,7 +17,7 @@ Homepage: http://cpcc.cs.sbg.ac.at
 ## Demo distribution
 
 ### Requirements
-- Java 8+
+- Java 11+
 - 2 GB RAM for the Ground Station and 1 GB for each Real Vehicle.
 
 ### Setup and start
