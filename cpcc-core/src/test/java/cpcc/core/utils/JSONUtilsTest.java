@@ -23,6 +23,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -42,7 +43,7 @@ class JSONUtilsTest
     void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<JSONUtils> cnt = JSONUtils.class.getDeclaredConstructor();
-        assertThat(cnt.isAccessible()).isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

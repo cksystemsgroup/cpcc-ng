@@ -29,8 +29,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * Device
@@ -45,15 +43,13 @@ public class Device implements ITreeNode, Serializable
     @GeneratedValue
     private Integer id;
 
-    @NotNull
-    @Column(name = "topic_root", length = 50)
+    @Column(name = "topic_root", length = 50, nullable = false)
     private String topicRoot;
 
-    @NotNull
-    @OneToOne
+    @OneToOne(optional = false)
     private DeviceType type;
 
-    @Size(max = 512)
+    @Column(length = 512)
     private String configuration;
 
     /**

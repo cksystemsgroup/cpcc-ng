@@ -28,7 +28,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -36,12 +35,9 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -54,21 +50,19 @@ public class RealVehicle implements Serializable
 {
     private static final long serialVersionUID = 1765647234477466288L;
 
-    @GeneratedValue(generator = "UniqueIntegerIdGenerator")
-    @GenericGenerator(name = "UniqueIntegerIdGenerator", strategy = "cpcc.core.services.UniqueIntegerIdGenerator")
+    // @GeneratedValue(generator = "UniqueIntegerIdGenerator")
+    // @GenericGenerator(name = "UniqueIntegerIdGenerator", strategy = "cpcc.core.services.UniqueIntegerIdGenerator")
     @Id
     private Integer id;
 
-    @NotNull
-    @Size(max = 50)
+    @Column(length = 50, nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(30) default 'UNKNOWN'")
     private RealVehicleType type;
 
-    @NotNull
-    @Size(max = 1024)
+    @Column(length = 1024, nullable = false)
     private String url;
 
     @Lob
@@ -80,12 +74,11 @@ public class RealVehicle implements Serializable
         inverseJoinColumns = {@JoinColumn(name = "sensors_id")})
     private List<SensorDefinition> sensors = new ArrayList<>();
 
-    @NotNull
-    @Type(type = "timestamp")
-    @Column(name = "last_update")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_update", nullable = false)
     private java.util.Date lastUpdate;
 
-    @NotNull
+    @Column(nullable = false)
     private boolean deleted;
 
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)

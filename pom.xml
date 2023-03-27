@@ -60,23 +60,24 @@
 		<assertj-version>3.24.2</assertj-version>
 		<awaitility-version>4.2.0</awaitility-version>
 		<cobertura.report.format>xml</cobertura.report.format>
-		<com.h2database.version>2.1.214</com.h2database.version>
+		<com.h2database.version>1.4.199</com.h2database.version>
 		<easymock-version>4.3</easymock-version>
 		<httpclient-version>4.5.14</httpclient-version>
-		<java-version>1.8</java-version>
+		<java-version>11</java-version>
 		<javax.mail.version>1.4.7</javax.mail.version>
 		<junit.jupiter.version>5.9.2</junit.jupiter.version>
 		<liquibase-version>4.20.0</liquibase-version>
 		<logback-version>1.4.6</logback-version>
 		<mockito-version>5.2.0</mockito-version>
 		<mockserver-version>5.15.0</mockserver-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<rosjava-version>0.0.6</rosjava-version>
 		<servlet-api-release-version>3.0-alpha-1</servlet-api-release-version>
 		<slf4j-version>2.0.7</slf4j-version>
 		<snakeyaml-version>2.0</snakeyaml-version>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<tapestry-release-version>5.8.2</tapestry-release-version>
-		<tomcat.version>10.1.7</tomcat.version>
+		<tomcat.version>9.0.73</tomcat.version>
 	</properties>
 
 	<dependencyManagement>

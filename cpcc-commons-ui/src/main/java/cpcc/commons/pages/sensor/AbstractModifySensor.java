@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import javax.inject.Inject;
-import javax.validation.Valid;
 
 import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.Property;
@@ -56,7 +55,6 @@ public class AbstractModifySensor
     @Inject
     protected Messages messages;
 
-    @Valid
     @Property
     protected SensorDefinition sensor;
 

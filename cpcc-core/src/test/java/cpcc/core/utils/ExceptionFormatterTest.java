@@ -3,6 +3,7 @@ package cpcc.core.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ class ExceptionFormatterTest
     void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<ExceptionFormatter> cnt = ExceptionFormatter.class.getDeclaredConstructor();
-        assertThat(cnt.isAccessible()).isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

@@ -21,7 +21,6 @@ package cpcc.commons.pages.vv;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.annotations.Component;
@@ -62,7 +61,6 @@ public class AbstractModifyVv
     @Inject
     protected TimeService timeService;
 
-    @Valid
     @Property
     protected VirtualVehicle vehicle;
 

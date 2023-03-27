@@ -21,7 +21,6 @@ package cpcc.commons.pages.rv;
 import java.util.Date;
 
 import javax.inject.Inject;
-import javax.validation.Valid;
 
 import org.apache.tapestry5.alerts.AlertManager;
 import org.apache.tapestry5.annotations.Component;
@@ -63,7 +62,6 @@ public class AbstractModifyRealVehicle
     @Inject
     protected AlertManager alertManager;
 
-    @Valid
     @Property
     protected RealVehicle realVehicle;
 

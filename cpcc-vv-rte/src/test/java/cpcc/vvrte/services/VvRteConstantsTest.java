@@ -21,6 +21,7 @@ package cpcc.vvrte.services;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +34,7 @@ class VvRteConstantsTest
     {
         Constructor<VvRteConstants> cnt = VvRteConstants.class.getDeclaredConstructor();
 
-        assertThat(cnt.isAccessible()).describedAs("Constructor Acessability").isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

@@ -27,7 +27,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 /**
  * Topic
@@ -42,23 +41,20 @@ public class Topic implements Serializable
     @GeneratedValue
     private Integer id;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "node_type", length = 255)
+    @Column(name = "node_type", length = 255, nullable = false)
     private RosNodeType nodeType;
 
     @Column(name = "sub_path", length = 50)
     private String subpath;
 
-    @NotNull
-    @Column(name = "message_type", length = 50)
+    @Column(name = "message_type", length = 50, nullable = false)
     private String messageType;
 
-    @NotNull
-    @Column(name = "adapter_class_name", length = 120)
+    @Column(name = "adapter_class_name", length = 120, nullable = false)
     private String adapterClassName;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TopicCategory category;
 

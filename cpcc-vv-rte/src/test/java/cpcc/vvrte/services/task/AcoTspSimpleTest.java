@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +47,7 @@ class AcoTspSimpleTest
     void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<AcoTspSimple> cnt = AcoTspSimple.class.getDeclaredConstructor();
-        assertThat(cnt.isAccessible()).isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

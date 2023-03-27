@@ -18,19 +18,27 @@
 
 package cpcc.commons.services;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.Translator;
 import org.apache.tapestry5.commons.Configuration;
 import org.apache.tapestry5.commons.MappedConfiguration;
 import org.apache.tapestry5.commons.OrderedConfiguration;
+import org.apache.tapestry5.http.services.BaseURLSource;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.services.LibraryMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cpcc.commons.base.CommonsConstants;
 
 /**
  * CommonsModule
  */
 public final class CommonsModule
 {
+    private static final Logger LOG = LoggerFactory.getLogger(CommonsModule.class);
+
     private CommonsModule()
     {
         // Intentionally empty.
@@ -68,6 +76,20 @@ public final class CommonsModule
     public static void contributeApplicationDefaults(MappedConfiguration<String, String> configuration)
     {
         configuration.add(SymbolConstants.JAVASCRIPT_INFRASTRUCTURE_PROVIDER, "jquery");
+    }
+
+    /**
+     * @param configuration the IoC configuration.
+     */
+    public static void contributeServiceOverride(MappedConfiguration<Class<?>, Object> configuration)
+    {
+        String baseUrl = System.getProperty(CommonsConstants.PROP_BASE_URL);
+        if (StringUtils.isNotBlank(baseUrl))
+        {
+            LOG.info("Using base URL {}", baseUrl);
+            BaseURLSource source = (secure) -> baseUrl;
+            configuration.add(BaseURLSource.class, source);
+        }
     }
 
     /**

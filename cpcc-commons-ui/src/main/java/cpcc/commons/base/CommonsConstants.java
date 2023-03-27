@@ -1,6 +1,6 @@
 // This code is part of the CPCC-NG project.
 //
-// Copyright (c) 2009-2016 Clemens Krainer <clemens.krainer@gmail.com>
+// Copyright (c) 2013-2023 Clemens Krainer <clemens.krainer@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,26 +16,14 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package cpcc.rv.base.services;
+package cpcc.commons.base;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-
-import org.junit.jupiter.api.Test;
-
-/**
- * RealVehicleBaseConstantsTest implementation.
- */
-class RealVehicleBaseConstantsTest
+public final class CommonsConstants
 {
-    @Test
-    void shouldHavePrivateConstructor() throws Exception
+    public static final String PROP_BASE_URL = "cpcc.base.url";
+    
+    private CommonsConstants()
     {
-        Constructor<RealVehicleBaseConstants> cnt = RealVehicleBaseConstants.class.getDeclaredConstructor();
-        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
-        cnt.setAccessible(true);
-        cnt.newInstance();
+        // Intentionally left empty.
     }
 }

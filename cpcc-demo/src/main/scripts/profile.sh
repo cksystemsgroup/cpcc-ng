@@ -61,8 +61,8 @@ askUser ()
 
 v=$(java -version 2>&1 | awk -F\" 'NR == 1 {print $2}');
 case "$v" in
-	1.[89]*) ;;
-	*) die "Can not use Java version '$v'. Please provide Java version 1.8 or newer!"; ;;
+	1[123456789]*) ;;
+	*) die "Can not use Java version '$v'. Please provide Java version 11 or newer!"; ;;
 esac
 
 [ -f "$CUSTOM_CONFIG" ] && info "Including custom configuration $CUSTOM_CONFIG" && . $CUSTOM_CONFIG;

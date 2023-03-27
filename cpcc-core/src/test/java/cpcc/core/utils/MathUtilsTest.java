@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.offset;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class MathUtilsTest
     void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<MathUtils> cnt = MathUtils.class.getDeclaredConstructor();
-        assertThat(cnt.isAccessible()).isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

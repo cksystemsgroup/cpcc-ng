@@ -144,6 +144,8 @@ class RosImageConverterTest
 
         byte[] resultImageData = bos.toByteArray();
 
+        // FileUtils.writeByteArrayToFile(new File(imageName + "-new"), bos.toByteArray());
+
         assertThat(resultImageData).hasSameSizeAs(imageData);
     }
 
@@ -243,6 +245,8 @@ class RosImageConverterTest
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ImageIO.write(result, "PNG", bos);
 
+        // FileUtils.writeByteArrayToFile(new File(convertedImageName + "-new"), bos.toByteArray());
+
         assertThat(bos.toByteArray()).isEqualTo(convertedImageData);
     }
 
@@ -278,6 +282,8 @@ class RosImageConverterTest
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ImageIO.write(result, "PNG", bos);
+
+        // FileUtils.writeByteArrayToFile(new File(convertedImageName + "-new"), bos.toByteArray());
 
         assertThat(bos.toByteArray()).isEqualTo(convertedImageData);
     }

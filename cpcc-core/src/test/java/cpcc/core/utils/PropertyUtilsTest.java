@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -45,7 +46,7 @@ class PropertyUtilsTest
     void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<PropertyUtils> cnt = PropertyUtils.class.getDeclaredConstructor();
-        assertThat(cnt.isAccessible()).isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

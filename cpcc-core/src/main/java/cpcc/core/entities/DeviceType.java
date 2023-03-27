@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -32,8 +33,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * Device
@@ -48,21 +47,18 @@ public class DeviceType implements Serializable
     @GeneratedValue
     private Integer id;
 
-    @NotNull
-    @Size(max = 50)
+    @Column(length = 50, nullable = false)
     private String name;
 
-    @NotNull
-    @OneToOne
+    @OneToOne(optional = false)
     private Topic mainTopic;
 
-    @Size(max = 120)
+    @Column(length = 120)
     private String className;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "device_types_topics"
-        , joinColumns = {@JoinColumn(name = "device_types_id")}
-        , inverseJoinColumns = {@JoinColumn(name = "subtopics_id")})
+    @JoinTable(name = "device_types_topics", joinColumns = {@JoinColumn(name = "device_types_id")},
+        inverseJoinColumns = {@JoinColumn(name = "subtopics_id")})
     private List<Topic> subTopics = new ArrayList<>();
 
     /**

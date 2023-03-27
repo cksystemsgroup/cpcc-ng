@@ -39,11 +39,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.internal.util.SerializationHelper;
+import org.apache.commons.lang3.SerializationUtils;
 import org.mozilla.javascript.ScriptableObject;
 
 import cpcc.core.entities.PolarCoordinate;
@@ -66,24 +63,20 @@ public class Task implements Serializable
     @Embedded
     private PolarCoordinate position;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "task_state")
+    @Column(name = "task_state", nullable = false)
     private TaskState taskState = TaskState.INIT;
 
-    @NotNull
-    @Column(name = "task_order")
+    @Column(name = "task_order", nullable = false)
     private int order = 0;
 
-    @NotNull
-    @Column(name = "tolerance")
+    @Column(name = "tolerance", nullable = false)
     private double tolerance = 5.0f;
 
     @Column(name = "distance_to_target")
     private Double distanceToTarget = null;
 
-    @NotNull
-    @Column(name = "creation_time")
+    @Column(name = "creation_time", nullable = false)
     private Date creationTime = new Date();
 
     @Column(name = "execution_start")
@@ -97,10 +90,8 @@ public class Task implements Serializable
     private byte[] sensorValues;
 
     @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
-    @Fetch(value = FetchMode.SUBSELECT)
-    @JoinTable(name = "tasks_sensors"
-        , joinColumns = {@JoinColumn(name = "task_id")}
-        , inverseJoinColumns = {@JoinColumn(name = "sensor_id")})
+    @JoinTable(name = "tasks_sensors", joinColumns = {@JoinColumn(name = "task_id")},
+        inverseJoinColumns = {@JoinColumn(name = "sensor_id")})
     private List<SensorDefinition> sensors = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
@@ -270,7 +261,7 @@ public class Task implements Serializable
      */
     public ScriptableObject getSensorValues()
     {
-        return (ScriptableObject) SerializationHelper.deserialize(sensorValues);
+        return (ScriptableObject) SerializationUtils.deserialize(sensorValues);
     }
 
     /**
@@ -278,7 +269,7 @@ public class Task implements Serializable
      */
     public void setSensorValues(ScriptableObject sensorValues)
     {
-        this.sensorValues = SerializationHelper.serialize(sensorValues);
+        this.sensorValues = SerializationUtils.serialize(sensorValues);
     }
 
     /**

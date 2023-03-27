@@ -26,6 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,7 @@ class VirtualVehicleStorageUtilsTest
     void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VirtualVehicleStorageUtils> cnt = VirtualVehicleStorageUtils.class.getDeclaredConstructor();
-        assertThat(cnt.isAccessible()).isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

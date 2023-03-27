@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class VvRteFunctionsTest
     void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VvRteFunctions> cnt = VvRteFunctions.class.getDeclaredConstructor();
-        assertThat(cnt.isAccessible()).isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

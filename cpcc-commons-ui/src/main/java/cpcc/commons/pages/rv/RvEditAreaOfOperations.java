@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.validation.Valid;
 
 import org.apache.tapestry5.StreamResponse;
 import org.apache.tapestry5.annotations.Property;
@@ -54,7 +53,6 @@ public class RvEditAreaOfOperations
     @Inject
     private CoreJsonConverter jsonConverter;
 
-    @Valid
     @Property
     protected RealVehicle realVehicle;
 

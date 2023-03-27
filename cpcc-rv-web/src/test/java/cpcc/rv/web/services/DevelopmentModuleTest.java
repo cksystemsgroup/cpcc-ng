@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 import org.apache.tapestry5.SymbolConstants;
 import org.apache.tapestry5.commons.MappedConfiguration;
@@ -39,7 +40,7 @@ public class DevelopmentModuleTest
     public void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<DevelopmentModule> cnt = DevelopmentModule.class.getDeclaredConstructor();
-        assertThat(cnt.isAccessible()).isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

@@ -27,7 +27,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 /**
  * MappingAttributes
@@ -41,12 +40,10 @@ public class MappingAttributes implements Serializable
     @EmbeddedId
     private MappingAttributesPK pk;
 
-    @NotNull
-    @Column(name="vv_visible")
+    @Column(name="vv_visible", nullable = false)
     private Boolean vvVisible;
 
-    @NotNull
-    @Column(name="connected_to_autopilot")
+    @Column(name="connected_to_autopilot", nullable = false)
     private Boolean connectedToAutopilot;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)

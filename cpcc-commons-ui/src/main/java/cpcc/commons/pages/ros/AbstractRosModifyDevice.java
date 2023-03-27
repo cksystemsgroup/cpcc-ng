@@ -21,7 +21,6 @@ package cpcc.commons.pages.ros;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.validation.Valid;
 
 import org.apache.tapestry5.SelectModel;
 import org.apache.tapestry5.ValueEncoder;
@@ -66,7 +65,6 @@ public abstract class AbstractRosModifyDevice
     @Inject
     protected Messages messages;
 
-    @Valid
     @Property
     protected Device device;
 

@@ -27,11 +27,10 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Type;
-import org.hibernate.internal.util.SerializationHelper;
+import org.apache.commons.lang3.SerializationUtils;
 import org.mozilla.javascript.ScriptableObject;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -49,15 +48,14 @@ public class VirtualVehicleStorage implements Serializable
     @GeneratedValue
     private Integer id;
 
-    @NotNull
-    @ManyToOne
+    @ManyToOne(optional = false)
     private VirtualVehicle virtualVehicle;
 
-    @Type(type = "timestamp")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modification_time")
     private java.util.Date modificationTime;
 
-    @Size(max = 128)
+    @Column(length = 128)
     private String name;
 
     @Lob
@@ -134,7 +132,7 @@ public class VirtualVehicleStorage implements Serializable
      */
     public ScriptableObject getContent()
     {
-        return (ScriptableObject) SerializationHelper.deserialize(content);
+        return (ScriptableObject) SerializationUtils.deserialize(content);
     }
 
     /**
@@ -142,7 +140,7 @@ public class VirtualVehicleStorage implements Serializable
      */
     public void setContent(ScriptableObject content)
     {
-        this.content = SerializationHelper.serialize(content);
+        this.content = SerializationUtils.serialize(content);
     }
 
     /**

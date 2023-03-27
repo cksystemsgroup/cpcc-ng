@@ -11,6 +11,7 @@
 
 HTTP_DOMAIN=localhost
 HTTP_PORT=80
+HTTP_SCHEME=http
 
 setup() {
 	BASE_PORT='';
@@ -26,8 +27,10 @@ setup() {
 	
 	CONTEXT_PREFIX=$(askUser 'Please enter the base context prefix (leave empty if unsure)' '.*' '')
 	HTTP_DOMAIN=$(askUser 'Please enter the HTTP server''s virtual host name (use localhost if unsure)' '.*' "$HTTP_DOMAIN")
-	HTTP_PORT=$(askUser 'Please enter the HTTP server''s port number (use 80 if unsure)' '.*' "$HTTP_PORT")
+	HTTP_PORT=$(askUser 'Please enter the HTTP server''s port number (use 80/443 if unsure)' '.*' "$HTTP_PORT")
+	HTTP_SCHEME=$(askUser 'Please enter the HTTP server''s connector scheme (http/https)' '.*' "$HTTP_SCHEME")
 	CAMERAS=$(askUser 'Do you want to enable the OSM camera simulation? (y/N)' '[YyNn]' '')
+	BASE_URL="$HTTP_SCHEME://$HTTP_DOMAIN:$HTTP_PORT";
 	
 	echo "Setup using configuration in $1 and base port number $BASE_PORT"	
 	ensureDir "$WORKDIR" || exit 1;
@@ -58,11 +61,13 @@ setup() {
 		echo
 		echo "CONNECTOR_PROXY_NAME=\"$HTTP_DOMAIN\""
 		echo "CONNECTOR_PROXY_PORT=\"$HTTP_PORT\""
+		echo "CONNECTOR_SCHEME=\"$HTTP_SCHEME\""
+		echo "BASE_URL=\"$BASE_URL\"";
 		echo
 	} > $CONFIG;
 	
 	if [ "$HTTP_DOMAIN" != "localhost" ]; then
-		echo "UPDATE real_vehicles SET url = 'http://$HTTP_DOMAIN/$CONTEXT_PREFIX-' || name;" >> $WORKDIR/temp/db-setup-all.sql
+		echo "UPDATE real_vehicles SET url = '$HTTP_SCHEME://$HTTP_DOMAIN/$CONTEXT_PREFIX-' || name;" >> $WORKDIR/temp/db-setup-all.sql
 	fi
 	
 	$(dirname $0)/setup_databases.sh 

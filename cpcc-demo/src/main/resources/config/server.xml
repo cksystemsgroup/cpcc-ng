@@ -7,7 +7,7 @@
 	<Service name="Catalina">
 		<Connector port="${http.connector.port}" URIEncoding="UTF-8" connectionTimeout="30000"
 			keepAliveTimeout="30000" maxThreads="20" maxConnections="20" proxyName="${http.connector.proxy-name}"
-			proxyPort="${http.connector.proxy-port}" />
+			proxyPort="${http.connector.proxy-port}" scheme="${http.connector.scheme}"/>
 		<Engine name="Catalina" defaultHost="localhost">
 			<Host name="localhost" appBase="${app.base}" autoDeploy="false" copyXML="false">
 				<Context path="${cpcc.context.path}" docBase="${app.war.file}" privileged="false" cookies="false"

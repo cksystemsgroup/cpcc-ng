@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
 
 import org.apache.tapestry5.commons.Configuration;
@@ -76,7 +77,7 @@ class VvRteModuleTest
     void shouldHavePrivateConstructor() throws Exception
     {
         Constructor<VvRteModule> cnt = VvRteModule.class.getDeclaredConstructor();
-        assertThat(cnt.isAccessible()).isFalse();
+        assertThat(Modifier.isPrivate(cnt.getModifiers())).isTrue();
         cnt.setAccessible(true);
         cnt.newInstance();
     }

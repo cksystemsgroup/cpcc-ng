@@ -24,15 +24,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -45,35 +42,33 @@ public class SensorDefinition implements Serializable
 {
     private static final long serialVersionUID = -1329539207093921742L;
 
-    @GeneratedValue(generator = "UniqueIntegerIdGenerator")
-    @GenericGenerator(name = "UniqueIntegerIdGenerator", strategy = "cpcc.core.services.UniqueIntegerIdGenerator")
+    // @GeneratedValue(generator = "UniqueIntegerIdGenerator")
+    // @GenericGenerator(name = "UniqueIntegerIdGenerator", strategy = "cpcc.core.services.UniqueIntegerIdGenerator")
     @Id
     private Integer id;
 
-    @NotNull
-    @Size(max = 1024)
+    @Column(length = 1024, nullable = false)
     private String description;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SensorType type;
 
-    @Size(max = 1024)
+    @Column(length = 1024)
     private String parameters;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SensorVisibility visibility;
 
-    @NotNull
-    @Type(type = "timestamp")
-    @Column(name = "last_update")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_update", nullable = false)
     private java.util.Date lastUpdate;
 
     @Column(name = "message_type", length = 50)
     private String messageType;
 
-    @NotNull
+    @Column(nullable = false)
     private Boolean deleted;
 
     /**

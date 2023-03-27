@@ -33,11 +33,9 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.hibernate.annotations.Type;
 
 import cpcc.core.entities.RealVehicle;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -57,11 +55,10 @@ public class VirtualVehicle implements Serializable
     @GeneratedValue
     private Integer id;
 
-    @NotNull
-    @Size(max = 36)
+    @Column(length = 36, nullable = false)
     private String uuid;
 
-    @Size(max = 36)
+    @Column(length = 36)
     private String name;
 
     @Column(name = "api_version", nullable = false, columnDefinition = "INTEGER DEFAULT 1")
@@ -70,9 +67,8 @@ public class VirtualVehicle implements Serializable
     @Lob
     private String code;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(length = MAX_STATE_LENGTH)
+    @Column(length = MAX_STATE_LENGTH, nullable = false)
     private VirtualVehicleState state;
 
     @Enumerated(EnumType.STRING)
@@ -88,22 +84,22 @@ public class VirtualVehicle implements Serializable
     @Column(name = "chunk_number")
     private Integer chunkNumber;
 
-    @Type(type = "timestamp")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "migration_start_time")
     private java.util.Date migrationStartTime;
 
     @Lob
     private byte[] continuation;
 
-    @Type(type = "timestamp")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "start_time")
     private java.util.Date startTime;
 
-    @Type(type = "timestamp")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "end_time")
     private java.util.Date endTime;
 
-    @Type(type = "timestamp")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "update_time")
     private java.util.Date updateTime;
 

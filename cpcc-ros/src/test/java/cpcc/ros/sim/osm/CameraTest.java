@@ -287,6 +287,8 @@ class CameraTest
         assertThat(image.getHeight()).isEqualTo(height);
         assertThat(image.getWidth()).isEqualTo(width);
 
+        FileUtils.writeByteArrayToFile(new File(imageName + ".new.png"), buffer);
+
         byte[] reference = FileUtils.readFileToByteArray(new File(imageName));
         assertThat(buffer).isEqualTo(reference);
     }

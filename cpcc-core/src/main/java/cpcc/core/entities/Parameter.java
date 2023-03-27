@@ -20,12 +20,11 @@ package cpcc.core.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * Parameter
@@ -44,14 +43,13 @@ public class Parameter implements Serializable
     @GeneratedValue
     private Integer id;
 
-    @NotNull
-    @Size(max = 100)
+    @Column(length = 100, nullable = false)
     private String name;
 
-    @Size(max = 255)
+    @Column(length = 255)
     private String value;
 
-    @NotNull
+    @Column(nullable = false)
     private Integer sort;
 
     public Parameter()
