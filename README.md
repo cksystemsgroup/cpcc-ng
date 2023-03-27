@@ -70,7 +70,7 @@ The general idea is to keep your 'master' branch in-sync with the 'upstream/mast
 
 ### Requirements
 - Maven 3.x
-- Java 8+
+- Java 11+
 - ROS Java Hydra Maven Repository (coming soon)
 
 
