@@ -77,7 +77,7 @@
 		<snakeyaml-version>2.0</snakeyaml-version>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<tapestry-release-version>5.8.2</tapestry-release-version>
-		<tomcat.version>9.0.73</tomcat.version>
+		<tomcat.version>9.0.74</tomcat.version>
 	</properties>
 
 	<dependencyManagement>
