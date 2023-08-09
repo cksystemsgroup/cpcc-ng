@@ -67,7 +67,7 @@
 		<javax.mail.version>1.4.7</javax.mail.version>
 		<junit.jupiter.version>5.10.0</junit.jupiter.version>
 		<liquibase-version>4.23.0</liquibase-version>
-		<logback-version>1.4.10</logback-version>
+		<logback-version>1.4.11</logback-version>
 		<mockito-version>5.4.0</mockito-version>
 		<mockserver-version>5.15.0</mockserver-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
