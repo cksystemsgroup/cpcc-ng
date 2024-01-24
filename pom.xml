@@ -57,7 +57,7 @@
 
 	<properties>
 		<additionalparam>-Xdoclint:none</additionalparam>
-		<assertj-version>3.25.1</assertj-version>
+		<assertj-version>3.25.2</assertj-version>
 		<awaitility-version>4.2.0</awaitility-version>
 		<cobertura.report.format>xml</cobertura.report.format>
 		<com.h2database.version>2.2.224</com.h2database.version>
