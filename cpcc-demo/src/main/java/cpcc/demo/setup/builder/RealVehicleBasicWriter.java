@@ -135,13 +135,13 @@ public class RealVehicleBasicWriter extends AbstractRealVehicleWriter
      */
     private void writeParameters(Writer writer, RealVehicle rv) throws IOException
     {
-        writer.append(String.format("INSERT INTO PARAMETERS (ID,NAME,SORT,VALUE) VALUES "
+        writer.append(String.format("INSERT INTO PARAMETERS (ID,NAME,SORT,STRING_VALUE) VALUES "
             + "(1,'realVehicleName',0,'%1$s');%n", rv.getName()));
 
-        writer.append(String.format("INSERT INTO PARAMETERS (ID,NAME,SORT,VALUE) VALUES "
+        writer.append(String.format("INSERT INTO PARAMETERS (ID,NAME,SORT,STRING_VALUE) VALUES "
             + "(2,'masterServerURI',0,'http://localhost:%1$d');%n", pm.getRosPort(rv.getId())));
 
-        writer.append("INSERT INTO PARAMETERS (ID,NAME,SORT,VALUE) VALUES (3,'useInternalRosCore',0,'true');\n\n");
+        writer.append("INSERT INTO PARAMETERS (ID,NAME,SORT,STRING_VALUE) VALUES (3,'useInternalRosCore',0,'true');\n\n");
     }
 
 }

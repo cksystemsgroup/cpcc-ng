@@ -79,7 +79,7 @@ public class RealVehicle implements Serializable
     private java.util.Date lastUpdate;
 
     @Column(nullable = false)
-    private boolean deleted;
+    private Boolean deleted;
 
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinColumn(name = "id", referencedColumnName = "id")

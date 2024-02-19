@@ -4,12 +4,12 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 	<changeSet author="ckrainer" id="2014-03-02">
 		<addColumn tableName="REALVEHICLE">
-			<column name="DELETED" type="BOOLEAN(1)" defaultValue="false">
+			<column name="DELETED" type="BOOLEAN" defaultValue="false">
 				<constraints nullable="false" />
 			</column>
 		</addColumn>
 		<addColumn tableName="SENSORDEFINITION">
-			<column name="DELETED" type="BOOLEAN(1)" defaultValue="false">
+			<column name="DELETED" type="BOOLEAN" defaultValue="false">
 				<constraints nullable="false" />
 			</column>
 		</addColumn>

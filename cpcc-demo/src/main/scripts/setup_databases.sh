@@ -16,7 +16,7 @@ for DB in "${!RVS[@]}";
 do
 	echo "Creating database $DB";
 	# url="jdbc:hsqldb:file://$DBDIR/$DB";
-	url="jdbc:h2:file:$DBDIR/$DB;create=true"
+	url="jdbc:h2:file:$DBDIR/$DB"
 	$CPCC_DIR/bin/liquibase-update.sh "$url";
 	SCRIPTS="$DB_SCRIPT_DIR/db-setup-all.sql $DB_SCRIPT_DIR/db-setup-${DB}-rv.sql"
 	$CAMERAS && SCRIPTS="$SCRIPTS $DB_SCRIPT_DIR/db-setup-${DB}-cam.sql"

@@ -29,7 +29,7 @@ setup() {
 	HTTP_DOMAIN=$(askUser 'Please enter the HTTP server''s virtual host name (use localhost if unsure)' '.*' "$HTTP_DOMAIN")
 	HTTP_PORT=$(askUser 'Please enter the HTTP server''s port number (use 80/443 if unsure)' '.*' "$HTTP_PORT")
 	HTTP_SCHEME=$(askUser 'Please enter the HTTP server''s connector scheme (http/https)' '.*' "$HTTP_SCHEME")
-	CAMERAS=$(askUser 'Do you want to enable the OSM camera simulation? (y/N)' '[YyNn]' '')
+	CAMERAS=$(askUser 'Do you want to enable the OSM camera simulation? (y/N)' '[YyNn]' 'N')
 	BASE_URL="$HTTP_SCHEME://$HTTP_DOMAIN:$HTTP_PORT";
 	
 	echo "Setup using configuration in $1 and base port number $BASE_PORT"	

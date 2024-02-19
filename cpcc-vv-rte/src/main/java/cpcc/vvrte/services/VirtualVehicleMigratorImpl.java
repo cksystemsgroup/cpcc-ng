@@ -145,7 +145,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
         ArchiveStreamFactory factory = new ArchiveStreamFactory(StandardCharsets.UTF_8.name());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ArchiveOutputStream outStream = factory.createArchiveOutputStream("tar", baos);
+        ArchiveOutputStream<TarArchiveEntry> outStream = factory.createArchiveOutputStream("tar", baos);
 
         writeVirtualVehicleProperties(virtualVehicle, outStream, chunkNumber, lastChunk);
         if (chunkNumber == 0)
@@ -173,8 +173,8 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * @param chunkNumber the chunk number.
      * @throws IOException thrown in case of errors.
      */
-    private void writeVirtualVehicleProperties(VirtualVehicle virtualVehicle, ArchiveOutputStream os, int chunkNumber,
-        boolean lastChunk) throws IOException
+    private void writeVirtualVehicleProperties(VirtualVehicle virtualVehicle, ArchiveOutputStream<TarArchiveEntry> os,
+        int chunkNumber, boolean lastChunk) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Properties virtualVehicleProps = fillVirtualVehicleProps(virtualVehicle, lastChunk);
@@ -200,8 +200,8 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * @param chunkNumber the chunk number.
      * @throws IOException thrown in case of errors.
      */
-    private void writeVirtualVehicleContinuation(VirtualVehicle virtualVehicle, ArchiveOutputStream os, int chunkNumber)
-        throws IOException
+    private void writeVirtualVehicleContinuation(VirtualVehicle virtualVehicle, ArchiveOutputStream<TarArchiveEntry> os,
+        int chunkNumber) throws IOException
     {
         byte[] continuation = virtualVehicle.getContinuation();
 
@@ -227,8 +227,8 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * @param chunkNumber the chunk number.
      * @throws IOException thrown in case of errors.
      */
-    private void writeVirtualVehicleSourceCode(VirtualVehicle virtualVehicle, ArchiveOutputStream os, int chunkNumber)
-        throws IOException
+    private void writeVirtualVehicleSourceCode(VirtualVehicle virtualVehicle, ArchiveOutputStream<TarArchiveEntry> os,
+        int chunkNumber) throws IOException
     {
         if (virtualVehicle.getCode() == null)
         {
@@ -254,7 +254,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
      * @param storageChunk the storage chunk.
      * @throws IOException thrown in case of errors.
      */
-    private void writeVirtualVehicleStorageChunk(ArchiveOutputStream os, int chunkNumber,
+    private void writeVirtualVehicleStorageChunk(ArchiveOutputStream<TarArchiveEntry> os, int chunkNumber,
         List<VirtualVehicleStorage> storageChunk) throws IOException
     {
         for (VirtualVehicleStorage se : storageChunk)
@@ -324,7 +324,7 @@ public class VirtualVehicleMigratorImpl implements VirtualVehicleMigrator
 
         VirtualVehicleHolder virtualVehicleHolder = new VirtualVehicleHolder();
 
-        try (ArchiveInputStream ais = f.createArchiveInputStream("tar", inStream))
+        try (ArchiveInputStream<TarArchiveEntry> ais = f.createArchiveInputStream("tar", inStream))
         {
             for (TarArchiveEntry entry = (TarArchiveEntry) ais.getNextEntry(); entry != null; entry =
                 (TarArchiveEntry) ais.getNextEntry())

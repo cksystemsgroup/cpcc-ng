@@ -58,7 +58,7 @@ class TarArchiveDemoTest
         FileOutputStream fos = new FileOutputStream("bugger1.tar");
 
         ArchiveStreamFactory factory = new ArchiveStreamFactory("UTF-8");
-        ArchiveOutputStream outStream = factory.createArchiveOutputStream("tar", fos);
+        ArchiveOutputStream<TarArchiveEntry> outStream = factory.createArchiveOutputStream("tar", fos);
 
         TarArchiveEntry archiveEntry1 = new TarArchiveEntry("entry1");
         archiveEntry1.setModTime(t1);
@@ -83,7 +83,7 @@ class TarArchiveDemoTest
         outStream.close();
 
         FileInputStream fis = new FileInputStream("bugger1.tar");
-        ArchiveInputStream inStream = factory.createArchiveInputStream("tar", fis);
+        ArchiveInputStream<TarArchiveEntry> inStream = factory.createArchiveInputStream("tar", fis);
 
         TarArchiveEntry entry1 = (TarArchiveEntry) inStream.getNextEntry();
         assertThat(entry1.getModTime()).isEqualTo(t1);

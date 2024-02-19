@@ -83,7 +83,7 @@ class RosNodeServiceTest
     @BeforeEach
     void setupTest() throws URISyntaxException, IOException, ParseException
     {
-        final int port = 40000 + (int) (Math.random() * 10000.0);
+        final int port = 30000 + (int) (Math.random() * 20000.0);
         final String uriString = "http://localhost:" + port + "/";
         final String uriString2 = "http://localhost:" + Integer.toString(port + 1) + "/";
         masterServer = new URI(uriString);

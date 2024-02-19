@@ -46,7 +46,7 @@ public class Parameter implements Serializable
     @Column(length = 100, nullable = false)
     private String name;
 
-    @Column(length = 255)
+    @Column(length = 255, name = "STRING_VALUE")
     private String value;
 
     @Column(nullable = false)
