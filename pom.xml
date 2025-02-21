@@ -60,7 +60,7 @@
 	<properties>
 		<additionalparam>-Xdoclint:none</additionalparam>
 		<assertj-version>3.27.3</assertj-version>
-		<awaitility-version>4.2.2</awaitility-version>
+		<awaitility-version>4.3.0</awaitility-version>
 		<cobertura.report.format>xml</cobertura.report.format>
 		<com.h2database.version>2.3.232</com.h2database.version>
 		<easymock-version>4.3</easymock-version>
